@@ -35,19 +35,35 @@ class Dep
   end
 
   def met?
-    @cached_met ||= dep_task(:met?) && @defines[:met?].call
+    @cached_met ||= dep_task(:met?) && run_met_task
   end
   
   def meet
-    log "#{name}..." do
+    log name do
       # begin
-        dep_task(:meet) && (met? || @defines[:meet].call)
+        dep_task(:meet) && (met? || run_meet_task)
       # rescue Exception => e
       #   log "Tried to install #{@name}, and #{e.to_s} out of fucking nowhere."
       #   log e.backtrace.inspect
       #   false
       # end
     end
+  end
+  
+  def run_met_task
+    returning @defines[:met?].call do |result|
+      log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil)
+    end
+  end
+  
+  def run_meet_task
+    returning @defines[:meet].call do |result|
+      log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
+    end
+  end
+  
+  def inspect
+    "#<Dep:#{object_id} '#{name}' { #{@defines[:requires].join(', ')} }>"
   end
 end
 

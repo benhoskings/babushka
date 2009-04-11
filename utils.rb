@@ -6,16 +6,16 @@ end
 $log_indent = 0
 
 def log message, &block
-  print((' ' * $log_indent * 2) + message)
+  print(' ' * $log_indent * 2)
   if block_given?
-    print " {\n"
+    print "#{message} {\n".colorize('grey')
     $log_indent += 1
     returning yield do
       $log_indent -= 1
-      log "}"
+      log "}".colorize('grey')
     end
   else
-    print "\n"
+    print "#{message}\n"
   end
 end
 

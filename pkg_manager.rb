@@ -60,5 +60,3 @@ end
 def pkg_manager
   PkgManager.for_system
 end
-
-shell 'ls'

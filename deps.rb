@@ -2,7 +2,7 @@ require 'fakeistrano'
 
 dep 'migrated db' do
   requires 'db access', 'existing db'
-  met? { shell "rake db:version".val_for('Current version') == Dir.glob('db/migrate').sort.last.split('_', 2).first }
+  met? { rake "db:version".val_for('Current version') == Dir.glob('db/migrate').sort.last.split('_', 2).first }
   meet { rake "db:migrate --trace" }
 end
 
