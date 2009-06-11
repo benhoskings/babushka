@@ -5,7 +5,11 @@ end
 
 $log_indent = 0
 
-def log message, &block
+def log_error message, opts = {}, &block
+  log message, opts.merge(:error => true), &block
+end
+
+def log message, opts = {}, &block
   print(' ' * $log_indent * 2)
   if block_given?
     print "#{message} {\n".colorize('grey')
