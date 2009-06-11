@@ -55,7 +55,7 @@ class String
     CtrlRegex = /^bold|underlined?|blink(ing)?|reversed?$/
     ColorOffsets = {
       'none' => 0,
-      'gray' => 1, 'grey' => 1,
+      'gray' => 61, 'grey' => 61,
       'red' => 2,
       'green' => 3,
       'yellow' => 4,
