@@ -25,7 +25,7 @@ end
 dep 'db access' do
   requires 'db software'
   met? { shell "echo '\\d' | psql #{dbname}" }
-  meet { sudo "createuser #{appname}" }
+  meet { sudo "createuser -SDR #{appname}" }
 end
 
 pkg_dep 'db software' do
