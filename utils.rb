@@ -19,7 +19,11 @@ def log message, opts = {}, &block
       log "}".colorize('grey')
     end
   else
-    print "#{message}\n"
+    if opts[:error]
+      print "#{message.colorize('red')}\n"
+    else
+      print "#{message}\n"
+    end
   end
 end
 
