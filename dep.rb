@@ -26,7 +26,7 @@ class Dep
   
   def dep_task method_name
     @defines[:requires].all? {|requirement|
-      if (dep = Dep.for(requirement)).nil?
+      if (dep = Dep(requirement)).nil?
         raise "dep '#{name}' requires '#{requirement}', which doesn't exist."
       else
         dep.send method_name
@@ -65,6 +65,10 @@ class Dep
   def inspect
     "#<Dep:#{object_id} '#{name}' { #{@defines[:requires].join(', ')} }>"
   end
+end
+
+def Dep name
+  Dep.for name
 end
 
 def dep name, &block
