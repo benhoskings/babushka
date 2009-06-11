@@ -41,7 +41,7 @@ class Dep
   def meet
     log name do
       # begin
-        dep_task(:meet) && (met? || run_meet_task)
+        dep_task(:meet) && (run_met_task || run_meet_task)
       # rescue Exception => e
       #   log "Tried to install #{@name}, and #{e.to_s} out of fucking nowhere."
       #   log e.backtrace.inspect
@@ -57,7 +57,7 @@ class Dep
   end
   
   def run_meet_task
-    returning @defines[:meet].call do |result|
+    returning(@defines[:meet].call && @defines[:met?].call) do |result|
       log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
     end
   end
