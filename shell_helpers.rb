@@ -10,7 +10,7 @@ def shell cmd
     _stdout, _stderr = stdout.read, stderr.read
   end
   returning (status.exitstatus == 0 ? _stdout : false) do |result|
-    log_error "`#{cmd}` failed with '#{_stderr.chomp}'" unless result
+    # log_error "`#{cmd}` failed with '#{_stderr.chomp}'" unless result
   end
 end
 
