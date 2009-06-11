@@ -36,7 +36,7 @@ class MacportsHelper < PkgManager
       log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
     else
       returning cmd_dir(cmd_name).starts_with?(prefix) do |result|
-        log "#{result ? 'the correct' : 'an incorrect installation of'} '#{cmd_name}' is in use, at #{cmd_dir(cmd_name)}.", :error => result
+        log "#{result ? 'the correct' : 'an incorrect installation of'} '#{cmd_name}' is in use, at #{cmd_dir(cmd_name)}.", :error => !result
       end
     end
   end
