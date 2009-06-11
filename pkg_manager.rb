@@ -43,7 +43,7 @@ class AptHelper < PkgManager
     end
   end
   def self.install! *pkgs
-    shell "apt-get install #{pkgs.join(' ')}"
+    shell "apt-get install -y #{pkgs.join(' ')}"
   end
 end
 class GemHelper < PkgManager
