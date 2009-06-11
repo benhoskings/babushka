@@ -14,9 +14,9 @@ def log message, opts = {}, &block
   if block_given?
     print "#{message} {\n".colorize('grey')
     $log_indent += 1
-    returning yield do
+    returning yield do |result|
       $log_indent -= 1
-      log "}".colorize('grey')
+      log "}".colorize(result ? 'grey' : 'red')
     end
   else
     if opts[:error]
