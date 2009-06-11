@@ -35,7 +35,7 @@ class Dep
   end
 
   def met?
-    @cached_met ||= dep_task(:met?) && run_met_task
+    dep_task(:met?) && run_met_task
   end
   
   def meet
