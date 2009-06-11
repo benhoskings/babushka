@@ -11,7 +11,7 @@ end
 
 class MacportsHelper < PkgManager
   def has? pkg_name
-    returning pkg_name.in? existing_packages do |result|
+    returning pkg_name.in?(existing_packages) do |result|
       log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} port"
     end
   end
@@ -43,7 +43,7 @@ class MacportsHelper < PkgManager
 end
 class AptHelper < PkgManager
   def self.has? pkg_name
-    returning shell "dpkg -s #{pkg_name}" do |result|
+    returning shell("dpkg -s #{pkg_name}") do |result|
       log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} package"
     end
   end
@@ -53,7 +53,7 @@ class AptHelper < PkgManager
 end
 class GemHelper < PkgManager
   def self.has? pkg_name
-    returning shell "gem list -i #{pkg_name}" do |result|
+    returning shell("gem list #{pkg_name}").detect {|l| /^pg/ =~ l } do |result|
       log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} gem"
     end
   end
