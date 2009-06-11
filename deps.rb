@@ -13,7 +13,7 @@ dep 'existing db' do
 end
 
 gem_dep 'db gem' do
-  requires 'db software'
+  requires 'db software', 'rubygems'
   pkg 'pg'
   # gem_dep({
   #   'mysql' => 'mysql',
@@ -36,4 +36,20 @@ pkg_dep 'db software' do
   #   'postgresql' => AptPkg.new('postgresql-8.2', 'psql'),
   #   'sqlite3' => 'sqlite3'
   # }[yaml('config/database.yml')[RAILS_ENV]['adapter']])
+end
+
+dep 'rubygems' do
+  requires 'ruby'
+  met? {
+    which('gem') &&
+    cmd_dir('gem') == cmd_dir('ruby')
+  }
+  meet {
+    
+  }
+end
+
+pkg_dep 'ruby' do
+  pkg :macports => 'ruby', :apt => %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
+  provides %w[ruby irb ri rdoc]
 end
