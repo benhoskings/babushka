@@ -21,10 +21,6 @@ class MacportsHelper < PkgManager
   def existing_packages
     Dir.glob("/opt/local/var/macports/software/*").map {|i| File.basename i }
   end
-  def cmd_dir cmd_name
-    which = shell("which #{cmd_name}")
-    File.dirname which if which
-  end
   def prefix
     cmd_dir('port').sub(/\/bin\/?$/, '')
   end

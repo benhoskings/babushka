@@ -14,6 +14,11 @@ def shell cmd
   end
 end
 
+def cmd_dir cmd_name
+  which = shell("which #{cmd_name}")
+  File.dirname which if which
+end
+
 def sudo cmd
   log "(would be sudoing the next command)"
   shell cmd
