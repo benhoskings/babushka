@@ -14,6 +14,10 @@ def shell cmd
   end
 end
 
+def which cmd_name
+  shell("which #{cmd_name}")
+end
+
 def cmd_dir cmd_name
   which = shell("which #{cmd_name}")
   File.dirname which if which
