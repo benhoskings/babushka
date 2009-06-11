@@ -22,7 +22,8 @@ class MacportsHelper < PkgManager
     Dir.glob("/opt/local/var/macports/software/*").map {|i| File.basename i }
   end
   def cmd_dir cmd_name
-    File.dirname shell("which #{cmd_name}")
+    which = shell("which #{cmd_name}")
+    File.dirname which if which
   end
   def prefix
     cmd_dir('port').sub(/\/bin\/?$/, '')
@@ -31,8 +32,12 @@ class MacportsHelper < PkgManager
     prefix / 'bin'
   end
   def cmd_in_path? cmd_name
-    returning cmd_dir(cmd_name).starts_with?(prefix) do |result|
-      log "#{result ? 'the correct' : 'an incorrect installation of'} #{cmd_name} is in use, at #{cmd_dir(cmd_name)}."
+    if (_cmd_dir = cmd_dir(cmd_name)).nil?
+      log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
+    else
+      returning cmd_dir(cmd_name).starts_with?(prefix) do |result|
+        log "#{result ? 'the correct' : 'an incorrect installation of'} '#{cmd_name}' is in use, at #{cmd_dir(cmd_name)}.", :error => result
+      end
     end
   end
 end
