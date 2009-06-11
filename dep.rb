@@ -27,7 +27,7 @@ class Dep
   def dep_task method_name
     @defines[:requires].all? {|requirement|
       if (dep = Dep(requirement)).nil?
-        raise "dep '#{name}' requires '#{requirement}', which doesn't exist."
+        log(requirement) { log_error "dep not defined!" }
       else
         dep.send method_name
       end
