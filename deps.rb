@@ -1,7 +1,7 @@
 require 'fakeistrano'
 
 dep 'migrated db' do
-  requires 'db access'
+  requires 'db access', 'rails'
   met? {
     current_version = rake("db:version").val_for('Current version')
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
@@ -46,6 +46,11 @@ pkg_dep 'db software' do
   #   'postgresql' => AptPkg.new('postgresql-8.2', 'psql'),
   #   'sqlite3' => 'sqlite3'
   # }[yaml('config/database.yml')[RAILS_ENV]['adapter']])
+end
+
+gem_dep 'rails' do
+  requires 'rubygems'
+  pkg 'rails'
 end
 
 dep 'rubygems' do
