@@ -4,7 +4,7 @@ class DepDefiner
   def initialize name, &block
     @name = name
     @defines = {:requires => []}
-    instance_eval &block
+    instance_eval &block if block_given?
   end
   def requires *deps
     @defines[:requires] = deps
@@ -56,21 +56,34 @@ class PkgDepDefiner < DepDefiner
   private
 
   def packages_present
-    if @pkg[pkg_manager.manager_key].is_a? Hash
-      @pkg[pkg_manager.manager_key].all? {|pkg_name, version| pkg_manager.has?(pkg_name, version) }
+    if pkg_or_default.is_a? Hash
+      pkg_or_default.all? {|pkg_name, version| pkg_manager.has?(pkg_name, version) }
     else
-      @pkg[pkg_manager.manager_key].all? {|pkg_name| pkg_manager.has?(pkg_name) }
+      pkg_or_default.all? {|pkg_name| pkg_manager.has?(pkg_name) }
     end
   end
 
   def cmds_in_path
-    (@provides || []).all? {|cmd_name|
+    provides_or_default.all? {|cmd_name|
       pkg_manager.cmd_in_path? cmd_name
     }
   end
 
   def pkg_manager
     PkgManager.for_system
+  end
+
+  def pkg_or_default
+    if @pkg.nil?
+      @name
+    elsif @pkg.is_a? Hash
+      @pkg[pkg_manager.manager_key]
+    else
+      [*@pkg]
+    end
+  end
+  def provides_or_default
+    @provides || [@name]
   end
 end
 
