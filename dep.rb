@@ -35,24 +35,39 @@ class Dep
   end
 
   def met?
-    dep_task(:met?) && run_met_task
+    unless @_cached_met.nil?
+      log "#{name} cached for met? (#{@_cached_met})."
+      @_cached_met
+    else
+      dep_task(:met?) && run_met_task
+    end
   end
   
   def meet
-    log name do
-      # begin
-        dep_task(:meet) && (run_met_task || run_meet_task)
-      # rescue Exception => e
-      #   log "Tried to install #{@name}, and #{e.to_s} out of fucking nowhere."
-      #   log e.backtrace.inspect
-      #   false
-      # end
+    unless @_cached_met.nil?
+      log [name.colorize('grey'), "#{'un' unless @_cached_met}met".colorize(@_cached_met ? 'green' : 'red')].join(' ')
+      @_cached_met
+    else
+      log name, :closing_status => true do
+        # begin
+          dep_task(:meet) && (run_met_task || run_meet_task)
+        # rescue Exception => e
+        #   log "Tried to install #{@name}, and #{e.to_s} out of fucking nowhere."
+        #   log e.backtrace.inspect
+        #   false
+        # end
+      end
     end
   end
   
   def run_met_task
-    returning @defines[:met?].call do |result|
-      log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil)
+    unless @_cached_met.nil?
+      log [name.colorize('grey'), "#{'un' unless @_cached_met}met".colorize(@_cached_met ? 'green' : 'red')].join(' ')
+      @_cached_met
+    else
+      @_cached_met = returning @defines[:met?].call do |result|
+        log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil) unless result
+      end
     end
   end
   
