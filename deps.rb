@@ -7,7 +7,7 @@ dep 'migrated db' do
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
     returning current_version == latest_version do |result|
       if result
-        log "DB is up to date at version #{current_version}"
+        log "DB is up to date at migration #{current_version}"
       else
         log "DB needs migrating from #{current_version} to #{latest_version}"
       end
