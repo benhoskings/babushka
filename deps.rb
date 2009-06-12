@@ -1,15 +1,25 @@
 require 'fakeistrano'
 
 dep 'migrated db' do
-  requires 'db access', 'existing db'
-  met? { rake "db:version".val_for('Current version') == Dir.glob('db/migrate').sort.last.split('_', 2).first }
-  meet { rake "db:migrate --trace" }
+  requires 'db access'
+  met? {
+    current_version = rake("db:version").val_for('Current version')
+    latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
+    returning current_version == latest_version do |result|
+      if result
+        log "DB is up to date at version #{current_version}"
+      else
+        log "DB needs migrating from #{current_version} to #{latest_version}"
+      end
+    end
+  }
+  meet { rake("db:migrate --trace") }
 end
 
 dep 'existing db' do
-  requires 'db gem', 'db access'
-  met? { shell("rake db:create")['already exists'] }
-  meet { rake "db:create" }
+  requires 'db gem'
+  met? { !shell("psql -l").split("\n").grep(/^\s*testapp\s+\|/).empty? }
+  meet { rake("db:create") }
 end
 
 gem_dep 'db gem' do
@@ -23,7 +33,7 @@ gem_dep 'db gem' do
 end
 
 dep 'db access' do
-  requires 'db software'
+  requires 'existing db'
   met? { shell "echo '\\d' | psql #{dbname}" }
   meet { sudo "createuser -SDR #{appname}" }
 end
