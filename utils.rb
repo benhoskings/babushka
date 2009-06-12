@@ -1,3 +1,6 @@
+
+alias :L :lambda
+
 def returning obj, &block
   yield obj
   obj
