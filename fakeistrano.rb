@@ -1,10 +1,10 @@
-RAILS_ROOT = '/Users/ben/projects/corkboard/current'
+RAILS_ROOT = '/Users/ben/projects/babushka/testapp'
 RAILS_ENV = 'production'
 
 def appname
-  'corkboard'
+  'testapp'
 end
 
 def dbname
-  'corkboard'
+  'testapp'
 end
