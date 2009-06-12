@@ -2,6 +2,11 @@ class Object
   def in? list
     list.include? self
   end
+
+  def tap &block
+    yield self
+    self
+  end
 end
 
 class String
@@ -26,7 +31,7 @@ class String
   end
 
   def val_for key
-    split("\n").grep(key).first.sub(/^#{key}\:?/).strip
+    split("\n").grep(/\b#{key}\b/).map {|l| l.sub(/\b#{key}\b\:?/, '').strip }.first
   end
   def / other
     File.join self, other
