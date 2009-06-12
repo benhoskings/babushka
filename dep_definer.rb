@@ -1,7 +1,8 @@
 require 'pkg_manager'
 
 class DepDefiner
-  def initialize &block
+  def initialize name, &block
+    @name = name
     @defines = {:requires => []}
     instance_eval &block
   end
