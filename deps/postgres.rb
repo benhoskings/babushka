@@ -21,7 +21,7 @@ dep 'db access' do
 end
 
 pkg_dep 'db software' do
-  pkg :macports => 'postgresql83-server', :apt => 'postgresql-8.3'
+  pkg :macports => 'postgresql83-server', :apt => %w[postgresql postgresql-client libpq-dev]
   provides 'psql'
   # provides({
   #   'mysql' => AptPkg.new('mysql-server', 'mysql5'),
