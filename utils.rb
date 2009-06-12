@@ -19,7 +19,7 @@ def log message, opts = {}, &block
       if opts[:closing_status]
         log "}".colorize(result ? 'green' : 'red')
       else
-        log "}"
+        log "}".colorize('grey')
       end
     end
   else
