@@ -4,7 +4,7 @@ require 'open4'
 require 'utils'
 
 def shell cmd
-  # log "running '#{cmd}'"
+  # log "$ #{cmd}".colorize('grey')
   _stdout, _stderr = nil, nil
   status = Open4.popen4 cmd do |pid,stdin,stdout,stderr|
     _stdout, _stderr = stdout.read, stderr.read
@@ -19,8 +19,8 @@ def which cmd_name
 end
 
 def cmd_dir cmd_name
-  which = shell("which #{cmd_name}")
-  File.dirname which if which
+  path = which("#{cmd_name}")
+  File.dirname path if path
 end
 
 def sudo cmd
@@ -29,5 +29,5 @@ def sudo cmd
 end
 
 def rake cmd
-  shell "rake #{cmd}"
+  shell "rake #{cmd} RAILS_ENV=#{RAILS_ENV}"
 end
