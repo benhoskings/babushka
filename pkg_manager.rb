@@ -48,10 +48,16 @@ class AptHelper < PkgManager
   end
 end
 class GemHelper < PkgManager
-  def self.has? pkg_name
-    returning shell("gem list #{pkg_name}").detect {|l| /^pg/ =~ l } do |result|
-      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} gem"
+  def self.has? pkg_name, version = nil
+    versions = versions_of pkg_name
+    returning !versions.empty? && (version.nil? || versions.include?(version)) do |result|
+      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name}#{"-#{version}" unless version.nil?} gem#{" (at #{versions.first})" if version.nil? && result}"
     end
+  end
+  def self.versions_of pkg_name
+    installed = shell("gem list --local #{pkg_name}").detect {|l| /^#{pkg_name}/ =~ l }
+    versions = installed.scan(/.*\(([0-9., ]+)\)/).flatten.first || ''
+    versions.split(/[^0-9.]+/)
   end
   def self.install! *pkgs
     sudo "gem install #{pkgs.join(' ')}"
