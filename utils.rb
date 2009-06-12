@@ -16,7 +16,11 @@ def log message, opts = {}, &block
     $log_indent += 1
     returning yield do |result|
       $log_indent -= 1
-      log "}".colorize(result ? 'grey' : 'red')
+      if opts[:closing_status]
+        log "}".colorize(result ? 'green' : 'red')
+      else
+        log "}"
+      end
     end
   else
     if opts[:error]
