@@ -20,16 +20,15 @@ class Dep
   end
   def self.for name
     @@deps ||= {}
-    @@deps[name]
+    returning dep = @@deps[name] do |result|
+      log(name, :closing_status => true) { log_error "dep not defined!" } unless result
+    end
   end
   
   def dep_task method_name
     @defines[:requires].all? {|requirement|
-      if (dep = Dep(requirement)).nil?
-        log(requirement) { log_error "dep not defined!" }
-      else
-        dep.send method_name
-      end
+      dep = Dep(requirement)
+      dep.send method_name unless dep.nil?
     }
   end
 
