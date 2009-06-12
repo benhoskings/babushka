@@ -7,22 +7,17 @@ class PkgManager
     when 'Linux'; AptHelper
     end.new
   end
-end
 
-class MacportsHelper < PkgManager
   def has? pkg_name
-    returning pkg_name.in?(existing_packages) do |result|
-      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} port"
+    returning _has?(pkg_name) do |result|
+      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}"
     end
   end
   def install! *pkgs
-    shell "port install #{pkgs.join(' ')}"
-  end
-  def existing_packages
-    Dir.glob("/opt/local/var/macports/software/*").map {|i| File.basename i }
+    shell "#{pkg_cmd} install #{pkgs.join(' ')}"
   end
   def prefix
-    cmd_dir('port').sub(/\/bin\/?$/, '')
+    cmd_dir(pkg_cmd).sub(/\/bin\/?$/, '')
   end
   def bin_path
     prefix / 'bin'
@@ -37,33 +32,49 @@ class MacportsHelper < PkgManager
     end
   end
 end
-class AptHelper < PkgManager
-  def self.has? pkg_name
-    returning shell("dpkg -s #{pkg_name}") do |result|
-      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} package"
-    end
+
+class MacportsHelper < PkgManager
+  def existing_packages
+    Dir.glob("/opt/local/var/macports/software/*").map {|i| File.basename i }
   end
-  def self.install! *pkgs
-    shell "apt-get install -y #{pkgs.join(' ')}"
+  def pkg_type; :port end
+  def pkg_cmd; 'port' end
+  def manager_key; :macports end
+
+  private
+  def _has? pkg_name
+    pkg_name.in? existing_packages
   end
 end
+
+class AptHelper < PkgManager
+  def pkg_type; :deb end
+  def pkg_cmd; 'apt-get -y' end
+  def manager_key; :apt end
+
+  private
+  def _has? pkg_name
+    shell("dpkg -s #{pkg_name}")
+  end
+end
+
 class GemHelper < PkgManager
-  def self.has? pkg_name, version = nil
+  def pkg_type; :gem end
+  def pkg_cmd; 'gem' end
+  def manager_key; :gem end
+
+  def has? pkg_name, version = nil
     versions = versions_of pkg_name
     returning !versions.empty? && (version.nil? || versions.include?(version)) do |result|
       log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name}#{"-#{version}" unless version.nil?} gem#{" (at #{versions.first})" if version.nil? && result}"
     end
   end
-  def self.versions_of pkg_name
+
+  private
+
+  def versions_of pkg_name
     installed = shell("gem list --local #{pkg_name}").detect {|l| /^#{pkg_name}/ =~ l }
     versions = installed.scan(/.*\(([0-9., ]+)\)/).flatten.first || ''
     versions.split(/[^0-9.]+/)
   end
-  def self.install! *pkgs
-    sudo "gem install #{pkgs.join(' ')}"
-  end
-end
-
-def pkg_manager
-  PkgManager.for_system
 end
