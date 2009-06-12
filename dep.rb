@@ -1,5 +1,4 @@
 require 'dep_definer'
-require 'gem_helpers'
 
 class Dep
   attr_reader :name

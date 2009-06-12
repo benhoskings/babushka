@@ -44,10 +44,7 @@ class PkgDepDefiner < DepDefiner
   def payload
     super.merge({
       :met? => lambda {
-        @pkg[:macports].all? {|pkg_name| pkg_manager.has?(pkg_name) } &&
-        @provides.all? {|cmd_name|
-          pkg_manager.cmd_in_path? cmd_name
-        }
+        packages_present && cmds_in_path
       },
       :meet => lambda {
         'lol'
@@ -55,4 +52,36 @@ class PkgDepDefiner < DepDefiner
     })
   end
 
+  private
+
+  def packages_present
+    if @pkg[pkg_manager.manager_key].is_a? Hash
+      @pkg[pkg_manager.manager_key].all? {|pkg_name, version| pkg_manager.has?(pkg_name, version) }
+    else
+      @pkg[pkg_manager.manager_key].all? {|pkg_name| pkg_manager.has?(pkg_name) }
+    end
+  end
+
+  def cmds_in_path
+    (@provides || []).all? {|cmd_name|
+      pkg_manager.cmd_in_path? cmd_name
+    }
+  end
+
+  def pkg_manager
+    PkgManager.for_system
+  end
+end
+
+class GemDepDefiner < PkgDepDefiner
+
+  def pkg obj
+    @pkg = {:gem => obj}
+  end
+
+  private
+
+  def pkg_manager
+    GemHelper.new
+  end
 end
