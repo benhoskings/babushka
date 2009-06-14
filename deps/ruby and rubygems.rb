@@ -1,16 +1,21 @@
-# rubygems should be installed alongside ruby. We pretend ruby is a
-# package manager here in order to use PkgManager#cmd_in_path?, which
-# checks that the given command is alongside the 'package manager'
-# (ruby in this case).
-class RubyManager < PkgManager
-  def pkg_cmd; 'ruby' end
-end
-
 dep 'rubygems' do
   requires 'ruby'
-  met? { RubyManager.new.cmd_in_path?('gem') }
+  met? { which('gem') && shell('gem env gemdir') }
   meet {
-    # TODO download/build/install rubygems
+    rubygems_version = '1.3.4'
+
+    in_dir "~/src" do
+      # disable ri and rdoc generation
+      shell "sed -i 's/# gem\: --no-rdoc --no-ri/gem\: --no-rdoc --no-ri/' ~/.dot-files/.gemrc"
+      shell "wget http://rubyforge.org/frs/download.php/57643/rubygems-#{rubygems_version}.tgz"
+      shell "tar -zxvf rubygems-#{rubygems_version}.tgz"
+      shell "cd rubygems-#{rubygems_version}"
+      sudo "ruby setup.rb"
+
+      in_dir cmd_dir(ruby) do
+        sudo "ln -s gem1.8 gem"
+      end
+    end
   }
 end
 
