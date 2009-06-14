@@ -3,6 +3,10 @@ class Object
     list.include? self
   end
 
+  def blank?
+    nil? || (respond_to?(:empty?) && empty?)
+  end
+
   def tap &block
     yield self
     self
