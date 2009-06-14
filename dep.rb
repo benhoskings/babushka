@@ -13,6 +13,10 @@ class Dep
     Dep.register self
   end
 
+  def self.deps
+    @@deps
+  end
+
   def self.register dep
     @@deps ||= {}
     raise "There is already a registered dep called '#{dep.name}'." unless @@deps[dep.name].nil?
