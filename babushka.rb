@@ -17,6 +17,7 @@ class Babushka
       log_error "You have to specify the target machine on the commandline, e.g.:\n$ babushka you@target.machine.com"
     else
       @setup = true
+      self
     end
   end
 
@@ -24,6 +25,7 @@ class Babushka
     Dir.glob('deps/**/*.rb').each {|f| require f }
     log "Loaded #{Dep.deps.count} dependencies."
     @deps_loaded = true
+    self
   end
 
   def setup?
@@ -39,9 +41,7 @@ class Babushka
 end
 
 def Babushka argv
-  b = Babushka.new ARGV
-  b.setup && b.load_deps
-  b
+  Babushka.new(ARGV).setup.load_deps
 end
 
 Babushka(ARGV).run
