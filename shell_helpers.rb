@@ -15,7 +15,7 @@ class Shell
     def ok?; shell.ok? end
 
     def render
-      log_error "`#{shell.cmd}` failed with '#{shell.stderr.split("\n", 3)[0..1].join(', ')}'" unless ok?
+      log_verbose "`#{shell.cmd}` failed with '#{shell.stderr.split("\n", 3)[0..1].join(', ')}'", :error => true unless ok?
       if @block.nil?
         shell.stdout if shell.ok?
       else

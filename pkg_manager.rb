@@ -10,7 +10,7 @@ class PkgManager
 
   def has? pkg_name
     returning _has?(pkg_name) do |result|
-      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}"
+      log_verbose "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}"
     end
   end
   def install! *pkgs
@@ -65,7 +65,12 @@ class GemHelper < PkgManager
   def has? pkg_name, version = nil
     versions = versions_of pkg_name
     returning !versions.empty? && (version.nil? || versions.include?(version)) do |result|
-      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name}#{"-#{version}" unless version.nil?} gem#{" (at #{versions.first})" if version.nil? && result}"
+      pkg_spec = "#{pkg_name}#{"-#{version}" unless version.nil?}"
+      if result
+        log_verbose "system has #{pkg_spec} gem#{" (at #{versions.first})" if version.nil?}"
+      else
+        log "system doesn't have #{pkg_spec} gem"
+      end
     end
   end
 
