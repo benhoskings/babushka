@@ -1,5 +1,3 @@
-require 'readline'
-
 require 'dep_definer'
 
 class Dep
@@ -93,10 +91,6 @@ class Dep
         redo
       }.call
     }
-  end
-
-  def read_from_prompt
-    Readline.readline '? '
   end
 
   def call_task task_name

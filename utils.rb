@@ -1,3 +1,4 @@
+require 'readline'
 
 alias :L :lambda
 
@@ -68,6 +69,10 @@ def log message, opts = {}, &block
     message = message.end_with "\n" unless opts[:newline] == false
     print message
   end
+end
+
+def read_from_prompt prompt = '? '
+  Readline.readline prompt
 end
 
 def yaml file_name
