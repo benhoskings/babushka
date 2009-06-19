@@ -37,6 +37,7 @@ class PkgDepDefiner < DepDefiner
 
   def payload
     super.merge({
+      :requires => pkg_manager.manager_dep,
       :met? => L{
         packages_present && cmds_in_path
       },

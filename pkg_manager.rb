@@ -8,6 +8,10 @@ class PkgManager
     end.new
   end
 
+  def manager_dep
+    manager_key.to_s
+  end
+
   def has? pkg_name
     returning _has?(pkg_name) do |result|
       log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}", :as => :ok
