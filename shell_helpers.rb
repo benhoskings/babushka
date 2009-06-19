@@ -24,8 +24,7 @@ def cmd_dir cmd_name
 end
 
 def sudo cmd
-  log "(would be sudoing the next command)"
-  shell cmd
+  shell "sudo #{cmd}"
 end
 
 def rake cmd
