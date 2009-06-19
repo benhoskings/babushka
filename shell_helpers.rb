@@ -82,3 +82,11 @@ end
 def rake cmd, &block
   shell "rake #{cmd} RAILS_ENV=#{RAILS_ENV}", &block
 end
+
+def change_with_sed keyword, from, to, file
+  sed = linux? ? 'sed' : 'gsed'
+  # Remove the incorrect setting if it's there
+  shell "#{sed} -ri 's/^#{keyword} #{from}//' #{file}"
+  # Add the correct setting unless it's already there
+  shell("echo '#{keyword} #{to}' >> #{file}") if failable_shell("grep '^#{keyword} #{to}' #{file}").stdout.empty?
+end
