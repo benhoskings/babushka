@@ -3,9 +3,6 @@ require 'dep'
 require 'fakeistrano'
 
 
-# Dir.chdir RAILS_ROOT
-# Dep('migrated db').meet
-
 class Babushka
 
   def initialize argv
@@ -35,6 +32,7 @@ class Babushka
   def run
     if setup?
       log "Running on #{@target_machine}."
+      Dep('migrated db').meet
     end
   end
 
