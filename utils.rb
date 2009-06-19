@@ -77,6 +77,12 @@ def read_from_prompt prompt = '? '
   Readline.readline prompt
 end
 
+def log_and_open message, url
+  log "#{message} Hit Enter to open the download page.", :newline => false
+  read_from_prompt ' '
+  shell "open #{url}"
+end
+
 def yaml file_name
   require 'yaml'
   YAML::load_file(RAILS_ROOT / file_name)
