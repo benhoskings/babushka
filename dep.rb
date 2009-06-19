@@ -73,7 +73,7 @@ class Dep
 
   def run_meet_task
     if @_cached_met == false
-      log "You'll have to fix this manually."
+      log "You'll have to fix '#{name}' manually."
     else
       returning(@payload[:meet].call && call_task(:met?)) do |result|
         log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
