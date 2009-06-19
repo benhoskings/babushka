@@ -37,10 +37,10 @@ class PkgDepDefiner < DepDefiner
 
   def payload
     super.merge({
-      :met? => lambda {
+      :met? => L{
         packages_present && cmds_in_path
       },
-      :meet => lambda {
+      :meet => L{
         install_packages
       }
     })
