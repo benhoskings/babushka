@@ -6,7 +6,7 @@ class Dep
   def initialize name, block, definer_class = DepDefiner
     @name = name
     @defines = definer_class.new(name, &block).payload
-    # log "Dep #{name} depends on #{@defines[:requires].inspect}"
+    debug "Dep #{name} depends on #{@defines[:requires].inspect}"
     Dep.register self
   end
 
