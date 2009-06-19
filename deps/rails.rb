@@ -4,7 +4,9 @@ dep 'migrated db' do
     current_version = rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
     returning current_version == latest_version do |result|
-      if result
+      if latest_version == '0'
+        log "This app doesn't have any migrations yet."
+      elsif result
         log "DB is up to date at migration #{current_version}"
       else
         log "DB needs migrating from #{current_version} to #{latest_version}"
