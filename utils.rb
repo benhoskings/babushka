@@ -7,6 +7,7 @@ def returning obj, &block
 end
 
 $log_indent = 0
+$debug = true
 
 def log_error message, opts = {}, &block
   log message, opts.merge(:error => true), &block
@@ -32,6 +33,10 @@ def log message, opts = {}, &block
       print "#{message}\n"
     end
   end
+end
+
+def debug message, opts = {}, &block
+  log message, opts, &block if $debug
 end
 
 def yaml file_name
