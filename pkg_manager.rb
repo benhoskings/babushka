@@ -18,7 +18,7 @@ class PkgManager
     sudo "#{pkg_cmd} install #{pkgs.join(' ')}"
   end
   def prefix
-    cmd_dir(pkg_cmd).sub(/\/bin\/?$/, '')
+    cmd_dir(pkg_cmd.split(' ', 2).first).sub(/\/bin\/?$/, '')
   end
   def bin_path
     prefix / 'bin'
