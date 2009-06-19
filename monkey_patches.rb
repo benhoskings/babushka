@@ -1,5 +1,25 @@
 require 'pathname'
 
+class Array
+  def squash
+    dup.squash!
+  end
+  def squash!
+    delete_if &:blank?
+  end
+  def to_list(opts = {})
+    if opts[:limit].nil? || (self.length <= opts[:limit])
+      [
+        self[0..-2].squash.join(', '),
+        last
+      ].squash.join(" #{opts[:conj] || 'and'} ") +
+      (opts[:suffix] ? " #{self.length > 1 ? 'are' : 'is'} #{opts[:suffix].strip}" : '')
+    else
+      self[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " &mdash; #{self.length} #{opts[:noun]}")
+    end
+  end
+end
+
 class Object
   def in? list
     list.include? self
