@@ -28,7 +28,7 @@ class Dep
   def self.for name
     @@deps ||= {}
     returning dep = @@deps[name] do |result|
-      log(name, :closing_status => true) { log_error "dep not defined!" } unless result
+      log"#{name.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}" unless result
     end
   end
 
