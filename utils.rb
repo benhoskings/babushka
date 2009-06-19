@@ -6,6 +6,13 @@ def returning obj, &block
   obj
 end
 
+def linux?
+  `uname -s`['Liunx']
+end
+def osx?
+  `uname -s`['Darwin']
+end
+
 $log_indent = 0
 Cfg = {}
 
