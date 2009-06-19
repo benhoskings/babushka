@@ -125,3 +125,7 @@ end
 def gem_dep name, &block
   Dep.new name, block, GemDepDefiner
 end
+
+def ext_dep name, &block
+  Dep.new name, block, ExtDepDefiner
+end
