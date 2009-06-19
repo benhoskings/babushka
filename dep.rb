@@ -45,13 +45,7 @@ class Dep
       @_cached_met
     else
       log name, :closing_status => true do
-        # begin
-          ask_for_vars && dep_task(:meet) && (run_met_task || run_meet_task)
-        # rescue Exception => e
-        #   log "Tried to install #{@name}, and #{e.to_s} out of fucking nowhere."
-        #   log e.backtrace.inspect
-        #   false
-        # end
+        ask_for_vars && dep_task(:meet) && (run_met_task || run_meet_task)
       end
     end
   end
