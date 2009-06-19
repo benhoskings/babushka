@@ -100,10 +100,10 @@ class Dep
   def default_task task_name
     {
       :met? => L{
-        log_verbose "met? { } not defined for #{name}, moving on."
+        log_verbose "met? { } not defined for '#{name}', moving on."
         true
       },
-      :meet => L{ log_verbose "meet { } not defined for #{name}; nothing to do." }
+      :meet => L{ log_verbose "meet { } not defined for '#{name}'; nothing to do." }
     }[task_name]
   end
 
