@@ -68,6 +68,8 @@ def log message, opts = {}, &block
     message = message.colorize 'red' if opts[:as] == :error
     message = message.end_with "\n" unless opts[:newline] == false
     print message
+    $stdout.flush
+    nil
   end
 end
 
