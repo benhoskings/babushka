@@ -16,6 +16,4 @@ end
 
 gem_dep 'rails' do
   requires 'rubygems'
-  pkg 'rails'
-  provides 'rails'
 end
