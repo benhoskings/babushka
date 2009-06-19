@@ -50,6 +50,14 @@ def which cmd_name, &block
   shell "which #{cmd_name}", &block
 end
 
+def in_dir dir, &block
+  Dir.chdir dir do |path|
+    debug "in dir #{path} (#{Pathname(path).realpath})" do
+      yield
+    end
+  end
+end
+
 def cmd_dir cmd_name
   which("#{cmd_name}") {|shell|
     File.dirname shell.stdout if shell.ok?
