@@ -5,46 +5,53 @@ require 'fakeistrano'
 
 
 class Babushka
-
   def initialize argv
-    @target_machine = argv[0]
-  end
-
-  def setup
-    if @target_machine.blank?
-      log "You have to specify the target machine on the commandline, e.g.:\n$ babushka you@target.machine.com"
-    else
-      @setup = true
-    end
-    self
+    @args = argv.dup
   end
 
   def load_deps
-    if @setup
-      Dir.glob('deps/**/*.rb').each {|f| require f }
-      log "Loaded #{Dep.deps.count} dependencies."
-      @deps_loaded = true
-    end
-    self
+    Dir.glob('deps/**/*.rb').each {|f| require f }
+    log "Loaded #{Dep.deps.count} dependencies."
   end
 
-  def setup?
-    @setup && @deps_loaded
+  def setup
+    @targets = extract_args @args
+    # if @targets.empty?
+    #   exit_with "You have to specify the target machine on the commandline, e.g.:\n$ babushka you@target.machine.com"
+    # end
+
+    load_deps
+    @setup = true
   end
 
   def run
-    if setup?
-      log "Running on #{@target_machine}."
-      in_dir '../testapp' do
-        Dep('migrated db').meet
-      end
+    setup unless @setup
+    # log "Running on #{@targets.to_list}."
+    Dep('user setup').meet
+    in_dir '../testapp' do
+      Dep('migrated db').meet
     end
+  end
+
+  def exit_with message
+    log message
+    exit 1
+  end
+
+
+  private
+
+  def extract_args args
+    Cfg[:verbose_logging] = %w[-q --quiet].map {|arg| args.delete arg }.first.blank?
+    Cfg[:debug] = args.delete('--debug')
+
+    args
   end
 
 end
 
 def Babushka argv
-  Babushka.new(ARGV).setup.load_deps
+  Babushka.new(argv).run
 end
 
-Babushka(ARGV).run
+Babushka ARGV
