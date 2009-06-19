@@ -90,16 +90,18 @@ class Dep
   end
 
   def call_task task_name
-    (@payload[task_name] || DefaultTasks[task_name]).call
+    (@payload[task_name] || default_task(task_name)).call
   end
 
-  DefaultTasks = {
-    :met? => L{
-      log "met? { } not defined for #{@name}, moving on."
-      true
-    },
-    :meet => L{ log "meet { } not defined for #{@name}; nothing to do." }
-  }.freeze
+  def default_task task_name
+    {
+      :met? => L{
+        log "met? { } not defined for #{name}, moving on."
+        true
+      },
+      :meet => L{ log "meet { } not defined for #{name}; nothing to do." }
+    }[task_name]
+  end
 
   def inspect
     "#<Dep:#{object_id} '#{name}' { #{@payload[:requires].join(', ')} }>"
