@@ -14,12 +14,20 @@ def indentation
 end
 
 def log_error message, opts = {}, &block
-  log message, opts.merge(:error => true), &block
+  log message, opts.merge(:as => :error), &block
 end
 
 def log_verbose message, opts = {}, &block
   if Cfg[:verbose_logging]
     log message, opts, &block
+  elsif block_given?
+    yield
+  end
+end
+
+def log_ok message, opts = {}, &block
+  if Cfg[:verbose_logging]
+    log message, opts.merge(:as => :ok), &block
   elsif block_given?
     yield
   end
@@ -48,7 +56,8 @@ def log message, opts = {}, &block
     end
   else
     message.gsub! "\n", "\n#{indentation}"
-    message = message.colorize 'red' if opts[:error]
+    message = "#{'√'.colorize('green')} #{message}" if opts[:as] == :ok
+    message = message.colorize 'red' if opts[:as] == :error
     message = message.end_with "\n" unless opts[:newline] == false
     print message
   end

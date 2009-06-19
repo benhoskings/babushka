@@ -61,7 +61,7 @@ class PkgDepDefiner < DepDefiner
       pkg_manager.cmd_in_path? cmd_name
     }
 
-    log_verbose "#{good.map {|i| "'#{i}'" }.to_list} run#{'s' if good.length == 1} from #{cmd_dir(good.first)}." unless good.empty?
+    log_ok "#{good.map {|i| "'#{i}'" }.to_list} run#{'s' if good.length == 1} from #{cmd_dir(good.first)}." unless good.empty?
 
     unless bad.empty?
       log_error "#{bad.map {|i| "'#{i}'" }.to_list} incorrectly run#{'s' if bad.length == 1} from #{cmd_dir(bad.first)}."
