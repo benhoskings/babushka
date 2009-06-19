@@ -8,14 +8,17 @@ class Shell
   class ShellResult
     attr_reader :shell
 
-    def initialize shell, &block
-      @shell, @block = shell, block
+    def initialize shell, opts, &block
+      @shell, @opts, @block = shell, opts, block
     end
 
     def ok?; shell.ok? end
 
     def render
-      log_verbose "`#{shell.cmd}` failed with '#{shell.stderr.split("\n", 3)[0..1].join(', ')}'", :error => true unless ok?
+      unless ok? || @opts[:fail_ok]
+        log_verbose "`#{shell.cmd}` failed with '#{shell.stderr.split("\n", 3)[0..1].join(', ')}'", :error => true
+      end
+
       if @block.nil?
         shell.stdout if shell.ok?
       else
@@ -30,7 +33,7 @@ class Shell
 
   def ok?; result end
 
-  def run &block
+  def run opts = {}, &block
     debug "$ #{@cmd}".colorize('grey')
     @stdout, @stderr = nil, nil
 
@@ -38,12 +41,20 @@ class Shell
       @stdout, @stderr = stdout.read.chomp, stderr.read.chomp
     end.exitstatus.zero?
 
-    ShellResult.new(self, &block).render
+    ShellResult.new(self, opts, &block).render
   end
 end
 
-def shell cmd, &block
-  Shell.new(cmd).run &block
+def shell cmd, opts = {}, &block
+  Shell.new(cmd).run opts, &block
+end
+
+def failable_shell cmd
+  shell = nil
+  Shell.new(cmd).run :fail_ok => true do |s|
+    shell = s
+  end
+  shell
 end
 
 def which cmd_name, &block
