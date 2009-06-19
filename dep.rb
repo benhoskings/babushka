@@ -1,3 +1,5 @@
+require 'readline'
+
 require 'dep_definer'
 
 class Dep
@@ -83,14 +85,18 @@ class Dep
 
   def ask_for_vars
     @payload[:asks_for].each {|key|
-      log "#{key} for #{name}? ", :newline => false
+      log "#{key} for #{name}", :newline => false
       L{
-        @vars[key] = $stdin.gets.chomp
+        @vars[key] = read_from_prompt
         break unless @vars[key].blank?
-        log "That was blank. #{key} for #{name}? ", :newline => false
+        log "That was blank. #{key} for #{name}", :newline => false
         redo
       }.call
     }
+  end
+
+  def read_from_prompt
+    Readline.readline '? '
   end
 
   def call_task task_name
