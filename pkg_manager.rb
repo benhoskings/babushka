@@ -14,7 +14,8 @@ class PkgManager
     end
   end
   def install! *pkgs
-    shell "#{pkg_cmd} install #{pkgs.join(' ')}"
+    log "Installing #{pkgs.join(', ')} via #{manager_key}"
+    sudo "#{pkg_cmd} install #{pkgs.join(' ')}"
   end
   def prefix
     cmd_dir(pkg_cmd).sub(/\/bin\/?$/, '')
