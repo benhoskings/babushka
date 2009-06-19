@@ -75,7 +75,7 @@ class GemHelper < PkgManager
 
   def versions_of pkg_name
     installed = shell("gem list --local #{pkg_name}").detect {|l| /^#{pkg_name}/ =~ l }
-    versions = installed.scan(/.*\(([0-9., ]+)\)/).flatten.first || ''
+    versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
     versions.split(/[^0-9.]+/)
   end
 end
