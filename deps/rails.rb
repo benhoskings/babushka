@@ -1,7 +1,7 @@
 dep 'migrated db' do
   requires 'db access', 'rails'
   met? {
-    current_version = rake("db:version").val_for('Current version')
+    current_version = rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
     returning current_version == latest_version do |result|
       if result

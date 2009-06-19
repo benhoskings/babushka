@@ -1,6 +1,10 @@
 dep 'existing db' do
   requires 'db gem', 'rails'
-  met? { !shell("psql -l").split("\n").grep(/^\s*testapp\s+\|/).empty? }
+  met? {
+    !shell("psql -l") {|shell|
+      shell.stdout.split("\n").grep(/^\s*testapp\s+\|/)
+    }.empty?
+  }
   meet { rake("db:create") }
 end
 
