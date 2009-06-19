@@ -66,14 +66,18 @@ class Dep
       @_cached_met
     else
       @_cached_met = returning call_task(:met?) do |result|
-        log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil) unless result
+        log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil) if result.nil?
       end
     end
   end
 
   def run_meet_task
-    returning(@payload[:meet].call && call_task(:met?)) do |result|
-      log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
+    if @_cached_met == false
+      log "You'll have to fix this manually."
+    else
+      returning(@payload[:meet].call && call_task(:met?)) do |result|
+        log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
+      end
     end
   end
 
