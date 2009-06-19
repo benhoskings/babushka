@@ -1,53 +1,33 @@
 require 'pkg_manager'
 
 class DepDefiner
+  attr_reader :payload
+
   def initialize name, &block
     @name = name
-    @defines = {:requires => []}
+    @payload = {}
     instance_eval &block if block_given?
   end
+
   def requires *deps
-    @defines[:requires] = deps
+    @payload[:requires] = deps
+  end
+  def asks_for *keys
+    @payload[:asks_for] = keys
   end
   def met? &block
-    @defines[:met?] = block
+    @payload[:met?] = block
   end
   def meet &block
-    @defines[:meet] = block
+    @payload[:meet] = block
   end
 
-  # def self.block_writer name
-  #   define_method name do |&block|
-  #     instance_variable_set name, block
-  #   end
-  # end
   def self.attr_setter *names
     names.each {|name|
       define_method name do |obj|
         instance_variable_set "@#{name}", obj
       end
     }
-  end
-
-  def payload
-    {
-      :requires => @defines[:requires],
-      :met? => @defines[:met?] || default_met_block,
-      :meet => @defines[:meet] || default_meet_block
-    }
-  end
-
-  private
-
-  def default_met_block
-    L{
-      log "met? { } not defined for #{name}, moving on."
-      true
-    }
-  end
-
-  def default_meet_block
-    L{ log "meet { } not defined for #{name}; nothing to do." }
   end
 end
 

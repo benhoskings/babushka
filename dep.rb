@@ -2,11 +2,15 @@ require 'dep_definer'
 
 class Dep
   attr_reader :name
-  
+
   def initialize name, block, definer_class = DepDefiner
     @name = name
-    @defines = definer_class.new(name, &block).payload
-    debug "Dep #{name} depends on #{@defines[:requires].inspect}"
+    @vars = {}
+    @payload = {
+      :requires => [],
+      :asks_for => []
+    }.merge definer_class.new(name, &block).payload
+    debug "Dep #{name} depends on #{@payload[:requires].inspect}"
     Dep.register self
   end
 
@@ -25,13 +29,6 @@ class Dep
       log(name, :closing_status => true) { log_error "dep not defined!" } unless result
     end
   end
-  
-  def dep_task method_name
-    @defines[:requires].all? {|requirement|
-      dep = Dep(requirement)
-      dep.send method_name unless dep.nil?
-    }
-  end
 
   def met?
     unless @_cached_met.nil?
@@ -41,7 +38,7 @@ class Dep
       dep_task(:met?) && run_met_task
     end
   end
-  
+
   def meet
     unless @_cached_met.nil?
       log [name.colorize('grey'), "#{'un' unless @_cached_met}met".colorize(@_cached_met ? 'green' : 'red')].join(' ')
@@ -49,7 +46,7 @@ class Dep
     else
       log name, :closing_status => true do
         # begin
-          dep_task(:meet) && (run_met_task || run_meet_task)
+          ask_for_vars && dep_task(:meet) && (run_met_task || run_meet_task)
         # rescue Exception => e
         #   log "Tried to install #{@name}, and #{e.to_s} out of fucking nowhere."
         #   log e.backtrace.inspect
@@ -58,26 +55,60 @@ class Dep
       end
     end
   end
-  
+
+
+  private
+
+  def dep_task method_name
+    @payload[:requires].all? {|requirement|
+      dep = Dep(requirement)
+      dep.send method_name unless dep.nil?
+    }
+  end
+
   def run_met_task
     unless @_cached_met.nil?
       log [name.colorize('grey'), "#{'un' unless @_cached_met}met".colorize(@_cached_met ? 'green' : 'red')].join(' ')
       @_cached_met
     else
-      @_cached_met = returning @defines[:met?].call do |result|
+      @_cached_met = returning call_task(:met?) do |result|
         log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil) unless result
       end
     end
   end
-  
+
   def run_meet_task
-    returning(@defines[:meet].call && @defines[:met?].call) do |result|
+    returning(@payload[:meet].call && call_task(:met?)) do |result|
       log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
     end
   end
-  
+
+  def ask_for_vars
+    @payload[:asks_for].each {|key|
+      log "#{key} for #{name}? ", :newline => false
+      L{
+        @vars[key] = $stdin.gets.chomp
+        break unless @vars[key].blank?
+        log "That was blank. #{key} for #{name}? ", :newline => false
+        redo
+      }.call
+    }
+  end
+
+  def call_task task_name
+    (@payload[task_name] || DefaultTasks[task_name]).call
+  end
+
+  DefaultTasks = {
+    :met? => L{
+      log "met? { } not defined for #{@name}, moving on."
+      true
+    },
+    :meet => L{ log "meet { } not defined for #{@name}; nothing to do." }
+  }.freeze
+
   def inspect
-    "#<Dep:#{object_id} '#{name}' { #{@defines[:requires].join(', ')} }>"
+    "#<Dep:#{object_id} '#{name}' { #{@payload[:requires].join(', ')} }>"
   end
 end
 
