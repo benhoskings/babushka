@@ -1,3 +1,5 @@
+require 'pathname'
+
 class Object
   def in? list
     list.include? self
@@ -10,6 +12,12 @@ class Object
   def tap &block
     yield self
     self
+  end
+end
+
+class Pathname
+  def child child_name
+    new self.cleanpath / child_name
   end
 end
 
