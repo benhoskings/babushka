@@ -28,7 +28,11 @@ class PkgManager
       log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
     else
       returning cmd_dir(cmd_name).starts_with?(prefix) do |result|
-        log "#{result ? 'the correct' : 'an incorrect installation of'} '#{cmd_name}' is in use, at #{cmd_dir(cmd_name)}.", :error => !result
+        if result
+          log "the correct '#{cmd_name}' is in use, at #{cmd_dir(cmd_name)}."
+        else
+          log_error "an incorrect installation of '#{cmd_name}' is in the PATH, at #{cmd_dir(cmd_name)} (instead of the installation in #{prefix})."
+        end
       end
     end
   end
