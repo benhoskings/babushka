@@ -48,7 +48,7 @@ class PkgDepDefiner < DepDefiner
         packages_present && cmds_in_path
       },
       :meet => lambda {
-        'lol'
+        install_packages
       }
     })
   end
@@ -67,6 +67,10 @@ class PkgDepDefiner < DepDefiner
     provides_or_default.all? {|cmd_name|
       pkg_manager.cmd_in_path? cmd_name
     }
+  end
+
+  def install_packages
+    pkg_manager.install! pkg_or_default
   end
 
   def pkg_manager
