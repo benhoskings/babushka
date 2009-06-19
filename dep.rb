@@ -10,7 +10,7 @@ class Dep
       :requires => [],
       :asks_for => []
     }.merge definer_class.new(name, &block).payload
-    debug "Dep #{name} depends on #{@payload[:requires].inspect}"
+    debug "\"#{name}\" depends on #{@payload[:requires].inspect}"
     Dep.register self
   end
 
