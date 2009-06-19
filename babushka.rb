@@ -1,3 +1,4 @@
+$: << File.dirname(__FILE__)
 require 'monkey_patches'
 require 'dep'
 require 'fakeistrano'
@@ -34,7 +35,9 @@ class Babushka
   def run
     if setup?
       log "Running on #{@target_machine}."
-      Dep('migrated db').meet
+      in_dir '../testapp' do
+        Dep('migrated db').meet
+      end
     end
   end
 
