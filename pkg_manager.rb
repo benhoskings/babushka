@@ -27,13 +27,7 @@ class PkgManager
     if (_cmd_dir = cmd_dir(cmd_name)).nil?
       log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
     else
-      returning cmd_dir(cmd_name).starts_with?(prefix) do |result|
-        if result
-          log "the correct '#{cmd_name}' is in use, at #{cmd_dir(cmd_name)}."
-        else
-          log_error "an incorrect installation of '#{cmd_name}' is in the PATH, at #{cmd_dir(cmd_name)} (instead of the installation in #{prefix})."
-        end
-      end
+      cmd_dir(cmd_name).starts_with?(prefix)
     end
   end
 end

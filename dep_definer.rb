@@ -57,9 +57,18 @@ class PkgDepDefiner < DepDefiner
   end
 
   def cmds_in_path
-    provides_or_default.all? {|cmd_name|
+    good, bad = provides_or_default.partition {|cmd_name|
       pkg_manager.cmd_in_path? cmd_name
     }
+
+    log "#{good.map {|i| "'#{i}'" }.to_list} run#{'s' if good.length == 1} from #{cmd_dir(good.first)}." unless good.empty?
+
+    unless bad.empty?
+      log_error "#{bad.map {|i| "'#{i}'" }.to_list} incorrectly run#{'s' if bad.length == 1} from #{cmd_dir(bad.first)}."
+      log "You need to put #{pkg_manager.prefix} before #{cmd_dir(bad.first)} in your PATH."
+    end
+
+    bad.empty?
   end
 
   def install_packages
