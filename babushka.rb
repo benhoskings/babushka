@@ -11,17 +11,19 @@ class Babushka
 
   def setup
     if @target_machine.blank?
-      log_error "You have to specify the target machine on the commandline, e.g.:\n$ babushka you@target.machine.com"
+      log "You have to specify the target machine on the commandline, e.g.:\n$ babushka you@target.machine.com"
     else
       @setup = true
-      self
     end
+    self
   end
 
   def load_deps
-    Dir.glob('deps/**/*.rb').each {|f| require f }
-    log "Loaded #{Dep.deps.count} dependencies."
-    @deps_loaded = true
+    if @setup
+      Dir.glob('deps/**/*.rb').each {|f| require f }
+      log "Loaded #{Dep.deps.count} dependencies."
+      @deps_loaded = true
+    end
     self
   end
 
