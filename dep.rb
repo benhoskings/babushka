@@ -6,9 +6,6 @@ class Dep
   def initialize name, block, definer_class = DepDefiner
     @name = name
     @defines = definer_class.new(name, &block).payload
-    [:requires, :met?, :meet].each {|item|
-      raise "You need to specify '#{item}' in the \"#{name}\" dep definition." if @defines[item].nil?
-    }
     # log "Dep #{name} depends on #{@defines[:requires].inspect}"
     Dep.register self
   end

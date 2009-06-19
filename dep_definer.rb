@@ -32,9 +32,22 @@ class DepDefiner
   def payload
     {
       :requires => @defines[:requires],
-      :met? => @defines[:met?],
-      :meet => @defines[:meet]
+      :met? => @defines[:met?] || default_met_block,
+      :meet => @defines[:meet] || default_meet_block
     }
+  end
+
+  private
+
+  def default_met_block
+    L{
+      log "met? { } not defined for #{name}, moving on."
+      true
+    }
+  end
+
+  def default_meet_block
+    L{ log "meet { } not defined for #{name}; nothing to do." }
   end
 end
 
