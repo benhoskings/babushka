@@ -39,7 +39,11 @@ class PkgDepDefiner < DepDefiner
     super.merge({
       :requires => pkg_manager.manager_dep,
       :met? => L{
-        !applicable? || (packages_present && cmds_in_path)
+        if !applicable?
+          log_ok "Not required on #{pkg_manager.manager_key}-based systems."
+        else
+          packages_present and cmds_in_path
+        end
       },
       :meet => L{
         install_packages
