@@ -32,6 +32,15 @@ class DepDefiner
       end
     }
   end
+
+  def method_missing method_name, *args, &block
+    if @dep.vars.has_key? method_name
+      @dep.vars[method_name]
+    else
+      super
+    end
+  end
+
 end
 
 class PkgDepDefiner < DepDefiner
