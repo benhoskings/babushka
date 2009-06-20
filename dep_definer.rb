@@ -39,7 +39,7 @@ class PkgDepDefiner < DepDefiner
     super.merge({
       :requires => pkg_manager.manager_dep,
       :met? => L{
-        packages_present && cmds_in_path
+        !applicable? || (packages_present && cmds_in_path)
       },
       :meet => L{
         install_packages
@@ -48,6 +48,10 @@ class PkgDepDefiner < DepDefiner
   end
 
   private
+
+  def applicable?
+    !(@pkg.is_a?(Hash) && @pkg[pkg_manager.manager_key].blank?)
+  end
 
   def packages_present
     if pkg_or_default.is_a? Hash
