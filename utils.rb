@@ -80,8 +80,15 @@ def log message, opts = {}, &block
   end
 end
 
-def read_from_prompt prompt = '? '
-  Readline.readline prompt
+def read_from_prompt message, prompt = '? ', opts = {}
+  value = nil
+  log message, :newline => false
+  loop do
+    value = Readline.readline prompt.end_with(' ')
+    break if !value.blank? || opts[:persist] == false
+    log "That was blank. #{message}", :newline => false
+  end
+  value
 end
 
 def log_and_open message, url
