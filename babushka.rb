@@ -27,6 +27,7 @@ class Babushka
   def run
     setup unless @setup
     # log "Running on #{@targets.to_list}."
+    Dep('system').meet
     Dep('user setup').meet
     in_dir '../testapp' do
       Dep('migrated db').meet
