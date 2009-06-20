@@ -31,53 +31,21 @@ class Dep
   end
 
   def met?
-    unless @_cached_met.nil?
-      log "#{name} cached for met? (#{@_cached_met})."
-      @_cached_met
-    else
-      dep_task(:met?) && run_met_task
-    end
+    process :attempt_to_meet => false
   end
-
   def meet
-    unless @_cached_met.nil?
-      log "#{name} (cached)".colorize('grey'), :as => (@_cached_met ? :ok : :error)
-      @_cached_met
-    else
-      log name, :closing_status => true do
-        ask_for_vars && dep_task(:meet) && (run_met_task || run_meet_task)
-      end
-    end
+    process :attempt_to_meet => !Cfg[:dry_run]
   end
-
 
   private
 
-  def dep_task method_name
-    @payload[:requires].all? {|requirement|
-      dep = Dep(requirement)
-      dep.send method_name unless dep.nil?
-    }
+  def process opts = {}
+    cached? ? cached_result : process_and_cache(opts)
   end
 
-  def run_met_task
-    unless @_cached_met.nil?
-      log "#{name} (cached)".colorize('grey'), :as => (@_cached_met ? :ok : :error)
-      @_cached_met
-    else
-      @_cached_met = returning call_task(:met?) do |result|
-        log "#{name} #{'not ' unless result}already met.".colorize(result ? 'green' : nil) if result.nil?
-      end
-    end
-  end
-
-  def run_meet_task
-    if @_cached_met == false
-      log "You'll have to fix '#{name}' manually."
-    else
-      returning(@payload[:meet].call && call_task(:met?)) do |result|
-        log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red') if result
-      end
+  def process_and_cache opts
+    log name, :closing_status => (opts[:attempt_to_meet] ? true : :dry_run) do
+      ask_for_vars and process_deps(opts) and process_self(opts)
     end
   end
 
@@ -93,6 +61,48 @@ class Dep
     }
   end
 
+  def process_deps opts
+    closure = L{|dep|
+      dep = Dep(dep)
+      dep.send :process, opts unless dep.nil?
+    }
+    if opts[:attempt_to_meet]
+      @payload[:requires].all? &closure
+    else
+      @payload[:requires].each &closure
+    end
+  end
+
+  def process_self opts
+    if !(met_result = run_met_task(opts.merge(:initial => true)))
+      if !opts[:attempt_to_meet]
+        met_result
+      else
+        call_task(:meet) and run_met_task(opts)
+      end
+    elsif :fail == met_result
+      log "fail lulz"
+    else
+      true
+    end
+  end
+
+  def run_met_task opts
+    returning cache_process(call_task(:met?)) do |result|
+      if :fail == result
+        log_extra "You'll have to fix '#{name}' manually."
+      elsif !result && opts[:initial]
+        log_extra "#{name} not already met."
+      elsif result && !opts[:initial]
+        log "#{name} met.".colorize('green')
+      end
+    end
+  end
+
+  def has_task? task_name
+    !@payload[task_name].nil?
+  end
+
   def call_task task_name
     (@payload[task_name] || default_task(task_name)).call
   end
@@ -100,11 +110,26 @@ class Dep
   def default_task task_name
     {
       :met? => L{
-        log_verbose "#{name} / met? not defined, moving on."
+        log_extra "#{name} / met? not defined, moving on."
         true
       },
-      :meet => L{ log_verbose "#{name} / meet not defined; nothing to do." }
+      :meet => L{ log_extra "#{name} / meet not defined; nothing to do." }
     }[task_name]
+  end
+
+  def cached_result
+    returning cached_process do |result|
+      log "#{name} (cached)".colorize('grey'), :as => (result ? :ok : :error)
+    end
+  end
+  def cached?
+    instance_variable_defined? :@_cached_process
+  end
+  def cached_process
+    @_cached_process
+  end
+  def cache_process value
+    @_cached_process = value
   end
 
   def inspect
