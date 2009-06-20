@@ -17,7 +17,7 @@ dep 'ssh key' do
   requires 'user exists'
   asks_for :public_key
   met? {
-    !shell("grep '#{public_key}' ~/.ssh/authorized_keys") {|shell| shell.stdout.empty? }
+    !failable_shell("grep '#{public_key}' ~/.ssh/authorized_keys").stdout.empty?
   }
   meet {
     shell 'mkdir -p ~/.ssh'
