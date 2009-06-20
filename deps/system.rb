@@ -17,7 +17,7 @@ dep 'secured ssh logins' do
     change_with_sed 'PasswordAuthentication',          'yes', 'no', ssh_conf_path(:sshd)
     change_with_sed 'ChallengeResponseAuthentication', 'yes', 'no', ssh_conf_path(:sshd)
 
-    failable_shell "killall -HUP sshd"
+    # failable_shell "killall -HUP sshd"
   }
 end
 
@@ -28,6 +28,6 @@ dep 'lax host key checking' do
   }
   meet {
     change_with_sed 'StrictHostKeyChecking', 'yes', 'no', ssh_conf_path(:ssh)
-    failable_shell "killall -HUP sshd"
+    # failable_shell "killall -HUP sshd"
   }
 end
