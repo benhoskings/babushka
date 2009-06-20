@@ -48,7 +48,7 @@ class Dep
 
   def process_and_cache
     log name, :closing_status => (opts[:attempt_to_meet] ? true : :dry_run) do
-      ask_for_vars and process_deps and process_self
+      ask_for_vars and process_in_dir
     end
   end
 
@@ -56,6 +56,13 @@ class Dep
     payload[:asks_for].each {|key|
       @vars[key] = read_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
     }
+  end
+
+  def process_in_dir
+    path = payload[:run_in].is_a?(Symbol) ? vars[payload[:run_in]] : payload[:run_in]
+    in_dir path do
+      process_deps and process_self
+    end
   end
 
   def process_deps
