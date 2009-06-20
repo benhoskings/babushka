@@ -16,7 +16,11 @@ class DepDefiner
     payload[:requires] = deps
   end
   def asks_for *keys
-    payload[:asks_for] = keys
+    payload[:asks_for].concat keys
+  end
+  def run_in path_or_key
+    asks_for path_or_key if path_or_key.is_a?(Symbol)
+    payload[:run_in] = path_or_key
   end
   def met? &block
     payload[:met?] = block
