@@ -1,12 +1,12 @@
 require 'dep_definer'
 
 class Dep
-  attr_reader :name, :vars
+  attr_reader :name, :vars, :opts
 
   def initialize name, block, definer_class = DepDefiner
     @name = name
     @vars = {}
-    @definer = definer_class.define self, &block
+    @definer = definer_class.new self, &block
     debug "\"#{name}\" depends on #{payload[:requires].inspect}"
     Dep.register self
   end
@@ -27,22 +27,23 @@ class Dep
     end
   end
 
-  def met?
-    process :attempt_to_meet => false
+  def met? opts = {}
+    process opts.merge :attempt_to_meet => false
   end
-  def meet
-    process :attempt_to_meet => !Cfg[:dry_run]
+  def meet opts = {}
+    process opts.merge :attempt_to_meet => !Cfg[:dry_run]
   end
 
   private
 
-  def process opts = {}
-    cached? ? cached_result : process_and_cache(opts)
+  def process run_opts
+    @opts = run_opts
+    cached? ? cached_result : process_and_cache
   end
 
-  def process_and_cache opts
+  def process_and_cache
     log name, :closing_status => (opts[:attempt_to_meet] ? true : :dry_run) do
-      ask_for_vars and process_deps(opts) and process_self(opts)
+      ask_for_vars and process_deps and process_self
     end
   end
 
@@ -58,10 +59,10 @@ class Dep
     }
   end
 
-  def process_deps opts
+  def process_deps
     closure = L{|dep|
       dep = Dep(dep)
-      dep.send :process, opts unless dep.nil?
+      dep.send :process, opts.merge(:vars => @vars) unless dep.nil?
     }
     if opts[:attempt_to_meet]
       payload[:requires].all? &closure
@@ -70,12 +71,12 @@ class Dep
     end
   end
 
-  def process_self opts
-    if !(met_result = run_met_task(opts.merge(:initial => true)))
+  def process_self
+    if !(met_result = run_met_task(:initial => true))
       if !opts[:attempt_to_meet]
         met_result
       else
-        call_task(:meet) and run_met_task(opts)
+        call_task(:meet) and run_met_task
       end
     elsif :fail == met_result
       log "fail lulz"
@@ -84,13 +85,13 @@ class Dep
     end
   end
 
-  def run_met_task opts
+  def run_met_task task_opts = {}
     returning cache_process(call_task(:met?)) do |result|
       if :fail == result
         log_extra "You'll have to fix '#{name}' manually."
-      elsif !result && opts[:initial]
+      elsif !result && task_opts[:initial]
         log_extra "#{name} not already met."
-      elsif result && !opts[:initial]
+      elsif result && !task_opts[:initial]
         log "#{name} met.".colorize('green')
       end
     end
