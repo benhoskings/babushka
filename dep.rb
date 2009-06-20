@@ -1,7 +1,7 @@
 require 'dep_definer'
 
 class Dep
-  attr_reader :name, :vars, :opts
+  attr_reader :name, :opts
 
   def initialize name, block, definer_class = DepDefiner
     @name = name
@@ -33,6 +33,11 @@ class Dep
   def meet opts = {}
     process opts.merge :attempt_to_meet => !Cfg[:dry_run]
   end
+
+  def vars
+    opts[:vars].merge @vars
+  end
+
 
   private
 
