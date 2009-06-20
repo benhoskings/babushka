@@ -9,7 +9,7 @@ dep 'user shell setup' do
     File.basename(shell("echo $SHELL")) == 'fish'
   }
   meet {
-    shell "chsh -s #{shell('which fish')}"
+    sudo "chsh -s #{shell('which fish')} #{username}"
   }
 end
 
