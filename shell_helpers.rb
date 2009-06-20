@@ -63,9 +63,13 @@ def which cmd_name, &block
 end
 
 def in_dir dir, &block
-  Dir.chdir dir do |path|
-    debug "in dir #{path} (#{Pathname(path).realpath})" do
-      yield
+  if dir.nil?
+    yield
+  else
+    Dir.chdir dir do |path|
+      log_verbose "in dir #{path} (#{Pathname(path).realpath})" do
+        yield
+      end
     end
   end
 end
