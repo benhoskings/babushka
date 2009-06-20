@@ -1,16 +1,13 @@
 require 'dep_definer'
 
 class Dep
-  attr_reader :name
+  attr_reader :name, :vars
 
   def initialize name, block, definer_class = DepDefiner
     @name = name
     @vars = {}
-    @payload = {
-      :requires => [],
-      :asks_for => []
-    }.merge definer_class.new(name, &block).payload
-    debug "\"#{name}\" depends on #{@payload[:requires].inspect}"
+    @definer = definer_class.define self, &block
+    debug "\"#{name}\" depends on #{payload[:requires].inspect}"
     Dep.register self
   end
 
@@ -50,7 +47,7 @@ class Dep
   end
 
   def ask_for_vars
-    @payload[:asks_for].each {|key|
+    payload[:asks_for].each {|key|
       log "#{key} for #{name}", :newline => false
       L{
         @vars[key] = read_from_prompt
@@ -67,9 +64,9 @@ class Dep
       dep.send :process, opts unless dep.nil?
     }
     if opts[:attempt_to_meet]
-      @payload[:requires].all? &closure
+      payload[:requires].all? &closure
     else
-      @payload[:requires].each &closure
+      payload[:requires].each &closure
     end
   end
 
@@ -100,11 +97,11 @@ class Dep
   end
 
   def has_task? task_name
-    !@payload[task_name].nil?
+    !payload[task_name].nil?
   end
 
   def call_task task_name
-    (@payload[task_name] || default_task(task_name)).call
+    (payload[task_name] || default_task(task_name)).call
   end
 
   def default_task task_name
@@ -132,8 +129,12 @@ class Dep
     @_cached_process = value
   end
 
+  def payload
+    @definer.payload
+  end
+
   def inspect
-    "#<Dep:#{object_id} '#{name}' { #{@payload[:requires].join(', ')} }>"
+    "#<Dep:#{object_id} '#{name}' { #{payload[:requires].join(', ')} }>"
   end
 end
 

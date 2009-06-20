@@ -3,23 +3,38 @@ require 'pkg_manager'
 class DepDefiner
   attr_reader :payload
 
-  def initialize name, &block
-    @name = name
-    @payload = {}
+  def self.define dep, &block
+    returning new(dep, &block) do |definer|
+      definer.configure
+    end
+  end
+
+  def initialize dep, &block
+    @dep = dep
+    @payload = {
+      :requires => [],
+      :asks_for => []
+    }
     instance_eval &block if block_given?
   end
 
+  def configure
+    payload[:asks_for].each {|key|
+      exit_with "'#{@dep.name}': #{key.inspect} has to be supplied to asks_for as a symbol - maybe :#{key.downcase.gsub(/ -/, '_').gsub(/[^0-9a-z_]/, '')}?  " unless key.is_a?(Symbol)
+    }
+  end
+
   def requires *deps
-    @payload[:requires] = deps
+    payload[:requires] = deps
   end
   def asks_for *keys
-    @payload[:asks_for] = keys
+    payload[:asks_for] = keys
   end
   def met? &block
-    @payload[:met?] = block
+    payload[:met?] = block
   end
   def meet &block
-    @payload[:meet] = block
+    payload[:meet] = block
   end
 
   def self.attr_setter *names
@@ -90,7 +105,7 @@ class PkgDepDefiner < DepDefiner
 
   def pkg_or_default
     if @pkg.nil?
-      @name
+      @dep.name
     elsif @pkg.is_a? Hash
       @pkg[pkg_manager.manager_key] || []
     else
@@ -98,7 +113,7 @@ class PkgDepDefiner < DepDefiner
     end
   end
   def provides_or_default
-    @provides || [@name]
+    @provides || [@dep.name]
   end
 end
 
