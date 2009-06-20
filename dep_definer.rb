@@ -84,7 +84,7 @@ class PkgDepDefiner < DepDefiner
     if @pkg.nil?
       @name
     elsif @pkg.is_a? Hash
-      @pkg[pkg_manager.manager_key]
+      @pkg[pkg_manager.manager_key] || []
     else
       [*@pkg]
     end
