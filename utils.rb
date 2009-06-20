@@ -33,6 +33,10 @@ def log_verbose message, opts = {}, &block
   end
 end
 
+def log_extra message, opts = {}, &block
+  log_verbose message.colorize('grey'), opts, &block
+end
+
 def log_ok message, opts = {}, &block
   if Cfg[:verbose_logging]
     log message, opts.merge(:as => :ok), &block
@@ -57,14 +61,14 @@ def log message, opts = {}, &block
     returning yield do |result|
       $log_indent -= 1
       if opts[:closing_status]
-        log "}".colorize(result ? 'green' : 'red')
+        log '}'.colorize('grey') + ' ' + "#{result ? '√' : '×'} #{message}".colorize(result ? 'green' : 'red')
       else
         log "}".colorize('grey')
       end
     end
   else
     message.gsub! "\n", "\n#{indentation}"
-    message = "#{'√'.colorize('green')} #{message}" if opts[:as] == :ok
+    message = "#{'√'.colorize('grey')} #{message}" if opts[:as] == :ok
     message = message.colorize 'red' if opts[:as] == :error
     message = message.end_with "\n" unless opts[:newline] == false
     print message

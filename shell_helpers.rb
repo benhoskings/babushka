@@ -16,7 +16,8 @@ class Shell
 
     def render
       unless ok? || @opts[:fail_ok]
-        log_verbose "`#{shell.cmd}` failed with '#{shell.stderr.split("\n", 3)[0..1].join(', ')}'", :as => :error
+        log_extra "$ #{shell.cmd}"
+        log_verbose shell.stderr.split("\n", 3)[0..1].join(', '), :as => :error
       end
 
       if @block.nil?

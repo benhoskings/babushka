@@ -41,7 +41,7 @@ class Dep
 
   def meet
     unless @_cached_met.nil?
-      log [name.colorize('grey'), "#{'un' unless @_cached_met}met".colorize(@_cached_met ? 'green' : 'red')].join(' ')
+      log "#{name} (cached)".colorize('grey'), :as => (@_cached_met ? :ok : :error)
       @_cached_met
     else
       log name, :closing_status => true do
@@ -62,7 +62,7 @@ class Dep
 
   def run_met_task
     unless @_cached_met.nil?
-      log [name.colorize('grey'), "#{'un' unless @_cached_met}met".colorize(@_cached_met ? 'green' : 'red')].join(' ')
+      log "#{name} (cached)".colorize('grey'), :as => (@_cached_met ? :ok : :error)
       @_cached_met
     else
       @_cached_met = returning call_task(:met?) do |result|
@@ -76,7 +76,7 @@ class Dep
       log "You'll have to fix '#{name}' manually."
     else
       returning(@payload[:meet].call && call_task(:met?)) do |result|
-        log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red')
+        log "#{name} #{"couldn't be " unless result}met.".colorize(result ? 'green' : 'red') if result
       end
     end
   end
