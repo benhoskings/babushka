@@ -3,12 +3,6 @@ require 'pkg_manager'
 class DepDefiner
   attr_reader :payload
 
-  def self.define dep, &block
-    returning new(dep, &block) do |definer|
-      definer.configure
-    end
-  end
-
   def initialize dep, &block
     @dep = dep
     @payload = {
@@ -16,12 +10,6 @@ class DepDefiner
       :asks_for => []
     }
     instance_eval &block if block_given?
-  end
-
-  def configure
-    payload[:asks_for].each {|key|
-      exit_with "'#{@dep.name}': #{key.inspect} has to be supplied to asks_for as a symbol - maybe :#{key.downcase.gsub(/ -/, '_').gsub(/[^0-9a-z_]/, '')}?  " unless key.is_a?(Symbol)
-    }
   end
 
   def requires *deps
