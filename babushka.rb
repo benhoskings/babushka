@@ -45,6 +45,7 @@ class Babushka
   def extract_args args
     Cfg[:verbose_logging] = %w[-q --quiet].map {|arg| args.delete arg }.first.blank?
     Cfg[:debug] = args.delete('--debug')
+    Cfg[:dry_run] = !%w[-n --dry-run].map {|arg| args.delete arg }.first.blank?
 
     args
   end
