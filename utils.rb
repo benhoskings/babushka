@@ -80,6 +80,14 @@ def log message, opts = {}, &block
   end
 end
 
+def read_path_from_prompt message, opts = {}
+  read_value_from_prompt(message, opts.merge(
+    :retry => "Doesn't exist, or not a directory."
+  )) {|value|
+    File.directory? value || ''
+  }
+end
+
 def read_value_from_prompt message, in_opts = {}
   opts = {
     :prompt => '? ',
