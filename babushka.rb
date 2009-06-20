@@ -34,11 +34,6 @@ class Babushka
     end
   end
 
-  def exit_with message
-    log message
-    exit 1
-  end
-
 
   private
 

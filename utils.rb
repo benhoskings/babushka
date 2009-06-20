@@ -90,6 +90,11 @@ def log_and_open message, url
   shell "open #{url}"
 end
 
+def exit_with message
+  log message
+  exit 1
+end
+
 def yaml file_name
   require 'yaml'
   YAML::load_file(RAILS_ROOT / file_name)
