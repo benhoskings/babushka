@@ -65,6 +65,7 @@ class GemHelper < PkgManager
   def pkg_type; :gem end
   def pkg_cmd; 'gem' end
   def manager_key; :gem end
+  def manager_dep; 'rubygems' end
 
   def has? pkg_name, version = nil
     versions = versions_of pkg_name
