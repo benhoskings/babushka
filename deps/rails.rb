@@ -16,6 +16,16 @@ dep 'migrated db' do
   meet { rake("db:migrate --trace") }
 end
 
+dep 'existing db' do
+  requires 'db gem', 'rails'
+  met? {
+    !shell("psql -l") {|shell|
+      shell.stdout.split("\n").grep(/^\s*testapp\s+\|/)
+    }.empty?
+  }
+  meet { rake("db:create") }
+end
+
 gem_dep 'rails' do
   requires 'rubygems'
 end
