@@ -15,12 +15,13 @@ end
 
 dep 'ssh key' do
   requires 'user exists'
+  asks_for :public_key
   met? {
-    !shell("grep ben@hat ~ben/.ssh/authorized_keys").empty?
+    !shell("grep '#{public_key}' ~/.ssh/authorized_keys") {|shell| shell.stdout.empty? }
   }
   meet {
-    shell 'mkdir ~/.ssh'
-    shell 'echo "AAAAB3NzaC1kc3MAAACBAM2lpANrrRiLi9xnCl5rGFMsDeqEiXcQX3Y9UDchbsf5nH0JvNUKjNppVh3r+JTNOge3rHpNIBipzqqdtgwb7KL9JChvxcATkTye4ok0LfQJsYW3bcnJ1aQiIXeG5UEjRBfEgMNL/qhvhlQjUdkGFi23Jidx5qD8w+m3elUPVAo/AAAAFQCI52+Fed0JJm7zcGOfiz7993Z1JQAAAIBLmaM9/ZQ6a/x/fO+3A7dLT0cCxwpNtitkPc1fqFVvhTf3FB2G0U4DYBaPg9wNOCqcwcGZZtgl30I33MlAXJp8CUSxnnmkTmPJNs7D2YPuR9fwpj2khuF/UtiJAjkhZrdJ3WsA1/3caELIyZwYb/znbXENiH7/fx3sbIGdRRn/mAAAAIBi1TrUkWIhSPPyFh+9UJWYHNlLVwQfVhB/w+7kR8MIttJ2Yar4IJiRyIWzD+d5CEojqved/jYUxoDiTx5fN3xDCeMNK0z4z1767oyaXWWJs5XOPiCJsog9G/mBHcLGrYutFQusmPp2B3O96wfGsPJpCyQqtJ2qK8eeOMt9E27hPw== ben@hat" > ~/.ssh/authorized_keys'
+    shell 'mkdir -p ~/.ssh'
+    shell "echo '#{public_key}' > ~/.ssh/authorized_keys"
     shell 'chmod 700 ~/.ssh'
     shell 'chmod 600 ~/.ssh/authorized_keys'
   }
