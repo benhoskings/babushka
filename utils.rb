@@ -40,6 +40,7 @@ end
 def log_ok message, opts = {}, &block
   if Cfg[:verbose_logging]
     log message, opts.merge(:as => :ok), &block
+    true
   elsif block_given?
     yield
   end
