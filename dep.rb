@@ -35,7 +35,7 @@ class Dep
   end
 
   def vars
-    opts[:vars].merge @vars
+    (opts[:vars] || {}).merge @vars
   end
 
 
