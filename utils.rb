@@ -60,7 +60,9 @@ def log message, opts = {}, &block
     $log_indent += 1
     returning yield do |result|
       $log_indent -= 1
-      if opts[:closing_status]
+      if opts[:closing_status] == :dry_run
+        log '}'.colorize('grey') + ' ' + "#{result ? '√' : '~'} #{message}".colorize(result ? 'green' : 'blue')
+      elsif opts[:closing_status]
         log '}'.colorize('grey') + ' ' + "#{result ? '√' : '×'} #{message}".colorize(result ? 'green' : 'red')
       else
         log "}".colorize('grey')
