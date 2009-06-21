@@ -55,7 +55,9 @@ class Dep
         log_error "Oh crap, endless loop!"
       else
         opts[:callstack].push self
-        ask_for_vars and process_in_dir
+        returning ask_for_vars && process_in_dir do
+          opts[:callstack].pop
+        end
       end
     end
   end
