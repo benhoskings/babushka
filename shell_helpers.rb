@@ -80,8 +80,8 @@ def cmd_dir cmd_name
   }
 end
 
-def sudo cmd, &block
-  shell "sudo #{cmd}", &block
+def sudo cmd, opts = {}, &block
+  shell "sudo -u #{opts[:as] || 'root'} #{cmd}", &block
 end
 
 def rake cmd, &block
