@@ -8,7 +8,7 @@ def returning obj, &block
 end
 
 def linux?
-  `uname -s`['Liunx']
+  `uname -s`['Linux']
 end
 def osx?
   `uname -s`['Darwin']
