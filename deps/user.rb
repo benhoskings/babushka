@@ -21,7 +21,7 @@ dep 'ssh key' do
   }
   meet {
     shell 'mkdir -p ~/.ssh'
-    shell "echo '#{public_key}' > ~/.ssh/authorized_keys"
+    append_to_file public_key, "~/.ssh/authorized_keys"
     shell 'chmod 700 ~/.ssh'
     shell 'chmod 600 ~/.ssh/authorized_keys'
   }

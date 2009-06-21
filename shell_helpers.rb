@@ -103,3 +103,9 @@ def change_with_sed keyword, from, to, file
     shell("echo '#{keyword} #{to}' >> #{file}") if failable_shell("grep '^#{keyword}\s+#{to}' #{file}").stdout.empty?
   end
 end
+
+def append_to_file text, file
+  if failable_shell("grep '^#{text}' #{file}").stdout.empty?
+    shell %Q{echo "#{text.gsub('"', '\"')}" >> #{file}}.tap{|obj| log obj.inspect }
+  end
+end
