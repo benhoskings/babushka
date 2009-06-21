@@ -82,7 +82,7 @@ class Dep
   def process_deps
     closure = L{|dep|
       dep = Dep(dep)
-      dep.send :process, opts.merge(:vars => @vars) unless dep.nil?
+      dep.send :process, opts.merge(:vars => vars) unless dep.nil?
     }
     if opts[:attempt_to_meet]
       payload[:requires].all? &closure
