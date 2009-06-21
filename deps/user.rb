@@ -1,5 +1,5 @@
 dep 'user setup' do
-  requires 'user shell setup', 'ssh key'
+  requires 'user shell setup', 'passwordless ssh logins', 'public key'
   asks_for :username
 end
 
@@ -9,11 +9,11 @@ dep 'user shell setup' do
   meet { sudo "chsh -s #{shell('which fish')} #{username}" }
 end
 
-dep 'ssh key' do
+dep 'passwordless ssh logins' do
   requires 'user exists'
-  asks_for :public_key
+  asks_for :your_ssh_public_key
   met? {
-    !failable_shell("grep '#{public_key}' ~/.ssh/authorized_keys").stdout.empty?
+    !failable_shell("grep '#{your_ssh_public_key}' ~/.ssh/authorized_keys").stdout.empty?
   }
   meet {
     shell 'mkdir -p ~/.ssh'
@@ -21,6 +21,11 @@ dep 'ssh key' do
     shell 'chmod 700 ~/.ssh'
     shell 'chmod 600 ~/.ssh/authorized_keys'
   }
+end
+
+dep 'public key' do
+  met? { grep /^ssh-dss/ '~/.ssh/id_dsa.pub' }
+  meet { shell "ssh-keygen -t dsa -f ~/.ssh/id_dsa -N ''" }
 end
 
 dep 'dot files' do
