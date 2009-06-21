@@ -110,6 +110,6 @@ end
 
 def append_to_file text, file
   if failable_shell("grep '^#{text}' #{file}").stdout.empty?
-    shell %Q{echo "#{text.gsub('"', '\"')}" >> #{file}}.tap{|obj| log obj.inspect }
+    shell %Q{echo "#{text.gsub('"', '\"')}" >> #{file}}
   end
 end
