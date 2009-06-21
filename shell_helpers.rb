@@ -85,7 +85,7 @@ def sudo cmd, opts = {}, &block
 end
 
 def rake cmd, &block
-  shell "rake #{cmd} RAILS_ENV=#{rails_env}", &block
+  sudo "rake #{cmd} RAILS_ENV=#{rails_env}", :as => app_name, &block
 end
 
 def check_file file_name, method_name
