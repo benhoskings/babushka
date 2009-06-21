@@ -63,7 +63,9 @@ class Dep
   end
 
   def ask_for_vars
-    payload[:asks_for].each {|key|
+    payload[:asks_for].reject {|key|
+      vars[key]
+    }.each {|key|
       @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
         read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
       else
