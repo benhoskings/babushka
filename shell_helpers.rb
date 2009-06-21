@@ -95,8 +95,10 @@ def check_file file_name, method_name
 end
 
 def grep regex, file
-  output = IO.readlines(File.expand_path file).grep(regex)
-  output unless output.empty?
+  if File.exists?(path = File.expand_path(file))
+    output = IO.readlines(path).grep(regex)
+    output unless output.empty?
+  end
 end
 
 def change_with_sed keyword, from, to, file
