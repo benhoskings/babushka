@@ -95,7 +95,7 @@ def check_file file_name, method_name
 end
 
 def grep regex, file
-  output = IO.readlines(file).grep(regex)
+  output = IO.readlines(File.expand_path file).grep(regex)
   output unless output.empty?
 end
 
