@@ -95,7 +95,8 @@ def check_file file_name, method_name
 end
 
 def grep regex, file
-  IO.readlines(file).grep(regex).empty? ? nil : true
+  output = IO.readlines(file).grep(regex)
+  output unless output.empty?
 end
 
 def change_with_sed keyword, from, to, file
