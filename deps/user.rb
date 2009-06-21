@@ -41,7 +41,7 @@ dep 'user exists' do
   asks_for :username
   met? { shell("grep #{username} /etc/passwd") }
   meet {
-    sudo "useradd #{username} -m -s /bin/bash"
+    sudo "useradd #{username} -m -s /bin/bash -G admin"
     sudo "chmod 701 /home/#{username}"
   }
 end
