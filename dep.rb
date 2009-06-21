@@ -1,11 +1,11 @@
 require 'dep_definer'
 
 class Dep
-  attr_reader :name, :opts
+  attr_reader :name
 
   def initialize name, block, definer_class = DepDefiner
     @name = name
-    @vars = {}
+    @vars, @opts = {}, {}
     @definer = definer_class.new self, &block
     debug "\"#{name}\" depends on #{payload[:requires].inspect}"
     Dep.register self
@@ -28,21 +28,24 @@ class Dep
   end
 
   def met? opts = {}
-    process opts.merge :attempt_to_meet => false
+    process opts.merge default_run_opts.merge :attempt_to_meet => false
   end
   def meet opts = {}
-    process opts.merge :attempt_to_meet => !Cfg[:dry_run]
+    process opts.merge default_run_opts.merge :attempt_to_meet => !Cfg[:dry_run]
   end
 
   def vars
     (opts[:vars] || {}).merge @vars
+  end
+  def opts
+    @opts.merge @run_opts || {}
   end
 
 
   private
 
   def process run_opts
-    @opts = run_opts
+    @run_opts = run_opts
     cached? ? cached_result : process_and_cache
   end
 
@@ -138,6 +141,12 @@ class Dep
   end
   def cache_process value
     @_cached_process = value
+  end
+
+  def default_run_opts
+    {
+      :callstack => []
+    }
   end
 
   def payload
