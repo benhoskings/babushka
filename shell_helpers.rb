@@ -66,8 +66,8 @@ def in_dir dir, &block
   if dir.nil?
     yield
   else
-    Dir.chdir dir do |path|
-      log_verbose "in dir #{path} (#{Pathname(path).realpath})" do
+    Dir.chdir Pathname(dir).realpath do |path|
+      log_verbose "in dir #{dir} (#{path})" do
         yield
       end
     end
