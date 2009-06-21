@@ -43,5 +43,6 @@ dep 'user exists' do
   meet {
     sudo "useradd #{username} -m -s /bin/bash"
     sudo "chmod 701 /home/#{username}"
+    sudo "passwd #{username}"
   }
 end
