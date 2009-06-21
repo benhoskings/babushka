@@ -38,7 +38,7 @@ end
 
 class MacportsHelper < PkgManager
   def existing_packages
-    Dir.glob("/opt/local/var/macports/software/*").map {|i| File.basename i }
+    Dir.glob(prefix / "var/macports/software/*").map {|i| File.basename i }
   end
   def pkg_type; :port end
   def pkg_cmd; 'port' end
