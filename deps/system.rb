@@ -1,5 +1,5 @@
 dep 'system' do
-  requires 'secured ssh logins', 'lax host key checking'
+  requires 'secured ssh logins', 'lax host key checking', 'admins can sudo'
 end
 
 def ssh_conf_path file
@@ -16,18 +16,22 @@ dep 'secured ssh logins' do
   meet {
     change_with_sed 'PasswordAuthentication',          'yes', 'no', ssh_conf_path(:sshd)
     change_with_sed 'ChallengeResponseAuthentication', 'yes', 'no', ssh_conf_path(:sshd)
-
-    # failable_shell "killall -HUP sshd"
   }
 end
 
 dep 'lax host key checking' do
   requires 'sed'
-  met? {
-    failable_shell("grep '^StrictHostKeyChecking[ \\t]\\+no' #{ssh_conf_path(:ssh)}").stdout.empty? ? nil : true
-  }
-  meet {
-    change_with_sed 'StrictHostKeyChecking', 'yes', 'no', ssh_conf_path(:ssh)
-    # failable_shell "killall -HUP sshd"
-  }
+  met? { grep /^StrictHostKeyChecking[ \t]\+no/, ssh_conf_path(:ssh) }
+  meet { change_with_sed 'StrictHostKeyChecking', 'yes', 'no', ssh_conf_path(:ssh) }
+end
+
+dep 'admins can sudo' do
+  requires 'admin group'
+  met? { grep /^%admin/, '/etc/sudoers' }
+  meet { append_to_file '%admin  ALL=(ALL) ALL', '/etc/sudoers' }
+end
+
+dep 'admin group' do
+  met? { grep /^admin\:/, '/etc/group' }
+  meet { shell "groupadd admin" }
 end
