@@ -5,9 +5,9 @@ gem_dep 'db gem' do
 end
 
 dep 'db access' do
-  requires 'db software'
+  requires 'db software', 'user exists'
   met? { sudo "echo '\\du' | psql", :as => 'postgres' }
-  meet { sudo "createuser -SdR #{app_name}", :as => 'postgres' }
+  meet { sudo "createuser -SdR #{username}", :as => 'postgres' }
 end
 
 pkg_dep 'db software' do

@@ -39,11 +39,9 @@ end
 
 dep 'user exists' do
   requires 'fish'
-  met? { true || shell("grep ben /etc/passwd") }
+  met? { true || shell("grep #{username} /etc/passwd") }
   meet {
-    sudo "useradd ben -m -s /usr/bin/fish"
-    sudo "chmod 701 /home/ben"
-    
-    
+    sudo "useradd #{username} -m -s /usr/bin/fish"
+    sudo "chmod 701 /home/#{username}"
   }
 end

@@ -1,7 +1,7 @@
 dep 'migrated db' do
   requires 'existing db', 'rails'
   run_in :rails_root
-  asks_for :app_name, :rails_env
+  asks_for :rails_env
   met? {
     current_version = rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
