@@ -1,5 +1,7 @@
 dep 'migrated db' do
-  requires 'db access', 'rails'
+  requires 'existing db', 'rails'
+  run_in :rails_root
+  asks_for :app_name, :rails_env
   met? {
     current_version = rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
@@ -19,10 +21,10 @@ dep 'migrated db' do
 end
 
 dep 'existing db' do
-  requires 'db gem', 'rails'
+  requires 'db gem', 'db access', 'rails'
   met? {
     !shell("psql -l") {|shell|
-      shell.stdout.split("\n").grep(/^\s*testapp\s+\|/)
+      shell.stdout.split("\n").grep(/^\s*#{app_name}\s+\|/)
     }.empty?
   }
   meet { rake("db:create") }

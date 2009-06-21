@@ -5,9 +5,9 @@ gem_dep 'db gem' do
 end
 
 dep 'db access' do
-  requires 'existing db'
-  met? { shell "echo '\\d' | psql #{dbname}" }
-  meet { sudo "createuser -SDR #{appname}" }
+  requires 'db software'
+  met? { shell "echo '\\d' | psql #{app_name}" }
+  meet { sudo "createuser -SDR #{app_name}" }
 end
 
 pkg_dep 'db software' do
