@@ -1,10 +1,10 @@
 dep 'user setup' do
-  requires 'user shell setup', 'ssh key', 'dot files'
+  requires 'user shell setup', 'ssh key'
   asks_for :username
 end
 
 dep 'user shell setup' do
-  requires 'fish'
+  requires 'fish', 'dot files'
   met? {
     File.basename(shell("echo $SHELL")) == 'fish'
   }
@@ -38,10 +38,10 @@ dep 'dot files' do
 end
 
 dep 'user exists' do
-  requires 'fish'
+  asks_for :username
   met? { shell("grep #{username} /etc/passwd") }
   meet {
-    sudo "useradd #{username} -m -s /usr/bin/fish"
+    sudo "useradd #{username} -m -s /bin/bash"
     sudo "chmod 701 /home/#{username}"
   }
 end
