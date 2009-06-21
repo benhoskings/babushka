@@ -52,7 +52,7 @@ class Dep
   def process_and_cache
     log name, :closing_status => (opts[:attempt_to_meet] ? true : :dry_run) do
       if opts[:callstack].include? self
-        log_error "Oh crap, endless loop!"
+        log_error "Oh crap, endless loop! (#{opts[:callstack].push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
       else
         opts[:callstack].push self
         returning ask_for_vars && process_in_dir do
