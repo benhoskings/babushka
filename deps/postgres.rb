@@ -6,8 +6,8 @@ end
 
 dep 'db access' do
   requires 'db software'
-  met? { shell "echo '\\d' | psql #{app_name}" }
-  meet { sudo "createuser -SDR #{app_name}" }
+  met? { sudo "echo '\\d' | psql #{app_name}", :as => 'postgres' }
+  meet { sudo "createuser -SdR #{app_name}", :as => 'postgres' }
 end
 
 pkg_dep 'db software' do
