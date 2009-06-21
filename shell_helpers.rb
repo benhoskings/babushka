@@ -94,13 +94,17 @@ def check_file file_name, method_name
   end
 end
 
+def grep regex, file
+  IO.readlines(file).grep(regex).empty? ? nil : true
+end
+
 def change_with_sed keyword, from, to, file
   sed = linux? ? 'sed' : 'gsed'
   if check_file file, :writable?
     # Remove the incorrect setting if it's there
     shell("#{sed} -ri 's/^#{keyword}\s+#{from}//' #{file}")
     # Add the correct setting unless it's already there
-    shell("echo '#{keyword} #{to}' >> #{file}") if failable_shell("grep '^#{keyword}\s+#{to}' #{file}").stdout.empty?
+    shell("echo '#{keyword} #{to}' >> #{file}") unless grep(/^#{keyword}\s+#{to}/, file)
   end
 end
 
