@@ -16,7 +16,7 @@ class Shell
 
     def render
       unless ok? || @opts[:fail_ok]
-        log_extra "$ #{shell.cmd}"
+        log_extra "$ #{shell.cmd}" unless Cfg[:debug]
         log_verbose shell.stderr.split("\n", 3)[0..1].join(', '), :as => :error
       end
 
