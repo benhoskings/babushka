@@ -9,7 +9,7 @@ end
 dep 'secured ssh logins' do
   requires 'sed'
   met? {
-    returning failable_shell('ssh nonexistentuser@localhost').stderr['(publickey)'] do |result|
+    returning failable_shell('ssh -o StrictHostKeyChecking=no nonexistentuser@localhost').stderr['(publickey)'] do |result|
       log_verbose "sshd #{'only ' if result}accepts #{result.scan(/[a-z]+/).to_list} logins.", :as => (result ? :ok : :error)
     end
   }
