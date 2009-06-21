@@ -5,12 +5,8 @@ end
 
 dep 'user shell setup' do
   requires 'fish', 'dot files'
-  met? {
-    File.basename(shell("echo $SHELL")) == 'fish'
-  }
-  meet {
-    sudo "chsh -s #{shell('which fish')} #{username}"
-  }
+  met? { File.basename(sudo('echo \$SHELL', :as => username)) == 'fish' }
+  meet { sudo "chsh -s #{shell('which fish')} #{username}" }
 end
 
 dep 'ssh key' do
