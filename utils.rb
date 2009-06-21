@@ -37,6 +37,10 @@ def log_extra message, opts = {}, &block
   log_verbose message.colorize('grey'), opts, &block
 end
 
+def log_result message, opts = {}, &block
+  log "#{opts[:result] ? '√' : (opts[:fail_symbol] || '×')} #{message}".colorize(opts[:result] ? (opts[:ok_color] || 'green') : (opts[:fail_color] || 'red'))
+end
+
 def log_ok message, opts = {}, &block
   if Cfg[:verbose_logging]
     log message, opts.merge(:as => :ok), &block
