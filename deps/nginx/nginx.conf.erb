@@ -1,0 +1,32 @@
+user www www;
+worker_processes 8;
+pid /opt/nginx/logs/nginx.pid;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay off;
+  keepalive_timeout 30;
+
+  include mime.types;
+  default_type application/octet-stream;
+
+  server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+      root html;
+      index index.html;
+    }
+  }
+
+  passenger_root /opt/local/lib/ruby/gems/1.8/gems/passenger-<%= passenger_version %>;
+  passenger_ruby /opt/local/bin/ruby;
+
+  include vhosts/on/*.conf;
+}

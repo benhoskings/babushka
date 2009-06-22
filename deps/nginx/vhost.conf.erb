@@ -1,0 +1,14 @@
+server {
+  listen 80;
+  include vhosts/<%= domain %>.common;
+}
+
+#server {
+#  listen 443;
+#  ssl                  on;
+#  ssl_certificate      certs/<%= domain %>.crt;
+#  ssl_certificate_key  certs/<%= domain %>.key;
+#  ssl_session_timeout  5m;
+#
+#  include vhosts/<%= domain %>.common;
+#}

@@ -1,0 +1,26 @@
+server_name <%= domain %> www.<%= domain %>;
+root /<%= rails_root %>/current/public;
+passenger_enabled on;
+rails_env <%= rails_env %>;
+
+if (-f $document_root/system/maintenance.html) {
+  rewrite ^(.*)$ /system/maintenance.html break;
+}
+
+location ~* \.(js|css|jpg|jpeg|gif|png|ico|swf)$ {
+  gzip on;
+  gzip_min_length 1024;
+  #gzip_http_version 1.0;
+  #gzip_vary on;
+  gzip_comp_level 9;
+  gzip_proxied any;
+  gzip_types text/plain text/html text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+  # make sure gzip does not lose large gzipped js or css files
+  # see http://blog.leetsoft.com/2007/7/25/nginx-gzip-ssl
+  gzip_buffers 16 8k;
+  
+  if (-f $request_filename) {
+    expires 1d;
+    break;
+  }
+}
