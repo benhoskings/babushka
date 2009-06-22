@@ -39,6 +39,10 @@ class Shell
     @stdout, @stderr = nil, nil
 
     @result = Open4.popen4 @cmd do |pid,stdin,stdout,stderr|
+      unless opts[:input].nil?
+        stdin << opts[:input]
+        stdin.close
+      end
       @stdout, @stderr = stdout.read.chomp, stderr.read.chomp
     end.exitstatus.zero?
 
