@@ -94,6 +94,13 @@ def sudo cmd, opts = {}, &block
   end
 end
 
+def log_shell cmd, message
+  log "#{message}...", :newline => false
+  returning shell(cmd) do |result|
+    log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
+  end
+end
+
 def rake cmd, &block
   sudo "rake #{cmd} RAILS_ENV=#{rails_env}", :as => app_name, &block
 end
