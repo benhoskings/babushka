@@ -5,6 +5,10 @@ end
 
 pkg_dep 'fish'
 
+pkg_dep 'rcconf' do
+  pkg :apt => 'rcconf'
+end
+
 pkg_dep 'sed' do
   pkg :macports => 'gsed'
   provides 'gsed'
