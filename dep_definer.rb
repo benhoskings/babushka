@@ -39,6 +39,10 @@ class DepDefiner
     asks_for path_or_key if path_or_key.is_a?(Symbol)
     payload[:run_in] = path_or_key
   end
+  def set key, value
+    @dep.set key, value
+  end
+
   def met? &block
     payload[:met?] = block
   end
