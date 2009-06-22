@@ -129,3 +129,13 @@ def get_source url
     log_shell("sudo rm -rf #{archive_dir} && tar -zxvf #{filename}", "Extracting #{filename}")
   end
 end
+
+def render_erb erb, opts = {}
+  require 'erb'
+  log ERB.new(IO.read(File.dirname(source) / erb)).result(binding)
+  returning sudo "cat > #{opts[:to]}", :input => ERB.new(IO.read(File.dirname(source) / erb)).result(binding) do
+    if result
+      File.chmod opts[:perms], '/etc/init.d/nginx' unless opts[:perms].nil?
+    end
+  end
+end
