@@ -67,12 +67,13 @@ class GemHelper < PkgManager
   def manager_key; :gem end
   def manager_dep; 'rubygems' end
 
-  def has? pkg_name, version = nil
+  def has? pkg_name, requested_version = nil
     versions = versions_of pkg_name
-    returning !versions.empty? && (version.nil? || versions.include?(version)) do |result|
-      pkg_spec = "#{pkg_name}#{"-#{version}" unless version.nil?}"
+    version = (version.nil? ? versions : versions & [version]).last
+    returning version do |result|
+      pkg_spec = "#{pkg_name}#{"-#{requested_version}" unless requested_version.nil?}"
       if result
-        log_ok "system has #{pkg_spec} gem#{" (at #{versions.first})" if version.nil?}"
+        log_ok "system has #{pkg_spec} gem#{" (at #{version})" if requested_version.nil?}"
       else
         log "system doesn't have #{pkg_spec} gem"
       end
@@ -84,6 +85,6 @@ class GemHelper < PkgManager
   def versions_of pkg_name
     installed = shell("gem list --local #{pkg_name}").detect {|l| /^#{pkg_name}/ =~ l }
     versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
-    versions.split(/[^0-9.]+/)
+    versions.split(/[^0-9.]+/).sort
   end
 end
