@@ -87,7 +87,11 @@ def cmd_dir cmd_name
 end
 
 def sudo cmd, opts = {}, &block
-  shell "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\"", opts, &block
+  if cmd[' |'] || cmd[' >']
+    shell "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\"", opts, &block
+  else
+    shell "sudo -u #{opts[:as] || 'root'} #{cmd}", opts, &block
+  end
 end
 
 def rake cmd, &block
