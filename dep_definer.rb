@@ -133,14 +133,9 @@ end
 
 class ExtDepDefiner < DepDefiner
 
-  def payload
-    super.merge({
-      :met? => met_block
-    })
-  end
-
   def if_missing *cmds, &block
     @cmds, @block = cmds, block
+    payload[:met?] = met_block
   end
 
   private
