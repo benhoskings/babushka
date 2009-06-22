@@ -66,12 +66,14 @@ def which cmd_name, &block
   shell "which #{cmd_name}", &block
 end
 
-def in_dir dir, &block
+def in_dir dir, opts = {}, &block
   if dir.nil?
     yield
   else
-    Dir.chdir Pathname(dir).realpath do |path|
-      log_verbose "in dir #{dir} (#{path})" do
+    path = File.expand_path(dir)
+    Dir.mkdir(path) if opts[:create] unless File.exists?(path)
+    Dir.chdir path do
+      debug "in dir #{dir} (#{path})" do
         yield
       end
     end
