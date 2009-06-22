@@ -65,7 +65,7 @@ class String
   end
 
   def val_for key
-    split("\n").grep(/\b#{key}\b/).map {|l| l.sub(/\b#{key}\b\:?/, '').strip }.first
+    split("\n").grep(/\b#{key}\b/).map {|l| l.sub(/\b#{key}\b\:?/, '').sub(/;\s*$/, '').strip }.first || ''
   end
   def / other
     File.join self, other
