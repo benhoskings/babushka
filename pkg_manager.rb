@@ -1,11 +1,12 @@
 require 'shell_helpers'
 
 class PkgManager
-  def self.for_system
-    case `uname -s`.chomp
-    when 'Darwin'; MacportsHelper
-    when 'Linux'; AptHelper
-    end.new
+class << self
+  def for_system
+    {
+      'Darwin' => MacportsHelper,
+      'Linux' => AptHelper
+    }[`uname -s`.chomp]
   end
 
   def manager_dep
@@ -35,8 +36,10 @@ class PkgManager
     end
   end
 end
+end
 
 class MacportsHelper < PkgManager
+class << self
   def existing_packages
     Dir.glob(prefix / "var/macports/software/*").map {|i| File.basename i }
   end
@@ -49,8 +52,10 @@ class MacportsHelper < PkgManager
     pkg_name.in? existing_packages
   end
 end
+end
 
 class AptHelper < PkgManager
+class << self
   def pkg_type; :deb end
   def pkg_cmd; 'apt-get -y' end
   def manager_key; :apt end
@@ -60,8 +65,10 @@ class AptHelper < PkgManager
     shell("dpkg -s #{pkg_name}")
   end
 end
+end
 
 class GemHelper < PkgManager
+class << self
   def pkg_type; :gem end
   def pkg_cmd; 'gem' end
   def manager_key; :gem end
@@ -87,4 +94,5 @@ class GemHelper < PkgManager
     versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
     versions.split(/[^0-9.]+/).sort
   end
+end
 end

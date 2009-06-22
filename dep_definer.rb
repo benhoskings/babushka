@@ -148,7 +148,7 @@ class GemDepDefiner < PkgDepDefiner
   private
 
   def pkg_manager
-    GemHelper.new
+    GemHelper
   end
 end
 
