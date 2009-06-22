@@ -13,20 +13,20 @@ class DepDefiner
   end
 
   def requires *deps
-    payload[:requires] = deps
+    @payload[:requires] = deps
   end
   def asks_for *keys
-    payload[:asks_for].concat keys
+    @payload[:asks_for].concat keys
   end
   def run_in path_or_key
     asks_for path_or_key if path_or_key.is_a?(Symbol)
-    payload[:run_in] = path_or_key
+    @payload[:run_in] = path_or_key
   end
   def met? &block
-    payload[:met?] = block
+    @payload[:met?] = block
   end
   def meet &block
-    payload[:meet] = block
+    @payload[:meet] = block
   end
 
   def self.attr_setter *names
