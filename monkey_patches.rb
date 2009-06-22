@@ -33,6 +33,10 @@ class Object
     yield self
     self
   end
+  def tap_log
+    log_verbose self
+    self
+  end
 end
 
 class Pathname
