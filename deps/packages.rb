@@ -19,4 +19,3 @@ pkg_dep 'build-essential' do
 end
 
 pkg_dep 'autoconf'
-pkg_dep 'automake'
