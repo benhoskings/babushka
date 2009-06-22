@@ -139,7 +139,7 @@ class Dep
 
   def cached_result
     returning cached_process do |result|
-      log_result "#{name} (cached)", :result => result, :ok_color => 'grey'
+      log_result "#{name} (cached)", :result => result
     end
   end
   def cached?
