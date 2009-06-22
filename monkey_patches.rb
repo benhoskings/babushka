@@ -30,12 +30,10 @@ class Object
   end
 
   def tap &block
-    yield self
-    self
+    returning(self) { yield self }
   end
   def tap_log
-    log_verbose self
-    self
+    returning(self) { log_verbose self }
   end
 end
 
