@@ -16,6 +16,10 @@ end
 def linux?; :linux == uname end
 def osx?; :osx == uname end
 
+def from_first_and_rest first, rest
+  first.is_a?(Hash) ? first : [*first].concat(rest)
+end
+
 $log_indent = 0
 Cfg = {}
 
