@@ -1,5 +1,3 @@
-require 'pathname'
-
 class Array
   def squash
     dup.squash!
@@ -34,12 +32,6 @@ class Object
   end
   def tap_log
     returning(self) { log_verbose self }
-  end
-end
-
-class Pathname
-  def child child_name
-    new self.cleanpath / child_name
   end
 end
 
