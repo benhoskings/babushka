@@ -38,7 +38,10 @@ def log_extra message, opts = {}, &block
 end
 
 def log_result message, opts = {}, &block
-  log "#{opts[:result] ? '√' : (opts[:fail_symbol] || '×')} #{message}".colorize(opts[:result] ? (opts[:ok_color] || 'green') : (opts[:fail_color] || 'red'))
+  log [
+    (opts[:result] ? '√' : (opts[:fail_symbol] || '×')).colorize(opts[:result] ? (opts[:ok_color] || 'grey') : (opts[:fail_color] || 'red')),
+    "#{message}".colorize(opts[:result] ? (opts[:ok_color] || 'none') : (opts[:fail_color] || 'red'))
+  ].join(' ')
 end
 
 def log_ok message, opts = {}, &block
