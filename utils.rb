@@ -68,7 +68,7 @@ def debug message, opts = {}, &block
 end
 
 def log message, opts = {}, &block
-  print indentation
+  print indentation unless opts[:indentation] == false
   if block_given?
     print "#{message} {\n".colorize('grey')
     $log_indent += 1
