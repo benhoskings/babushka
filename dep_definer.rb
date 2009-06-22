@@ -1,7 +1,7 @@
 require 'pkg_manager'
 
 class DepDefiner
-  attr_reader :payload
+  attr_reader :payload, :source
 
   def initialize dep, &block
     @dep = dep
@@ -9,7 +9,24 @@ class DepDefiner
       :requires => [],
       :asks_for => []
     }
+    @source = self.class.current_load_path
     instance_eval &block if block_given?
+  end
+
+  def self.current_load_path
+    @@current_load_path
+  end
+
+  def self.load_deps_from path
+    previous_count = Dep.deps.count
+    returning(Dir.glob(File.expand_path(path) / '/**/*.rb').all? {|f|
+      @@current_load_path = f
+      returning require f do
+        @@current_load_path = nil
+      end
+    }) do |result|
+      log "Loaded #{Dep.deps.count - previous_count} dependencies from #{path}."
+    end
   end
 
   def requires *deps

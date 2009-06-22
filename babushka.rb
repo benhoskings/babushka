@@ -9,8 +9,9 @@ class Babushka
   end
 
   def run
-    setup unless @setup
-    if @tasks.empty?
+    if !(@setup ||= setup)
+      log "There was a problem loading deps."
+    elsif @tasks.empty?
       log "Nothing to do."
     else
       @tasks.each {|dep_name| Dep(dep_name).meet }
@@ -22,13 +23,7 @@ class Babushka
 
   def setup
     @tasks = extract_args @args
-    load_deps
-    @setup = true
-  end
-
-  def load_deps
-    Dir.glob('deps/**/*.rb').each {|f| require f }
-    log "Loaded #{Dep.deps.count} dependencies."
+    %w[~/.babushka/deps ./deps].all? {|dep_path| DepDefiner.load_deps_from dep_path }
   end
 
   def extract_args args

@@ -12,17 +12,15 @@ class Dep
   end
 
   def self.deps
-    @@deps
+    @@deps ||= {}
   end
 
   def self.register dep
-    @@deps ||= {}
-    raise "There is already a registered dep called '#{dep.name}'." unless @@deps[dep.name].nil?
-    @@deps[dep.name] = dep
+    raise "There is already a registered dep called '#{dep.name}'." unless deps[dep.name].nil?
+    deps[dep.name] = dep
   end
   def self.for name
-    @@deps ||= {}
-    returning dep = @@deps[name] do |result|
+    returning dep = deps[name] do |result|
       log"#{name.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}" unless result
     end
   end
