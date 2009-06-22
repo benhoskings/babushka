@@ -10,3 +10,6 @@ pkg_dep 'sed' do
   provides 'gsed'
 end
 
+pkg_dep 'build-essential' do
+  provides 'gcc', 'g++', 'autoconf', 'automake', 'ld'
+end

@@ -35,3 +35,7 @@ dep 'admin group' do
   met? { grep /^admin\:/, '/etc/group' }
   meet { shell "groupadd admin" }
 end
+
+dep 'build tools' do
+  requires :osx => 'xcode tools', :linux => 'build-essential'
+end

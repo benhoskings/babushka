@@ -1,5 +1,5 @@
 ext_dep 'macports' do
-  requires 'compiler toolchain'
+  requires 'build tools'
   if_missing 'port' do
     log_and_open "Install the MacPorts release for your system, and then run Babushka again.",
       "http://www.macports.org/install.php"
