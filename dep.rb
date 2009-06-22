@@ -83,15 +83,10 @@ class Dep
   end
 
   def process_deps
-    closure = L{|dep|
+    requires_for_system.send(opts[:attempt_to_meet] ? :all? : :each, &L{|dep|
       dep = Dep(dep)
       dep.send :process, opts.merge(:vars => vars) unless dep.nil?
-    }
-    if opts[:attempt_to_meet]
-      payload[:requires].all? &closure
-    else
-      payload[:requires].each &closure
-    end
+    })
   end
 
   def process_self
@@ -161,6 +156,10 @@ class Dep
 
   def payload
     @definer.payload
+  end
+
+  def requires_for_system
+    payload[:requires].is_a?(Hash) ? (payload[:requires][uname] || []) : payload[:requires]
   end
 
   def inspect
