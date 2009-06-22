@@ -17,7 +17,7 @@ dep 'passwordless ssh logins' do
   }
   meet {
     shell 'mkdir -p ~/.ssh'
-    append_to_file public_key, "~/.ssh/authorized_keys"
+    append_to_file your_ssh_public_key, "~/.ssh/authorized_keys"
     shell 'chmod 700 ~/.ssh'
     shell 'chmod 600 ~/.ssh/authorized_keys'
   }
