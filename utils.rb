@@ -7,12 +7,14 @@ def returning obj, &block
   obj
 end
 
-def linux?
-  `uname -s`['Linux']
+def uname
+  {
+    'Linux' => :linux,
+    'Darwin' => :osx
+  }[`uname -s`.chomp]
 end
-def osx?
-  `uname -s`['Darwin']
-end
+def linux?; :linux == uname end
+def osx?; :osx == uname end
 
 $log_indent = 0
 Cfg = {}
