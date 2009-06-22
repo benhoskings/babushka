@@ -116,3 +116,12 @@ def append_to_file text, file
     shell %Q{echo "#{text.gsub('"', '\"')}" >> #{file}}
   end
 end
+
+def get_source url
+  in_dir "~/src/", :create => true do
+    filename = File.basename url
+    archive_dir = File.basename filename, '.tar.gz'
+    (File.exists?(filename) || log_shell("wget #{url}", "Downloading #{filename}")) &&
+    log_shell("sudo rm -rf #{archive_dir} && tar -zxvf #{filename}", "Extracting #{filename}")
+  end
+end
