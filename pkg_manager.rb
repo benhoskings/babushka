@@ -15,7 +15,7 @@ class << self
 
   def has? pkg_name
     returning _has?(pkg_name) do |result|
-      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}", :as => :ok
+      log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}", :as => (result ? :ok : nil)
     end
   end
   def install! *pkgs
