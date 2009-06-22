@@ -154,7 +154,7 @@ class ExtDepDefiner < DepDefiner
   end
 
   def cmds_present?
-    @cmds.all? {|cmd| which cmd }
+    (@cmds || []).all? {|cmd| which cmd }
   end
 
 end
