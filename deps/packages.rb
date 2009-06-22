@@ -11,5 +11,5 @@ pkg_dep 'sed' do
 end
 
 pkg_dep 'build-essential' do
-  provides 'gcc', 'g++', 'autoconf', 'automake', 'ld'
+  provides 'gcc', 'g++', 'autoconf', 'make', 'automake', 'ld'
 end
