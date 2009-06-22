@@ -15,10 +15,7 @@ class Shell
     def ok?; shell.ok? end
 
     def render
-      unless ok? || @opts[:fail_ok]
-        log_extra "$ #{shell.cmd}" unless Cfg[:debug]
-        log_verbose shell.stderr.split("\n", 3)[0..1].join(', '), :as => :error
-      end
+      log_verbose shell.stderr.split("\n", 3)[0..1].join(', '), :as => :error if Cfg[:debug] unless ok? || @opts[:fail_ok]
 
       if @block.nil?
         shell.stdout if shell.ok?
