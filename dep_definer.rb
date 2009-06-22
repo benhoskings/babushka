@@ -29,8 +29,8 @@ class DepDefiner
     end
   end
 
-  def requires *deps
-    payload[:requires] = deps
+  def requires first, *rest
+    payload[:requires] = from_first_and_rest(first, rest)
   end
   def asks_for *keys
     payload[:asks_for].concat keys
@@ -52,8 +52,8 @@ class DepDefiner
 
   def self.attr_setter *names
     names.each {|name|
-      define_method name do |obj|
-        instance_variable_set "@#{name}", obj
+      define_method name do |first, *rest|
+        instance_variable_set "@#{name}", from_first_and_rest(first, rest)
       end
     }
   end
