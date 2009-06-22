@@ -1,7 +1,11 @@
-dep 'migrated db' do
-  requires 'existing db', 'rails'
+dep 'rails app' do
+  requires 'virtualhost', 'webserver running', 'migrated db'
   run_in :rails_root
   asks_for :rails_env
+end
+
+dep 'migrated db' do
+  requires 'deployed app', 'existing db', 'rails'
   met? {
     current_version = rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
@@ -18,6 +22,11 @@ dep 'migrated db' do
     end
   }
   meet { rake("db:migrate --trace") }
+end
+
+dep 'deployed app' do
+  asks_for :rails_root
+  met? { File.directory? rails_root / 'app' }
 end
 
 dep 'existing db' do
