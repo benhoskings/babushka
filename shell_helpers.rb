@@ -54,9 +54,9 @@ def shell cmd, opts = {}, &block
   Shell.new(cmd).run opts, &block
 end
 
-def failable_shell cmd
+def failable_shell cmd, opts = {}
   shell = nil
-  Shell.new(cmd).run :fail_ok => true do |s|
+  Shell.new(cmd).run opts.merge(:fail_ok => true) do |s|
     shell = s
   end
   shell
