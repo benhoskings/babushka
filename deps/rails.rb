@@ -1,7 +1,7 @@
 dep 'rails app' do
-  requires 'virtualhost', 'webserver running', 'migrated db'
+  requires 'vhost enabled', 'webserver running', 'migrated db'
   run_in :rails_root
-  asks_for :rails_env, :username, :app_name
+  asks_for :domain, :username, :rails_env
 end
 
 dep 'migrated db' do

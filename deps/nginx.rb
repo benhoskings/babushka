@@ -1,15 +1,21 @@
-dep 'virtualhost' do
+dep 'vhost enabled' do
+  requires 'vhost configured'
+  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
+  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{domain}.conf' '/opt/nginx/conf/vhosts/on/#{domain}.conf'" }
+end
+
+dep 'vhost configured' do
   requires 'webserver configured'
-  met? {
-    username = shell('whoami')
-    returning File.exists? "/opt/nginx/conf/vhosts/on/#{username}.conf" do |result|
-      log_error "There is no vhost config for #{username} yet." unless result
-    end
+  met? { %w[conf common].all? {|suffix| File.exists? "/opt/nginx/conf/vhosts/#{domain}.#{suffix}" } }
+  meet {
+    render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
+    render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.common"
   }
 end
 
 def build_nginx opts = {}
   in_dir "~/src/", :create => true do
+    sudo("mkdir -p /opt/nginx/conf/vhosts/on") and
     get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx_version]}.tar.gz") and
     get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{opts[:upload_module_version]}.tar.gz") and
     failable_shell("sudo passenger-install-nginx-module", :input => [
