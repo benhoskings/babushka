@@ -23,6 +23,10 @@ class Object
     list.include? self
   end
 
+  def metaclass
+    class << self; self end
+  end
+  
   def blank?
     nil? || (respond_to?(:empty?) && empty?)
   end
