@@ -99,7 +99,7 @@ def log_shell cmd, message
 end
 
 def rake cmd, &block
-  sudo "rake #{cmd} RAILS_ENV=#{rails_env}", :as => app_name, &block
+  sudo "rake #{cmd} RAILS_ENV=#{rails_env}", :as => username, &block
 end
 
 def check_file file_name, method_name
