@@ -30,6 +30,7 @@ class Babushka
     Cfg[:verbose_logging] = %w[-q --quiet].map {|arg| args.delete arg }.first.blank?
     Cfg[:debug] = args.delete('--debug')
     Cfg[:dry_run] = !%w[-n --dry-run].map {|arg| args.delete arg }.first.blank?
+    Cfg[:force] = !%w[-f --force].map {|arg| args.delete arg }.first.blank?
     args
   end
 end
