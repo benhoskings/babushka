@@ -141,9 +141,12 @@ end
 def render_erb erb, opts = {}
   require 'erb'
   log ERB.new(IO.read(File.dirname(source) / erb)).result(binding)
-  returning sudo "cat > #{opts[:to]}", :input => ERB.new(IO.read(File.dirname(source) / erb)).result(binding) do
+  returning sudo "cat > #{opts[:to]}", :input => ERB.new(IO.read(File.dirname(source) / erb)).result(binding) do |result|
     if result
-      File.chmod opts[:perms], '/etc/init.d/nginx' unless opts[:perms].nil?
+      log "Rendered #{opts[:to]}."
+      File.chmod opts[:perms], opts[:to] unless opts[:perms].nil?
+    else
+      log_error "Couldn't render #{opts[:to]}."
     end
   end
 end
