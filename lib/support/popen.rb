@@ -16,9 +16,8 @@ module Babushka
       near.values.each {|p| p.sync = true }
 
       begin
-        status = Process.waitpid2(pid).last.exitstatus
         yield near[:in], near[:out], near[:err]
-        status
+        Process.waitpid2(pid).last.exitstatus
       ensure
         near.values.each {|p| p.close unless p.closed? }
       end
