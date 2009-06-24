@@ -2,6 +2,7 @@
   support/core_patches.rb
   support/utils.rb
   support/logger.rb
+  support/popen.rb
   support/prompt_helpers.rb
   support/shell_helpers.rb
 

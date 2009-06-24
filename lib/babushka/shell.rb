@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'open4'
-
 module Babushka
   module ShellHelpers
     def self.included base # :nodoc:
@@ -46,13 +43,13 @@ module Babushka
       debug "$ #{@cmd}".colorize('grey')
       @stdout, @stderr = nil, nil
 
-      @result = Open4.popen4 @cmd do |pid,stdin,stdout,stderr|
+      @result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
         unless opts[:input].nil?
           stdin << opts[:input]
           stdin.close
         end
         @stdout, @stderr = stdout.read.chomp, stderr.read.chomp
-      end.exitstatus.zero?
+      end.zero?
 
       ShellResult.new(self, opts, &block).render
     end
