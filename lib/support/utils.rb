@@ -1,10 +1,5 @@
 alias :L :lambda
 
-def returning obj, &block
-  yield obj
-  obj
-end
-
 def uname
   {
     'Linux' => :linux,

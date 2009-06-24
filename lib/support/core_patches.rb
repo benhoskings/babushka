@@ -19,6 +19,11 @@ class Array
 end
 
 class Object
+  def returning obj, &block
+    yield obj
+    obj
+  end
+
   def in? list
     list.include? self
   end
