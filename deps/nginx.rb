@@ -82,7 +82,7 @@ dep 'webserver configured' do
 end
 
 dep 'webserver installed' do
-  requires 'passenger', 'build tools'
+  requires 'passenger', 'build tools', 'zlib headers'
   met? { File.executable?('/opt/nginx/sbin/nginx') }
   meet { build_nginx :nginx_version => '0.7.60', :upload_module_version => '2.0.9' }
 end

@@ -27,3 +27,7 @@ end
 pkg_dep 'vim' do
   pkg :apt => 'vim-full'
 end
+
+pkg_dep 'zlib headers' do
+  pkg :apt => 'zlib1g-dev'
+end
