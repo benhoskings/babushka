@@ -1,6 +1,6 @@
 def failable_shell cmd, opts = {}
   shell = nil
-  Shell.new(cmd).run opts.merge(:fail_ok => true) do |s|
+  Babushka::Shell.new(cmd).run opts.merge(:fail_ok => true) do |s|
     shell = s
   end
   shell
