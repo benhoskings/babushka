@@ -63,7 +63,7 @@ module Babushka
 
     private
     def _has? pkg_name
-      shell("dpkg -s #{pkg_name}").val_for('Status').split(' ').include?('installed')
+      failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status').split(' ').include?('installed')
     end
   end
   end
