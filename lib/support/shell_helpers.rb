@@ -38,9 +38,9 @@ def sudo cmd, opts = {}, &block
   end
 end
 
-def log_shell cmd, message
+def log_shell message, cmd, opts = {}
   log "#{message}...", :newline => false
-  returning shell(cmd) do |result|
+  returning shell(cmd, opts) do |result|
     log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
   end
 end
@@ -81,8 +81,8 @@ end
 def get_source url
   filename = File.basename url
   archive_dir = File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext }
-  (File.exists?(filename) || log_shell("wget #{url}", "Downloading #{filename}")) &&
-  log_shell("sudo rm -rf #{archive_dir} && tar -zxvf #{filename}", "Extracting #{filename}")
+  (File.exists?(filename) || log_shell("Downloading #{filename}", "wget #{url}")) &&
+  log_shell("Extracting #{filename}", "sudo rm -rf #{archive_dir} && tar -zxvf #{filename}")
 end
 
 def render_erb erb, opts = {}
