@@ -14,7 +14,7 @@ dep 'rubygems' do
       end
 
       in_dir cmd_dir('ruby') do
-        sudo "ln -s gem1.8 gem"
+        sudo "ln -sf gem1.8 gem"
       end
     end
   }
