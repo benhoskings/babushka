@@ -12,7 +12,7 @@ dep 'rubygems' do
       shell "cd rubygems-#{rubygems_version}"
       sudo "ruby setup.rb"
 
-      in_dir cmd_dir(ruby) do
+      in_dir cmd_dir('ruby') do
         sudo "ln -s gem1.8 gem"
       end
     end
