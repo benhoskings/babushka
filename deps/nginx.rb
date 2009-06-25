@@ -35,7 +35,7 @@ end
 dep 'webserver running' do
   requires 'webserver configured', 'webserver startup script'
   met? {
-    returning shell "netstat -an | grep -E '^tcp.*\\.80 +.*LISTEN'" do |result|
+    returning shell "netstat -an | grep -E '^tcp.*\\#{linux? ? ':' : '.'}80 +.*LISTEN'" do |result|
       log_result "There is #{result ? 'something' : 'nothing'} listening on #{result ? result.scan(/[0-9.*]+\.80/).first : 'port 80'}.", :result => result
     end
   }
