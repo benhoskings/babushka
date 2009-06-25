@@ -4,7 +4,7 @@ dep 'rubygems' do
   meet {
     rubygems_version = '1.3.4'
 
-    in_dir "~/src" do
+    in_dir "~/src", :create => true do
       # disable ri and rdoc generation
       shell "sed -i 's/# gem\: --no-rdoc --no-ri/gem\: --no-rdoc --no-ri/' ~/.dot-files/.gemrc"
       get_source("http://rubyforge.org/frs/download.php/57643/rubygems-#{rubygems_version}.tgz") and
