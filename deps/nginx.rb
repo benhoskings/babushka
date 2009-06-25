@@ -71,12 +71,12 @@ dep 'webserver configured' do
   requires 'webserver installed'
   met? {
     current_passenger_version = IO.read('/opt/nginx/conf/nginx.conf').val_for('passenger_root')
-    returning current_passenger_version.ends_with?(GemHelper.has?('passenger')) do |result|
+    returning current_passenger_version.ends_with?(Babushka::GemHelper.has?('passenger')) do |result|
       log_result "nginx is configured to use #{File.basename current_passenger_version}", :result => result
     end
   }
   meet {
-    set :passenger_version, GemHelper.has?('passenger')
+    set :passenger_version, Babushka::GemHelper.has?('passenger')
     render_erb 'nginx/nginx.conf.erb', :to => '/opt/nginx/conf/nginx.conf'
   }
 end
