@@ -18,7 +18,7 @@ def build_nginx opts = {}
   in_dir "~/src/", :create => true do
     get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx_version]}.tar.gz") and
     get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{opts[:upload_module_version]}.tar.gz") and
-    log_shell("Building nginx (this takes a minute or two)... ", "sudo passenger-install-nginx-module", :input => [
+    log_shell("Building nginx (this takes a minute or two)", "sudo passenger-install-nginx-module", :input => [
       '', # enter to continue
       '2', # custom build
       File.expand_path("nginx-#{opts[:nginx_version]}"), # path to nginx source
