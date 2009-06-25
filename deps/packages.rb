@@ -19,3 +19,7 @@ pkg_dep 'build-essential' do
 end
 
 pkg_dep 'autoconf'
+
+gem_dep 'passenger' do
+  provides 'passenger-install-nginx-module'
+end
