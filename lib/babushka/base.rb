@@ -1,4 +1,6 @@
 module Babushka
+  Version = '0.0.1'
+
   module BaseHelpers
     def self.included base # :nodoc:
       Object.send :include, HelperMethods
