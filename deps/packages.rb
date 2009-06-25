@@ -28,6 +28,11 @@ pkg_dep 'vim' do
   pkg :apt => 'vim-full'
 end
 
+pkg_dep 'libssl headers' do
+  pkg :apt => 'libssl-dev'
+  provides []
+end
+
 pkg_dep 'zlib headers' do
   pkg :apt => 'zlib1g-dev'
   provides []
