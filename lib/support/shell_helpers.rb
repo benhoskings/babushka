@@ -80,7 +80,7 @@ end
 
 def get_source url
   filename = File.basename url
-  archive_dir = File.basename filename, '.tar.gz'
+  archive_dir = File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext }
   (File.exists?(filename) || log_shell("wget #{url}", "Downloading #{filename}")) &&
   log_shell("sudo rm -rf #{archive_dir} && tar -zxvf #{filename}", "Extracting #{filename}")
 end
