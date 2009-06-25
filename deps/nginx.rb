@@ -68,7 +68,7 @@ dep 'webserver startup script' do
 end
 
 dep 'webserver configured' do
-  requires 'webserver installed'
+  requires 'webserver installed', 'www user and group'
   met? {
     current_passenger_version = IO.read('/opt/nginx/conf/nginx.conf').val_for('passenger_root')
     returning current_passenger_version.ends_with?(Babushka::GemHelper.has?('passenger')) do |result|
@@ -82,7 +82,7 @@ dep 'webserver configured' do
 end
 
 dep 'webserver installed' do
-  requires 'www user and group', 'build tools', 'passenger'
+  requires 'passenger', 'build tools'
   met? { File.executable?('/opt/nginx/sbin/nginx') }
   meet { build_nginx :nginx_version => '0.7.60', :upload_module_version => '2.0.9' }
 end
