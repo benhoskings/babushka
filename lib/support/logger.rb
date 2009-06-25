@@ -15,7 +15,7 @@ module Babushka
   class << self
     @@indentation_level = 0
 
-    def error message, opts = {}, &block
+    def log_error message, opts = {}, &block
       log message, opts.merge(:as => :error), &block
     end
 
