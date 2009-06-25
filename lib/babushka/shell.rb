@@ -23,7 +23,12 @@ module Babushka
       def ok?; shell.ok? end
 
       def render
-        log_verbose shell.stderr.split("\n", 3)[0..1].join(', '), :as => :error if Base.opts[:debug] unless ok? || @opts[:fail_ok]
+        if Base.opts[:debug] && !(ok? || @opts[:fail_ok])
+          log "stdout:"
+          log shell.stdout
+          log "stderr:"
+          log shell.stderr
+        end
 
         if @block.nil?
           shell.stdout if shell.ok?
