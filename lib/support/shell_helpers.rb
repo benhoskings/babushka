@@ -31,7 +31,7 @@ def cmd_dir cmd_name
 end
 
 def sudo cmd, opts = {}, &block
-  if cmd[' |'] || cmd[' >']
+  if opts[:su] || cmd[' |'] || cmd[' >']
     shell "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\"", opts, &block
   else
     shell "sudo -u #{opts[:as] || 'root'} #{cmd}", opts, &block
