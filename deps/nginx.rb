@@ -41,10 +41,9 @@ dep 'webserver running' do
   }
   meet {
     if linux?
-      sudo 'update-rc.d nginx defaults'
       sudo '/etc/init.d/nginx start'
     elsif osx?
-      sudo 'launchctl load -w /Library/LaunchDaemons/org.nginx.plist'
+      log_error "launchctl should have already started nginx. Check /var/log/system.log for errors."
     end
   }
 end
@@ -61,8 +60,10 @@ dep 'webserver startup script' do
   meet {
     if linux?
       render_erb 'nginx/nginx.init.d', :to => '/etc/init.d/nginx', :perms => 0755
+      sudo 'update-rc.d nginx defaults'
     elsif osx?
       render_erb 'nginx/nginx.launchd', :to => '/Library/LaunchDaemons/org.nginx.plist'
+      sudo 'launchctl load -w /Library/LaunchDaemons/org.nginx.plist'
     end
   }
 end
