@@ -30,4 +30,5 @@ end
 
 pkg_dep 'zlib headers' do
   pkg :apt => 'zlib1g-dev'
+  provides []
 end
