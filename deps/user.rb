@@ -5,7 +5,7 @@ end
 
 dep 'user shell setup' do
   requires 'fish', 'dot files'
-  met? { File.basename(sudo('echo \$SHELL', :as => username)) == 'fish' }
+  met? { File.basename(sudo('echo \$SHELL', :as => username, :su => true)) == 'fish' }
   meet { sudo "chsh -s #{shell('which fish')} #{username}" }
 end
 
