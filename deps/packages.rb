@@ -23,3 +23,7 @@ pkg_dep 'autoconf'
 gem_dep 'passenger' do
   provides 'passenger-install-nginx-module'
 end
+
+pkg_dep 'vim' do
+  pkg :apt => 'vim-full'
+end

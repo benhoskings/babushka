@@ -1,5 +1,5 @@
 dep 'user setup' do
-  requires 'user shell setup', 'passwordless ssh logins', 'public key'
+  requires 'user shell setup', 'passwordless ssh logins', 'public key', 'vim'
   asks_for :username
 end
 
