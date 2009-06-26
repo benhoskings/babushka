@@ -40,7 +40,7 @@ module Babushka
 
     def log_ok message, opts = {}, &block
       if !Base.opts[:quiet]
-        log message, opts.merge(:as => :ok), &block
+        log message.end_with('.'), opts.merge(:as => :ok), &block
         true
       elsif block_given?
         yield
