@@ -14,9 +14,11 @@ module Babushka
       manager_key.to_s
     end
 
-    def has? pkg_name
+    def has? pkg_name, opts = {}
       returning _has?(pkg_name) do |result|
-        log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}", :as => (result ? :ok : nil)
+        unless opts[:log] == false
+          log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}", :as => (result ? :ok : nil)
+        end
       end
     end
     def install! *pkgs
@@ -75,15 +77,17 @@ module Babushka
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
 
-    def has? pkg_name, requested_version = nil
+    def has? pkg_name, requested_version = nil, opts = {}
       versions = versions_of pkg_name
       version = (version.nil? ? versions : versions & [version]).last
       returning version do |result|
         pkg_spec = "#{pkg_name}#{"-#{requested_version}" unless requested_version.nil?}"
-        if result
-          log_ok "system has #{pkg_spec} gem#{" (at #{version})" if requested_version.nil?}"
-        else
-          log "system doesn't have #{pkg_spec} gem"
+        unless opts[:log] == false
+          if result
+            log_ok "system has #{pkg_spec} gem#{" (at #{version})" if requested_version.nil?}"
+          else
+            log "system doesn't have #{pkg_spec} gem"
+          end
         end
       end
     end

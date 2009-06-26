@@ -93,7 +93,7 @@ dep 'webserver configured' do
     end
   }
   meet {
-    set :passenger_version, Babushka::GemHelper.has?('passenger')
+    set :passenger_version, Babushka::GemHelper.has?('passenger', :log => false)
     render_erb 'nginx/nginx.conf.erb', :to => '/opt/nginx/conf/nginx.conf'
   }
 end
