@@ -27,8 +27,8 @@ http {
     }
   }
 
-  passenger_root /opt/local/lib/ruby/gems/1.8/gems/passenger-<%= passenger_version %>;
-  passenger_ruby /opt/local/bin/ruby;
+  passenger_root <%= Babushka::PkgManager.for_system.prefix %>/lib/ruby/gems/1.8/gems/passenger-<%= passenger_version %>;
+  passenger_ruby <%= Babushka::PkgManager.for_system.prefix %>/bin/ruby;
 
   include vhosts/on/*.conf;
 }
