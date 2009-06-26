@@ -52,6 +52,12 @@ module Babushka
     def meet &block
       payload[:meet] = block
     end
+    def before &block
+      payload[:before] = block
+    end
+    def after &block
+      payload[:after] = block
+    end
 
     def self.attr_setter *names
       names.each {|name|

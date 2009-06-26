@@ -110,7 +110,9 @@ module Babushka
         if !opts[:attempt_to_meet]
           met_result
         else
-          call_task(:meet) and run_met_task
+          call_task :before
+          returning call_task :meet do call_task :after end
+          run_met_task
         end
       elsif :fail == met_result
         log "fail lulz"
@@ -136,7 +138,8 @@ module Babushka
     end
 
     def call_task task_name
-      (payload[task_name] || default_task(task_name)).call
+      task = payload[task_name] || default_task(task_name)
+      task.call unless task.nil?
     end
 
     def default_task task_name
