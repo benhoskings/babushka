@@ -42,7 +42,7 @@ end
 
 def log_shell message, cmd, opts = {}
   log "#{message}...", :newline => false
-  returning shell(cmd, opts) do |result|
+  returning opts.delete(:sudo) ? sudo(cmd, opts) : shell(cmd, opts) do |result|
     log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
   end
 end
