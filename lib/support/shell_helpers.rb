@@ -31,11 +31,13 @@ def cmd_dir cmd_name
 end
 
 def sudo cmd, opts = {}, &block
-  if opts[:su] || cmd[' |'] || cmd[' >']
-    shell "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\"", opts, &block
+  sudo_cmd = if opts[:su] || cmd[' |'] || cmd[' >']
+    "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\""
   else
-    shell "sudo -u #{opts[:as] || 'root'} #{cmd}", opts, &block
+    "sudo -u #{opts[:as] || 'root'} #{cmd}"
   end
+  log_verbose "$ #{sudo_cmd}" unless Babushka::Base.opts[:debug]
+  shell sudo_cmd, opts, &block
 end
 
 def log_shell message, cmd, opts = {}
