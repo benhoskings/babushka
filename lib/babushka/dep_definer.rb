@@ -1,6 +1,7 @@
 module Babushka
   class DepDefiner
     include ShellHelpers
+    include DefinerHelpers
 
     attr_reader :payload, :source
 

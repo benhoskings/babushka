@@ -17,6 +17,7 @@ module Babushka
     include PromptHelpers
 
     attr_reader :name
+    attr_accessor :unmet_message
 
     def initialize name, block, definer_class = DepDefiner
       @name = name
@@ -123,7 +124,7 @@ module Babushka
         if :fail == result
           log_extra "You'll have to fix '#{name}' manually."
         elsif !result && task_opts[:initial]
-          log_extra "#{name} not already met."
+          log_extra "#{name} not already met#{unmet_message_for(result)}."
         elsif result && !task_opts[:initial]
           log "#{name} met.".colorize('green')
         end
@@ -146,6 +147,10 @@ module Babushka
         },
         :meet => L{ log_extra "#{name} / meet not defined; nothing to do." }
       }[task_name]
+    end
+
+    def unmet_message_for result
+      result ? '' : " - #{unmet_message.capitalize}"
     end
 
     def cached_result

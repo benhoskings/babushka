@@ -10,6 +10,7 @@
   babushka/shell.rb
   babushka/pkg_manager.rb
   babushka/dep.rb
+  babushka/definer_helpers.rb
   babushka/dep_definer.rb
 
 ].each {|component|
