@@ -32,10 +32,20 @@ def build_nginx opts = {}
   end
 end
 
+def nginx_running?
+  shell "netstat -an | grep -E '^tcp.*\\#{linux? ? ':' : '.'}80 +.*LISTEN'"
+end
+
+def restart_nginx
+  if nginx_running?
+    log_shell "Restarting nginx", "/opt/nginx/sbin/nginx -s reload", :sudo => true
+  end
+end
+
 dep 'webserver running' do
   requires 'webserver configured', 'webserver startup script'
   met? {
-    returning shell "netstat -an | grep -E '^tcp.*\\#{linux? ? ':' : '.'}80 +.*LISTEN'" do |result|
+    returning nginx_running? do |result|
       log_result "There is #{result ? 'something' : 'nothing'} listening on #{result ? result.scan(/[0-9.*]+\.80/).first : 'port 80'}.", :result => result
     end
   }
