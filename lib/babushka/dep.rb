@@ -153,7 +153,7 @@ module Babushka
     end
 
     def unmet_message_for result
-      result ? '' : " - #{unmet_message.capitalize}"
+      unmet_message.nil? || result ? '' : " - #{unmet_message.capitalize}"
     end
 
     def cached_result
