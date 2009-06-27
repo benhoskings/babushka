@@ -6,7 +6,7 @@ end
 
 dep 'db access' do
   requires 'db software', 'user exists'
-  met? { sudo "echo '\\du' | psql", :as => 'postgres' }
+  met? { sudo "echo '\\du' | #{which 'psql'}", :as => 'postgres' }
   meet { sudo "createuser -SdR #{username}", :as => 'postgres' }
 end
 
