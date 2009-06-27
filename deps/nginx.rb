@@ -12,6 +12,7 @@ dep 'vhost configured' do
     render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
     render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.common"
   }
+  after { restart_nginx }
 end
 
 def build_nginx opts = {}
