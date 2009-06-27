@@ -1,7 +1,7 @@
 # <%= generated_by_babushka %>
 
 server_name <%= domain %> www.<%= domain %>;
-root /<%= rails_root %>/current/public;
+root <%= File.join File.expand_path(rails_root), 'public' %>;
 passenger_enabled on;
 rails_env <%= rails_env %>;
 
