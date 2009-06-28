@@ -37,3 +37,8 @@ pkg_dep 'zlib headers' do
   pkg :apt => 'zlib1g-dev'
   provides []
 end
+
+pkg_dep 'java' do
+  pkg :apt => 'sun-java6-jre'
+  provides 'java'
+end
