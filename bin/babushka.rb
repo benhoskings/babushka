@@ -21,4 +21,4 @@ include Babushka::BaseHelpers
 include Babushka::LoggerHelpers
 include Babushka::DepHelpers
 
-Babushka ARGV
+Babushka ARGV if $0 == __FILE__
