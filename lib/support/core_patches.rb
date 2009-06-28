@@ -31,7 +31,11 @@ class Object
   def metaclass
     class << self; self end
   end
-  
+
+  def singleton
+    Class.new self
+  end
+
   def blank?
     nil? || (respond_to?(:empty?) && empty?)
   end
