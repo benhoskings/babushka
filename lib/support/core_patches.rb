@@ -1,4 +1,13 @@
 class Array
+  def extract &block
+    dup.extract! &block
+  end
+  def extract! &block
+    dup.inject [] do |extracted,i|
+      extracted << delete(i) if yield i
+      extracted
+    end
+  end
   def squash
     dup.squash!
   end
