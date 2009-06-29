@@ -49,8 +49,7 @@ class PSQLBackup
   end
 
   def dump_db db_name
-    sudo = '' # "sudo -u #{db_name}"
-    log_shell db_name, "#{sudo} pg_dump #{db_name} > #{db_name}-#{@timestamp}.psql"
+    log_shell db_name, "sudo -u postgres pg_dump #{db_name} > #{db_name}-#{@timestamp}.psql"
   end
 
   def send_offsite hosts
