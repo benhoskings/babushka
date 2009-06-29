@@ -52,7 +52,7 @@ module Babushka
       (opts[:vars] || {}).merge @vars
     end
     def set key, value
-      @vars[key] = value
+      @vars[key.to_s] = value
     end
     def opts
       @opts.merge @run_opts || {}
