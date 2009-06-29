@@ -37,7 +37,7 @@ class PSQLBackup
   private
 
   def database_names
-    shell('psql -l').split("\n").grep(/^ [^ ]/).map {|l|
+    shell('sudo -u postgres psql -l').split("\n").grep(/^ [^ ]/).map {|l|
       l.gsub(/\|.*$/, '').strip
     } - ReservedDBNames
   end
