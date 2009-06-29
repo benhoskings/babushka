@@ -11,6 +11,18 @@ dep 'db access' do
   meet { sudo "createuser -SdR #{username}", :as => 'postgres' }
 end
 
+dep 'db backups' do
+  requires 'db software'
+  asks_for :offsite_host
+  met? {
+    shell "test -x /etc/cron.hourly/postgres_offsite_backup"
+  }
+  meet {
+    render_erb 'postgres/offsite_backup.rb.erb', :to => '/usr/local/bin/postgres_offsite_backup', :perms => 0755
+    sudo "ln -sf /usr/local/bin/postgres_offsite_backup /etc/cron.hourly/"
+  }
+end
+
 pkg_dep 'db software' do
   pkg :macports => 'postgresql83-server', :apt => %w[postgresql postgresql-client libpq-dev]
   provides 'psql'

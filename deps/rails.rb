@@ -30,7 +30,7 @@ dep 'deployed app' do
 end
 
 dep 'existing db' do
-  requires 'db gem', 'db access', 'rails'
+  requires 'db gem', 'db access', 'db backups', 'rails'
   met? {
     !shell("psql -l") {|shell|
       shell.stdout.split("\n").grep(/^\s*#{username}\s+\|/)
