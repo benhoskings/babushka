@@ -34,7 +34,7 @@ def build_nginx opts = {}
 end
 
 def nginx_running?
-  shell "netstat -an | grep -E '^tcp.*\\#{linux? ? ':' : '.'}80 +.*LISTEN'"
+  shell "netstat -an | grep -E '^tcp.*[.:]80 +.*LISTEN'"
 end
 
 def restart_nginx
@@ -47,7 +47,7 @@ dep 'webserver running' do
   requires 'webserver configured', 'webserver startup script'
   met? {
     returning nginx_running? do |result|
-      result "There is #{result ? 'something' : 'nothing'} listening on #{result ? result.scan(/[0-9.*]+\.80/).first : 'port 80'}", :result => result
+      result "There is #{result ? 'something' : 'nothing'} listening on #{result ? result.scan(/[0-9.*]+[.:]80/).first : 'port 80'}", :result => result
     end
   }
   meet {
