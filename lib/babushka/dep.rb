@@ -182,7 +182,8 @@ module Babushka
     end
 
     def requires_for_system
-      payload[:requires].is_a?(Hash) ? (payload[:requires][uname] || []) : payload[:requires]
+      system_requires = payload[:requires].is_a?(Hash) ? (payload[:requires][uname] || []) : payload[:requires]
+      [*system_requires]
     end
 
     def inspect
