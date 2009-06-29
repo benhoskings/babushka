@@ -36,7 +36,7 @@ module Babushka
       payload[:requires] = from_first_and_rest(first, rest)
     end
     def asks_for *keys
-      payload[:asks_for].concat keys
+      payload[:asks_for].concat keys.map(&:to_s)
     end
     def run_in path_or_key
       asks_for path_or_key if path_or_key.is_a?(Symbol)
@@ -68,8 +68,8 @@ module Babushka
     end
 
     def method_missing method_name, *args, &block
-      if @dep.vars.has_key? method_name
-        @dep.vars[method_name]
+      if @dep.vars.has_key? method_name.to_s
+        @dep.vars[method_name.to_s]
       else
         super
       end

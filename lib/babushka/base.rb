@@ -16,6 +16,13 @@ module Babushka
 
   class Base
   class << self
+    Options = {
+      :quiet => %w[-q --quiet],
+      :debug => '--debug',
+      :dry_run => %w[-n --dry-run],
+      :force => %w[-f --force]
+    }.freeze
+
     attr_reader :opts
 
     def run args
@@ -26,7 +33,7 @@ module Babushka
       else
         @tasks.all? {|dep_name|
           dep = Dep(dep_name)
-          dep.meet unless dep.nil?
+          dep.meet(:vars => @vars) unless dep.nil?
         }
       end
     end
@@ -35,24 +42,25 @@ module Babushka
     private
 
     def setup args
-      @tasks, @opts = parse_args args
+      extract_opts(args).tap{|obj| debug "opts=#{obj.inspect}" }
+      extract_vars(args).tap{|obj| debug "vars=#{obj.inspect}" }
+      @tasks = args.tap{|obj| debug "tasks=#{obj.inspect}" }
       %w[~/.babushka/deps ./deps].all? {|dep_path| DepDefiner.load_deps_from dep_path }
     end
 
-    def parse_args args
-      parse_opts args.dup, {
-        :quiet => %w[-q --quiet],
-        :debug => '--debug',
-        :dry_run => %w[-n --dry-run],
-        :force => %w[-f --force]
+    def extract_opts args
+      @opts = Options.inject({}) {|opts,(opt_name,opt)|
+        opts[opt_name] = !args.extract! {|arg| arg == opt }.empty?
+        opts
       }
     end
 
-    def parse_opts args, opts
-      opts.keys.each {|k|
-        opts[k] = ![*opts[k]].map {|arg| args.delete arg }.first.blank?
+    def extract_vars args
+      @vars = args.extract! {|arg| arg['='] }.inject({}) {|vars,arg|
+        key, value = arg.split('=', 2)
+        vars[key] = value
+        vars
       }
-      [args, opts]
     end
   end
   end
