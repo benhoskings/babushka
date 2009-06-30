@@ -1,12 +1,15 @@
+def current_user
+  shell('whoami')
+end
+
 dep 'user setup' do
   requires 'user shell setup', 'passwordless ssh logins', 'public key', 'vim'
-  asks_for :username
 end
 
 dep 'user shell setup' do
   requires 'fish', 'dot files'
-  met? { File.basename(sudo('echo \$SHELL', :as => username, :su => true)) == 'fish' }
-  meet { sudo "chsh -s #{shell('which fish')} #{username}" }
+  met? { File.basename(sudo('echo \$SHELL', :as => current_user, :su => true)) == 'fish' }
+  meet { sudo "chsh -s #{shell('which fish')} #{current_user}" }
 end
 
 dep 'passwordless ssh logins' do
@@ -39,10 +42,9 @@ dep 'dot files' do
 end
 
 dep 'user exists' do
-  asks_for :username
-  met? { grep(/^#{username}:/, '/etc/passwd') }
+  met? { grep(/^#{current_user}:/, '/etc/passwd') }
   meet {
-    sudo "useradd #{username} -m -s /bin/bash -G admin"
-    sudo "chmod 701 /home/#{username}"
+    sudo "useradd #{current_user} -m -s /bin/bash -G admin"
+    sudo "chmod 701 /home/#{current_user}"
   }
 end
