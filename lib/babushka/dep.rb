@@ -121,7 +121,7 @@ module Babushka
         if !opts[:attempt_to_meet]
           met_result
         else
-          call_task :before
+          call_task :before and
           returning call_task :meet do call_task :after end
           run_met_task
         end
