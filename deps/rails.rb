@@ -1,13 +1,12 @@
 dep 'rails app' do
   requires 'vhost enabled', 'webserver running', 'migrated db'
-  run_in :rails_root
   asks_for :domain, :username, :rails_env
 end
 
 dep 'migrated db' do
   requires 'deployed app', 'existing db', 'rails'
   met? {
-    current_version = rake("db:version") {|shell| shell.stdout.val_for('Current version') }
+    current_version = rails_rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
     returning current_version == latest_version do |result|
       unless current_version.blank?
@@ -21,7 +20,7 @@ dep 'migrated db' do
       end
     end
   }
-  meet { rake("db:migrate --trace") }
+  meet { rails_rake "db:migrate --trace" }
 end
 
 dep 'deployed app' do
@@ -36,7 +35,7 @@ dep 'existing db' do
       shell.stdout.split("\n").grep(/^\s*#{username}\s+\|/)
     }.empty?
   }
-  meet { rake("db:create") }
+  meet { rails_rake "db:create" }
 end
 
 gem_dep 'rails' do
