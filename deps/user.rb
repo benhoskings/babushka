@@ -14,7 +14,6 @@ end
 
 dep 'passwordless ssh logins' do
   requires 'user exists'
-  asks_for :your_ssh_public_key
   met? {
     !failable_shell("grep '#{your_ssh_public_key}' ~/.ssh/authorized_keys").stdout.empty?
   }
