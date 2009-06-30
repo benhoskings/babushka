@@ -83,12 +83,16 @@ module Babushka
       payload[:asks_for].reject {|key|
         vars[key]
       }.each {|key|
-        @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
-          read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
-        else
-          read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
-        end
+        ask_for_var key
       }
+    end
+
+    def ask_for_var key
+      @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
+        read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
+      else
+        read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
+      end
     end
 
     def process_in_dir
