@@ -12,15 +12,20 @@ module Babushka
 
     def read_value_from_prompt message, in_opts = {}
       opts = {
-        :prompt => '? ',
-        :persist => true
+        :prompt => '? '
       }.merge in_opts
 
       value = nil
+      message = "#{message}#{" [#{opts[:default]}]" if opts[:default]}"
       log message, :newline => false
       loop do
-        value = Readline.readline opts[:prompt].end_with(' ')
-        break unless (block_given? ? !yield(value) : value.blank?) && opts[:persist]
+        value = Readline.readline opts[:prompt].end_with(' '), true
+        if block_given?
+          break if yield value
+        else
+          value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].empty?)
+          break unless value.blank? && !(opts[:default] && opts[:default].empty?)
+        end
         log "#{opts[:retry] || 'That was blank.'} #{message}", :newline => false
       end
       value
