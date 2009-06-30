@@ -87,11 +87,11 @@ module Babushka
       }
     end
 
-    def ask_for_var key
+    def ask_for_var key, default = nil
       @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
-        read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
+        read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
       else
-        read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}"
+        read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
       end
     end
 
