@@ -1,9 +1,9 @@
 server {
   listen       80;
-  server_name  <%= domain %> <%= extra_domains %> <%= www_aliases %>;
+  server_name  <%= domain %> <%= extra_domains '' %> <%= www_aliases %>;
 
   location / {
-    proxy_pass         http://<%= host %>:<%= port %>/;
+    proxy_pass         http://<%= host 'localhost' %>:<%= port '8080' %>/;
     proxy_redirect     off;
 
     proxy_set_header   Host             $host;
