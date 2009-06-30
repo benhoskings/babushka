@@ -17,7 +17,7 @@ dep 'db backups' do
     shell "test -x /etc/cron.hourly/postgres_offsite_backup"
   }
   before {
-    returning shell "ssh #{offsite_host} 'true'" do |result|
+    returning sudo "ssh #{offsite_host} 'true'" do |result|
       log_error "You need to add root's public key to #{offsite_host}:~/.ssh/authorized_keys." unless result
     end
   }
