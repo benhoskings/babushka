@@ -22,8 +22,7 @@ module Babushka
       end
     end
     def install! *pkgs
-      log "Installing #{pkgs.join(', ')} via #{manager_key}"
-      sudo "#{pkg_cmd} install #{pkgs.join(' ')}"
+      log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
     end
     def prefix
       cmd_dir(pkg_cmd.split(' ', 2).first).sub(/\/bin\/?$/, '')
@@ -62,6 +61,15 @@ module Babushka
     def pkg_type; :deb end
     def pkg_cmd; 'apt-get -y' end
     def manager_key; :apt end
+
+    def install! *pkgs
+      package_count = sudo("#{pkg_cmd} -s install #{pkgs.join(' ')}").split.grep(/^Inst\b/).length
+      dep_count = package_count - pkgs.length
+
+      log "Installing #{pkgs.join(', ')} and #{package_count} dep#{'s' unless dep_count == 1} via #{manager_key}"
+      log_shell "Downloading", "#{pkg_cmd} -d install #{pkgs.join(' ')}", :sudo => true
+      log_shell "Installing", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
+    end
 
     private
     def _has? pkg_name
