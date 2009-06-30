@@ -10,6 +10,7 @@ dep 'vhost enabled' do
   requires 'vhost configured'
   met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
   meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{domain}.conf' '/opt/nginx/conf/vhosts/on/#{domain}.conf'" }
+  after { restart_nginx }
 end
 
 dep 'vhost configured' do
@@ -19,7 +20,6 @@ dep 'vhost configured' do
     render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
     render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.common"
   }
-  after { restart_nginx }
 end
 
 # TODO duplication
@@ -27,6 +27,7 @@ dep 'proxy enabled' do
   requires 'proxy configured'
   met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
   meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{domain}.conf' '/opt/nginx/conf/vhosts/on/#{domain}.conf'" }
+  after { restart_nginx }
 end
 
 dep 'proxy configured' do
@@ -35,7 +36,6 @@ dep 'proxy configured' do
   meet {
     render_erb 'nginx/http_proxy.conf.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
   }
-  after { restart_nginx }
 end
 
 def build_nginx opts = {}
