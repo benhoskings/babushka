@@ -1,9 +1,27 @@
 dep 'system' do
-  requires 'secured ssh logins', 'lax host key checking', 'admins can sudo'
+  requires 'hostname', 'secured ssh logins', 'lax host key checking', 'admins can sudo'
 end
 
 def ssh_conf_path file
   "/etc#{'/ssh' if linux?}/#{file}_config"
+end
+
+dep 'hostname' do
+  met? {
+    if osx?
+      true
+    else
+      current_hostname = shell('hostname -f')
+      stored_hostname = read_file('/etc/hostname')
+      !stored_hostname.blank? && current_hostname == stored_hostname
+    end
+  }
+  meet {
+    if linux?
+      sudo "cat #{hostname shell('hostname')} > /etc/hostname"
+      sudo "/etc/init.d/hostname.sh"
+    end
+  }
 end
 
 dep 'secured ssh logins' do
