@@ -23,6 +23,22 @@ dep 'vhost configured' do
   after { restart_nginx }
 end
 
+# TODO duplication
+dep 'proxy enabled' do
+  requires 'proxy configured'
+  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
+  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{domain}.conf' '/opt/nginx/conf/vhosts/on/#{domain}.conf'" }
+end
+
+dep 'proxy configured' do
+  requires 'webserver configured'
+  met? { File.exists? "/opt/nginx/conf/vhosts/#{domain}.conf" }
+  meet {
+    render_erb 'nginx/http_proxy.conf.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
+  }
+  after { restart_nginx }
+end
+
 def build_nginx opts = {}
   in_dir "~/src/", :create => true do
     get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx_version]}.tar.gz") and
