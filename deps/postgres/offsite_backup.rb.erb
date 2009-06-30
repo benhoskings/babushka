@@ -56,7 +56,7 @@ class PSQLBackup
     Dir.chdir @backup_path do
       hosts.all? do |host|
         log_shell "sending to #{host}\n",
-          "tar -zcvf - #{@backup_name}/ | ssh #{host} 'cat > ~/sqldumps/#{@backup_name}.tgz'"
+          "tar -zcvf - #{@backup_name}/ | ssh #{host} 'mkdir -p ~/sqldumps/#{`hostname -f`.chomp} && cat > ~/sqldumps/#{`hostname -f`.chomp}/#{@backup_name}.tgz'"
       end
     end
   end
