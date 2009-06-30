@@ -193,8 +193,7 @@ module Babushka
     end
 
     def requires_for_system
-      system_requires = payload[:requires].is_a?(Hash) ? (payload[:requires][uname] || []) : payload[:requires]
-      [*system_requires]
+      (payload[:requires][:all] + payload[:requires][uname]).uniq
     end
 
     def inspect

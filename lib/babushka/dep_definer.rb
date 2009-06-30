@@ -8,7 +8,7 @@ module Babushka
     def initialize dep, &block
       @dep = dep
       @payload = {
-        :requires => [],
+        :requires => Hash.new {|hsh,k| hsh[k] = [] },
         :asks_for => []
       }
       @source = self.class.current_load_path
@@ -34,7 +34,14 @@ module Babushka
     end
 
     def requires first, *rest
-      payload[:requires] = from_first_and_rest(first, rest)
+      deps = from_first_and_rest(first, rest)
+      if deps.is_a? Array
+        requires :all => deps
+      else
+        deps.each_pair {|system,deps|
+          payload[:requires][system].concat([*deps]).uniq!
+        }
+      end
     end
     def asks_for *keys
       payload[:asks_for].concat keys.map(&:to_s)
