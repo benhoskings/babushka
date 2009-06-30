@@ -1,6 +1,6 @@
 # <%= generated_by_babushka %>
 
-server_name <%= domain %> www.<%= domain %>;
+server_name <%= domain %> <%= extra_domains %> <%= www_aliases %>;
 root <%= File.join File.expand_path(rails_root), 'public' %>;
 passenger_enabled on;
 rails_env <%= rails_env %>;

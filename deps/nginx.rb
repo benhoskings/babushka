@@ -1,3 +1,11 @@
+def www_aliases
+  "#{domain} #{extra_domains}".split(' ').compact.map(&:strip).reject {|d|
+    d.starts_with?('www.')
+  }.map {|d|
+    "www.#{d}"
+  }.join(' ')
+end
+
 dep 'vhost enabled' do
   requires 'vhost configured'
   met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
