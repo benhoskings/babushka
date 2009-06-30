@@ -26,7 +26,7 @@ end
 
 dep 'deployed app' do
   asks_for :rails_root
-  met? { File.directory? rails_root / 'app' }
+  met? { File.directory? File.expand_path rails_root / 'app' }
 end
 
 dep 'existing db' do
