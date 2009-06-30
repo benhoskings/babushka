@@ -24,9 +24,7 @@ gem_dep 'passenger' do
   provides 'passenger-install-nginx-module'
 end
 
-pkg_dep 'vim' do
-  pkg :apt => 'vim-full'
-end
+pkg_dep 'vim'
 
 pkg_dep 'libssl headers' do
   pkg :apt => 'libssl-dev'
