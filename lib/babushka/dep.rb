@@ -27,7 +27,8 @@ module Babushka
         :parent_vars => {},
         :child_vars => {}
       }
-      @definer = definer_class.new self, &block
+      @definer = definer_class.new self
+      @definer.process &block
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       Dep.register self
     end

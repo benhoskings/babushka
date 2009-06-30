@@ -5,14 +5,16 @@ module Babushka
 
     attr_reader :payload, :source
 
-    def initialize dep, &block
+    def initialize dep
       @dep = dep
       @payload = {
         :requires => Hash.new {|hsh,k| hsh[k] = [] },
         :asks_for => []
       }
       @source = self.class.current_load_path
-      default_init if respond_to? :default_init
+    end
+
+    def process &block
       instance_eval &block if block_given?
     end
 
@@ -91,7 +93,9 @@ module Babushka
 
     private
 
-    def default_init
+    def initialize dep
+      super
+
       requires pkg_manager.manager_dep
       met? {
         if !applicable?
