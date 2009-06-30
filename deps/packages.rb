@@ -39,4 +39,5 @@ end
 pkg_dep 'java' do
   pkg :apt => 'sun-java6-jre'
   provides 'java'
+  after { shell("set -Ux JAVA_HOME /usr/lib/jvm/java-6-sun") }
 end
