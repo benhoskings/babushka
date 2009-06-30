@@ -149,8 +149,7 @@ module Babushka
     end
 
     def call_task task_name
-      task = payload[task_name] || default_task(task_name)
-      task.call unless task.nil?
+      (payload[task_name] || default_task(task_name)).call
     end
 
     def default_task task_name
@@ -160,7 +159,7 @@ module Babushka
           true
         },
         :meet => L{ log_extra "#{name} / meet not defined; nothing to do." }
-      }[task_name]
+      }[task_name] || L{ true }
     end
 
     def unmet_message_for result
