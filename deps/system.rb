@@ -18,7 +18,7 @@ dep 'hostname' do
   }
   meet {
     if linux?
-      sudo "cat #{hostname shell('hostname')} > /etc/hostname"
+      sudo "echo #{hostname shell('hostname')} > /etc/hostname"
       sudo "/etc/init.d/hostname.sh"
     end
   }
