@@ -12,6 +12,7 @@ module Babushka
         :asks_for => []
       }
       @source = self.class.current_load_path
+      default_init if respond_to? :default_init
       instance_eval &block if block_given?
     end
 
@@ -81,23 +82,19 @@ module Babushka
 
     attr_setter :pkg, :provides
 
-    def payload
-      super.merge({
-        :requires => pkg_manager.manager_dep,
-        :met? => L{
-          if !applicable?
-            log_ok "Not required on #{pkg_manager.manager_key}-based systems."
-          else
-            packages_present and cmds_in_path
-          end
-        },
-        :meet => L{
-          install_packages
-        }
-      })
-    end
-
     private
+
+    def default_init
+      requires pkg_manager.manager_dep
+      met? {
+        if !applicable?
+          log_ok "Not required on #{pkg_manager.manager_key}-based systems."
+        else
+          packages_present and cmds_in_path
+        end
+      }
+      meet { install_packages }
+    end
 
     def applicable?
       !(@pkg.is_a?(Hash) && @pkg[pkg_manager.manager_key].blank?)
