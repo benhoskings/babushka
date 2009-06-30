@@ -51,6 +51,12 @@ def rake cmd, &block
   sudo "rake #{cmd} RAILS_ENV=#{rails_env}", :as => username, &block
 end
 
+def rails_rake cmd, &block
+  in_dir rails_root '~/current' do
+    rake cmd, &block
+  end
+end
+
 def check_file file_name, method_name
   returning File.send method_name, file_name do |result|
     log_error "#{file_name} failed #{method_name.to_s.sub(/[?!]$/, '')} check." unless result
