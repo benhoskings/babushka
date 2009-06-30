@@ -64,11 +64,10 @@ module Babushka
     end
 
     def ask_for_var key, default = nil
-      @local_vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
-        read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
-      else
-        read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
-      end
+      # TODO this should be elsewhere
+      read_method = [payload[:run_in]].include?(key) ? :read_path_from_prompt : :read_value_from_prompt
+      printable_key = key.to_s.gsub '_', ' '
+      @local_vars[key] = send read_method, "#{printable_key}#{" for #{name}" unless printable_key == name}", :default => default
     end
 
 
