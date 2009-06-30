@@ -17,11 +17,16 @@ module Babushka
     include PromptHelpers
 
     attr_reader :name
+    attr_reader :name, :local_vars
     attr_accessor :unmet_message
 
     def initialize name, block, definer_class = DepDefiner
       @name = name
-      @vars, @opts = {}, {}
+      @local_vars = {}
+      @opts = {
+        :parent_vars => {},
+        :child_vars => {}
+      }
       @definer = definer_class.new self, &block
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       Dep.register self
@@ -49,17 +54,17 @@ module Babushka
     end
 
     def vars
-      (opts[:vars] || {}).merge @vars
+      opts[:parent_vars].merge(opts[:child_vars]).merge(local_vars)
     end
     def set key, value
-      @vars[key.to_s] = value
+      @local_vars[key.to_s] = value
     end
     def opts
       @opts.merge @run_opts || {}
     end
 
     def ask_for_var key, default = nil
-      @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
+      @local_vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
         read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
       else
         read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
@@ -104,8 +109,11 @@ module Babushka
 
     def process_deps
       requires_for_system.send(opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
-        dep = Dep(dep_name)
-        dep.send :process, opts.merge(:vars => vars) unless dep.nil?
+        unless (dep = Dep(dep_name)).nil?
+          returning dep.send :process, opts.merge(:parent_vars => vars) do
+            opts[:child_vars].update dep.vars
+          end
+        end
       })
     end
 
