@@ -58,6 +58,14 @@ module Babushka
       @opts.merge @run_opts || {}
     end
 
+    def ask_for_var key, default = nil
+      @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
+        read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
+      else
+        read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
+      end
+    end
+
 
     private
 
@@ -85,14 +93,6 @@ module Babushka
       }.each {|key|
         ask_for_var key
       }
-    end
-
-    def ask_for_var key, default = nil
-      @vars[key] = if [payload[:run_in]].include? key # TODO this should be elsewhere
-        read_path_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
-      else
-        read_value_from_prompt "#{key.to_s.gsub('_', ' ')} for #{name}", :default => default
-      end
     end
 
     def process_in_dir
