@@ -71,7 +71,7 @@ module Babushka
       if @dep.vars.has_key? method_name.to_s
         @dep.vars[method_name.to_s]
       else
-        super
+        @dep.ask_for_var method_name.to_s, args.first
       end
     end
 
