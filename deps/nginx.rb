@@ -16,7 +16,6 @@ dep 'vhost configured' do
   requires 'webserver configured'
   met? { %w[conf common].all? {|suffix| File.exists? "/opt/nginx/conf/vhosts/#{domain}.#{suffix}" } }
   meet {
-    sudo "mkdir -p /opt/nginx/conf/vhosts/on"
     render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
     render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.common"
   }
@@ -121,7 +120,10 @@ dep 'webserver configured' do
     set :passenger_version, Babushka::GemHelper.has?('passenger', :log => false)
     render_erb 'nginx/nginx.conf.erb', :to => '/opt/nginx/conf/nginx.conf'
   }
-  after { restart_nginx }
+  after {
+    sudo "mkdir -p /opt/nginx/conf/vhosts/on"
+    restart_nginx
+  }
 end
 
 dep 'webserver installed' do
