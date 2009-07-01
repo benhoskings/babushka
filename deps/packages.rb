@@ -1,42 +1,42 @@
 
-pkg_dep 'git' do
+pkg 'git' do
   pkg 'git-core'
 end
 
-pkg_dep 'fish'
+pkg 'fish'
 
-pkg_dep 'rcconf' do
+pkg 'rcconf' do
   pkg :apt => 'rcconf'
 end
 
-pkg_dep 'sed' do
+pkg 'sed' do
   pkg :macports => 'gsed'
   provides 'gsed'
 end
 
-pkg_dep 'build-essential' do
+pkg 'build-essential' do
   provides 'gcc', 'g++', 'make', 'ld'
 end
 
-pkg_dep 'autoconf'
+pkg 'autoconf'
 
-gem_dep 'passenger' do
+gem 'passenger' do
   provides 'passenger-install-nginx-module'
 end
 
-pkg_dep 'vim'
+pkg 'vim'
 
-pkg_dep 'libssl headers' do
+pkg 'libssl headers' do
   pkg :apt => 'libssl-dev'
   provides []
 end
 
-pkg_dep 'zlib headers' do
+pkg 'zlib headers' do
   pkg :apt => 'zlib1g-dev'
   provides []
 end
 
-pkg_dep 'java' do
+pkg 'java' do
   pkg :apt => 'sun-java6-jre'
   provides 'java'
   after { shell("set -Ux JAVA_HOME /usr/lib/jvm/java-6-sun") }

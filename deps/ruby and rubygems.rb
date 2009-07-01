@@ -20,7 +20,7 @@ dep 'rubygems' do
   }
 end
 
-pkg_dep 'ruby' do
+pkg 'ruby' do
   pkg :macports => 'ruby', :apt => %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
   provides %w[ruby irb ri rdoc]
 end

@@ -5,11 +5,11 @@ module Babushka
     end
 
     module HelperMethods
-      def     Dep name;         Dep.for name                       end
-      def     dep name, &block; Dep.new name, block                end
-      def pkg_dep name, &block; Dep.new name, block, PkgDepDefiner end
-      def gem_dep name, &block; Dep.new name, block, GemDepDefiner end
-      def ext_dep name, &block; Dep.new name, block, ExtDepDefiner end
+      def Dep name;         Dep.for name                       end
+      def dep name, &block; Dep.new name, block                end
+      def pkg name, &block; Dep.new name, block, PkgDepDefiner end
+      def gem name, &block; Dep.new name, block, GemDepDefiner end
+      def ext name, &block; Dep.new name, block, ExtDepDefiner end
     end
   end
 

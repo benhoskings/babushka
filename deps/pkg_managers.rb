@@ -1,4 +1,4 @@
-ext_dep 'macports' do
+ext 'macports' do
   requires 'build tools'
   if_missing 'port' do
     log_and_open "Install the MacPorts release for your system, and then run Babushka again.",
@@ -6,7 +6,7 @@ ext_dep 'macports' do
   end
 end
 
-ext_dep 'apt' do
+ext 'apt' do
   if_missing 'apt-get' do
     log "Your system doesn't seem to have Apt installed. Is it Debian-based?"
   end
