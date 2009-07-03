@@ -1,5 +1,5 @@
 dep 'rubygems' do
-  requires 'ruby'
+  requires 'ruby', 'wget'
   met? { which('gem') && shell('gem env gemdir') }
   meet {
     rubygems_version = '1.3.4'
