@@ -85,19 +85,11 @@ module Babushka
           log_error "Oh crap, endless loop! (#{opts[:callstack].push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         else
           opts[:callstack].push self
-          returning ask_for_vars && process_in_dir do
+          returning process_in_dir do
             opts[:callstack].pop
           end
         end
       end
-    end
-
-    def ask_for_vars
-      payload[:asks_for].reject {|key|
-        vars[key]
-      }.each {|key|
-        ask_for_var key
-      }
     end
 
     def process_in_dir
