@@ -14,6 +14,8 @@ pkg 'sed' do
   provides 'gsed'
 end
 
+pkg 'wget'
+
 pkg 'build-essential' do
   provides 'gcc', 'g++', 'make', 'ld'
 end
