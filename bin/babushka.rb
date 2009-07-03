@@ -12,6 +12,9 @@
   babushka/dep.rb
   babushka/definer_helpers.rb
   babushka/dep_definer.rb
+  babushka/dep_definers/pkg_dep_definer.rb
+  babushka/dep_definers/gem_dep_definer.rb
+  babushka/dep_definers/ext_dep_definer.rb
 
 ].each {|component|
   require "#{File.dirname(__FILE__)}/../lib/#{component}"
