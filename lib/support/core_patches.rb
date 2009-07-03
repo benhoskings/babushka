@@ -27,6 +27,15 @@ class Array
   end
 end
 
+class Hashish
+  def self.array
+    Hash.new {|hsh,k| hsh[k] = [] }
+  end
+  def self.hash
+    Hash.new {|hsh,k| hsh[k] = {} }
+  end
+end
+
 class Object
   def returning obj, &block
     yield obj
