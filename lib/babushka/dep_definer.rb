@@ -8,7 +8,7 @@ module Babushka
     def initialize dep
       @dep = dep
       @payload = {
-        :requires => Hash.new {|hsh,k| hsh[k] = [] },
+        :requires => Hashish.array,
         :asks_for => []
       }
       @source = self.class.current_load_path
@@ -35,16 +35,24 @@ module Babushka
       end
     end
 
-    def requires first, *rest
-      deps = from_first_and_rest(first, rest)
-      if deps.is_a? Array
-        requires :all => deps
-      else
-        deps.each_pair {|system,deps|
-          payload[:requires][system].concat([*deps]).uniq!
-        }
+    def self.accepts_hash_for method_name, payload_key = method_name
+      define_method method_name do |first, *rest|
+        val = from_first_and_rest(first, rest)
+        if val.is_a? Array
+          send method_name, :all => val
+        else
+          val.each_pair {|acc,val|
+            (payload[payload_key] ||= Hashish.array)[acc].concat([*val]).uniq!
+          }
+        end
+      end
+      define_method "#{method_name}_for_system" do
+        (payload[method_name][:all] + payload[method_name][uname]).uniq unless payload[method_name].nil?
       end
     end
+
+    accepts_hash_for :requires
+
     def asks_for *keys
       payload[:asks_for].concat keys.map(&:to_s)
     end
@@ -69,14 +77,6 @@ module Babushka
       payload[:after] = block
     end
 
-    def self.attr_setter *names
-      names.each {|name|
-        define_method name do |first, *rest|
-          instance_variable_set "@#{name}", from_first_and_rest(first, rest)
-        end
-      }
-    end
-
     def method_missing method_name, *args, &block
       if @dep.vars.has_key? method_name.to_s
         @dep.vars[method_name.to_s]
@@ -89,7 +89,8 @@ module Babushka
 
   class PkgDepDefiner < DepDefiner
 
-    attr_setter :pkg, :provides
+    accepts_hash_for :pkg
+    accepts_hash_for :provides
 
     private
 
@@ -108,7 +109,7 @@ module Babushka
     end
 
     def applicable?
-      !(@pkg.is_a?(Hash) && @pkg[pkg_manager.manager_key].blank?)
+      !(payload[:installs].is_a?(Hash) && payload[:installs][pkg_manager.manager_key].blank?)
     end
 
     def packages_present
@@ -143,23 +144,23 @@ module Babushka
     end
 
     def pkg_or_default
-      if @pkg.nil?
+      if payload[:installs].nil?
         @dep.name
-      elsif @pkg.is_a? Hash
-        @pkg[pkg_manager.manager_key] || []
+      elsif payload[:installs].is_a? Hash
+        payload[:installs][pkg_manager.manager_key] || []
       else
-        [*@pkg]
+        [*payload[:installs]]
       end
     end
     def provides_or_default
-      @provides || [@dep.name]
+      provides_for_system || [@dep.name]
     end
   end
 
   class GemDepDefiner < PkgDepDefiner
 
-    def pkg obj
-      @pkg = {:gem => obj}
+    def installs obj
+      payload[:installs] = {:gem => obj}
     end
 
     private
