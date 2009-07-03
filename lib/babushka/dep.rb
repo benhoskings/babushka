@@ -100,7 +100,7 @@ module Babushka
     end
 
     def process_deps
-      requires_for_system.send(opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
+      @definer.requires_for_system.send(opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
         unless (dep = Dep(dep_name)).nil?
           returning dep.send :process, opts.merge(:parent_vars => vars) do
             opts[:child_vars].update dep.vars
@@ -182,10 +182,6 @@ module Babushka
 
     def payload
       @definer.payload
-    end
-
-    def requires_for_system
-      (payload[:requires][:all] + payload[:requires][uname]).uniq
     end
 
     def inspect
