@@ -1,16 +1,16 @@
 
 pkg 'git' do
-  pkg 'git-core'
+  installs 'git-core'
 end
 
 pkg 'fish'
 
 pkg 'rcconf' do
-  pkg :apt => 'rcconf'
+  installs :apt => 'rcconf'
 end
 
 pkg 'sed' do
-  pkg :macports => 'gsed'
+  installs :macports => 'gsed'
   provides 'gsed'
 end
 
@@ -29,17 +29,17 @@ end
 pkg 'vim'
 
 pkg 'libssl headers' do
-  pkg :apt => 'libssl-dev'
+  installs :apt => 'libssl-dev'
   provides []
 end
 
 pkg 'zlib headers' do
-  pkg :apt => 'zlib1g-dev'
+  installs :apt => 'zlib1g-dev'
   provides []
 end
 
 pkg 'java' do
-  pkg :apt => 'sun-java6-jre'
+  installs :apt => 'sun-java6-jre'
   provides 'java'
   after { shell("set -Ux JAVA_HOME /usr/lib/jvm/java-6-sun") }
 end

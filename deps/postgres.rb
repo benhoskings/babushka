@@ -1,6 +1,6 @@
 gem 'db gem' do
   requires 'db software', 'rubygems'
-  pkg 'pg'
+  installs 'pg'
   provides []
 end
 
@@ -28,6 +28,6 @@ dep 'db backups' do
 end
 
 pkg 'db software' do
-  pkg :macports => 'postgresql83-server', :apt => %w[postgresql postgresql-client libpq-dev]
+  installs :macports => 'postgresql83-server', :apt => %w[postgresql postgresql-client libpq-dev]
   provides 'psql'
 end

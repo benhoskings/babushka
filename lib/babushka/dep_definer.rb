@@ -89,7 +89,7 @@ module Babushka
 
   class PkgDepDefiner < DepDefiner
 
-    accepts_hash_for :pkg
+    accepts_hash_for :installs
     accepts_hash_for :provides
 
     private
