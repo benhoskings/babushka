@@ -1,20 +1,20 @@
 %w[
-  support/core_patches.rb
-  support/utils.rb
-  support/logger.rb
-  support/popen.rb
-  support/prompt_helpers.rb
-  support/shell_helpers.rb
+  support/core_patches
+  support/utils
+  support/logger
+  support/popen
+  support/prompt_helpers
+  support/shell_helpers
 
-  babushka/base.rb
-  babushka/shell.rb
-  babushka/pkg_manager.rb
-  babushka/dep.rb
-  babushka/definer_helpers.rb
-  babushka/dep_definer.rb
-  babushka/dep_definers/pkg_dep_definer.rb
-  babushka/dep_definers/gem_dep_definer.rb
-  babushka/dep_definers/ext_dep_definer.rb
+  babushka/base
+  babushka/shell
+  babushka/pkg_manager
+  babushka/dep
+  babushka/definer_helpers
+  babushka/dep_definer
+  babushka/dep_definers/pkg_dep_definer
+  babushka/dep_definers/gem_dep_definer
+  babushka/dep_definers/ext_dep_definer
 
 ].each {|component|
   require "#{File.dirname(__FILE__)}/../lib/#{component}"
