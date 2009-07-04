@@ -71,13 +71,16 @@ def grep regex, file
 end
 
 def change_with_sed keyword, from, to, file
-  sed = linux? ? 'sed' : 'gsed'
   if check_file file, :writable?
     # Remove the incorrect setting if it's there
     shell("#{sed} -ri 's/^#{keyword}\s+#{from}//' #{file}")
     # Add the correct setting unless it's already there
     shell("echo '#{keyword} #{to}' >> #{file}") unless grep(/^#{keyword}\s+#{to}/, file)
   end
+end
+
+def sed
+  linux? ? 'sed' : 'gsed'
 end
 
 def append_to_file text, file
