@@ -116,6 +116,9 @@ end
 def edited_by_babushka
   "This line edited #{_by_babushka}"
 end
+def added_by_babushka nlines
+  "These #{nlines} lines added #{_by_babushka}"
+end
 
 def read_file filename
   path = File.expand_path filename
