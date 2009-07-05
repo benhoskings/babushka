@@ -1,6 +1,35 @@
 dep 'rails app' do
-  requires 'vhost enabled', 'webserver running', 'migrated db'
+  requires 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
   asks_for :domain, :username, :rails_env
+end
+
+def parse_gem_deps
+  IO.readlines(
+    File.expand_path rails_root / 'config/environment.rb'
+  ).grep(/^\s*config\.gem/).map {|l|
+    i = l.scan /config\.gem[\s\('"]+([\w-]+)(['"],\s*\:version\s*=>\s*['"]([<>=!~.0-9\s]+)['"])?.*$/
+
+    if i.first.nil? || i.first.first.nil?
+      log_error "Couldn't parse '#{l.chomp}' in #{File.expand_path 'config/environment.rb'}."
+    else
+      {i.first.first => i.first.last}
+    end
+  }.compact
+end
+
+dep 'gems installed' do
+  setup {
+    parse_gem_deps.map {|gem_spec|
+      # Make a new Dep for each gem this app needs...
+      gem("#{gem_spec.keys.first} gem") {
+        installs gem_spec
+        provides []
+      }
+    }.each {|dep|
+      # ... and set each one as a requirement of this dep.
+      requires dep.name
+    }
+  }
 end
 
 dep 'migrated db' do
@@ -24,7 +53,6 @@ dep 'migrated db' do
 end
 
 dep 'deployed app' do
-  asks_for :rails_root
   met? { File.directory? File.expand_path rails_root / 'app' }
 end
 
