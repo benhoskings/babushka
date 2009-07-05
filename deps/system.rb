@@ -1,9 +1,15 @@
 dep 'system' do
-  requires 'hostname', 'secured ssh logins', 'lax host key checking', 'admins can sudo'
+  requires 'hostname', 'path order', 'secured ssh logins', 'lax host key checking', 'admins can sudo'
 end
 
 def ssh_conf_path file
   "/etc#{'/ssh' if linux?}/#{file}_config"
+end
+
+dep 'path order', :for => :osx do
+  requires 'sed'
+  met? { grep %Q(NEWPATH="${p}${SEP}${NEWPATH}"), "/usr/libexec/path_helper" }
+  meet { change_line %Q(NEWPATH="${NEWPATH}${SEP}${p}"), %Q(NEWPATH="${p}${SEP}${NEWPATH}"), "/usr/libexec/path_helper" }
 end
 
 dep 'hostname' do
