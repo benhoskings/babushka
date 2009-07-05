@@ -1,22 +1,22 @@
 module StartsAndEndsChecks
-  # Returns true iff +str+ appears exactly at the start of +self+.
-  def starts_with? str
-    self[0, str.length] == str
+  # Returns true iff +other+ appears exactly at the start of +self+.
+  def starts_with? other
+    self[0, other.length] == other
   end
 
-  # Returns true iff +str+ appears exactly at the end of +self+.
-  def ends_with? str
-    self[-str.length, str.length] == str
+  # Returns true iff +other+ appears exactly at the end of +self+.
+  def ends_with? other
+    self[-other.length, other.length] == other
   end
 
-  # Return a duplicate of +self+, with +str+ prepended to it if it doesn't already start with +str+.
-  def start_with str
-    starts_with?(str) ? self : str + self
+  # Return a duplicate of +self+, with +other+ prepended to it if it doesn't already start with +other+.
+  def start_with other
+    starts_with?(other) ? self : other + self
   end
 
-  # Return a duplicate of +self+, with +str+ appended to it if it doesn't already end with +str+.
-  def end_with str
-    ends_with?(str) ? self : self + str
+  # Return a duplicate of +self+, with +other+ appended to it if it doesn't already end with +other+.
+  def end_with other
+    ends_with?(other) ? self : self + other
   end
 end
 
