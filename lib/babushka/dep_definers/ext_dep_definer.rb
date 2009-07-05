@@ -3,7 +3,7 @@ module Babushka
 
     def if_missing *cmds, &block
       @cmds, @block = cmds, block
-      payload[:met?] = met_block
+      met? &met_block
     end
 
     private

@@ -1,12 +1,11 @@
 module Babushka
   class PkgDepDefiner < DepDefiner
 
-    accepts_hash_for :installs
-    accepts_hash_for :provides
+    accepts_hash_for :installs, Hashish.array
+    accepts_hash_for :provides, Hashish.array
 
-    private
 
-    def initialize dep
+    def process
       super
 
       requires pkg_manager.manager_dep
@@ -19,6 +18,9 @@ module Babushka
       }
       meet { install_packages }
     end
+
+
+    private
 
     def applicable?
       !(payload[:installs].is_a?(Hash) && payload[:installs][pkg_manager.manager_key].blank?)
