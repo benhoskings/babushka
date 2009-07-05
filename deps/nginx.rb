@@ -111,7 +111,7 @@ dep 'webserver configured' do
       unmet "the nginx config needs to be regenerated"
     else
       current_passenger_version = IO.read('/opt/nginx/conf/nginx.conf').val_for('passenger_root')
-      returning current_passenger_version.ends_with?(Babushka::GemHelper.has?('passenger')) do |result|
+      returning current_passenger_version.ends_with?(Babushka::GemHelper.has?('passenger').to_s) do |result|
         log_result "nginx is configured to use #{File.basename current_passenger_version}", :result => result
       end
     end
