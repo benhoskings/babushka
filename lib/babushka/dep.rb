@@ -78,6 +78,9 @@ module Babushka
       log name, :closing_status => (run_opts[:attempt_to_meet] ? true : :dry_run) do
         if run_opts[:callstack].include? self
           log_error "Oh crap, endless loop! (#{run_opts[:callstack].push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif ![:all, uname].include?(opts[:for])
+          log_extra "not required on #{uname_str}."
+          true
         else
           run_opts[:callstack].push self
           returning process_in_dir do
