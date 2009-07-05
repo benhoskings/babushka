@@ -5,30 +5,28 @@ module Babushka
     end
 
     module HelperMethods
-      def Dep name;         Dep.for name                       end
-      def dep name, &block; Dep.new name, block                end
-      def pkg name, &block; Dep.new name, block, PkgDepDefiner end
-      def gem name, &block; Dep.new name, block, GemDepDefiner end
-      def ext name, &block; Dep.new name, block, ExtDepDefiner end
+      def Dep name;                    Dep.for name                             end
+      def dep name, opts = {}, &block; Dep.new name, opts, block                end
+      def pkg name, opts = {}, &block; Dep.new name, opts, block, PkgDepDefiner end
+      def gem name, opts = {}, &block; Dep.new name, opts, block, GemDepDefiner end
+      def ext name, opts = {}, &block; Dep.new name, opts, block, ExtDepDefiner end
     end
   end
 
   class Dep
     include PromptHelpers
 
-    attr_reader :name
-    attr_reader :name, :local_vars
+    attr_reader :name, :local_vars, :opts, :run_opts
     attr_accessor :unmet_message
 
-    def initialize name, block, definer_class = DepDefiner
+    def initialize name, in_opts, block, definer_class = DepDefiner
       @name = name
       @local_vars = {}
       @opts = {
-        :parent_vars => {},
-        :child_vars => {}
-      }
-      @definer = definer_class.new self
-      @definer.process &block
+        :for => :all
+      }.merge in_opts
+      @definer = definer_class.new self, &block
+      @definer.process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       Dep.register self
     end
@@ -47,21 +45,18 @@ module Babushka
       end
     end
 
-    def met? opts = {}
-      process opts.merge default_run_opts.merge :attempt_to_meet => false
+    def met? run_opts = {}
+      process default_run_opts.merge(run_opts).merge :attempt_to_meet => false
     end
-    def meet opts = {}
-      process opts.merge default_run_opts.merge :attempt_to_meet => !Base.opts[:dry_run]
+    def meet run_opts = {}
+      process default_run_opts.merge(run_opts).merge :attempt_to_meet => !Base.opts[:dry_run]
     end
 
     def vars
-      opts[:parent_vars].merge(opts[:child_vars]).merge(local_vars)
+      run_opts[:parent_vars].merge(run_opts[:child_vars]).merge(local_vars)
     end
     def set key, value
       @local_vars[key.to_s] = value
-    end
-    def opts
-      @opts.merge @run_opts || {}
     end
 
     def ask_for_var key, default = nil
@@ -80,13 +75,13 @@ module Babushka
     end
 
     def process_and_cache
-      log name, :closing_status => (opts[:attempt_to_meet] ? true : :dry_run) do
-        if opts[:callstack].include? self
-          log_error "Oh crap, endless loop! (#{opts[:callstack].push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+      log name, :closing_status => (run_opts[:attempt_to_meet] ? true : :dry_run) do
+        if run_opts[:callstack].include? self
+          log_error "Oh crap, endless loop! (#{run_opts[:callstack].push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         else
-          opts[:callstack].push self
+          run_opts[:callstack].push self
           returning process_in_dir do
-            opts[:callstack].pop
+            run_opts[:callstack].pop
           end
         end
       end
@@ -100,10 +95,10 @@ module Babushka
     end
 
     def process_deps
-      @definer.requires_for_system.send(opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
+      @definer.requires_for_system.send(run_opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
         unless (dep = Dep(dep_name)).nil?
-          returning dep.send :process, opts.merge(:parent_vars => vars) do
-            opts[:child_vars].update dep.vars
+          returning dep.send :process, run_opts.merge(:parent_vars => vars) do
+            run_opts[:child_vars].update dep.vars
           end
         end
       })
@@ -111,7 +106,7 @@ module Babushka
 
     def process_self
       if !(met_result = run_met_task(:initial => true))
-        if !opts[:attempt_to_meet]
+        if !run_opts[:attempt_to_meet]
           met_result
         else
           call_task :before and
@@ -176,7 +171,9 @@ module Babushka
 
     def default_run_opts
       {
-        :callstack => []
+        :callstack => [],
+        :parent_vars => {},
+        :child_vars => {}
       }
     end
 
