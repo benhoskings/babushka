@@ -81,7 +81,7 @@ def change_line line, replacement, filename
   }
 end
 
-def insert_into_file lines, insert_after, insert_before, filename
+def insert_into_file insert_after, insert_before, filename, lines
   end_of_insertion = "# }\n"
   path = File.expand_path filename
   nlines = lines.split("\n").length
