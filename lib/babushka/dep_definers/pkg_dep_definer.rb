@@ -28,7 +28,7 @@ module Babushka
 
     def packages_present
       if pkg_or_default.is_a? Hash
-        pkg_or_default.all? {|pkg_name, version| pkg_manager.has?(pkg_name, version) }
+        pkg_or_default.all? {|pkg_name, version| pkg_manager.has?(pkg_name, :version => version) }
       else
         pkg_or_default.all? {|pkg_name| pkg_manager.has?(pkg_name) }
       end
