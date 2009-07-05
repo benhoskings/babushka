@@ -28,6 +28,15 @@ dep 'db backups' do
 end
 
 pkg 'db software' do
+  requires 'db in path'
   installs :macports => 'postgresql83-server', :apt => %w[postgresql postgresql-client libpq-dev]
   provides 'psql'
+end
+
+dep 'db in path', :for => :osx do
+  met? { ENV['PATH'].split(':').include? '/opt/local/lib/postgresql83/bin' }
+  meet {
+    sudo "echo '/opt/local/lib/postgresql83/bin' > /etc/paths.d/postgres"
+    ENV['PATH'] = "/opt/local/lib/postgresql83/bin:#{ENV['PATH']}"
+  }
 end
