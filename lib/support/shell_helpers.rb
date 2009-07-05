@@ -107,11 +107,14 @@ def get_source url
   log_shell("Extracting #{filename}", "sudo rm -rf #{archive_dir} && tar -zxvf #{filename}")
 end
 
-def generated_by_babushka verb = 'Generated'
-  "#{verb} by babushka-#{Babushka::Version} at #{Time.now}"
+def _by_babushka
+  "by babushka-#{Babushka::Version} at #{Time.now}"
+end
+def generated_by_babushka
+  "Generated #{_by_babushka}"
 end
 def edited_by_babushka
-  generated_by_babushka 'Edited'
+  "This line edited #{_by_babushka}"
 end
 
 def read_file filename
