@@ -81,6 +81,23 @@ def change_line line, replacement, filename
   }
 end
 
+def insert_into_file lines, insert_after, insert_before, filename
+  path = File.expand_path filename
+  before, after = IO.readlines(path).cut {|l| l.strip == insert_before.strip }
+
+  if before.last.strip != insert_after.strip
+    log_error "Couldn't find the spot to write to in #{filename}."
+  else
+    sudo "cat > #{path}", :as => File.owner(path), :input => [
+      before,
+      added_by_babushka(lines.split("\n").length).start_with('# { ').end_with("\n"),
+      lines.end_with("\n"),
+      "# }\n",
+      after
+    ].join
+  end
+end
+
 def change_with_sed keyword, from, to, file
   if check_file file, :writable?
     # Remove the incorrect setting if it's there
