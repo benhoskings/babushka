@@ -70,6 +70,13 @@ def grep regex, file
   end
 end
 
+def change_line line, replacement, filename
+  new_contents = IO.readlines(filename).map {|l|
+    l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
+  }
+  File.open(filename, 'w') {|f| f << new_contents }
+end
+
 def change_with_sed keyword, from, to, file
   if check_file file, :writable?
     # Remove the incorrect setting if it's there
