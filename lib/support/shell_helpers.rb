@@ -82,17 +82,21 @@ def change_line line, replacement, filename
 end
 
 def insert_into_file lines, insert_after, insert_before, filename
+  end_of_insertion = "# }\n"
   path = File.expand_path filename
+  nlines = lines.split("\n").length
   before, after = IO.readlines(path).cut {|l| l.strip == insert_before.strip }
 
-  if before.last.strip != insert_after.strip
+  if before.last == end_of_insertion
+    log_extra "Already written to line #{before.length + 1 - 2 - nlines} of #{filename}."
+  elsif before.last.strip != insert_after.strip
     log_error "Couldn't find the spot to write to in #{filename}."
   else
     sudo "cat > #{path}", :as => File.owner(path), :input => [
       before,
-      added_by_babushka(lines.split("\n").length).start_with('# { ').end_with("\n"),
+      added_by_babushka(nlines).start_with('# { ').end_with("\n"),
       lines.end_with("\n"),
-      "# }\n",
+      end_of_insertion,
       after
     ].join
   end
