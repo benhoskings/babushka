@@ -63,9 +63,13 @@ def check_file file_name, method_name
   end
 end
 
-def grep regex, file
+def grep pattern, file
   if File.exists?(path = File.expand_path(file))
-    output = IO.readlines(path).grep(regex)
+    output = if pattern.is_a? String
+      IO.readlines(path).select {|l| l[pattern] }
+    elsif pattern.is_a? Regexp
+      IO.readlines(path).grep(pattern)
+    end
     output unless output.empty?
   end
 end
