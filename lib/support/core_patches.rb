@@ -1,4 +1,14 @@
 class Array
+  def cut &block
+    if (cut_at = index {|i| yield i }).nil?
+      [self, nil]
+    else
+      [self[0...cut_at], self[cut_at..-1]]
+    end
+  end
+  def cut_at value
+    cut {|i| i == value }
+  end
   def extract &block
     dup.extract! &block
   end
