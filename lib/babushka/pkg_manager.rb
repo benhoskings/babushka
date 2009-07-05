@@ -105,6 +105,17 @@ module Babushka
       end
     end
 
+    def install! *pkgs
+      if pkgs.first.is_a? Hash
+        pkgs.first.each_pair {|pkg,version|
+          log_shell "Installing #{pkg} via #{manager_key}", "#{pkg_cmd} install #{pkg} --version '#{version}'", :sudo => true
+        }
+      else
+        log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
+      end
+    end
+
+
     private
 
     def versions_of pkg_name
