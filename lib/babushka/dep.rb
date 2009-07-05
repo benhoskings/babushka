@@ -135,22 +135,23 @@ module Babushka
       end
     end
 
-    def has_task? task_name
-      !payload[task_name].nil?
-    end
-
     def call_task task_name
-      (payload[task_name] || default_task(task_name)).call
+      (@definer.send("#{task_name}_for_system") || default_task(task_name)).call
     end
 
     def default_task task_name
-      {
-        :met? => L{
-          log_extra "#{name} / met? not defined, moving on."
-          true
-        },
-        :meet => L{ log_extra "#{name} / meet not defined; nothing to do." }
-      }[task_name] || L{ true }
+      L{
+        send({:met? => :log_extra, :meet => :log_extra}[task_name] || :debug, [
+          "#{name} / #{task_name} not defined",
+          "#{" for #{uname_str}" unless (payload[task_name] || {})[:all].nil?}",
+          {
+            :met => ", moving on",
+            :meet => " - nothing to do"
+          }[task_name],
+          "."
+        ].join)
+        true
+      }
     end
 
     def unmet_message_for result
