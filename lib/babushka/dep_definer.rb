@@ -75,6 +75,7 @@ module Babushka
 
     accepts_hash_for :requires, Hashish.array
     accepts_hash_for :asks_for, Hashish.array
+    accepts_block_for :setup
     accepts_block_for :met?
     accepts_block_for :meet
     accepts_block_for :before

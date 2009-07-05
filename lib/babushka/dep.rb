@@ -93,7 +93,7 @@ module Babushka
     def process_in_dir
       path = payload[:run_in].is_a?(Symbol) ? vars[payload[:run_in]] : payload[:run_in]
       in_dir path do
-        process_deps and process_self
+        call_task(:setup) and process_deps and process_self
       end
     end
 
