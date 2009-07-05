@@ -38,6 +38,4 @@ dep 'existing db' do
   meet { rails_rake "db:create" }
 end
 
-gem 'rails' do
-  requires 'rubygems'
-end
+gem 'rails'

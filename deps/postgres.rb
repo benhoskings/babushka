@@ -1,5 +1,5 @@
 gem 'db gem' do
-  requires 'db software', 'rubygems'
+  requires 'db software'
   installs 'pg'
   provides []
 end
