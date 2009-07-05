@@ -76,7 +76,7 @@ end
 
 def change_line line, replacement, filename
   path = File.expand_path filename
-  sudo "cat > #{path}", :input => IO.readlines(path).map {|l|
+  sudo "cat > #{path}", :as => File.owner(filename), :input => IO.readlines(path).map {|l|
     l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
   }
 end
