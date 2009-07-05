@@ -27,6 +27,14 @@ class Array
   end
 end
 
+require 'etc'
+
+class File
+  def self.owner filename
+    Etc.getpwuid(File.stat(filename).uid).name
+  end
+end
+
 class Hashish
   def self.array
     Hash.new {|hsh,k| hsh[k] = [] }
