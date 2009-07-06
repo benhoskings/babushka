@@ -18,7 +18,11 @@ dep 'db backups' do
   }
   before {
     returning sudo "ssh #{offsite_host} 'true'" do |result|
-      log_error "You need to add root's public key to #{offsite_host}:~/.ssh/authorized_keys." unless result
+      if result
+        log_ok "publickey login to #{offsite_host}"
+      else
+        log_error "You need to add root's public key to #{offsite_host}:~/.ssh/authorized_keys."
+      end
     end
   }
   meet {
