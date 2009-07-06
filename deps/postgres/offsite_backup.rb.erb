@@ -62,7 +62,7 @@ class PSQLBackup
   end
 
   def remove_local
-    log_shell "Removing local sqldumps", "rm -rf #{@path}"
+    log_shell "Removing local sqldumps", "rm -rf #{@dump_path}"
   end
 
   def shell cmd
