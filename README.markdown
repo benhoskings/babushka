@@ -35,7 +35,7 @@ how is dep formed?
 
 A dep (dependency) is something that you want to do, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
 
-Each dep is really small and simple. A little nugget of code that does one thing and does it right. They're deliberately as concise as possible, so you can quickly write it once and then never do that job manually again.
+Each dep is really small and simple. A little nugget of code that does one thing and does it right. They're deliberately as concise as possible, so you can quickly write one and then never do its job manually again.
 
 Example: to get a rails app running..
 
@@ -43,7 +43,7 @@ Example: to get a rails app running..
       requires 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
     end
 
-... you just need to satisfy those four requirements. Each of which depend on a few other things, and so on. So 'vhost enabled' from above:
+... there are four requirements (maybe more, for your app - just tack them on). Each one depends on a few other things, and so on. So `vhost enabled` from above:
 
     dep 'vhost enabled' do
       requires 'vhost configured'
@@ -71,7 +71,7 @@ This isn't only about deploying webapps though. Deps like to do anything that yo
       }
     end
 
-Don't worry about your_ssh_public_key - Babushka will ask for it when it needs the value.
+Don't worry about `your_ssh_public_key` - Babushka will ask for it when it needs the value.
 
 So in general:
 
@@ -91,7 +91,7 @@ what are there deps for?
 
 Pretty much whatever I've needed. That means that there are lots missing, and the ones there are may well not be right for you.
 
-But a dep is so easy to write or modify, you can do up a quick one for just about anything and pop it in ~/.babushka/deps. Send me the good ones and I'll include em!
+But a dep is so easy to write or modify, you can do up a quick one for just about anything and pop it in `~/.babushka/deps`. Send me the good ones and I'll include 'em!
 
 
 n.b.
