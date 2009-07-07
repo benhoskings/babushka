@@ -23,7 +23,9 @@ module Babushka
       :force => %w[-f --force]
     }.freeze
 
-    attr_reader :opts
+    def opts
+      @opts || {}
+    end
 
     def run args
       if !(@setup ||= setup(args))
