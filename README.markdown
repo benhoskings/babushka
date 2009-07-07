@@ -97,4 +97,4 @@ But a dep is so easy to write or modify, you can do up a quick one for just abou
 n.b.
 ---
 
-Babushka is new, in flux, and has approximately 0% test coverage. Also, many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
+Babushka is new, in flux, and only has partial test coverage. Also, many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
