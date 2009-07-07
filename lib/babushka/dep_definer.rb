@@ -5,8 +5,6 @@ module Babushka
 
     attr_reader :payload, :source
 
-    @@default_payload = {}
-
     def initialize dep, &block
       @dep = dep
       @payload = {}
@@ -36,9 +34,9 @@ module Babushka
     end
 
     def self.accepts_hash_for method_name, default = {}
-      @@default_payload[method_name] = default
+      (@@default_hash_payload ||= {})[method_name] = default
       define_method method_name do |first, *rest|
-        payload[method_name] ||= @@default_payload[method_name].dup
+        payload[method_name] ||= @@default_hash_payload[method_name].dup
         if (val = from_first_and_rest(first, rest)).is_a? Array
           send method_name, :all => val
         else
@@ -49,7 +47,7 @@ module Babushka
       end
       define_method "#{method_name}_for_system" do
         if payload[method_name].nil?
-          @@default_payload[method_name]
+          @@default_hash_payload[method_name]
         else
           (payload[method_name][:all] + payload[method_name][uname]).uniq
         end
@@ -57,9 +55,9 @@ module Babushka
     end
 
     def self.accepts_block_for method_name, default = {}
-      @@default_payload[method_name] = default
+      (@@default_block_payload ||= {})[method_name] = default
       define_method method_name do |*args, &block|
-        payload[method_name] ||= @@default_payload[method_name].dup
+        payload[method_name] ||= @@default_block_payload[method_name].dup
         if (opts = args.first).nil?
           payload[method_name][:all] = block
         elsif !opts.is_a?(Hash)
