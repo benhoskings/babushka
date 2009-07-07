@@ -16,9 +16,13 @@ def in_dir dir, opts = {}, &block
   else
     path = File.expand_path(dir)
     Dir.mkdir(path) if opts[:create] unless File.exists?(path)
-    Dir.chdir path do
-      debug "in dir #{dir} (#{path})" do
-        yield
+    if Dir.pwd == path
+      yield
+    else
+      Dir.chdir path do
+        debug "in dir #{dir} (#{path})" do
+          yield
+        end
       end
     end
   end
