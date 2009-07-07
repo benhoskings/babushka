@@ -86,15 +86,23 @@ describe "in_dir" do
     Dir.rmdir(@nonexistent_dir) if File.directory?(@nonexistent_dir)
   end
 
-  it "shouldn't change dir unless required" do
-    in_dir(@pwd) {
+  it "should yield if no chdir is required" do
+    has_yielded = false
+    l = L{
       Dir.pwd.should == @original_pwd
+      has_yielded = true
     }
+    in_dir @original_pwd, &l
+    has_yielded.should be_true
   end
   it "should change dir for the duration of the block" do
-    in_dir(@tmp_dir) {
+    has_yielded = false
+    l = L{
       Dir.pwd.should == @tmp_dir
+      has_yielded = true
     }
+    in_dir @tmp_dir, &l
+    has_yielded.should be_true
     Dir.pwd.should == @original_pwd
   end
   it "should work recursively" do
