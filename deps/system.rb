@@ -30,22 +30,16 @@ dep 'path_helper fish support' do
   }
 end
 
-dep 'hostname' do
+dep 'hostname', :for => :linux do
   met? {
-    if osx?
-      true
-    else
-      current_hostname = shell('hostname -f')
-      stored_hostname = read_file('/etc/hostname')
-      !stored_hostname.blank? && current_hostname == stored_hostname
-    end
+    current_hostname = shell('hostname -f')
+    stored_hostname = read_file('/etc/hostname')
+    !stored_hostname.blank? && current_hostname == stored_hostname
   }
   meet {
-    if linux?
-      sudo "echo #{hostname shell('hostname')} > /etc/hostname"
-      sudo "sed -ri 's/^127.0.0.1.*$/127.0.0.1 #{hostname} localhost.localdomain localhost/' /etc/hosts"
-      sudo "/etc/init.d/hostname.sh"
-    end
+    sudo "echo #{hostname shell('hostname')} > /etc/hostname"
+    sudo "sed -ri 's/^127.0.0.1.*$/127.0.0.1 #{hostname} localhost.localdomain localhost/' /etc/hosts"
+    sudo "/etc/init.d/hostname.sh"
   }
 end
 
