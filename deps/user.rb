@@ -14,9 +14,7 @@ end
 
 dep 'passwordless ssh logins' do
   requires 'user exists'
-  met? {
-    !failable_shell("grep '#{your_ssh_public_key}' ~/.ssh/authorized_keys").stdout.empty?
-  }
+  met? { grep your_ssh_public_key, '~/.ssh/authorized_keys' }
   meet {
     shell 'mkdir -p ~/.ssh'
     append_to_file your_ssh_public_key, "~/.ssh/authorized_keys"
@@ -32,12 +30,8 @@ end
 
 dep 'dot files' do
   requires 'user exists', 'git'
-  met? {
-    File.exists?(ENV['HOME'] / ".dot-files/.git")
-  }
-  meet {
-    shell 'wget "http://github.com/benhoskings/dot-files/tree/master/clone_and_link.sh?raw=true" -O - | bash'
-  }
+  met? { File.exists?(ENV['HOME'] / ".dot-files/.git") }
+  meet { shell 'wget "http://github.com/benhoskings/dot-files/tree/master/clone_and_link.sh?raw=true" -O - | bash' }
 end
 
 dep 'user exists' do

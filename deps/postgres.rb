@@ -13,9 +13,7 @@ end
 dep 'db backups' do
   requires 'db software'
   asks_for :offsite_host
-  met? {
-    shell "test -x /etc/cron.hourly/postgres_offsite_backup"
-  }
+  met? { shell "test -x /etc/cron.hourly/postgres_offsite_backup" }
   before {
     returning sudo "ssh #{offsite_host} 'true'" do |result|
       if result
