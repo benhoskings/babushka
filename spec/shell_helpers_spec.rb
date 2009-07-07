@@ -108,7 +108,7 @@ describe "in_dir" do
   it "should work recursively" do
     in_dir(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
-      in_dir(@tmp_dir) {
+      in_dir(@tmp_dir_2) {
         Dir.pwd.should == @tmp_dir_2
       }
       Dir.pwd.should == @tmp_dir
