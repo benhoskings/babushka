@@ -25,6 +25,7 @@ module Babushka
       @opts = {
         :for => :all
       }.merge in_opts
+      @run_opts = default_run_opts
       @definer = definer_class.new self, &block
       @definer.process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
