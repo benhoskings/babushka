@@ -71,6 +71,10 @@ module Babushka
       end
     end
 
+    def self.accepted_blocks
+      @@default_block_payload.keys
+    end
+
     accepts_hash_for :requires, Hashish.array
     accepts_hash_for :asks_for, Hashish.array
     accepts_block_for :setup
