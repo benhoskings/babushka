@@ -41,6 +41,9 @@ module Babushka
     def self.names
       @@deps.keys
     end
+    def self.clear!
+      @@deps = {}
+    end
 
     def self.register dep
       raise "There is already a registered dep called '#{dep.name}'." unless deps[dep.name].nil?
