@@ -19,7 +19,7 @@ module Babushka
     end
 
     def self.current_load_path
-      @@current_load_path
+      @@current_load_path ||= nil
     end
 
     def self.load_deps_from path
