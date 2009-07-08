@@ -33,24 +33,31 @@ module Babushka
       end
     end
 
-    def self.accepts_hash_for method_name, default = {}
-      (@@default_hash_payload ||= {})[method_name] = default
-      define_method method_name do |first, *rest|
-        payload[method_name] ||= @@default_hash_payload[method_name].dup
-        if (val = from_first_and_rest(first, rest)).is_a? Array
-          send method_name, :all => val
+    def self.accepts_hash_for method_name, default = nil
+      define_method method_name do |*args|
+        if args.blank?
+          hash_for method_name, default
         else
-          val.each_pair {|acc,val|
-            payload[method_name][acc].concat([*val]).uniq!
-          }
+          store_hash_for method_name, args
         end
       end
-      define_method "#{method_name}_for_system" do
-        if payload[method_name].nil?
-          @@default_hash_payload[method_name]
-        else
-          (payload[method_name][:all] + payload[method_name][uname]).uniq
-        end
+    end
+
+    def store_hash_for method_name, args
+      payload[method_name] = Hashish.array
+      (
+        args.first.is_a?(Hash) ? args.first : {:all => args.first}
+      ).each_pair {|k,v|
+        payload[method_name][k].concat([*v]).uniq!
+      }
+    end
+
+    def hash_for method_name, default
+      if payload[method_name].nil?
+        default_value = default.is_a?(Symbol) ? send(default) : default
+        [*default_value]
+      else
+        (payload[method_name][:all] + payload[method_name][uname]).uniq
       end
     end
 
