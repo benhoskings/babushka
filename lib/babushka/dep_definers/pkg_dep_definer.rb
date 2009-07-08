@@ -1,8 +1,8 @@
 module Babushka
   class PkgDepDefiner < BaseDepDefiner
 
-    accepts_hash_for :installs, Hashish.array
-    accepts_hash_for :provides, Hashish.array
+    accepts_hash_for :installs, :name
+    accepts_hash_for :provides, :name
 
 
     def process
