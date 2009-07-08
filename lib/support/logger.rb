@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Babushka
   module LoggerHelpers
     def self.included base # :nodoc:
