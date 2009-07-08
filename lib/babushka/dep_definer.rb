@@ -54,15 +54,23 @@ module Babushka
       end
     end
 
-    def self.accepts_block_for method_name, default = {}
+    def self.accepts_block_for method_name
       define_method method_name do |*args, &block|
         if block.nil?
-          payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
+          payload_for method_name
         else
-          opts = {:on => :all}.merge(args.first || {})
-          (payload[method_name] = {})[opts[:on]] = block
+          store_block_for method_name, args, block
         end
       end
+    end
+
+    def store_block_for method_name, args, block
+      opts = {:on => :all}.merge(args.first || {})
+      (payload[method_name] = {})[opts[:on]] = block
+    end
+
+    def payload_for method_name
+      payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
     end
 
     def self.accepted_blocks
