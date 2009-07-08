@@ -69,7 +69,7 @@ module Babushka
       (@@accepted_blocks ||= []).push method_name
       define_method method_name do |*args, &block|
         if block.nil?
-          payload_for method_name
+          block_for method_name
         else
           store_block_for method_name, args, block
         end
@@ -81,7 +81,7 @@ module Babushka
       (payload[method_name] = {})[opts[:on]] = block
     end
 
-    def payload_for method_name
+    def block_for method_name
       payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
     end
 
