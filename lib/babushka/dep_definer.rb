@@ -55,19 +55,13 @@ module Babushka
     end
 
     def self.accepts_block_for method_name, default = {}
-      (@@default_block_payload ||= {})[method_name] = default
       define_method method_name do |*args, &block|
-        payload[method_name] ||= @@default_block_payload[method_name].dup
-        if (opts = args.first).nil?
-          payload[method_name][:all] = block
-        elsif !opts.is_a?(Hash)
-          raise "The only argument #{method_name} accepts is a Hash of options."
+        if block.nil?
+          payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
         else
-          payload[method_name][opts[:on] || :all] = block
+          opts = {:on => :all}.merge(args.first || {})
+          (payload[method_name] = {})[opts[:on]] = block
         end
-      end
-      define_method "#{method_name}_for_system" do
-        payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
       end
     end
 
