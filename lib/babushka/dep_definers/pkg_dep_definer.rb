@@ -27,15 +27,15 @@ module Babushka
     end
 
     def packages_present
-      if pkg_or_default.is_a? Hash
-        pkg_or_default.all? {|pkg_name, version| pkg_manager.has?(pkg_name, :version => version) }
+      if installs.is_a? Hash
+        installs.all? {|pkg_name, version| pkg_manager.has? pkg_name, :version => version }
       else
-        pkg_or_default.all? {|pkg_name| pkg_manager.has?(pkg_name) }
+        installs.all? {|pkg_name| pkg_manager.has? pkg_name }
       end
     end
 
     def cmds_in_path
-      present, missing = provides_or_default.partition {|cmd_name| cmd_dir(cmd_name) }
+      present, missing = provides.partition {|cmd_name| cmd_dir(cmd_name) }
       good, bad = present.partition {|cmd_name| pkg_manager.cmd_in_path? cmd_name }
 
       log_ok "#{good.map {|i| "'#{i}'" }.to_list} run#{'s' if good.length == 1} from #{cmd_dir(good.first)}." unless good.empty?
@@ -50,24 +50,11 @@ module Babushka
     end
 
     def install_packages
-      pkg_manager.install! pkg_or_default
+      pkg_manager.install! installs
     end
 
     def pkg_manager
       PkgManager.for_system
-    end
-
-    def pkg_or_default
-      if payload[:installs].nil?
-        @dep.name
-      elsif payload[:installs].is_a? Hash
-        payload[:installs][pkg_manager.manager_key] || []
-      else
-        [*payload[:installs]]
-      end
-    end
-    def provides_or_default
-      provides_for_system || [@dep.name]
     end
   end
 end
