@@ -12,6 +12,10 @@ module Babushka
       @source = self.class.current_load_path
     end
 
+    def name
+      @dep.name
+    end
+
     def process
       instance_eval &@block unless @block.nil?
     end
