@@ -29,6 +29,9 @@ http {
 
   passenger_root <%= Babushka::PkgManager.for_system.prefix %>/lib/ruby/gems/1.8/gems/passenger-<%= passenger_version %>;
   passenger_ruby <%= Babushka::PkgManager.for_system.prefix %>/bin/ruby;
+  passenger_use_global_queue on;
+  passenger_max_pool_size 16;
+  passenger_pool_idle_time 1800;
 
   include vhosts/on/*.conf;
 }
