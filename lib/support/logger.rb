@@ -13,6 +13,8 @@ module Babushka
 
   class Logger
   class << self
+    TickChar = '√'
+    CrossChar = '×'
     @@indentation_level = 0
 
     def log_error message, opts = {}, &block
@@ -33,7 +35,7 @@ module Babushka
 
     def log_result message, opts = {}, &block
       log [
-        (opts[:result] ? '√' : (opts[:fail_symbol] || '×')).colorize(opts[:result] ? (opts[:ok_color] || 'grey') : (opts[:fail_color] || 'red')),
+        (opts[:result] ? TickChar : (opts[:fail_symbol] || '×')).colorize(opts[:result] ? (opts[:ok_color] || 'grey') : (opts[:fail_color] || 'red')),
         "#{message}".colorize(opts[:result] ? (opts[:ok_color] || 'none') : (opts[:fail_color] || 'red'))
       ].join(' ')
     end
@@ -63,16 +65,16 @@ module Babushka
         returning yield do |result|
           @@indentation_level -= 1
           if opts[:closing_status] == :dry_run
-            log '}'.colorize('grey') + ' ' + "#{result ? '√' : '~'} #{message}".colorize(result ? 'green' : 'blue')
+            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : '~'} #{message}".colorize(result ? 'green' : 'blue')
           elsif opts[:closing_status]
-            log '}'.colorize('grey') + ' ' + "#{result ? '√' : '×'} #{message}".colorize(result ? 'green' : 'red')
+            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar} #{message}".colorize(result ? 'green' : 'red')
           else
             log "}".colorize('grey')
           end
         end
       else
         message.gsub! "\n", "\n#{indentation}"
-        message = "#{'√'.colorize('grey')} #{message}" if opts[:as] == :ok
+        message = "#{TickChar.colorize('grey')} #{message}" if opts[:as] == :ok
         message = message.colorize 'red' if opts[:as] == :error
         message = message.end_with "\n" unless opts[:newline] == false
         print message
