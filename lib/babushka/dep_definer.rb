@@ -58,7 +58,7 @@ module Babushka
 
     def hash_for method_name, default
       if payload[method_name].nil?
-        default_value = default.is_a?(Symbol) ? send(default) : default
+        default_value = default.is_a?(Symbol) ? send(default) : (default || [])
         [*default_value]
       else
         (payload[method_name][:all] + payload[method_name][uname]).uniq
