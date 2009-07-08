@@ -72,14 +72,14 @@ describe "accepts_hash_for resultant values" do
 
   it "should always present an array" do
     Dep.all.each {|dep|
-      dep.definer.requires_for_system.should be_a Array
+      dep.definer.requires.should be_a Array
     }
   end
 
   it "should always present the same data" do
     Dep.all.each {|dep|
       values = @deps_to_make[dep.name].is_a?(Hash) ? @deps_to_make[dep.name].values.first : @deps_to_make[dep.name]
-      dep.definer.requires_for_system.should == [*values]
+      dep.definer.requires.should == [*values]
     }
   end
 

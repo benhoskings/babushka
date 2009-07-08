@@ -111,7 +111,7 @@ module Babushka
     end
 
     def process_deps
-      @definer.requires_for_system.send(run_opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
+      @definer.requires.send(run_opts[:attempt_to_meet] ? :all? : :each, &L{|dep_name|
         unless (dep = Dep(dep_name)).nil?
           returning dep.send :process, run_opts.merge(:parent_vars => vars) do
             run_opts[:child_vars].update dep.vars
@@ -149,7 +149,7 @@ module Babushka
     end
 
     def call_task task_name
-      (@definer.send("#{task_name}_for_system") || default_task(task_name)).call
+      (@definer.send(task_name) || default_task(task_name)).call
     end
 
     def default_task task_name
