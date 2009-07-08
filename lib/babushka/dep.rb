@@ -41,6 +41,9 @@ module Babushka
     def self.names
       @@deps.keys
     end
+    def self.all
+      @@deps.values
+    end
     def self.clear!
       @@deps = {}
     end
