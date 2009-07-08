@@ -24,3 +24,8 @@ pkg 'ruby' do
   installs :macports => 'ruby', :apt => %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
   provides %w[ruby irb ri rdoc]
 end
+
+pkg 'ruby 1.9' do
+  installs :macports => 'ruby19', :apt => %w[ruby1.9 irb1.9 ri1.9 rdoc1.9 ruby1.9-dev libopenssl-ruby1.9]
+  provides %w[ruby1.9 irb1.9 ri1.9 rdoc1.9]
+end
