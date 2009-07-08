@@ -89,14 +89,6 @@ module Babushka
       @@accepted_blocks
     end
 
-    accepts_hash_for :requires, Hashish.array
-    accepts_hash_for :asks_for, Hashish.array
-    accepts_block_for :setup
-    accepts_block_for :met?
-    accepts_block_for :meet
-    accepts_block_for :before
-    accepts_block_for :after
-
     def run_in path_or_key
       asks_for path_or_key if path_or_key.is_a?(Symbol)
       payload[:run_in] = path_or_key

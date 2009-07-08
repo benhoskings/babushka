@@ -1,5 +1,5 @@
 module Babushka
-  class PkgDepDefiner < DepDefiner
+  class PkgDepDefiner < BaseDepDefiner
 
     accepts_hash_for :installs, Hashish.array
     accepts_hash_for :provides, Hashish.array

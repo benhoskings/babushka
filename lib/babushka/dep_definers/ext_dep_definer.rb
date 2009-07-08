@@ -1,5 +1,5 @@
 module Babushka
-  class ExtDepDefiner < DepDefiner
+  class ExtDepDefiner < BaseDepDefiner
 
     def if_missing *cmds, &block
       @cmds, @block = cmds, block

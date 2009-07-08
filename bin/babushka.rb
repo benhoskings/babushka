@@ -12,6 +12,7 @@
   babushka/dep
   babushka/definer_helpers
   babushka/dep_definer
+  babushka/dep_definers/base_dep_definer
   babushka/dep_definers/pkg_dep_definer
   babushka/dep_definers/gem_dep_definer
   babushka/dep_definers/ext_dep_definer
