@@ -66,6 +66,7 @@ module Babushka
     end
 
     def self.accepts_block_for method_name
+      (@@accepted_blocks ||= []).push method_name
       define_method method_name do |*args, &block|
         if block.nil?
           payload_for method_name
@@ -85,7 +86,7 @@ module Babushka
     end
 
     def self.accepted_blocks
-      @@default_block_payload.keys
+      @@accepted_blocks
     end
 
     accepts_hash_for :requires, Hashish.array
