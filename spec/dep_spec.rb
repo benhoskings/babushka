@@ -1,5 +1,5 @@
-require 'spec/spec_helper'
-require 'spec/dep_helper'
+require 'spec/spec_support'
+require 'spec/dep_support'
 
 describe "dep creation" do
   it "should work for blank deps" do
