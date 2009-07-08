@@ -16,7 +16,7 @@ module Babushka
   class Dep
     include PromptHelpers
 
-    attr_reader :name, :local_vars, :opts, :run_opts
+    attr_reader :name, :local_vars, :opts, :run_opts, :definer
     attr_accessor :unmet_message
 
     def initialize name, in_opts, block, definer_class = DepDefiner
