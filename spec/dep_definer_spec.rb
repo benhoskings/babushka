@@ -60,6 +60,12 @@ describe "accepts_hash_for resultant values" do
     }
   }
 
+  it "should present an empty array for no input" do
+    dep 'nothing' do
+    end
+    Dep('nothing').definer.requires.should == []
+  end
+
   it "should always result in a hash of arrays" do
     Dep.all.each {|dep|
       dep.definer.payload[:requires].should be_a Hash
