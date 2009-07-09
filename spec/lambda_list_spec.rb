@@ -10,7 +10,12 @@ class LambdaListTest
   def chooser
     :macports
   end
+  def default_formats
+    %w[html xml js json]
+  end
   accepts_list_for :records
+  accepts_list_for :produces, "a default response"
+  accepts_list_for :valid_formats, :default_formats
 end
 
 describe "invalid input" do
@@ -23,16 +28,32 @@ describe "invalid input" do
   end
 end
 
+describe "storing" do
+  before {
+    @list = LambdaListTest.new
+  }
+  it "should return self to allow chaining" do
+    [:records, :produces, :valid_formats].each {|method_name|
+      @list.send(method_name, "hello").should == @list
+    }
+  end
+end
+
 describe "returning" do
   before {
     @list = LambdaListTest.new
   }
   it "should return the empty list for no input" do
-    LambdaListTest.new.records.should == []
+    @list.records.should == []
+  end
+  it "should return the correct default when no value is stored" do
+    @list.produces.should == ["a default response"]
+    @list.valid_formats.should == %w[html xml js json]
   end
   it "should return whatever is stored when called without args" do
-    @list.records "hello"
-    @list.records.should == ["hello"]
+    [:records, :produces, :valid_formats].each {|method_name|
+      @list.send(method_name, "hello").send(method_name).should == ["hello"]
+    }
   end
 end
 

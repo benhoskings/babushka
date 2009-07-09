@@ -15,6 +15,7 @@ module Babushka
             list_for method_name, default
           else
             store_list_for method_name, block || [*args].flatten
+            self
           end
         end
       end
