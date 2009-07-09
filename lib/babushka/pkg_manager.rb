@@ -115,6 +115,16 @@ module Babushka
       end
     end
 
+    def gem_path_for gem_name, opts = {}
+      unless (version = has?(gem_name, :version => opts[:version])).nil?
+        File.join gem_root, "#{gem_name}-#{version.to_s}"
+      end
+    end
+
+    def gem_root
+      File.join shell('gem env gemdir'), 'gems'
+    end
+
 
     private
 
