@@ -12,5 +12,18 @@ describe "lambda choosing" do
       theirs "this is theirs"
     }.choose(:ours).should == ["this is ours"]
   end
+
+  it "should return the data intact" do
+    {
+      "string" => ["string"],
+      %w[a r r a y] => %w[a r r a y],
+      {:h => 'a', :s => 'h'} => {:h => 'a', :s => 'h'}
+    }.each_pair {|input, expected|
+      LambdaChooser.new {
+        ours input
+        theirs "this is theirs"
+      }.choose(:ours).should == expected
+    }
+  end
   
 end

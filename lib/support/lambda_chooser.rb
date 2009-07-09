@@ -16,7 +16,13 @@ module Babushka
 
     def method_missing method_name, first = nil, *rest, &block
       if @name == method_name
-        @result = block_given? ? block : [*first].concat(rest)
+        @result = if block_given?
+          block
+        elsif first.is_a? Hash
+          first
+        else
+          [*first].concat(rest)
+        end
       end
     end
 
