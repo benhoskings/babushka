@@ -14,9 +14,9 @@ module Babushka
       end
     end
 
-    def method_missing method_name, *args, &block
+    def method_missing method_name, first = nil, *rest, &block
       if @name == method_name
-        @result = block_given? ? block : [*args]
+        @result = block_given? ? block : [*first].concat(rest)
       end
     end
 
