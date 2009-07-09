@@ -6,6 +6,7 @@
   support/prompt_helpers
   support/shell_helpers
   support/lambda_chooser
+  support/lambda_list
 
   babushka/base
   babushka/shell
