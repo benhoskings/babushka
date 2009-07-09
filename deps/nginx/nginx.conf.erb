@@ -29,7 +29,6 @@ http {
 
   passenger_root <%= passenger_root %>;
   passenger_ruby <%= Babushka::PkgManager.for_system.prefix %>/bin/ruby;
-  passenger_use_global_queue on;
   passenger_max_pool_size 16;
   passenger_pool_idle_time 1800;
 
