@@ -1,22 +1,5 @@
 require 'spec/spec_support'
-
-class LambdaListTest
-  include LambdaList
-  attr_reader :payload
-  def initialize name = nil
-    @name = name
-    @payload = {}
-  end
-  def chooser
-    :macports
-  end
-  def default_formats
-    %w[html xml js json]
-  end
-  accepts_list_for :records
-  accepts_list_for :produces, "a default response"
-  accepts_list_for :valid_formats, :default_formats
-end
+require 'spec/lambda_list_support'
 
 describe "invalid input" do
   it "should reject values and a block at once" do
@@ -58,16 +41,8 @@ describe "returning" do
 end
 
 describe "value input" do
-  before {
-    @test_cases = {
-      'a'       => %w[a],
-      %w[a]     => %w[a],
-      %w[a b c] => %w[a b c],
-      {'a' => '0.1', 'b' => '0.2.3'} => {'a' => '0.1', 'b' => '0.2.3'},
-    }
-  }
   it "should always return a list or hash" do
-    @test_cases.each_pair {|input, expected|
+    test_lists.each_pair {|input, expected|
       list = LambdaListTest.new
       list.records input
       list.records.should == expected
@@ -76,27 +51,42 @@ describe "value input" do
 end
 
 describe "lambda input" do
-  before {
-    @test_cases = {
-      L{ } => [],
-      L{
-        apt %w[ruby irb ri rdoc]
-      } => [],
-      L{
-        macports 'ruby'
-        apt %w[ruby irb ri rdoc]
-      } => %w[ruby],
-      L{
-        macports %w[something else]
-        apt %w[some apt packages]
-      } => %w[something else]
-    }
-  }
-  it "should return the correct call's args as a list or hash" do
-    @test_cases.each_pair {|input, expected|
+  it "should return the correct call's args" do
+    test_lambdas.each_pair {|input, expected|
       list = LambdaListTest.new(input.inspect)
       list.records &input
       list.records.should == expected
     }
+  end
+end
+
+describe "lambda and value input" do
+  it "should return the correct list or hash" do
+    test_lists.each_pair {|input, expected|
+      l = L{
+        macports input
+      }
+      list = LambdaListTest.new
+      list.records &l
+      list.records.should == expected
+    }
+  end
+end
+
+describe "nested lambdas" do
+  it "should choose recursively" do
+    l = L{
+      macports {
+        macports "haha, excellent"
+        apt ":|"
+      }
+      apt {
+        macports "no, not this one"
+        apt "OK this one is just completely wrong"
+      }
+    }
+    list = LambdaListTest.new
+    list.records &l
+    list.records.should == ["haha, excellent"]
   end
 end
