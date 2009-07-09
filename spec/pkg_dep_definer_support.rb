@@ -1,16 +1,12 @@
-def setup_test_lambdas
-  @lambda_hello = L{ "hello world!" }
-end
-
-def setup_test_deps
-  pkg 'default'
-  pkg 'default provides' do
-    installs 'something else'
+def make_test_pkgs pkg_type
+  send pkg_type, "default #{pkg_type}"
+  send pkg_type, "default provides" do
+    installs "something else"
   end
-  pkg 'default installs' do
-    provides 'something_else'
+  send pkg_type, "default installs" do
+    provides "something_else"
   end
-  pkg 'empty provides' do
+  send pkg_type, "empty provides" do
     provides []
   end
 end
