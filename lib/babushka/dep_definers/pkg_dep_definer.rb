@@ -1,9 +1,8 @@
 module Babushka
   class PkgDepDefiner < BaseDepDefiner
 
-    accepts_hash_for :installs, :name
-    accepts_hash_for :provides, :name
-
+    accepts_list_for :installs, :name
+    accepts_list_for :provides, :name
 
     def process
       super
@@ -22,8 +21,12 @@ module Babushka
 
     private
 
+    def chooser
+      PkgManager.for_system
+    end
+
     def applicable?
-      !(payload[:installs].is_a?(Hash) && payload[:installs][pkg_manager.manager_key].blank?)
+      !installs.blank?
     end
 
     def packages_present
