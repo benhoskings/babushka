@@ -5,6 +5,7 @@
   support/popen
   support/prompt_helpers
   support/shell_helpers
+  support/lambda_chooser
 
   babushka/base
   babushka/shell
