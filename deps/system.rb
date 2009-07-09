@@ -74,5 +74,8 @@ dep 'admin group' do
 end
 
 dep 'build tools' do
-  requires :osx => 'xcode tools', :linux => ['build-essential', 'autoconf']
+  requires {
+    osx 'xcode tools'
+    linux ['build-essential', 'autoconf']
+  }
 end
