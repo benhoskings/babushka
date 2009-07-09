@@ -2,6 +2,7 @@ module Babushka
   class DepDefiner
     include ShellHelpers
     include DefinerHelpers
+    include LambdaList
 
     attr_reader :payload, :source
 
@@ -34,34 +35,6 @@ module Babushka
         end
       }) do |result|
         log "Loaded #{Dep.deps.count - previous_count} dependencies from #{path}."
-      end
-    end
-
-    def self.accepts_hash_for method_name, default = nil
-      define_method method_name do |*args|
-        if args.blank?
-          hash_for method_name, default
-        else
-          store_hash_for method_name, args
-        end
-      end
-    end
-
-    def store_hash_for method_name, args
-      payload[method_name] = Hashish.array
-      (
-        args.first.is_a?(Hash) ? args.first : {:all => args.first}
-      ).each_pair {|k,v|
-        payload[method_name][k].concat([*v]).uniq!
-      }
-    end
-
-    def hash_for method_name, default
-      if payload[method_name].nil?
-        default_value = default.is_a?(Symbol) ? send(default) : (default || [])
-        [*default_value]
-      else
-        (payload[method_name][:all] + payload[method_name][uname]).uniq
       end
     end
 
