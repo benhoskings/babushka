@@ -28,13 +28,21 @@ module Babushka
       def store_list_for method_name, data
         if data.respond_to? :call
           store_list_for method_name, LambdaChooser.new(&data).choose(chooser)
-        elsif !data.nil?
-          payload[method_name] = data.first.is_a?(Hash) ? data.first : data
+        else
+          payload[method_name] = if data.nil?
+            []
+          else
+            data.first.is_a?(Hash) ? data.first : data
+          end
         end
       end
 
       def list_for method_name, default
-        payload[method_name] || [*(default.is_a?(Symbol) ? send(default) : (default || []))]
+        if payload.has_key? method_name
+          payload[method_name]
+        else
+          [*(default.is_a?(Symbol) ? send(default) : (default || []))]
+        end
       end
 
     end

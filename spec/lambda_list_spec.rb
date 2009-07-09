@@ -58,6 +58,13 @@ describe "lambda input" do
       list.records.should == expected
     }
   end
+  it "should ignore default whenever any lambda is specified" do
+    test_lambdas.each_pair {|input, expected|
+      list = LambdaListTest.new(input.inspect)
+      list.produces &input
+      list.produces.should == expected
+    }
+  end
 end
 
 describe "lambda and value input" do
