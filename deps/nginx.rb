@@ -111,14 +111,14 @@ dep 'webserver configured' do
       unmet "the nginx config needs to be regenerated"
     else
       configured_root = IO.read('/opt/nginx/conf/nginx.conf').val_for('passenger_root')
-      set :passenger_root, Babushka::GemHelper.gem_path_for('passenger')
+      passenger_root = Babushka::GemHelper.gem_path_for('passenger')
       returning configured_root == passenger_root do |result|
         log_result "nginx is configured to use #{File.basename configured_root}", :result => result
       end
     end
   }
   meet {
-    set :passenger_version, Babushka::GemHelper.has?('passenger', :log => false)
+    set :passenger_root, Babushka::GemHelper.gem_path_for('passenger')
     render_erb 'nginx/nginx.conf.erb', :to => '/opt/nginx/conf/nginx.conf'
   }
   after {
