@@ -7,6 +7,7 @@
   support/shell_helpers
   support/lambda_chooser
   support/lambda_list
+  support/version_str
 
   babushka/base
   babushka/shell

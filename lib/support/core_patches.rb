@@ -119,7 +119,7 @@ class String
   end
 
   def to_version
-    VersionStr.new self
+    Babushka::VersionStr.new self
   end
 
   def colorize description = '', start_at = nil
@@ -135,26 +135,6 @@ class String
   end
 
   private
-
-  class VersionStr
-    include Comparable
-    attr_reader :pieces
-    def <=> other
-      @pieces.zip(other.pieces).map {|(a,b)|
-        a <=> b
-      }.compact.reject(&:zero?).first || 0
-    end
-    def initialize str
-      @pieces = str.split('.').map(&:to_i)
-    end
-    def to_s
-      pieces.join('.')
-    end
-    define_method "~>" do |other|
-      (self >= other) && pieces.starts_with?(other.pieces[0..-2])
-    end
-  end
-
 
   class Colorizer
     HomeOffset = 29
