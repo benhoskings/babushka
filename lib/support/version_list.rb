@@ -31,8 +31,12 @@ module Babushka
         else
           payload[method_name] = if data.nil?
             []
+          elsif data.is_a? Hash
+            data.map {|name,version| ver name, version }
+          elsif data.first.is_a? Hash
+            data.first.map {|name,version| ver name, version }
           else
-            data.first.is_a?(Hash) ? data.first : data
+            data.map {|name| ver name }
           end
         end
       end

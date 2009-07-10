@@ -33,15 +33,18 @@ describe "returning" do
     @list.produces.should == ["a default response"]
     @list.valid_formats.should == %w[html xml js json]
   end
-  it "should return whatever is stored when called without args" do
+  it "should return the value when called without args" do
     [:records, :produces, :valid_formats].each {|method_name|
-      @list.send(method_name, "hello").send(method_name).should == ["hello"]
+      result = @list.send(method_name, "hello").send(method_name)
+      result.length.should == 1
+      result.first.should be_a VersionOf
+      result.first.should == "hello"
     }
   end
 end
 
 describe "value input" do
-  it "should always return a list or hash" do
+  it "should always return a [VersionOf] list" do
     test_lists.each_pair {|input, expected|
       list = VersionListTest.new
       list.records input
@@ -53,14 +56,14 @@ end
 describe "lambda input" do
   it "should return the correct call's args" do
     test_lambdas.each_pair {|input, expected|
-      list = VersionListTest.new(input.inspect)
+      list = VersionListTest.new(input)
       list.records &input
       list.records.should == expected
     }
   end
   it "should ignore default whenever any lambda is specified" do
     test_lambdas.each_pair {|input, expected|
-      list = VersionListTest.new(input.inspect)
+      list = VersionListTest.new(input)
       list.produces &input
       list.produces.should == expected
     }
@@ -68,7 +71,7 @@ describe "lambda input" do
 end
 
 describe "lambda and value input" do
-  it "should return the correct list or hash" do
+  it "should return the correct data" do
     test_lists.each_pair {|input, expected|
       l = L{
         macports input

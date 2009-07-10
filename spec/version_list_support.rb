@@ -18,10 +18,10 @@ end
 
 def test_lists
   {
-    'a'       => %w[a],
-    %w[a]     => %w[a],
-    %w[a b c] => %w[a b c],
-    {'a' => '0.1', 'b' => '0.2.3'} => {'a' => '0.1', 'b' => '0.2.3'},
+    'a'       => [ver('a')],
+    %w[a]     => [ver('a')],
+    %w[a b c] => [ver('a'), ver('b'), ver('c')],
+    {'a' => '0.1', 'b' => '0.2.3'} => [ver('a', '0.1'), ver('b', '0.2.3')],
   }
 end
 
@@ -34,10 +34,10 @@ def test_lambdas
     L{
       macports 'ruby'
       apt %w[ruby irb ri rdoc]
-    } => %w[ruby],
+    } => [ver('ruby')],
     L{
-      macports %w[something else]
-      apt %w[some apt packages]
-    } => %w[something else]
+      macports 'something else'
+      apt 'some apt packages'
+    } => [ver('something else')]
   }
 end
