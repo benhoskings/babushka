@@ -14,6 +14,15 @@ module Babushka
       end
     end
 
+    def == other
+      if other.is_a? VersionOf
+        name == other.name &&
+        version == other.version
+      else
+        to_s == other.to_s
+      end
+    end
+
     def to_s
       [name, version].compact * '-'
     end
