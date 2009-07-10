@@ -129,6 +129,14 @@ end
 
 dep 'webserver installed' do
   requires 'passenger', 'build tools', 'libssl headers', 'zlib headers'
-  met? { File.executable?('/opt/nginx/sbin/nginx') }
+  met? {
+    if !File.executable?('/opt/nginx/sbin/nginx')
+      unmet "nginx isn't installed"
+    elsif !shell('/opt/nginx/sbin/nginx -V') {|shell| shell.stderr }[Babushka::GemHelper.gem_path_for('passenger')]
+      unmet "nginx is installed, but built against the wrong passenger version"
+    else
+      true
+    end
+  }
   meet { build_nginx :nginx_version => '0.7.60', :upload_module_version => '2.0.9' }
 end
