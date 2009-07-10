@@ -31,7 +31,10 @@ end
 
 pkg 'db software' do
   requires 'db in path'
-  installs :macports => 'postgresql83-server', :apt => %w[postgresql postgresql-client libpq-dev]
+  installs {
+    macports 'postgresql83-server'
+    apt %w[postgresql postgresql-client libpq-dev]
+  }
   provides 'psql'
 end
 
