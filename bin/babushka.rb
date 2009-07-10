@@ -6,9 +6,9 @@
   support/prompt_helpers
   support/shell_helpers
   support/lambda_chooser
-  support/lambda_list
   support/version_str
   support/version_of
+  support/version_list
   support/colorizer
 
   babushka/base

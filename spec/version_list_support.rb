@@ -1,5 +1,5 @@
-class LambdaListTest
-  include LambdaList
+class VersionListTest
+  include VersionList
   attr_reader :payload
   def initialize name = nil
     @name = name

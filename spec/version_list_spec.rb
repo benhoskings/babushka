@@ -1,10 +1,10 @@
 require 'spec/spec_support'
-require 'spec/lambda_list_support'
+require 'spec/version_list_support'
 
 describe "invalid input" do
   it "should reject values and a block at once" do
     L{
-      LambdaListTest.new.records "stuff" do
+      VersionListTest.new.records "stuff" do
         more "stuff"
       end
     }.should raise_error ArgumentError, "You can supply arguments or a block, but not both."
@@ -13,7 +13,7 @@ end
 
 describe "storing" do
   before {
-    @list = LambdaListTest.new
+    @list = VersionListTest.new
   }
   it "should return self to allow chaining" do
     [:records, :produces, :valid_formats].each {|method_name|
@@ -24,7 +24,7 @@ end
 
 describe "returning" do
   before {
-    @list = LambdaListTest.new
+    @list = VersionListTest.new
   }
   it "should return the empty list for no input" do
     @list.records.should == []
@@ -43,7 +43,7 @@ end
 describe "value input" do
   it "should always return a list or hash" do
     test_lists.each_pair {|input, expected|
-      list = LambdaListTest.new
+      list = VersionListTest.new
       list.records input
       list.records.should == expected
     }
@@ -53,14 +53,14 @@ end
 describe "lambda input" do
   it "should return the correct call's args" do
     test_lambdas.each_pair {|input, expected|
-      list = LambdaListTest.new(input.inspect)
+      list = VersionListTest.new(input.inspect)
       list.records &input
       list.records.should == expected
     }
   end
   it "should ignore default whenever any lambda is specified" do
     test_lambdas.each_pair {|input, expected|
-      list = LambdaListTest.new(input.inspect)
+      list = VersionListTest.new(input.inspect)
       list.produces &input
       list.produces.should == expected
     }
@@ -73,7 +73,7 @@ describe "lambda and value input" do
       l = L{
         macports input
       }
-      list = LambdaListTest.new
+      list = VersionListTest.new
       list.records &l
       list.records.should == expected
     }
@@ -92,7 +92,7 @@ describe "nested lambdas" do
         apt "OK this one is just completely wrong"
       }
     }
-    list = LambdaListTest.new
+    list = VersionListTest.new
     list.records &l
     list.records.should == ["haha, excellent"]
   end
