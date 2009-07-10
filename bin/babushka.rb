@@ -8,6 +8,7 @@
   support/lambda_chooser
   support/lambda_list
   support/version_str
+  support/version_of
   support/colorizer
 
   babushka/base
