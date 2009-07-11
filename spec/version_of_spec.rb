@@ -13,13 +13,13 @@ end
 
 describe "comparisons" do
   it "should compare to versionless strings" do
-    ver('ruby'       ).should     == 'ruby'
-    ver('ruby', '1.8').should_not == 'ruby'
+    ver('ruby'       ).should     == ver('ruby')
+    ver('ruby', '1.8').should_not == ver('ruby')
   end
   it "should compare to versioned strings" do
-    ver('ruby'       ).should_not == 'ruby-1.8'
-    ver('ruby', '1.8').should     == 'ruby-1.8'
-    ver('ruby', '1.8').should_not == 'ruby-1.9'
+    ver('ruby'       ).should_not == ver('ruby', '1.8')
+    ver('ruby', '1.8').should     == ver('ruby', '1.8')
+    ver('ruby', '1.8').should_not == ver('ruby', '1.9')
   end
   it "should compare to versionless VersionOfs" do
     ver('ruby'       ).should     == ver('ruby')

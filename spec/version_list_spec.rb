@@ -35,16 +35,13 @@ describe "returning" do
   end
   it "should return the value when called without args" do
     [:records, :produces, :valid_formats].each {|method_name|
-      result = @list.send(method_name, "hello").send(method_name)
-      result.length.should == 1
-      result.first.should be_a VersionOf
-      result.first.should == "hello"
+      @list.send(method_name, "hello").send(method_name).should == [ver("hello")]
     }
   end
   it "should append new values to existing ones" do
     @list.records "scores", "quips"
     @list.records "tall tales"
-    @list.records.should == ["scores", "quips", "tall tales"]
+    @list.records.should == [ver("scores"), ver("quips"), ver("tall tales")]
   end
 end
 
@@ -102,6 +99,6 @@ describe "nested lambdas" do
     }
     list = VersionListTest.new
     list.records &l
-    list.records.should == ["haha, excellent"]
+    list.records.should == [ver("haha, excellent")]
   end
 end
