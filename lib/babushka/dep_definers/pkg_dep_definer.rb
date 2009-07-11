@@ -1,8 +1,12 @@
 module Babushka
   class PkgDepDefiner < BaseDepDefiner
 
-    accepts_list_for :installs, :name
-    accepts_list_for :provides, :name
+    accepts_list_for :installs, :default_pkg
+    accepts_list_for :provides, :installs
+
+    def default_pkg
+      VersionOf.new name
+    end
 
     def process
       super
