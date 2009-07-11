@@ -5,7 +5,7 @@ module Babushka
     end
 
     module HelperMethods
-      def Dep name;                    Dep.for name                              end
+      def Dep name;                    Dep.for name.to_s                         end
       def dep name, opts = {}, &block; Dep.new name, opts, block, BaseDepDefiner end
       def pkg name, opts = {}, &block; Dep.new name, opts, block, PkgDepDefiner  end
       def gem name, opts = {}, &block; Dep.new name, opts, block, GemDepDefiner  end
