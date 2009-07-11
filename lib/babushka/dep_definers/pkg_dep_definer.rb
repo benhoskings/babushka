@@ -2,7 +2,7 @@ module Babushka
   class PkgDepDefiner < BaseDepDefiner
 
     accepts_list_for :installs, :default_pkg
-    accepts_list_for :provides, :installs
+    accepts_list_for :provides, :default_pkg
 
     def default_pkg
       VersionOf.new name
