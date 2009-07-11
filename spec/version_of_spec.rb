@@ -39,9 +39,9 @@ describe "matching" do
   end
   it "should only match the correct version" do
     ver('ruby', '1.8').matches?(VersionStr.new('1.8')).should be_true
-    ver('ruby', '1.8').matches?(VersionStr.new('1.9')).should be_false
-    ver('ruby', '1.8').matches?(VersionStr.new('>= 1.7')).should be_true
-    ver('ruby', '1.9').matches?(VersionStr.new('~> 1.8')).should be_true
-    ver('ruby', '2.0').matches?(VersionStr.new('~> 1.8')).should be_false
+    ver('ruby', '1.9').matches?(VersionStr.new('1.8')).should be_false
+    ver('ruby', '>= 1.7').matches?(VersionStr.new('1.8')).should be_true
+    ver('ruby', '~> 1.8').matches?(VersionStr.new('1.9')).should be_true
+    ver('ruby', '~> 1.8').matches?(VersionStr.new('2.0')).should be_false
   end
 end
