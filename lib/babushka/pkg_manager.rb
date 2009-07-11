@@ -21,7 +21,7 @@ module Babushka
         end
       end
     end
-    def install! *pkgs
+    def install! pkgs
       log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
     end
     def prefix
@@ -49,7 +49,7 @@ module Babushka
     def pkg_cmd; 'port' end
     def manager_key; :macports end
 
-    def install! *pkgs
+    def install! pkgs
       log_shell "Fetching #{pkgs.join(', ')}", "#{pkg_cmd} fetch #{pkgs.join(' ')}", :sudo => true
       super
     end
@@ -67,7 +67,7 @@ module Babushka
     def pkg_cmd; 'apt-get -y' end
     def manager_key; :apt end
 
-    def install! *pkgs
+    def install! pkgs
       package_count = sudo("#{pkg_cmd} -s install #{pkgs.join(' ')}").split.grep(/^Inst\b/).length
       dep_count = package_count - pkgs.length
 
@@ -90,14 +90,10 @@ module Babushka
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
 
-    def install! *pkgs
-      if pkgs.first.is_a? Hash
-        pkgs.first.each_pair {|pkg,version|
-          log_shell "Installing #{pkg} via #{manager_key}", "#{pkg_cmd} install #{pkg}#{" --version '#{version}'" unless version.blank?}", :sudo => true
-        }
-      else
-        log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
-      end
+    def install! pkgs
+      pkgs.each {|pkg|
+        log_shell "Installing #{pkg} via #{manager_key}", "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}", :sudo => true
+      }
     end
 
     def gem_path_for gem_name, opts = {}
