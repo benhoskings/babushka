@@ -22,7 +22,7 @@ module Babushka
     private
 
     def chooser
-      PkgManager.for_system
+      PkgManager.for_system.manager_key
     end
 
     def applicable?
