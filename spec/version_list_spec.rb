@@ -41,6 +41,11 @@ describe "returning" do
       result.first.should == "hello"
     }
   end
+  it "should append new values to existing ones" do
+    @list.records "scores", "quips"
+    @list.records "tall tales"
+    @list.records.should == ["scores", "quips", "tall tales"]
+  end
 end
 
 describe "value input" do
