@@ -3,16 +3,21 @@ module Babushka
 
     include Comparable
     attr_reader :pieces, :operator
-    GemVersionOperators = %w[= != > < >= <= ~>].freeze
+    GemVersionOperators = %w[= == != > < >= <= ~>].freeze
 
     def <=> other
-      pieces <=> other.pieces
+      pieces <=> other.pieces unless pieces.nil? || other.pieces.nil?
     end
     def initialize str
-      captures = str.scan(/^(#{GemVersionOperators.join('|')})?\s*([0-9.]+)$/)
-      unless captures.nil? || captures.first.nil? || captures.first.last.nil?
+      captures = str.strip.scan(/^(#{GemVersionOperators.join('|')})?\s*([0-9.]+)$/)
+      if captures.nil? || captures.first.nil? || captures.first.last.nil?
+        # bad input
+      elsif !(captures.first.first.nil? || GemVersionOperators.include?(captures.first.first))
+        # bad operator
+      else
         @pieces = captures.first.last.split('.').map(&:to_i)
         @operator = captures.first.first
+        @operator = '==' if @operator.nil? || @operator == '='
       end
     end
     def to_s

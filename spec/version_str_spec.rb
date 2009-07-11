@@ -22,12 +22,30 @@ describe "parsing" do
     VersionStr.new('0.3.10.2').pieces.should == [0, 3, 10, 2]
   end
   it "should parse the operator if supplied" do
-    v = VersionStr.new('= 0.2')
+    v = VersionStr.new('>= 0.2')
     v.pieces.should == [0, 2]
-    v.operator.should == '='
+    v.operator.should == '>='
 
-    v = VersionStr.new('~>  0.3.10.2')
+    v = VersionStr.new(' ~>  0.3.10.2')
     v.pieces.should == [0, 3, 10, 2]
     v.operator.should == '~>'
+  end
+  it "should convert = to ==" do
+    v = VersionStr.new('= 0.2')
+    v.pieces.should == [0, 2]
+    v.operator.should == '=='
+
+    v = VersionStr.new('== 0.2')
+    v.pieces.should == [0, 2]
+    v.operator.should == '=='
+  end
+  it "should reject invalid operators" do
+    v = VersionStr.new('~ 0.2')
+    v.pieces.should be_nil
+    v.operator.should be_nil
+
+    v = VersionStr.new('>> 0.2')
+    v.pieces.should be_nil
+    v.operator.should be_nil
   end
 end
