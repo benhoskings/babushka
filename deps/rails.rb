@@ -12,7 +12,7 @@ def parse_gem_deps
     if i.first.nil? || i.first.first.nil?
       log_error "Couldn't parse '#{l.chomp}' in #{File.expand_path 'config/environment.rb'}."
     else
-      {i.first.first => i.first.last}
+      ver i.first.first, i.first.last
     end
   }.compact
 end
@@ -21,7 +21,7 @@ dep 'gems installed' do
   setup {
     parse_gem_deps.map {|gem_spec|
       # Make a new Dep for each gem this app needs...
-      gem("#{gem_spec.keys.first} gem") {
+      gem("#{gem_spec.name} gem") {
         installs gem_spec
         provides []
       }
