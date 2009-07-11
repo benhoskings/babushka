@@ -33,6 +33,16 @@ module Babushka
       end
     end
 
+    def matches? other
+      if version.nil?
+        true
+      elsif other.is_a? VersionStr
+        version.send other.operator || :==, other
+      else
+        matches? other.to_version
+      end
+    end
+
     def to_s
       [name, version].compact * '-'
     end

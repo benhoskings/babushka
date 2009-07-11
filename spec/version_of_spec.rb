@@ -31,3 +31,17 @@ describe "comparisons" do
     ver('ruby', '1.8').should_not == ver('ruby', '1.9')
   end
 end
+
+describe "matching" do
+  it "should match all versions when unversioned" do
+    ver('ruby').matches?(VersionStr.new('1.8')).should be_true
+    ver('ruby').matches?(VersionStr.new('1.9')).should be_true
+  end
+  it "should only match the correct version" do
+    ver('ruby', '1.8').matches?(VersionStr.new('1.8')).should be_true
+    ver('ruby', '1.8').matches?(VersionStr.new('1.9')).should be_false
+    ver('ruby', '1.8').matches?(VersionStr.new('>= 1.7')).should be_true
+    ver('ruby', '1.9').matches?(VersionStr.new('~> 1.8')).should be_true
+    ver('ruby', '2.0').matches?(VersionStr.new('~> 1.8')).should be_false
+  end
+end
