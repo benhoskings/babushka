@@ -30,11 +30,7 @@ module Babushka
     end
 
     def packages_present
-      if installs.is_a? Hash
-        installs.all? {|pkg_name, version| pkg_manager.has? pkg_name, :version => version }
-      else
-        installs.all? {|pkg_name| pkg_manager.has? pkg_name }
-      end
+      installs.all? {|pkg| pkg_manager.has? pkg }
     end
 
     def cmds_in_path

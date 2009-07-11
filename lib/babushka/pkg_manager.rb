@@ -55,8 +55,8 @@ module Babushka
     end
 
     private
-    def _has? pkg_name
-      pkg_name.in? existing_packages
+    def _has? pkg
+      pkg.name.in? existing_packages
     end
   end
   end
