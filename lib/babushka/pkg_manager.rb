@@ -85,25 +85,10 @@ module Babushka
 
   class GemHelper < PkgManager
   class << self
-    GemVersionOperators = %w[= != > < >= <= ~>].freeze
     def pkg_type; :gem end
     def pkg_cmd; 'gem' end
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
-
-    def has? pkg_name, opts = {}
-      version = has_version? opts[:version], versions_of(pkg_name).sort.reverse
-      returning version do |result|
-        pkg_spec = "#{pkg_name}#{"[#{opts[:version]}]" unless opts[:version].nil?}"
-        unless opts[:log] == false
-          if result
-            log_ok "system has #{pkg_spec} gem (at #{version})"
-          else
-            log "system doesn't have #{pkg_spec} gem"
-          end
-        end
-      end
-    end
 
     def install! *pkgs
       if pkgs.first.is_a? Hash
@@ -128,25 +113,12 @@ module Babushka
 
     private
 
-    def has_version? spec, available
-      if spec.nil?
-        available.first
-      else
-        version_captures = spec.scan(/^(#{GemVersionOperators.join('|')})?\s*([0-9.]+)$/)
-        if version_captures.nil? || version_captures.first.nil? || version_captures.first.last.nil?
-          log_error "'#{spec}' isn't a valid gem version specification."
-        else
-          operator, version = version_captures.first.first, version_captures.first.last.to_version
-          if !GemVersionOperators.include?(operator)
-            log_error "'#{operator}' isn't a valid Gem version operator."
-          else
-            available.detect {|v| v.send operator, version }
-          end
-        end
-      end
+    def _has? pkg
+      versions_of(pkg).sort.reverse.detect {|version| pkg.matches? version }
     end
 
-    def versions_of pkg_name
+    def versions_of pkg
+      pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
       installed = shell("gem list --local #{pkg_name}").split("\n").detect {|l| /^#{pkg_name}\b/ =~ l }
       versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
       versions.split(/[^0-9.]+/).sort.map(&:to_version)
