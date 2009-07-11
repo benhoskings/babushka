@@ -14,10 +14,10 @@ module Babushka
       manager_key.to_s
     end
 
-    def has? pkg_name, opts = {}
-      returning _has?(pkg_name) do |result|
+    def has? pkg, opts = {}
+      returning _has?(pkg) do |matching_pkg|
         unless opts[:log] == false
-          log "system #{result ? 'has' : 'doesn\'t have'} #{pkg_name} #{pkg_type}", :as => (result ? :ok : nil)
+          log "system #{matching_pkg ? 'has' : 'doesn\'t have'} #{matching_pkg || pkg} #{pkg_type}", :as => (:ok if matching_pkg)
         end
       end
     end
