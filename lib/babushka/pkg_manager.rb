@@ -15,9 +15,10 @@ module Babushka
     end
 
     def has? pkg, opts = {}
-      returning _has?(pkg) do |matching_pkg|
+      returning _has?(pkg) do |matching_version|
+        matching_pkg = ver(pkg.name, (matching_version if matching_version.is_a?(VersionStr)))
         unless opts[:log] == false
-          log "system #{matching_pkg ? 'has' : 'doesn\'t have'} #{matching_pkg || pkg} #{pkg_type}", :as => (:ok if matching_pkg)
+          log "system #{matching_version ? "has" : "doesn't have"} #{matching_pkg} #{pkg_type}", :as => (:ok if matching_version)
         end
       end
     end
