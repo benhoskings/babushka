@@ -1,4 +1,14 @@
 dep 'rubygems' do
+  requires 'rubygems installed', 'github source'
+end
+
+dep 'github source' do
+  requires 'rubygems installed'
+  met? { shell("gem sources")["http://gems.github.com"] }
+  meet { sudo "gem sources -a http://gems.github.com" }
+end
+
+dep 'rubygems installed' do
   requires 'ruby', 'wget'
   met? { which('gem') && shell('gem env gemdir') }
   meet {
