@@ -3,7 +3,7 @@ dep 'rails app' do
   asks_for :domain, :username, :rails_env
 end
 
-def parse_gem_deps
+def parse_config_gem_deps
   IO.readlines(
     File.expand_path rails_root / 'config/environment.rb'
   ).grep(/^\s*config\.gem/).map {|l|
@@ -15,6 +15,18 @@ def parse_gem_deps
       ver i.first.first, i.first.last
     end
   }.compact
+end
+
+def parse_rails_dep
+  IO.readlines(
+    File.expand_path rails_root / 'config/environment.rb'
+  ).grep(/RAILS_GEM_VERSION/).map {|l|
+    $1 if l =~ /^[^#]*RAILS_GEM_VERSION\s*=\s*["']([!~<>=]*\s*[\d.]+)["']/
+  }.compact
+end
+
+def parse_gem_deps
+  parse_config_gem_deps + parse_rails_dep
 end
 
 dep 'gems installed' do
