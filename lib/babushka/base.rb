@@ -29,9 +29,9 @@ module Babushka
 
     def run args
       if !(@setup ||= setup(args))
-        log "There was a problem loading deps."
+        fail_with "There was a problem loading deps."
       elsif @tasks.empty?
-        log "Nothing to do."
+        fail_with "Nothing to do."
       else
         @tasks.all? {|dep_name|
           dep = Dep(dep_name)
@@ -63,6 +63,11 @@ module Babushka
         vars[key] = value
         vars
       }
+    end
+
+    def fail_with message
+      log message
+      exit 1
     end
   end
   end
