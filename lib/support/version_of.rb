@@ -35,7 +35,7 @@ module Babushka
 
     def matches? other
       if other.is_a? VersionStr
-        version.nil? || other.send(version.operator || :==, version)
+        version.nil? || other.send(version.match_operator, version)
       else
         matches? other.to_version
       end

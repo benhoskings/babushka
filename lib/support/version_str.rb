@@ -26,6 +26,9 @@ module Babushka
         pieces.join('.')
       ].compact.join(' ')
     end
+    def match_operator
+      operator || '=='
+    end
     def operator_str
       operator.gsub('==', '=') unless operator.nil?
     end
