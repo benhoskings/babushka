@@ -17,11 +17,17 @@ module Babushka
       else
         @pieces = captures.first.last.split('.').map(&:to_i)
         @operator = captures.first.first
-        @operator = '==' if @operator.nil? || @operator == '='
+        @operator = '==' if @operator == '='
       end
     end
     def to_s
-      pieces.join('.')
+      [
+        operator_str,
+        pieces.join('.')
+      ].compact.join(' ')
+    end
+    def operator_str
+      operator.gsub('==', '=') unless operator.nil?
     end
     define_method "!=" do |other|
       !(self == other)
