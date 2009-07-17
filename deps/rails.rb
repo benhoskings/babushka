@@ -35,7 +35,7 @@ dep 'gems installed' do
   setup {
     parse_gem_deps.map {|gem_spec|
       # Make a new Dep for each gem this app needs...
-      gem("#{gem_spec.name} gem") {
+      gem("#{gem_spec} gem") {
         installs gem_spec
         provides []
       }
