@@ -22,7 +22,9 @@ def parse_rails_dep
     File.expand_path rails_root / 'config/environment.rb'
   ).grep(/RAILS_GEM_VERSION/).map {|l|
     $1 if l =~ /^[^#]*RAILS_GEM_VERSION\s*=\s*["']([!~<>=]*\s*[\d.]+)["']/
-  }.compact
+  }.compact.map {|v|
+    ver 'rails', v
+  }
 end
 
 def parse_gem_deps
