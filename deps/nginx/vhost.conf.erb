@@ -5,7 +5,7 @@ server {
   include vhosts/<%= domain %>.common;
 }
 
-<% if enable_ssl('no').starts_with?('y') -%>
+<% if enable_ssl('no').starts_with?('y') %>
 server {
   listen 443;
 
@@ -16,4 +16,4 @@ server {
 
   include vhosts/<%= domain %>.common;
 }
-<% end -%>
+<% end %>
