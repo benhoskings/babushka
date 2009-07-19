@@ -3,8 +3,19 @@ pkg 'build-essential' do
   provides 'gcc', 'g++', 'make', 'ld'
 end
 pkg 'fish'
+pkg 'freeimage' do
+  installs {
+    apt %w[libfreeimage3 libfreeimage-dev]
+    macports 'freeimage'
+  }
+  provides []
+end
 pkg 'git' do
   installs 'git-core'
+end
+gem 'image_science' do
+  requires 'freeimage'
+  provides []
 end
 pkg 'java' do
   installs { apt 'sun-java6-jre' }
