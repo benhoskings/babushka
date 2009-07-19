@@ -21,7 +21,7 @@ location ~* \.(js|css|jpg|jpeg|gif|png|ico|swf)$ {
   # make sure gzip does not lose large gzipped js or css files
   # see http://blog.leetsoft.com/2007/7/25/nginx-gzip-ssl
   gzip_buffers 16 8k;
-  
+
   if (-f $request_filename) {
     expires 1d;
     break;
