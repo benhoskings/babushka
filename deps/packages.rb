@@ -11,7 +11,10 @@ pkg 'freeimage' do
   provides []
 end
 pkg 'git' do
-  installs 'git-core'
+  installs {
+    apt 'git-core'
+    macports 'git-core +svn +bash_completion'
+  }
 end
 gem 'image_science' do
   requires 'freeimage'
