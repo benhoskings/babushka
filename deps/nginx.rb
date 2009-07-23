@@ -24,6 +24,12 @@ dep 'vhost configured' do
   }
 end
 
+dep 'self signed cert' do
+  requires 'webserver installed'
+  met? { %w[key csr crt].all? {|ext| File.exists? "/opt/nginx/conf/certs/#{domain}.#{ext}" } }
+  meet { generate_self_signed_cert }
+end
+
 # TODO duplication
 dep 'proxy enabled' do
   requires 'proxy configured'
@@ -55,6 +61,26 @@ def build_nginx opts = {}
       '' # done
       ].join("\n")
     )
+  end
+end
+
+def generate_self_signed_cert
+  in_dir "/opt/nginx/conf/certs", :create => "700", :sudo => true do
+    log_shell("generating private key", "openssl genrsa -out #{domain}.key 1024", :sudo => true) and
+    log_shell("generating certificate", "openssl req -new -key #{domain}.key -out #{domain}.csr", :sudo => true, :input => [
+        var(:country, 'AU'),
+        var(:state),
+        var(:city, ''),
+        var(:organisation),
+        var(:organisational_unit, ''),
+        var(:domain),
+        var(:email),
+        '', # password
+        '', # optional company name
+        '' # done
+      ].join("\n")
+    ) and
+    log_shell("signing certificate with key", "openssl x509 -req -days 365 -in #{domain}.csr -signkey #{domain}.key -out #{domain}.crt", :sudo => true)
   end
 end
 
