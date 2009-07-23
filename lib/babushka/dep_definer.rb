@@ -70,12 +70,16 @@ module Babushka
       @dep.set key, value
     end
 
-    def method_missing method_name, *args, &block
-      if @dep.vars.has_key? method_name.to_s
-        @dep.vars[method_name.to_s]
+    def var name, default_value = nil
+      if @dep.vars.has_key? name.to_s
+        @dep.vars[name.to_s]
       else
-        @dep.ask_for_var method_name.to_s, args.first
+        @dep.ask_for_var name.to_s, default_value
       end
+    end
+
+    def method_missing method_name, *args, &block
+      var method_name, args.first
     end
 
   end
