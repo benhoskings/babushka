@@ -53,9 +53,9 @@ def build_nginx opts = {}
     log_shell("Building nginx (this takes a minute or two)", "sudo passenger-install-nginx-module", :input => [
       '', # enter to continue
       '2', # custom build
-      File.expand_path("nginx-#{opts[:nginx_version]}"), # path to nginx source
+      pathify("nginx-#{opts[:nginx_version]}"), # path to nginx source
       '', # accept /opt/nginx target path
-      "--with-http_ssl_module --add-module='#{File.expand_path "nginx_upload_module-#{opts[:upload_module_version]}"}'",
+      "--with-http_ssl_module --add-module='#{pathify "nginx_upload_module-#{opts[:upload_module_version]}"}'",
       '', # confirm settings
       '', # enter to continue
       '' # done

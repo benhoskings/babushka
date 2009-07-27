@@ -14,7 +14,7 @@ def in_dir dir, opts = {}, &block
   if dir.nil?
     yield
   else
-    path = File.expand_path(dir)
+    path = pathify dir
     Dir.mkdir(path) if opts[:create] unless File.exists?(path)
     if Dir.pwd == path
       yield
@@ -68,7 +68,7 @@ def check_file file_name, method_name
 end
 
 def grep pattern, file
-  if File.exists?(path = File.expand_path(file))
+  if File.exists?(path = pathify(file))
     output = if pattern.is_a? String
       IO.readlines(path).select {|l| l[pattern] }
     elsif pattern.is_a? Regexp
@@ -79,7 +79,7 @@ def grep pattern, file
 end
 
 def change_line line, replacement, filename
-  path = File.expand_path filename
+  path = pathify filename
   sudo "cat > #{path}", :as => File.owner(path), :input => IO.readlines(path).map {|l|
     l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
   }
@@ -87,7 +87,7 @@ end
 
 def insert_into_file insert_after, insert_before, filename, lines
   end_of_insertion = "# }\n"
-  path = File.expand_path filename
+  path = pathify filename
   nlines = lines.split("\n").length
   before, after = IO.readlines(path).cut {|l| l.strip == insert_before.strip }
 
@@ -146,7 +146,7 @@ def added_by_babushka nlines
 end
 
 def read_file filename
-  path = File.expand_path filename
+  path = pathify filename
   File.read(path).chomp if File.exists? path
 end
 
