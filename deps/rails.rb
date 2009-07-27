@@ -28,7 +28,7 @@ def parse_rails_dep
 end
 
 def parse_gem_deps
-  parse_config_gem_deps + parse_rails_dep
+  parse_rails_dep + parse_config_gem_deps
 end
 
 dep 'gems installed' do
