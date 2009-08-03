@@ -48,14 +48,14 @@ end
 
 def build_nginx opts = {}
   in_dir "~/src/", :create => true do
-    get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx_version]}.tar.gz") and
-    get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{opts[:upload_module_version]}.tar.gz") and
+    get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx]}.tar.gz") and
+    get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{opts[:upload_module]}.tar.gz") and
     log_shell("Building nginx (this takes a minute or two)", "sudo passenger-install-nginx-module", :input => [
       '', # enter to continue
       '2', # custom build
-      pathify("nginx-#{opts[:nginx_version]}"), # path to nginx source
+      pathify("nginx-#{opts[:nginx]}"), # path to nginx source
       '', # accept /opt/nginx target path
-      "--with-http_ssl_module --add-module='#{pathify "nginx_upload_module-#{opts[:upload_module_version]}"}'",
+      "--with-http_ssl_module --add-module='#{pathify "nginx_upload_module-#{opts[:upload_module]}"}'",
       '', # confirm settings
       '', # enter to continue
       '' # done
@@ -157,6 +157,7 @@ end
 
 dep 'webserver installed' do
   requires 'passenger', 'build tools', 'libssl headers', 'zlib headers'
+  set :versions, {:nginx => '0.7.61', :upload_module => '2.0.9'}
   met? {
     if !File.executable?('/opt/nginx/sbin/nginx')
       unmet "nginx isn't installed"
@@ -166,5 +167,5 @@ dep 'webserver installed' do
       true
     end
   }
-  meet { build_nginx :nginx_version => '0.7.60', :upload_module_version => '2.0.9' }
+  meet { build_nginx versions }
 end
