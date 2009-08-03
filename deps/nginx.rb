@@ -161,10 +161,15 @@ dep 'webserver installed' do
   met? {
     if !File.executable?('/opt/nginx/sbin/nginx')
       unmet "nginx isn't installed"
-    elsif !shell('/opt/nginx/sbin/nginx -V') {|shell| shell.stderr }[Babushka::GemHelper.gem_path_for('passenger')]
-      unmet "nginx is installed, but built against the wrong passenger version"
     else
-      true
+      installed_version = shell('/opt/nginx/sbin/nginx -V') {|shell| shell.stderr }.val_for('nginx version').sub('nginx/', '')
+      if installed_version != versions[:nginx]
+        unmet "an outdated version of nginx is installed (#{installed_version})"
+      elsif !shell('/opt/nginx/sbin/nginx -V') {|shell| shell.stderr }[Babushka::GemHelper.gem_path_for('passenger')]
+        unmet "nginx is installed, but built against the wrong passenger version"
+      else
+        met "nginx-#{installed_version} is installed"
+      end
     end
   }
   meet { build_nginx versions }
