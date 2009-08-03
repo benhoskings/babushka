@@ -32,7 +32,7 @@ dep 'rubygems installed' do
       end
 
       in_dir cmd_dir('ruby') do
-        sudo "ln -sf gem1.8 gem"
+        sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
       end
     end
   }
