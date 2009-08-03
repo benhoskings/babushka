@@ -10,7 +10,15 @@ end
 
 dep 'rubygems installed' do
   requires 'ruby', 'wget'
-  met? { which('gem') && shell('gem env gemdir') }
+  met? {
+    if which('gem').nil?
+      unmet "'gem' is not installed."
+    elsif cmd_dir('gem') != cmd_dir('ruby')
+      unmet "'gem' incorrectly runs from #{cmd_dir('gem')}."
+    else
+      shell 'gem env gemdir'
+    end
+  }
   meet {
     rubygems_version = '1.3.4'
 
