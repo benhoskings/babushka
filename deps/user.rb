@@ -2,10 +2,6 @@ def user
   username shell('whoami')
 end
 
-dep 'user setup' do
-  requires 'user shell setup', 'passwordless ssh logins', 'public key', 'vim'
-end
-
 dep 'user shell setup' do
   requires 'fish', 'dot files'
   met? { File.basename(sudo('echo \$SHELL', :as => user, :su => true)) == 'fish' }

@@ -1,7 +1,3 @@
-dep 'system' do
-  requires 'hostname', 'correct path', 'secured ssh logins', 'lax host key checking', 'admins can sudo'
-end
-
 def ssh_conf_path file
   "/etc#{'/ssh' if linux?}/#{file}_config"
 end

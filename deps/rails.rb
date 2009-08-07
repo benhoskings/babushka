@@ -1,8 +1,3 @@
-dep 'rails app' do
-  requires 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
-  asks_for :domain, :username, :rails_env
-end
-
 def parse_config_gem_deps
   IO.readlines(
     pathify rails_root / 'config/environment.rb'
