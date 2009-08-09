@@ -25,7 +25,7 @@ module Babushka
     def self.load_deps_from path
       $stdout.flush
       previous_count = Dep.deps.count
-      returning(Dir.glob(pathify(path) / '/**/*.rb').all? {|f|
+      returning(Dir.glob(pathify(path) / '**/*.rb').all? {|f|
         @@current_load_path = f
         returning require f do
           @@current_load_path = nil
