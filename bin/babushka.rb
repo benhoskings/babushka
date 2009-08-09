@@ -16,6 +16,11 @@
   babushka/pkg_manager
   babushka/dep
   babushka/definer_helpers
+  babushka/dep_runner
+  babushka/dep_runners/base_dep_runner
+  babushka/dep_runners/pkg_dep_runner
+  babushka/dep_runners/gem_dep_runner
+  babushka/dep_runners/ext_dep_runner
   babushka/dep_definer
   babushka/dep_definers/base_dep_definer
   babushka/dep_definers/pkg_dep_definer

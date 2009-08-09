@@ -18,6 +18,7 @@ module Babushka
             self
           end
         end
+        set_up_delegating_for method_name
       end
 
     end

@@ -1,20 +1,17 @@
 module Babushka
   class DepDefiner
     include ShellHelpers
-    include DefinerHelpers
     include VersionList
 
-    attr_reader :payload, :source
+    attr_reader :dep, :payload, :source
+
+    delegate :name, :var, :define_var, :to => :dep
 
     def initialize dep, &block
       @dep = dep
       @payload = {}
       @block = block
       @source = self.class.current_load_path
-    end
-
-    def name
-      @dep.name
     end
 
     def process
@@ -49,6 +46,24 @@ module Babushka
       end
     end
 
+    def default_task task_name
+      L{
+        send({:met? => :log_extra, :meet => :log_extra}[task_name] || :debug, [
+          "#{@dep.name} / #{task_name} not defined",
+          "#{" for #{uname_str}" unless (@dep.send(:payload)[task_name] || {})[:all].nil?}",
+          {
+            :met => ", moving on",
+            :meet => " - nothing to do"
+          }[task_name],
+          "."
+        ].join)
+        true
+      }
+    end
+
+
+    private
+
     def store_block_for method_name, args, block
       opts = {:on => :all}.merge(args.first || {})
       (payload[method_name] = {})[opts[:on]] = block
@@ -63,23 +78,26 @@ module Babushka
     end
 
     def run_in path_or_key
-      asks_for path_or_key if path_or_key.is_a?(Symbol)
+      define_var path_or_key if path_or_key.is_a?(Symbol)
       payload[:run_in] = path_or_key
     end
+    def run_as user_or_key
+      define_var user_or_key if user_or_key.is_a?(Symbol)
+      payload[:run_as] = user_or_key
+    end
     def set key, value
-      @dep.set key, value
+      dep.set key, value
+    end
+    def merge key, value
+      dep.merge key, value
     end
 
-    def var name, default_value = nil
-      if @dep.vars.has_key? name.to_s
-        @dep.vars[name.to_s]
-      else
-        @dep.ask_for_var name.to_s, default_value
-      end
+    def self.set_up_delegating_for method_name
+      runner_class.send :delegate, method_name, :to => :definer
     end
 
-    def method_missing method_name, *args, &block
-      var method_name, args.first
+    def self.runner_class
+      Object.recursive_const_get name.to_s.sub('Definer', 'Runner')
     end
 
   end

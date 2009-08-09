@@ -16,9 +16,5 @@ module Babushka
       }
     end
 
-    def cmds_present?
-      (@cmds || []).all? {|cmd| which cmd }
-    end
-
   end
 end
