@@ -22,7 +22,7 @@ dep 'rubygems installed' do
   meet {
     rubygems_version = '1.3.4'
 
-    in_dir "~/src", :create => true do
+    in_build_dir {
       # disable ri and rdoc generation
       change_line "# gem: --no-rdoc --no-ri", "gem: --no-rdoc --no-ri", '~/.dot-files/.gemrc'
       get_source("http://rubyforge.org/frs/download.php/57643/rubygems-#{rubygems_version}.tgz") and
@@ -34,7 +34,7 @@ dep 'rubygems installed' do
       in_dir cmd_dir('ruby') do
         sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
       end
-    end
+    }
   }
 end
 

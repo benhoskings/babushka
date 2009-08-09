@@ -47,7 +47,7 @@ dep 'proxy configured' do
 end
 
 def build_nginx opts = {}
-  in_dir "~/src/", :create => true do
+  in_build_dir {
     get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx]}.tar.gz") and
     get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{opts[:upload_module]}.tar.gz") and
     log_shell("Building nginx (this takes a minute or two)", "sudo passenger-install-nginx-module", :input => [
@@ -61,7 +61,7 @@ def build_nginx opts = {}
       '' # done
       ].join("\n")
     )
-  end
+  }
 end
 
 def generate_self_signed_cert

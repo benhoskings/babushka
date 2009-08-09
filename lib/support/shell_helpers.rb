@@ -28,6 +28,10 @@ def in_dir dir, opts = {}, &block
   end
 end
 
+def in_build_dir &block
+  in_dir '~/.babushka/src', :create => true, &block
+end
+
 def cmd_dir cmd_name
   which("#{cmd_name}") {|shell|
     File.dirname shell.stdout if shell.ok?
