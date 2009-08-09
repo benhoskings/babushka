@@ -127,6 +127,10 @@ class Object
     Class.new self
   end
 
+  def recursive_const_get name
+    name.split('::').inject(Object) {|klass,name| klass.const_get name }
+  end
+
   def blank?
     nil? || (respond_to?(:empty?) && empty?)
   end
