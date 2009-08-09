@@ -87,6 +87,19 @@ class File
   end
 end
 
+class Hash
+  def dragnet *keys
+    dup.dragnet! *keys
+  end
+
+  def dragnet! *keys
+    keys.inject({}) {|acc,key|
+      acc[key] = self.delete(key) if self.has_key?(key)
+      acc
+    }
+  end
+end
+
 class Hashish
   def self.array
     Hash.new {|hsh,k| hsh[k] = [] }
