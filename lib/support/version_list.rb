@@ -40,7 +40,7 @@ module Babushka
         elsif data.is_a? Hash
           data.map {|name,version| ver name, version }
         elsif data.first.is_a? Hash
-          data.first.map {|name,version| ver name, version }
+          versions_for data.first
         else
           data.map {|name| ver name }
         end
