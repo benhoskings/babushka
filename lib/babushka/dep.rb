@@ -172,7 +172,7 @@ module Babushka
     public
 
     def inspect
-      "#<Dep:#{object_id} '#{name}'#{" #{'un' if cached_result}met" if cached?}, deps = { #{require_counts} }>"
+      "#<Dep:#{object_id} '#{name}'#{" #{'un' if cached_process}met" if cached?}, deps = { #{require_counts} }>"
     end
   end
 end
