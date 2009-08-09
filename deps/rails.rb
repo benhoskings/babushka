@@ -1,6 +1,6 @@
 def parse_config_gem_deps
   IO.readlines(
-    pathify rails_root / 'config/environment.rb'
+    pathify var(:rails_root) / 'config/environment.rb'
   ).grep(/^\s*config\.gem/).map {|l|
     i = l.scan /config\.gem[\s\('"]+([\w-]+)(['"],\s*\:version\s*=>\s*['"]([<>=!~.0-9\s]+)['"])?.*$/
 
@@ -14,7 +14,7 @@ end
 
 def parse_rails_dep
   IO.readlines(
-    pathify rails_root / 'config/environment.rb'
+    pathify var(:rails_root) / 'config/environment.rb'
   ).grep(/RAILS_GEM_VERSION/).map {|l|
     $1 if l =~ /^[^#]*RAILS_GEM_VERSION\s*=\s*["']([!~<>=]*\s*[\d.]+)["']/
   }.compact.map {|v|
@@ -62,7 +62,7 @@ dep 'migrated db' do
 end
 
 dep 'deployed app' do
-  met? { File.directory? pathify rails_root / 'app' }
+  met? { File.directory? pathify var(:rails_root) / 'app' }
 end
 
 dep 'existing db' do

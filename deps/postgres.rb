@@ -12,14 +12,13 @@ end
 
 dep 'db backups' do
   requires 'db software'
-  asks_for :offsite_host
   met? { shell "test -x /etc/cron.hourly/postgres_offsite_backup" }
   before {
-    returning sudo "ssh #{offsite_host} 'true'" do |result|
+    returning sudo "ssh #{var 'offsite_host'} 'true'" do |result|
       if result
-        log_ok "publickey login to #{offsite_host}"
+        log_ok "publickey login to #{var 'offsite_host'}"
       else
-        log_error "You need to add root's public key to #{offsite_host}:~/.ssh/authorized_keys."
+        log_error "You need to add root's public key to #{var 'offsite_host'}:~/.ssh/authorized_keys."
       end
     end
   }

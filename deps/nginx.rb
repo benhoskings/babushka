@@ -1,5 +1,5 @@
 def www_aliases
-  "#{domain} #{extra_domains}".split(' ').compact.map(&:strip).reject {|d|
+  "#{var :domain} #{var :extra_domains}".split(' ').compact.map(&:strip).reject {|d|
     d.starts_with? '*.'
   }.reject {|d|
     d.starts_with? 'www.'
@@ -10,39 +10,39 @@ end
 
 dep 'vhost enabled' do
   requires 'vhost configured'
-  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
-  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{domain}.conf' '/opt/nginx/conf/vhosts/on/#{domain}.conf'" }
+  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
+  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{var :domain}.conf' '/opt/nginx/conf/vhosts/on/#{var :domain}.conf'" }
   after { restart_nginx }
 end
 
 dep 'vhost configured' do
   requires 'webserver configured'
-  met? { %w[conf common].all? {|suffix| File.exists? "/opt/nginx/conf/vhosts/#{domain}.#{suffix}" } }
+  met? { %w[conf common].all? {|suffix| File.exists? "/opt/nginx/conf/vhosts/#{var :domain}.#{suffix}" } }
   meet {
-    render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
-    render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.common"
+    render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
+    render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{var :domain}.common"
   }
 end
 
 dep 'self signed cert' do
   requires 'webserver installed'
-  met? { %w[key csr crt].all? {|ext| File.exists? "/opt/nginx/conf/certs/#{domain}.#{ext}" } }
+  met? { %w[key csr crt].all? {|ext| File.exists? "/opt/nginx/conf/certs/#{var :domain}.#{ext}" } }
   meet { generate_self_signed_cert }
 end
 
 # TODO duplication
 dep 'proxy enabled' do
   requires 'proxy configured'
-  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{domain}.conf" }
-  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{domain}.conf' '/opt/nginx/conf/vhosts/on/#{domain}.conf'" }
+  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
+  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{var :domain}.conf' '/opt/nginx/conf/vhosts/on/#{var :domain}.conf'" }
   after { restart_nginx }
 end
 
 dep 'proxy configured' do
   requires 'webserver configured'
-  met? { File.exists? "/opt/nginx/conf/vhosts/#{domain}.conf" }
+  met? { File.exists? "/opt/nginx/conf/vhosts/#{var :domain}.conf" }
   meet {
-    render_erb 'nginx/http_proxy.conf.erb', :to => "/opt/nginx/conf/vhosts/#{domain}.conf"
+    render_erb 'nginx/http_proxy.conf.erb', :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
   }
 end
 
@@ -66,8 +66,8 @@ end
 
 def generate_self_signed_cert
   in_dir "/opt/nginx/conf/certs", :create => "700", :sudo => true do
-    log_shell("generating private key", "openssl genrsa -out #{domain}.key 1024", :sudo => true) and
-    log_shell("generating certificate", "openssl req -new -key #{domain}.key -out #{domain}.csr", :sudo => true, :input => [
+    log_shell("generating private key", "openssl genrsa -out #{var :domain}.key 1024", :sudo => true) and
+    log_shell("generating certificate", "openssl req -new -key #{var :domain}.key -out #{var :domain}.csr", :sudo => true, :input => [
         var(:country, 'AU'),
         var(:state),
         var(:city, ''),
@@ -80,7 +80,7 @@ def generate_self_signed_cert
         '' # done
       ].join("\n")
     ) and
-    log_shell("signing certificate with key", "openssl x509 -req -days 365 -in #{domain}.csr -signkey #{domain}.key -out #{domain}.crt", :sudo => true)
+    log_shell("signing certificate with key", "openssl x509 -req -days 365 -in #{var :domain}.csr -signkey #{var :domain}.key -out #{var :domain}.crt", :sudo => true)
   end
 end
 
