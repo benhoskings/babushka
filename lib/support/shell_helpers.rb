@@ -10,12 +10,13 @@ def which cmd_name, &block
   shell "which #{cmd_name}", &block
 end
 
+require 'fileutils'
 def in_dir dir, opts = {}, &block
   if dir.nil?
     yield
   else
     path = pathify dir
-    Dir.mkdir(path) if opts[:create] unless File.exists?(path)
+    FileUtils.mkdir_p(path) if opts[:create] unless File.exists?(path)
     if Dir.pwd == path
       yield
     else
