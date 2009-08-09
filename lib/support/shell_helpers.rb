@@ -133,8 +133,16 @@ end
 def get_source url
   filename = File.basename url
   archive_dir = File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext }
-  (File.exists?(filename) || log_shell("Downloading #{filename}", "wget #{url}")) &&
+  download(url, filename) &&
   log_shell("Extracting #{filename}", "sudo rm -rf #{archive_dir} && tar -zxvf #{filename}")
+end
+
+def download url, filename = File.basename(url)
+  if File.exists? filename
+    log "Already downloaded #{filename}."
+  else
+    log_shell "Downloading #{filename}", "wget #{url}"
+  end
 end
 
 def _by_babushka
