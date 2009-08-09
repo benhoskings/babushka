@@ -11,6 +11,9 @@ class VersionListTest
   def default_formats
     %w[html xml js json]
   end
+  def self.set_up_delegating_for method_name
+    # nothing to do
+  end
   accepts_list_for :records
   accepts_list_for :produces, "a default response"
   accepts_list_for :valid_formats, :default_formats

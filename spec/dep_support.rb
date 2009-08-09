@@ -19,7 +19,7 @@ def make_counter_dep opts = {}
     requires opts[:requires] unless opts[:requires].nil?
     DepDefiner.accepted_blocks.each {|dep_method|
       send dep_method, &L{
-        returning (opts[dep_method] || @dep.send(:default_task, dep_method)).call do
+        returning (opts[dep_method] || @dep.definer.send(:default_task, dep_method)).call do
           incrementers[dep_method].call
         end
       }
