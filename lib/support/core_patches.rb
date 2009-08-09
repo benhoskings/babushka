@@ -147,7 +147,11 @@ class String
   include StartsAndEndsChecks
 
   def val_for key
-    split("\n").grep(/\b#{key}\b/).map {|l| l.sub(/\b#{key}\b\:?/, '').sub(/;\s*$/, '').strip }.first || ''
+    split("\n").grep(
+      key.is_a?(Regexp) ? key : /\b#{key}\b/
+    ).map {|l|
+      l.sub(key.is_a?(Regexp) ? key : /\b#{key}\b\:?/, '').sub(/;\s*$/, '').strip
+    }.first || ''
   end
   def / other
     File.join self, other
