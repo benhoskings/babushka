@@ -138,7 +138,7 @@ module Babushka
 
     def call_task task_name
       # log "calling #{name} / #{task_name}"
-      local_runner.instance_exec &(@definer.send(task_name) || @definer.default_task(task_name))
+      local_runner.instance_eval &(@definer.send(task_name) || @definer.default_task(task_name))
     end
 
     def unmet_message_for result
