@@ -8,16 +8,21 @@ module Babushka
     module ClassMethods
 
       def accepts_list_for method_name, default = nil
-        define_method method_name do |*args, &block|
-          if !args.blank? && !block.nil?
-            raise ArgumentError, "You can supply arguments or a block, but not both."
-          elsif args.blank? && block.nil?
-            list_for method_name, default
-          else
-            store_list_for method_name, block || [*args].flatten
-            self
+        file, line = caller.first.split(':', 2)
+        line = line.to_i
+
+        module_eval <<-LOL, file, line
+          def #{method_name} *args, &block
+            if !args.blank? && !block.nil?
+              raise ArgumentError, "You can supply arguments or a block, but not both."
+            elsif args.blank? && block.nil?
+              list_for #{method_name.inspect}, #{default.inspect}
+            else
+              store_list_for #{method_name.inspect}, block || [*args].flatten
+              self
+            end
           end
-        end
+        LOL
         set_up_delegating_for method_name
       end
 
