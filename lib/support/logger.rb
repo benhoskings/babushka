@@ -2,19 +2,6 @@
 
 module Babushka
   module LoggerHelpers
-    def self.included base # :nodoc:
-      (Logger.metaclass.instance_methods - Class.instance_methods).each {|method_name|
-        base.instance_eval {
-          define_method method_name do |*args, &block|
-            Logger.send method_name, *args, &block
-          end
-        }
-      }
-    end
-  end
-
-  class Logger
-  class << self
     TickChar = '√'
     CrossChar = '×'
     @@indentation_level = 0
@@ -91,6 +78,5 @@ module Babushka
     def indentation
       ' ' * @@indentation_level * 2
     end
-  end
   end
 end
