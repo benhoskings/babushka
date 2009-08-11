@@ -24,14 +24,14 @@ module Babushka
 
     def self.load_deps_from path
       $stdout.flush
-      previous_count = Dep.deps.count
+      previous_length = Dep.deps.length
       returning(Dir.glob(pathify(path) / '**/*.rb').all? {|f|
         @@current_load_path = f
         returning require f do
           @@current_load_path = nil
         end
       }) do |result|
-        log "Loaded #{Dep.deps.count - previous_count} dependencies from #{path}."
+        log "Loaded #{Dep.deps.length - previous_length} dependencies from #{path}."
       end
     end
 
