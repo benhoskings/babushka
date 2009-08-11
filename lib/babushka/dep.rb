@@ -151,7 +151,7 @@ module Babushka
       end
     end
     def cached?
-      instance_variable_defined? :@_cached_process
+      defined? @_cached_process
     end
     def cached_process
       @_cached_process
