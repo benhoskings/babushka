@@ -142,7 +142,7 @@ def download url, filename = File.basename(url)
   if File.exists? filename
     log "Already downloaded #{filename}."
   else
-    log_shell "Downloading #{filename}", "wget #{url}"
+    log_shell "Downloading #{filename}", %Q{curl -L -o "#{filename}" "#{url}"}
   end
 end
 
