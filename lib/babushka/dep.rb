@@ -118,7 +118,7 @@ module Babushka
           run_met_task
         end
       elsif :fail == met_result
-        log "fail lulz"
+        # fail
       else
         true
       end
