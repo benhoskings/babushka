@@ -116,7 +116,7 @@ dep 'webserver startup script' do
     if linux?
       shell("rcconf --list").val_for('nginx') == 'on'
     elsif osx?
-      sudo('launchctl list') {|shell| shell.stdout.split("\n").grep 'org.nginx' }
+      sudo('launchctl list').val_for('org.nginx')
     end
   }
   meet {
