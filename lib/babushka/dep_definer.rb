@@ -37,13 +37,15 @@ module Babushka
 
     def self.accepts_block_for method_name
       (@@accepted_blocks ||= []).push method_name
-      define_method method_name do |*args, &block|
-        if block.nil?
-          block_for method_name
-        else
-          store_block_for method_name, args, block
+      class_eval %Q{
+        def #{method_name} *args, &block
+          if block.nil?
+            block_for #{method_name.inspect}
+          else
+            store_block_for #{method_name.inspect}, args, block
+          end
         end
-      end
+      }
     end
 
     def default_task task_name
