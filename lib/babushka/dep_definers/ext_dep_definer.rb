@@ -2,7 +2,8 @@ module Babushka
   class ExtDepDefiner < BaseDepDefiner
 
     def if_missing *cmds, &block
-      @cmds, @block = cmds, block
+      set :cmds, cmds
+      set :block, block
       met? &met_block
     end
 
@@ -10,8 +11,8 @@ module Babushka
 
     def met_block
       L{
-        returning cmds_present? do |result|
-          @block.call unless result
+        returning cmds_present? || :fail do |result|
+          block.call if result == :fail
         end
       }
     end

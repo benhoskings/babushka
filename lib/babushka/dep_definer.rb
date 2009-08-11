@@ -1,6 +1,7 @@
 module Babushka
   class DepDefiner
     include ShellHelpers
+    include PromptHelpers
     include VersionList
 
     attr_reader :dep, :payload, :source
