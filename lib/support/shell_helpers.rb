@@ -7,7 +7,8 @@ def failable_shell cmd, opts = {}
 end
 
 def which cmd_name, &block
-  shell "which #{cmd_name}", &block
+  result = shell "which #{cmd_name}", &block
+  result if result["no #{cmd_name} in"].nil?
 end
 
 require 'fileutils'
