@@ -64,7 +64,7 @@ module Babushka
     end
 
     def define_var name, opts = {}
-      vars[name.to_s] = opts.dragnet(:default, :type)
+      vars[name.to_s].update opts.dragnet(:default, :type)
     end
 
     def ask_for_var key
