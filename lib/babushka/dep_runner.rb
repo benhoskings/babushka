@@ -43,8 +43,8 @@ module Babushka
       set key, ((vars[key.to_s] || {})[:value] || {}).merge(value)
     end
 
-    def var name
-      define_var name.to_s unless vars.has_key? name.to_s
+    def var name, opts = {}
+      define_var name, opts
       if vars[name.to_s].has_key? :value
         vars[name.to_s][:value]
       else
