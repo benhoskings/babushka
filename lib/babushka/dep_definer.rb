@@ -28,8 +28,15 @@ module Babushka
       previous_length = Dep.deps.length
       returning(Dir.glob(pathify(path) / '**/*.rb').all? {|f|
         @@current_load_path = f
-        returning require f do
-          @@current_load_path = nil
+        begin
+          returning require f do
+            @@current_load_path = nil
+          end
+        rescue Exception => e
+          log "#{e.backtrace.first}: #{e.message}"
+          # log "#{e.backtrace.grep(/#{f}/).first}"
+          log "Failed to load #{f}."
+          return nil
         end
       }) do |result|
         log "Loaded #{Dep.deps.length - previous_length} dependencies from #{path}."
