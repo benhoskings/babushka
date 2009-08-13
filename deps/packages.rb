@@ -2,6 +2,11 @@ pkg 'autoconf'
 pkg 'build-essential' do
   provides 'gcc', 'g++', 'make', 'ld'
 end
+pkg 'curl' do
+  installs {
+    apt 'curl'
+  }
+end
 pkg 'fish'
 pkg 'freeimage' do
   installs {
