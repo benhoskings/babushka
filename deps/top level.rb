@@ -1,9 +1,9 @@
 dep 'system' do
-  requires 'hostname', 'correct path', 'secured ssh logins', 'lax host key checking', 'admins can sudo'
+  requires 'hostname', 'correct path', 'secured ssh logins', 'lax host key checking', 'admins can sudo', 'core software'
 end
 
 dep 'user setup' do
-  requires 'user shell setup', 'passwordless ssh logins', 'public key', 'vim'
+  requires 'user shell setup', 'passwordless ssh logins', 'public key'
   define_var :username, :default => shell('whoami')
 end
 
@@ -12,4 +12,8 @@ dep 'rails app' do
   define_var :domain, :default => :username
   define_var :rails_env, :default => 'production'
   define_var :rails_root, :default => '~/current'
+end
+
+dep 'core software' do
+  requires 'vim', 'curl'
 end
