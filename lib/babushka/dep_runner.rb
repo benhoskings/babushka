@@ -16,6 +16,7 @@ module Babushka
     attr_reader :dep, :vars, :opts
 
     delegate :name, :to => :dep
+    delegate :source_path, :to => :definer
 
     def initialize dep
       @dep = dep

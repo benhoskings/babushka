@@ -4,7 +4,7 @@ module Babushka
     include PromptHelpers
     include VersionList
 
-    attr_reader :dep, :payload, :source
+    attr_reader :dep, :payload, :source_path
 
     delegate :name, :var, :define_var, :to => :dep
 
@@ -12,7 +12,7 @@ module Babushka
       @dep = dep
       @payload = {}
       @block = block
-      @source = self.class.current_load_path
+      @source_path = self.class.current_load_path
     end
 
     def process

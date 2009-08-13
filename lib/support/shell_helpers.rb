@@ -166,8 +166,8 @@ end
 
 def render_erb erb, opts = {}
   require 'erb'
-  debug ERB.new(IO.read(File.dirname(source) / erb)).result(binding)
-  returning sudo "cat > #{opts[:to]}", :input => ERB.new(IO.read(File.dirname(source) / erb)).result(binding) do |result|
+  debug ERB.new(IO.read(File.dirname(source_path) / erb)).result(binding)
+  returning sudo "cat > #{opts[:to]}", :input => ERB.new(IO.read(File.dirname(source_path) / erb)).result(binding) do |result|
     if result
       log "Rendered #{opts[:to]}."
       sudo "chmod #{opts[:perms]} '#{opts[:to]}'" unless opts[:perms].nil?
