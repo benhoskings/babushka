@@ -17,7 +17,7 @@ module Babushka
       message = "#{message}#{" [#{opts[:default]}]" if opts[:default]}"
       log message, :newline => false
       loop do
-        value = read_from_prompt opts[:prompt].end_with(' ')
+        value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
         if block_given?
           break if yield value
         else
