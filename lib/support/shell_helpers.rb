@@ -8,7 +8,7 @@ end
 
 def which cmd_name, &block
   result = shell "which #{cmd_name}", &block
-  result if result["no #{cmd_name} in"].nil?
+  result unless result.nil? || result["no #{cmd_name} in"]
 end
 
 require 'fileutils'
