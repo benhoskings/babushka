@@ -72,7 +72,7 @@ module Babushka
       package_count = sudo("#{pkg_cmd} -s install #{pkgs.join(' ')}").split.grep(/^Inst\b/).length
       dep_count = package_count - pkgs.length
 
-      log "Installing #{pkgs.join(', ')} and #{package_count} dep#{'s' unless dep_count == 1} via #{manager_key}"
+      log "Installing #{pkgs.join(', ')} and #{dep_count} dep#{'s' unless dep_count == 1} via #{manager_key}"
       log_shell "Downloading", "#{pkg_cmd} -d install #{pkgs.join(' ')}", :sudo => true
       log_shell "Installing", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
     end
