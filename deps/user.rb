@@ -6,10 +6,10 @@ end
 
 dep 'passwordless ssh logins' do
   requires 'user exists'
-  met? { grep your_ssh_public_key, '~/.ssh/authorized_keys' }
+  met? { grep var(:your_ssh_public_key), '~/.ssh/authorized_keys' }
   meet {
     shell 'mkdir -p ~/.ssh'
-    append_to_file your_ssh_public_key, "~/.ssh/authorized_keys"
+    append_to_file var(:your_ssh_public_key), "~/.ssh/authorized_keys"
     shell 'chmod 700 ~/.ssh'
     shell 'chmod 600 ~/.ssh/authorized_keys'
   }
