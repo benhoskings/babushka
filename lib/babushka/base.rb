@@ -29,7 +29,7 @@ module Babushka
 
     def run args
       if !(@setup ||= setup(args))
-        fail_with "There was a problem loading deps."
+        # fail
       elsif @tasks.empty?
         fail_with "Nothing to do."
       else
@@ -46,8 +46,8 @@ module Babushka
     def setup args
       extract_opts(args).tap{|obj| debug "opts=#{obj.inspect}" }
       extract_vars(args).tap{|obj| debug "vars=#{obj.inspect}" }
-      @tasks = args.tap{|obj| debug "tasks=#{obj.inspect}" }
-      %w[~/.babushka/deps ./deps].all? {|dep_path| DepDefiner.load_deps_from dep_path }
+      extract_tasks(args).tap{|obj| debug "tasks=#{obj.inspect}" }
+      load_deps
     end
 
     def extract_opts args
@@ -63,6 +63,14 @@ module Babushka
         vars[key] = value
         vars
       }
+    end
+
+    def extract_tasks args
+      @tasks = args
+    end
+
+    def load_deps
+      %w[~/.babushka/deps ./deps].all? {|dep_path| DepDefiner.load_deps_from dep_path }
     end
 
     def fail_with message
