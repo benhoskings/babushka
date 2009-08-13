@@ -12,9 +12,9 @@ dep 'rubygems installed' do
   requires 'ruby', 'wget'
   met? {
     if which('gem').nil?
-      unmet "'gem' is not installed."
+      unmet "'gem' is not installed"
     elsif cmd_dir('gem') != cmd_dir('ruby')
-      unmet "'gem' incorrectly runs from #{cmd_dir('gem')}."
+      unmet "'gem' incorrectly runs from #{cmd_dir('gem')}"
     else
       shell 'gem env gemdir'
     end
