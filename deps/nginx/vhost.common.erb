@@ -1,10 +1,10 @@
 # <%= generated_by_babushka %>
 
-server_name <%= domain %> <%= extra_domains %> <%= www_aliases %>;
-root <%= File.join pathify(rails_root), 'public' %>;
+server_name <%= var :domain %> <%= var :extra_domains %> <%= var :www_aliases %>;
+root <%= pathify(var :rails_root) / 'public' %>;
 passenger_enabled on;
 passenger_use_global_queue on;
-rails_env <%= rails_env 'production' %>;
+rails_env <%= var :rails_env, :default => 'production' %>;
 
 if (-f $document_root/system/maintenance.html) {
   rewrite ^(.*)$ /system/maintenance.html break;

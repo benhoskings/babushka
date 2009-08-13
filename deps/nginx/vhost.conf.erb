@@ -2,7 +2,7 @@
 
 server {
   listen 80;
-  include vhosts/<%= domain %>.common;
+  include vhosts/<%= var :domain %>.common;
 }
 
 <% if var(:enable_ssl, :default => 'no').starts_with?('y') %>
@@ -10,10 +10,10 @@ server {
   listen 443;
 
   ssl                  on;
-  ssl_certificate      certs/<%= domain %>.crt;
-  ssl_certificate_key  certs/<%= domain %>.key;
+  ssl_certificate      certs/<%= var :domain %>.crt;
+  ssl_certificate_key  certs/<%= var :domain %>.key;
   ssl_session_timeout  5m;
 
-  include vhosts/<%= domain %>.common;
+  include vhosts/<%= var :domain %>.common;
 }
 <% end %>
