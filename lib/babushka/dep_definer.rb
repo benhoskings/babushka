@@ -7,12 +7,17 @@ module Babushka
     attr_reader :dep, :payload, :source_path
 
     delegate :name, :var, :define_var, :to => :dep
+    delegate :set, :merge, :to => :runner
 
     def initialize dep, &block
       @dep = dep
       @payload = {}
       @block = block
       @source_path = self.class.current_load_path
+    end
+
+    def runner
+      @dep.runner
     end
 
     def process
@@ -85,21 +90,6 @@ module Babushka
 
     def self.accepted_blocks
       @@accepted_blocks
-    end
-
-    def run_in path_or_key
-      define_var path_or_key if path_or_key.is_a?(Symbol)
-      payload[:run_in] = path_or_key
-    end
-    def run_as user_or_key
-      define_var user_or_key if user_or_key.is_a?(Symbol)
-      payload[:run_as] = user_or_key
-    end
-    def set key, value
-      dep.set key, value
-    end
-    def merge key, value
-      dep.merge key, value
     end
 
     def self.set_up_delegating_for method_name
