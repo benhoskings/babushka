@@ -69,7 +69,7 @@ dep 'existing db' do
   requires 'db gem', 'db access', 'db backups', 'rails'
   met? {
     !shell("psql -l") {|shell|
-      shell.stdout.split("\n").grep(/^\s*#{db_name username}\s+\|/)
+      shell.stdout.split("\n").grep(/^\s*#{var :db_name, :default => :username}\s+\|/)
     }.empty?
   }
   meet { rails_rake "db:create" }

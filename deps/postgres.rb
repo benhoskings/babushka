@@ -6,19 +6,19 @@ end
 
 dep 'db access' do
   requires 'db software', 'user exists'
-  met? { !sudo("echo '\\du' | #{which 'psql'}", :as => 'postgres').split("\n").grep(/^\W*\b#{username shell('whoami')}\b/).empty? }
-  meet { sudo "createuser -SdR #{username}", :as => 'postgres' }
+  met? { !sudo("echo '\\du' | #{which 'psql'}", :as => 'postgres').split("\n").grep(/^\W*\b#{var :username}\b/).empty? }
+  meet { sudo "createuser -SdR #{var :username}", :as => 'postgres' }
 end
 
 dep 'db backups' do
   requires 'db software'
   met? { shell "test -x /etc/cron.hourly/postgres_offsite_backup" }
   before {
-    returning sudo "ssh #{var 'offsite_host'} 'true'" do |result|
+    returning sudo "ssh #{var :offsite_host} 'true'" do |result|
       if result
-        log_ok "publickey login to #{var 'offsite_host'}"
+        log_ok "publickey login to #{var :offsite_host}"
       else
-        log_error "You need to add root's public key to #{var 'offsite_host'}:~/.ssh/authorized_keys."
+        log_error "You need to add root's public key to #{var :offsite_host}:~/.ssh/authorized_keys."
       end
     end
   }
