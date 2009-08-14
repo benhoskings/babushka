@@ -1,6 +1,5 @@
 dep 'macports' do
   requires 'build tools'
-  run_as 'root'
   merge :versions, :macports => '1.7.1'
   met? { which 'port' }
   meet {
