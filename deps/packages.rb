@@ -42,7 +42,12 @@ pkg 'rcconf' do
 end
 pkg 'sed' do
   installs { macports 'gsed' }
-  provides 'gsed'
+  provides 'sed'
+  after {
+    in_dir '/opt/local/bin' do
+      sudo "ln -s gsed sed"
+    end
+  }
 end
 pkg 'vim'
 pkg 'wget'
