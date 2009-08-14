@@ -3,7 +3,7 @@ module Babushka
 
     private
 
-    def cmds_present?
+    def cmds_present? cmds
       (cmds || []).all? {|cmd| which cmd }
     end
 
