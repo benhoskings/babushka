@@ -30,7 +30,7 @@ module Babushka
     end
 
     def log_ok message, opts = {}, &block
-      if !Base.opts[:quiet]
+      if !Base.task.quiet?
         log message.end_with('.'), opts.merge(:as => :ok), &block
         true
       elsif block_given?
@@ -39,7 +39,7 @@ module Babushka
     end
 
     def debug message, opts = {}, &block
-      if Base.opts[:debug]
+      if Base.task.debug?
         log message, opts, &block
       elsif block_given?
         yield

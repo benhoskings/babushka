@@ -16,6 +16,7 @@
   babushka/pkg_manager
   babushka/dep
   babushka/definer_helpers
+  babushka/task
   babushka/dep_runner
   babushka/dep_runners/base_dep_runner
   babushka/dep_runners/pkg_dep_runner

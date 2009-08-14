@@ -23,19 +23,19 @@ module Babushka
       :force => %w[-f --force]
     }.freeze
 
-    def opts
-      @opts || {}
+    def task
+      @task ||= Task.new
     end
 
     def run args
-      if !(@setup ||= setup(args))
+      if !setup(args)
         # fail
       elsif @tasks.empty?
         fail_with "Nothing to do."
       else
         @tasks.all? {|dep_name|
           dep = Dep(dep_name)
-          dep.meet(:vars => @vars) unless dep.nil?
+          dep.process unless dep.nil?
         }
       end
     end
@@ -51,18 +51,18 @@ module Babushka
     end
 
     def extract_opts args
-      @opts = Options.inject({}) {|opts,(opt_name,opt)|
-        opts[opt_name] = !args.extract! {|arg| arg == opt }.empty?
-        opts
+      @opts = Options.inject({}) {|opts,(opt_name,opt_strings)|
+        task.base_opts[opt_name] = opt_strings.any? {|opt| !args.extract! {|arg| arg == opt }.empty? }
+        task.base_opts
       }
     end
 
     def extract_vars args
-      @vars = args.extract! {|arg| arg['='] }.inject({}) {|vars,arg|
+      args.extract! {|arg| arg['='] }.each {|arg|
         key, value = arg.split('=', 2)
-        vars[key] = value
-        vars
+        task.vars[key.to_sym].update :value => value, :from => :commandline
       }
+      task.vars
     end
 
     def extract_tasks args

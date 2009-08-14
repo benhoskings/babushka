@@ -46,7 +46,7 @@ def sudo cmd, opts = {}, &block
   else
     "sudo -u #{opts[:as] || 'root'} #{cmd}"
   end
-  # log_verbose "$ #{sudo_cmd}" unless Babushka::Base.opts[:debug]
+  # log_verbose "$ #{sudo_cmd}" unless Babushka::Base.task.debug
   shell sudo_cmd, opts, &block
 end
 

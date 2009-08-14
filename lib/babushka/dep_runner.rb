@@ -13,26 +13,20 @@ module Babushka
     include PromptHelpers
     include DefinerHelpers
 
-    attr_reader :dep, :vars, :opts
+    attr_reader :dep
 
     delegate :name, :to => :dep
     delegate :source_path, :to => :definer
 
     def initialize dep
       @dep = dep
-      @vars = Hash.new {|hsh,k| hsh[k] = {} }
-      @opts = default_opts
     end
 
     def definer
       @dep.definer
     end
-
-    def attempt_to_meet
-      opts[:attempt_to_meet]
-    end
-    def callstack
-      opts[:callstack]
+    def vars
+      Base.task.vars
     end
 
     def set key, value
