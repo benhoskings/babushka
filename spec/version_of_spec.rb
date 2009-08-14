@@ -38,15 +38,30 @@ describe "comparisons" do
 end
 
 describe "matching" do
-  it "should match all versions when unversioned" do
-    ver('ruby').matches?(VersionStr.new('1.8')).should be_true
-    ver('ruby').matches?(VersionStr.new('1.9')).should be_true
+  describe "against strings" do
+    it "should match all versions when unversioned" do
+      ver('ruby').matches?('1.8').should be_true
+      ver('ruby').matches?('1.9').should be_true
+    end
+    it "should only match the correct version" do
+      ver('ruby', '1.8').matches?('1.8').should be_true
+      ver('ruby', '1.9').matches?('1.8').should be_false
+      ver('ruby', '>= 1.7').matches?('1.8').should be_true
+      ver('ruby', '~> 1.8').matches?('1.9').should be_true
+      ver('ruby', '~> 1.8').matches?('2.0').should be_false
+    end
   end
-  it "should only match the correct version" do
-    ver('ruby', '1.8').matches?(VersionStr.new('1.8')).should be_true
-    ver('ruby', '1.9').matches?(VersionStr.new('1.8')).should be_false
-    ver('ruby', '>= 1.7').matches?(VersionStr.new('1.8')).should be_true
-    ver('ruby', '~> 1.8').matches?(VersionStr.new('1.9')).should be_true
-    ver('ruby', '~> 1.8').matches?(VersionStr.new('2.0')).should be_false
+  describe "against VersionStrs" do
+    it "should match all versions when unversioned" do
+      ver('ruby').matches?('1.8'.to_version).should be_true
+      ver('ruby').matches?('1.9'.to_version).should be_true
+    end
+    it "should only match the correct version" do
+      ver('ruby', '1.8').matches?('1.8'.to_version).should be_true
+      ver('ruby', '1.9').matches?('1.8'.to_version).should be_false
+      ver('ruby', '>= 1.7').matches?('1.8'.to_version).should be_true
+      ver('ruby', '~> 1.8').matches?('1.9'.to_version).should be_true
+      ver('ruby', '~> 1.8').matches?('2.0'.to_version).should be_false
+    end
   end
 end
