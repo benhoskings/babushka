@@ -41,7 +41,7 @@ module Babushka
       define_var name, opts
       if vars[name.to_s].has_key? :value
         vars[name.to_s][:value]
-      else
+      elsif opts[:ask] != false
         ask_for_var name.to_s
       end
     end
@@ -65,17 +65,16 @@ module Babushka
       printable_key = key.to_s.gsub '_', ' '
       set key, send("read_#{vars[key][:type] || 'value'}_from_prompt",
         "#{printable_key}#{" for #{name}" unless printable_key == name}",
-        :default => vars[key.to_s][:default]
+        :default => default_for(key)
       )
     end
 
-
-    private
-
-    def default_opts
-      {
-        :callstack => []
-      }
+    def default_for key
+      if vars[key.to_s][:default].is_a? Symbol
+        var vars[key.to_s][:default], :ask => false
+      else
+        vars[key.to_s][:default]
+      end
     end
 
   end
