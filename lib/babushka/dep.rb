@@ -142,7 +142,7 @@ module Babushka
 
     def cached_result
       returning cached_process do |result|
-        log_result "#{name} (cached)", :result => result
+        log_result "#{name} (cached)", :result => result, :as_bypass => task.dry_run?
       end
     end
     def cached?
