@@ -1,6 +1,17 @@
 require 'spec/spec_support'
 require 'spec/dep_definer_support'
 
+describe "loading deps" do
+  it "should load deps from a file" do
+    DepDefiner.load_deps_from('spec/deps/good').should be_true
+    Dep.names.should include('test dep 1')
+  end
+  it "should recover from load errors" do
+    DepDefiner.load_deps_from('spec/deps/bad').should be_nil
+    Dep.names.should_not include('broken test dep 1')
+  end
+end
+
 describe "accepts_block_for behaviour" do
   before {
     setup_test_lambdas
