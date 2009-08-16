@@ -15,7 +15,7 @@ describe "shell" do
   end
   it "should provide the shell to supplied blocks" do
     shell(SucceedingLs) {|shell|
-      shell.stdout.should include('bash')
+      shell.stdout.should include 'bash'
       shell.stderr.should be_empty
     }
     shell(FailingLs) {|shell|
