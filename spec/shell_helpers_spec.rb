@@ -138,11 +138,10 @@ describe "in_dir" do
   end
   it "should change dir for the duration of the block" do
     has_yielded = false
-    l = L{
+    in_dir(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
       has_yielded = true
     }
-    in_dir @tmp_dir, &l
     has_yielded.should be_true
     Dir.pwd.should == @original_pwd
   end
