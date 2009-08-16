@@ -34,10 +34,6 @@ end
 def linux?; :linux == uname end
 def osx?; :osx == uname end
 
-def from_first_and_rest first, rest
-  first.is_a?(Hash) ? first : [*first].concat(rest)
-end
-
 require 'etc'
 def pathify str
   File.expand_path str.sub(/^\~\/|^\~$/) {|_| Etc.getpwuid(Process.euid).dir.end_with('/') }
