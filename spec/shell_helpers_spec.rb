@@ -77,6 +77,20 @@ describe "sudo" do
   end
 end
 
+describe "log_shell" do
+  before {
+    should_receive(:log).exactly(2).times
+  }
+  it "should log and run a command" do
+    should_receive(:shell).with('uptime', {})
+    log_shell 'Getting uptime', 'uptime'
+  end
+  it "should log correctly for a failing command" do
+    should_receive(:shell).with('nonexistent', {})
+    log_shell 'Nonexistent shell command', 'nonexistent'
+  end
+end
+
 describe "grep" do
   it "should grep existing files" do
     grep('include', 'spec/spec_support.rb').should include "include Babushka\n"
