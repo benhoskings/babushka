@@ -46,7 +46,7 @@ describe "sudo" do
   end
   it "should run as the given user" do
     current_user = `whoami`.chomp
-    sudo('whoami', :as => current_user) == current_user
+    sudo('whoami', :as => current_user).should == current_user
   end
 end
 
