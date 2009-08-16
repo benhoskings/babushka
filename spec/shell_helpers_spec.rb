@@ -167,6 +167,18 @@ describe "in_dir" do
   end
 end
 
+describe "in_build_dir" do
+  before {
+    @original_pwd = Dir.pwd
+  }
+  it "should change to the build dir" do
+    in_build_dir {
+      Dir.pwd.should == pathify("~/.babushka/src")
+    }
+    Dir.pwd.should == @original_pwd
+  end
+end
+
 describe "cmd_dir" do
   it "should return the cmd_dir of an existing command" do
     cmd_dir('ruby').should == `which ruby`.chomp.gsub('/ruby', '')
