@@ -48,6 +48,33 @@ describe "sudo" do
     current_user = `whoami`.chomp
     sudo('whoami', :as => current_user).should == current_user
   end
+  describe "compound commands" do
+    it "should use 'sudo su -' when opts[:su] is supplied" do
+      sudo("echo \\`whoami\\`", :su => true).should == 'root'
+    end
+    describe "redirects" do
+      before {
+        @tmp_path = tmp_prefix / 'su_with_redirect'
+        sudo "rm #{@tmp_path}"
+      }
+      it "should use 'sudo su -'" do
+        sudo("echo \\`whoami\\` > #{@tmp_path}")
+        File.read(@tmp_path).chomp.should == 'root'
+        File.owner(@tmp_path).should == 'root'
+      end
+    end
+    describe "pipes" do
+      before {
+        @tmp_path = tmp_prefix / 'su_with_redirect'
+        sudo "rm #{@tmp_path}"
+      }
+      it "should use 'sudo su -'" do
+        sudo("echo \\`whoami\\` | tee #{@tmp_path}")
+        File.read(@tmp_path).chomp.should == 'root'
+        File.owner(@tmp_path).should == 'root'
+      end
+    end
+  end
 end
 
 describe "grep" do
