@@ -10,6 +10,13 @@ if (-f $document_root/system/maintenance.html) {
   rewrite ^(.*)$ /system/maintenance.html break;
 }
 
+<% unless var(:x_send_asset_subpath, :default => '').blank? %>
+location <%= var :x_send_asset_subpath %> {
+  root <%= pathify(var :rails_root) %>;
+  internal;
+}
+<% end %>
+
 location ~* \.(js|css|jpg|jpeg|gif|png|ico|swf)$ {
   gzip on;
   gzip_min_length 1024;
