@@ -170,10 +170,16 @@ describe "in_build_dir" do
   before {
     @original_pwd = Dir.pwd
   }
-  it "should change to the build dir" do
+  it "should change to the build dir with no args" do
     in_build_dir {
       Dir.pwd.should == pathify("~/.babushka/src")
     }
+    Dir.pwd.should == @original_pwd
+  end
+  it "should append the supplied path when supplied" do
+    in_build_dir "tmp" do
+      Dir.pwd.should == pathify("~/.babushka/src/tmp")
+    end
     Dir.pwd.should == @original_pwd
   end
 end
