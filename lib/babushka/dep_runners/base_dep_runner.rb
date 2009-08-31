@@ -14,5 +14,25 @@ module Babushka
       end
     end
 
+    def source url, &block
+      in_build_dir {
+        output = get_source url
+        unless output.nil?
+          in_build_dir output do |path|
+            yield path
+          end
+        end
+      }
+    end
+
+    def git url, &block
+      in_build_dir {
+        shell "git clone #{url}" and
+        in_build_dir(File.basename(url)) {|path|
+          yield path
+        }
+      }
+    end
+
   end
 end
