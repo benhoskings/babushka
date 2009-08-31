@@ -139,7 +139,7 @@ def get_source url, filename = nil
     log_error "Unsupported archive: #{filename}"
   elsif !download(url, filename)
     log_error "Failed to download #{url}."
-  elsif !log_shell("Extracting #{filename}", "sudo rm -rf #{archive_dir} && tar -zxvf #{filename}")
+  elsif !log_shell("Extracting #{filename}", "rm -rf #{archive_dir} && tar -zxf #{filename}")
     log_error "Couldn't extract #{pathify filename}."
     log "(maybe the download was cancelled before it finished?)"
   else
