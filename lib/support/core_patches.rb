@@ -59,6 +59,9 @@ class Array
       self[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " &mdash; #{self.length} #{opts[:noun]}")
     end
   end
+  def extract_options!
+    last.is_a?(::Hash) ? pop : {}
+  end
 end
 
 class Module
