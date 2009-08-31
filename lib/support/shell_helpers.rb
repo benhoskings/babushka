@@ -49,10 +49,16 @@ def sudo cmd, opts = {}, &block
   shell sudo_cmd, opts, &block
 end
 
-def log_shell message, cmd, opts = {}
+def log_block message, opts = {}, &block
   log "#{message}...", :newline => false
-  returning opts.delete(:sudo) ? sudo(cmd, opts) : shell(cmd, opts) do |result|
+  returning block.call do |result|
     log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
+  end
+end
+
+def log_shell message, cmd, opts = {}
+  log_block message do
+    opts.delete(:sudo) ? sudo(cmd, opts) : shell(cmd, opts)
   end
 end
 
