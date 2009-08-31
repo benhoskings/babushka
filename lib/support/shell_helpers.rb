@@ -130,8 +130,8 @@ def append_to_file text, file
   end
 end
 
-def get_source url
-  filename = File.basename url.to_s
+def get_source url, filename = nil
+  filename ||= File.basename url.to_s
   archive_dir = File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext }
   if filename.blank?
     log_error "Not a valid URL to download: #{url}"
