@@ -27,7 +27,8 @@ def system_name
     {
       '10.3' => 'Panther',
       '10.4' => 'Tiger',
-      '10.5' => 'Leopard'
+      '10.5' => 'Leopard',
+      '10.6' => 'Snow Leopard'
     }[system_release]
   end
 end
