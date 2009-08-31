@@ -104,18 +104,25 @@ module Babushka
     end
 
     def process_self
-      if !(met_result = run_met_task(:initial => true))
+      process_met_task(:initial => true) {
         if task.dry_run?
-          met_result
+          false # unmet
         else
           call_task :before and
-          returning call_task :meet do call_task :after end
-          run_met_task
+          call_task :meet and
+          call_task :after
+          process_met_task
         end
+      }
+    end
+
+    def process_met_task opts = {}, &block
+      if !(met_result = run_met_task(opts))
+        block.call unless block.nil?
       elsif :fail == met_result
-        # fail
+        false # can't be met
       else
-        true
+        true # already met
       end
     end
 
