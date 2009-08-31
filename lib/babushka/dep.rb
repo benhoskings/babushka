@@ -117,8 +117,8 @@ module Babushka
       }
     end
 
-    def process_met_task opts = {}, &block
-      if !(met_result = run_met_task(opts))
+    def process_met_task task_opts = {}, &block
+      if !(met_result = run_met_task(task_opts))
         if block.nil?
           false # unmet
         else
