@@ -43,7 +43,7 @@ module Babushka
     end
 
     def debug message, opts = {}, &block
-      if Base.task.debug?
+      if opts[:log] || Base.task.debug?
         log message, opts, &block
       elsif block_given?
         yield
