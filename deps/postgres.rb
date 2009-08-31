@@ -35,6 +35,14 @@ pkg 'db software' do
     apt %w[postgresql postgresql-client libpq-dev]
   }
   provides 'psql'
+  after {
+    if osx?
+      sudo "launchctl load -w /Library/LaunchDaemons/org.macports.postgresql83-server.plist" and
+      sudo "mkdir -p /opt/local/var/db/postgresql83/defaultdb" and
+      sudo "chown postgres:postgres /opt/local/var/db/postgresql83/defaultdb" and
+      sudo "su postgres -c '/opt/local/lib/postgresql83/bin/initdb -D /opt/local/var/db/postgresql83/defaultdb'"
+    end
+  }
 end
 
 dep 'db in path', :for => :osx do
