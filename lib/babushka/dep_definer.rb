@@ -6,6 +6,9 @@ module Babushka
 
     attr_reader :dep, :payload, :source_path
 
+    class_inheritable_accessor :accepted_blocks
+    self.accepted_blocks = []
+
     delegate :name, :var, :define_var, :to => :dep
     delegate :set, :merge, :to => :runner
 
@@ -49,7 +52,7 @@ module Babushka
     end
 
     def self.accepts_block_for method_name
-      (@@accepted_blocks ||= []).push method_name
+      (self.accepted_blocks ||= []).push method_name
       class_eval %Q{
         def #{method_name} *args, &block
           if block.nil?
@@ -86,10 +89,6 @@ module Babushka
 
     def block_for method_name
       payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
-    end
-
-    def self.accepted_blocks
-      @@accepted_blocks
     end
 
     def self.set_up_delegating_for method_name
