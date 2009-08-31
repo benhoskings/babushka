@@ -4,6 +4,15 @@ dep 'user shell setup' do
   meet { sudo "chsh -s #{shell('which fish')} #{var(:username)}" }
 end
 
+src 'fish' do
+  requires 'doxygen', 'coreutils', 'sed'
+  provides 'fush'
+  source "git://github.com/benhoskings/fish.git"
+  preconfigure { shell "autoconf" }
+  configure_env "LDFLAGS='-liconv -L/opt/local/lib'"
+  configure_args "--without-xsel"
+end
+
 dep 'passwordless ssh logins' do
   requires 'user exists'
   met? { grep var(:your_ssh_public_key), '~/.ssh/authorized_keys' }

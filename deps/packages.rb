@@ -16,7 +16,7 @@ pkg 'curl' do
     apt 'curl'
   }
 end
-pkg 'fish'
+pkg 'doxygen'
 pkg 'freeimage' do
   installs {
     apt %w[libfreeimage3 libfreeimage-dev]
