@@ -57,7 +57,7 @@ def log_shell message, cmd, opts = {}
 end
 
 def rake cmd, &block
-  sudo "rake #{cmd} RAILS_ENV=#{rails_env}", :as => username, &block
+  sudo "rake #{cmd} RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
 end
 
 def rails_rake cmd, &block
