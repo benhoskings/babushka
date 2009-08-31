@@ -1,18 +1,28 @@
 module Babushka
   class SrcDepDefiner < BaseDepDefiner
 
-    accepts_list_for :get
+    accepts_list_for :source
     accepts_list_for :provides, :default_name
     accepts_list_for :prefix, '/usr/local'
 
-    accepts_block_for :configure
-    accepts_block_for :make
-    accepts_block_for :install
+    accepts_block_for :preconfigure
+
+    accepts_block_for(:configure) { shell default_configure_command }
+    accepts_list_for :configure_env
+    accepts_list_for :configure_args
+
+    accepts_block_for(:build) { shell "make" }
+    accepts_block_for(:install) { sudo "make install" }
 
     def process
       super
 
       requires 'build tools'
+      setup {
+        returning(parse_uris) {
+          definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
+        }
+      }
       met? {
         present, missing = provides.partition {|cmd_name| cmd_dir(cmd_name) }
 
