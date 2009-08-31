@@ -46,14 +46,41 @@ module Babushka
 
     def run opts = {}, &block
       debug "$ #{@cmd}".colorize('grey')
-      @stdout, @stderr = nil, nil
+      @stdout, @stderr = '', ''
 
       @result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
         unless opts[:input].nil?
           stdin << opts[:input]
           stdin.close
         end
-        @stdout, @stderr = stdout.read.chomp, stderr.read.chomp
+
+        stdout_done = stderr_done = false
+
+        until stdout_done && stderr_done
+          stdout_ready = stdout.ready_for_read?
+          stderr_ready = stderr.ready_for_read?
+
+          if !stdout_ready && !stderr_ready
+            sleep 0.1 if stdout_done || stderr_done
+          else
+            if stdout_ready
+              if (buf = stdout.gets).nil?
+                stdout_done = true
+              else
+                debug buf.chomp, :log => opts[:log]
+                @stdout << buf
+              end
+            end
+            if stderr_ready
+              if (buf = stderr.gets).nil?
+                stderr_done = true
+              else
+                debug buf.chomp, :log => opts[:log], :as => :stderr
+                @stderr << buf
+              end
+            end
+          end
+        end
       end.zero?
 
       ShellResult.new(self, opts, &block).render

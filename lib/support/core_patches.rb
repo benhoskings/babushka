@@ -109,6 +109,13 @@ class Hashish
   end
 end
 
+class IO
+  def ready_for_read?
+    result = IO.select([self], [], [], 0)
+    result && (result.first.first == self)
+  end
+end
+
 class Object
   def returning obj, &block
     yield obj
