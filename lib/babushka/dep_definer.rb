@@ -6,8 +6,7 @@ module Babushka
 
     attr_reader :dep, :payload, :source_path
 
-    class_inheritable_accessor :accepted_blocks
-    self.accepted_blocks = []
+    class_inheritable_accessor :default_blocks
 
     delegate :name, :var, :define_var, :to => :dep
     delegate :set, :merge, :to => :runner
@@ -31,6 +30,10 @@ module Babushka
       @@current_load_path ||= nil
     end
 
+    def self.accepted_blocks
+      default_blocks.keys
+    end
+
     def self.load_deps_from path
       $stdout.flush
       previous_length = Dep.deps.length
@@ -51,10 +54,11 @@ module Babushka
       end
     end
 
-    def self.accepts_block_for method_name
-      (self.accepted_blocks ||= []).push method_name
+    def self.accepts_block_for method_name, &default_block
+      (self.default_blocks ||= {})[method_name] = default_block
       class_eval %Q{
         def #{method_name} *args, &block
+          payload[#{method_name.inspect}] ||= {}
           if block.nil?
             block_for #{method_name.inspect}
           else
@@ -62,6 +66,7 @@ module Babushka
           end
         end
       }
+      set_up_delegating_for method_name
     end
 
     def default_task task_name
@@ -84,11 +89,11 @@ module Babushka
 
     def store_block_for method_name, args, block
       opts = {:on => :all}.merge(args.first || {})
-      (payload[method_name] = {})[opts[:on]] = block
+      payload[method_name][opts[:on]] = block
     end
 
     def block_for method_name
-      payload[method_name][uname] || payload[method_name][:all] unless payload[method_name].nil?
+      payload[method_name][uname] || payload[method_name][:all] || (self.class.default_blocks || {})[method_name]
     end
 
     def self.set_up_delegating_for method_name
