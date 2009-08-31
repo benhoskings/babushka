@@ -22,7 +22,7 @@ module Babushka
 
       def render
         if @block.nil?
-          shell.stdout if shell.ok?
+          shell.stdout.chomp if shell.ok?
         else
           @block.call shell
         end
