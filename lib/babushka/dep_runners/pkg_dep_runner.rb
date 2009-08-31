@@ -22,10 +22,11 @@ module Babushka
 
       unless bad.empty?
         log_error "#{bad.map {|i| "'#{i}'" }.to_list} incorrectly run#{'s' if bad.length == 1} from #{cmd_dir(bad.first)}."
-        log "You need to put #{pkg_manager.prefix} before #{cmd_dir(bad.first)} in your PATH."
+        log "You need to put #{pkg_manager.bin_path} before #{cmd_dir(bad.first)} in your PATH."
+        :fail
+      else
+        missing.empty?
       end
-
-      missing.empty? and bad.empty?
     end
 
     def install_packages
