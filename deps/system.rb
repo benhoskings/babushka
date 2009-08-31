@@ -2,30 +2,6 @@ def ssh_conf_path file
   "/etc#{'/ssh' if linux?}/#{file}_config"
 end
 
-dep 'correct path', :for => :osx do
-  requires 'correct path order', 'path_helper fish support'
-end
-
-dep 'correct path order' do
-  met? { grep %Q(NEWPATH="${p}${SEP}${NEWPATH}"), '/usr/libexec/path_helper' }
-  meet {
-    change_line %Q(NEWPATH="${NEWPATH}${SEP}${p}"), %Q(NEWPATH="${p}${SEP}${NEWPATH}"), '/usr/libexec/path_helper'
-    ENV['PATH'] = "/opt/local/bin:#{ENV['PATH']}" if osx? # TODO: hax
-  }
-end
-
-dep 'path_helper fish support' do
-  met? { grep %Q(path_helper [-c | -f | -s]), "/usr/libexec/path_helper" }
-  meet {
-    change_line %Q(echo "usage: path_helper [-c | -s]" 1>&2), %Q(echo "usage: path_helper [-c | -f | -s]" 1>&2), '/usr/libexec/path_helper'
-    insert_into_file 'exit 0', 'elif [ "$1" == "-s" -o -z "$1" ]; then', '/usr/libexec/path_helper',
-      %q{elif [ "$1" == "-f" -o \( -z "$1" -a "${SHELL%fish}" != "$SHELL" \) ]; then
-	echo set -x PATH $P | tr ':' ' '
-	echo set -x MANPATH $MP | tr ':' ' '
-	exit 0}
-  }
-end
-
 dep 'hostname', :for => :linux do
   met? {
     current_hostname = shell('hostname -f')
