@@ -14,16 +14,16 @@ end
 require 'fileutils'
 def in_dir dir, opts = {}, &block
   if dir.nil?
-    yield
+    yield Dir.pwd
   else
     path = pathify dir
     FileUtils.mkdir_p(path) if opts[:create] unless File.exists?(path)
     if Dir.pwd == path
-      yield
+      yield path
     else
       Dir.chdir path do
         debug "in dir #{dir} (#{path})" do
-          yield
+          yield path
         end
       end
     end
