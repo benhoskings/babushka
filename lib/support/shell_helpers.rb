@@ -153,7 +153,7 @@ def get_source url, filename = nil
   end
 end
 
-def download url, filename = File.basename(url)
+def download url, filename = File.basename(url.to_s)
   if File.exists? filename
     log_ok "Already downloaded #{filename}."
   else
