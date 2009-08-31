@@ -131,10 +131,20 @@ def append_to_file text, file
 end
 
 def get_source url
-  filename = File.basename url
+  filename = File.basename url.to_s
   archive_dir = File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext }
-  download(url, filename) &&
-  log_shell("Extracting #{filename}", "sudo rm -rf #{archive_dir} && tar -zxvf #{filename}")
+  if filename.blank?
+    log_error "Not a valid URL to download: #{url}"
+  elsif archive_dir.blank?
+    log_error "Unsupported archive: #{filename}"
+  elsif !download(url, filename)
+    log_error "Failed to download #{url}."
+  elsif !log_shell("Extracting #{filename}", "sudo rm -rf #{archive_dir} && tar -zxvf #{filename}")
+    log_error "Couldn't extract #{pathify filename}."
+    log "(maybe the download was cancelled before it finished?)"
+  else
+    archive_dir
+  end
 end
 
 def download url, filename = File.basename(url)
