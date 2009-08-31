@@ -99,12 +99,12 @@ module Babushka
 
     def gem_path_for gem_name, version = nil
       unless (detected_version = has?(ver(gem_name, version), :log => false)).nil?
-        File.join gem_root, ver(gem_name, detected_version).to_s
+        gem_root / ver(gem_name, detected_version).to_s
       end
     end
 
     def gem_root
-      File.join shell('gem env gemdir'), 'gems'
+      shell('gem env gemdir') / 'gems'
     end
 
 
