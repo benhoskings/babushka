@@ -138,7 +138,7 @@ end
 
 def get_source url, filename = nil
   filename ||= File.basename url.to_s
-  archive_dir = File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext }
+  archive_dir = archive_basename filename
   if filename.blank?
     log_error "Not a valid URL to download: #{url}"
   elsif archive_dir.blank?
@@ -159,6 +159,10 @@ def download url, filename = File.basename(url)
   else
     log_shell "Downloading #{filename}", %Q{curl -L -o "#{filename}" "#{url}"}
   end
+end
+
+def archive_basename filename
+  File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext } || ''
 end
 
 def _by_babushka
