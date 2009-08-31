@@ -69,6 +69,7 @@ module Babushka
         message.gsub! "\n", "\n#{indentation}"
         message = "#{TickChar.colorize('grey')} #{message}" if opts[:as] == :ok
         message = message.colorize 'red' if opts[:as] == :error
+        message = message.colorize 'blue' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
         print message
         $stdout.flush
