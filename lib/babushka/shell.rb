@@ -20,16 +20,7 @@ module Babushka
         @shell, @opts, @block = shell, opts, block
       end
 
-      def ok?; shell.ok? end
-
       def render
-        if Base.task.debug? && !(ok? || @opts[:fail_ok])
-          log "stdout:"
-          log shell.stdout
-          log "stderr:"
-          log shell.stderr
-        end
-
         if @block.nil?
           shell.stdout if shell.ok?
         else
