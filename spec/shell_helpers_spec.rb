@@ -41,12 +41,14 @@ describe "failable_shell" do
 end
 
 describe "sudo" do
+  before {
+    @current_user = `whoami`.chomp
+  }
   it "should run as root when no user is given" do
     sudo('whoami').should == 'root'
   end
   it "should run as the given user" do
-    current_user = `whoami`.chomp
-    sudo('whoami', :as => current_user).should == current_user
+    sudo('whoami', :as => @current_user).should == @current_user
   end
   describe "compound commands" do
     it "should use 'sudo su -' when opts[:su] is supplied" do
