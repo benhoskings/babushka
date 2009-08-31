@@ -13,6 +13,8 @@ def tmp_prefix
   "#{'/private' if osx?}/tmp/rspec/its_ok_if_a_test_deletes_this"
 end
 
+FileUtils.mkdir_p tmp_prefix unless File.exists? tmp_prefix
+
 module Babushka
   class Logger
     def self.log message, opts = {}, &block
