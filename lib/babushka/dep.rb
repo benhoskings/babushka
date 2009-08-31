@@ -119,7 +119,11 @@ module Babushka
 
     def process_met_task opts = {}, &block
       if !(met_result = run_met_task(opts))
-        block.call unless block.nil?
+        if block.nil?
+          false # unmet
+        else
+          block.call
+        end
       elsif :fail == met_result
         false # can't be met
       else
