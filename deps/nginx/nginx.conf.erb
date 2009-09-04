@@ -17,6 +17,7 @@ http {
   include mime.types;
   default_type application/octet-stream;
 
+  # Don't edit this to serve content; instead, add a vhost.
   server {
     listen 80;
     server_name localhost;
@@ -32,5 +33,6 @@ http {
   passenger_max_pool_size 16;
   passenger_pool_idle_time 1800;
 
+  # Pull in all enabled vhosts
   include vhosts/on/*.conf;
 }
