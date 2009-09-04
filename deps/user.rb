@@ -6,7 +6,6 @@ end
 
 src 'fish' do
   requires 'doxygen', 'coreutils', 'sed'
-  provides 'fush'
   source "git://github.com/benhoskings/fish.git"
   preconfigure { shell "autoconf" }
   configure_env "LDFLAGS='-liconv -L/opt/local/lib'"
