@@ -35,7 +35,13 @@ dep 'dot files' do
 end
 
 dep 'user exists' do
-  met? { grep(/^#{var(:username)}:/, '/etc/passwd') }
+  met? {
+    if linux?
+      grep(/^#{var(:username)}:/, '/etc/passwd')
+    elsif osx?
+      !shell("dscl . -list /Users").split("\n").grep(var(:username)).empty?
+    end
+  }
   meet {
     sudo "useradd #{var(:username)} -m -s /bin/bash -G admin"
     sudo "chmod 701 /home/#{var(:username)}"
