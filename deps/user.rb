@@ -5,10 +5,10 @@ dep 'user shell setup' do
 end
 
 src 'fish' do
-  requires 'doxygen', 'coreutils', 'sed'
+  requires 'ncurses', 'doc', 'coreutils', 'sed'
   source "git://github.com/benhoskings/fish.git"
   preconfigure { shell "autoconf" }
-  configure_env "LDFLAGS='-liconv -L/opt/local/lib'"
+  configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if osx?
   configure_args "--without-xsel"
 end
 

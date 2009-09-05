@@ -16,6 +16,9 @@ pkg 'curl' do
     apt 'curl'
   }
 end
+dep 'doc' do
+  requires 'doxygen', 'gettext'
+end
 pkg 'doxygen'
 pkg 'freeimage' do
   installs {
@@ -24,6 +27,7 @@ pkg 'freeimage' do
   }
   provides []
 end
+pkg 'gettext'
 pkg 'git' do
   installs {
     apt 'git-core'
@@ -41,6 +45,13 @@ pkg 'java' do
 end
 pkg 'libssl headers' do
   installs { apt 'libssl-dev' }
+  provides []
+end
+pkg 'ncurses' do
+  installs {
+    apt 'libncurses5-dev', 'libncursesw5-dev'
+    macports 'ncurses', 'ncursesw'
+  }
   provides []
 end
 gem 'passenger' do
