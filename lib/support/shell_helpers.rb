@@ -122,7 +122,7 @@ def change_with_sed keyword, from, to, file
     # Remove the incorrect setting if it's there
     shell("#{sed} -ri 's/^#{keyword}\s+#{from}//' #{file}")
     # Add the correct setting unless it's already there
-    shell("echo '#{keyword} #{to}' >> #{file}") unless grep(/^#{keyword}\s+#{to}/, file)
+    grep(/^#{keyword}\s+#{to}/, file) or shell("echo '#{keyword} #{to}' >> #{file}")
   end
 end
 
