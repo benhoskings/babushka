@@ -69,6 +69,11 @@ pkg 'sed' do
     end
   }
 end
+pkg 'sshd' do
+  installs {
+    apt 'openssh-server'
+  }
+end
 pkg 'vim'
 pkg 'wget'
 pkg 'zlib headers' do
