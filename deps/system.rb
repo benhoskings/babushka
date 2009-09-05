@@ -4,9 +4,8 @@ end
 
 dep 'hostname', :for => :linux do
   met? {
-    current_hostname = shell('hostname -f')
     stored_hostname = read_file('/etc/hostname')
-    !stored_hostname.blank? && current_hostname == stored_hostname
+    !stored_hostname.blank? && hostname == stored_hostname
   }
   meet {
     sudo "echo #{hostname shell('hostname')} > /etc/hostname"

@@ -32,6 +32,9 @@ def system_name
     }[system_release]
   end
 end
+def hostname
+  shell 'hostname -f'
+end
 def linux?; :linux == uname end
 def osx?; :osx == uname end
 
