@@ -26,6 +26,7 @@ dep 'secured ssh logins' do
     change_with_sed 'PasswordAuthentication',          'yes', 'no', ssh_conf_path(:sshd)
     change_with_sed 'ChallengeResponseAuthentication', 'yes', 'no', ssh_conf_path(:sshd)
   }
+  after { sudo "/etc/init.d/ssh restart" }
 end
 
 dep 'lax host key checking' do
