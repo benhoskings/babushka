@@ -22,6 +22,7 @@ dep 'vhost configured' do
     render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
     render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{var :domain}.common"
   }
+  after { restart_nginx if File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
 end
 
 dep 'self signed cert' do
