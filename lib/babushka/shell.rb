@@ -52,7 +52,7 @@ module Babushka
           stderr_ready = stderr.ready_for_read?
 
           if !stdout_ready && !stderr_ready
-            sleep 0.1 if stdout_done || stderr_done
+            sleep 0.01 #if stdout_done || stderr_done
           else
             if stdout_ready
               if (buf = stdout.gets).nil?
