@@ -43,7 +43,8 @@ dep 'user exists' do
     end
   }
   meet {
-    sudo "useradd #{var(:username)} -m -s /bin/bash -G admin"
-    sudo "chmod 701 /home/#{var(:username)}"
+    sudo "mkdir -p #{var :home_dir_base}" and
+    sudo "useradd #{var(:username)} -m -s /bin/bash -b #{var :home_dir_base} -G admin" and
+    sudo "chmod 701 #{var(:home_dir_base) / var(:username)}"
   }
 end
