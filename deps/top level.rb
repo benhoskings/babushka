@@ -9,7 +9,7 @@ dep 'user setup' do
 end
 
 dep 'rails app' do
-  requires 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
+  requires 'user setup', 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
   define_var :domain, :default => :username
   define_var :rails_env, :default => 'production'
   define_var :rails_root, :default => '~/current'
