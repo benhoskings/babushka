@@ -22,13 +22,21 @@ module Babushka
       :dry_run => %w[-n --dry-run],
       :force => %w[-f --force]
     }.freeze
+    OptionDescriptions = {
+      :quiet => "Run with minimal logging",
+      :debug => "Print internal Babushka info, as well as the output of shell commands",
+      :dry_run => "Discover the curent state without making any changes",
+      :force => "Always attempt to meet the dependency, even if it's already met"
+    }.freeze
 
     def task
       @task ||= Task.new
     end
 
     def run args
-      if !setup(args)
+      if usage(args)
+        # nothing to do
+      elsif !setup(args)
         # fail
       elsif @tasks.empty?
         fail_with "Nothing to do."
@@ -42,6 +50,43 @@ module Babushka
 
 
     private
+
+    def usage args
+      if !(args & %w[-h --help --halp]).empty?
+        print_version :full => true
+        print_usage
+        print_options
+        true
+      elsif !(args & %w[-V --version]).empty?
+        print_version
+        true
+      end
+    end
+
+    def print_version opts = {}
+      if opts[:full]
+        log "Babushka v#{Babushka::Version}, (c) 2009 Ben Hoskings <ben@hoskings.net>"
+      else
+        log Babushka::Version
+      end
+    end
+
+    def print_usage
+      log "\nUsage:\n  ruby bin/babushka.rb [options] <dep name(s)>"
+    end
+
+    def print_options
+      log "\nOptions:"
+      indent = Options.values.map {|o| printable_option(o).length }.max + 4
+      Options.each_pair {|name,option|
+        log "  #{printable_option(option).ljust(indent)}#{OptionDescriptions[name]}"
+      }
+      log "\n"
+    end
+
+    def printable_option option
+      [*option].join(', ')
+    end
 
     def setup args
       extract_opts(args).tap{|obj| debug "opts=#{obj.inspect}" }
