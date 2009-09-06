@@ -47,6 +47,12 @@ pkg 'libssl headers' do
   installs { apt 'libssl-dev' }
   provides []
 end
+pkg 'mdns' do
+  installs {
+    apt 'avahi-daemon'
+  }
+  provides []
+end
 pkg 'ncurses' do
   installs {
     apt 'libncurses5-dev', 'libncursesw5-dev'
