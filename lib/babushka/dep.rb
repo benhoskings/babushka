@@ -146,6 +146,9 @@ module Babushka
     def call_task task_name
       # log "calling #{name} / #{task_name}"
       runner.instance_eval &(@definer.send(task_name) || @definer.default_task(task_name))
+    rescue StandardError => e
+      log "Exception during '#{name}' / #{task_name}{}.".colorize('red')
+      log "#{e.backtrace.detect {|l| l[definer.source_path] }}: #{e.message}".colorize('red')
     end
 
     def unmet_message_for result
