@@ -15,5 +15,5 @@ dep 'rails app' do
 end
 
 dep 'core software' do
-  requires 'vim', 'curl', 'mdns'
+  requires 'fish', 'vim', 'curl', 'mdns', 'jnettop', 'screen'
 end

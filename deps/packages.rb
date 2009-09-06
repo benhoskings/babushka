@@ -43,6 +43,9 @@ pkg 'java' do
   provides 'java'
   after { shell "set -Ux JAVA_HOME /usr/lib/jvm/java-6-sun" }
 end
+pkg 'jnettop' do
+  installs { apt 'jnettop' }
+end
 pkg 'libssl headers' do
   installs { apt 'libssl-dev' }
   provides []
@@ -66,6 +69,7 @@ end
 pkg 'rcconf' do
   installs { apt 'rcconf' }
 end
+pkg 'screen'
 pkg 'sed' do
   installs { macports 'gsed' }
   provides 'sed'
