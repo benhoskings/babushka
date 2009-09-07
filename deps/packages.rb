@@ -34,6 +34,7 @@ pkg 'git' do
     macports 'git-core +svn +bash_completion'
   }
 end
+pkg 'htop'
 gem 'image_science' do
   requires 'freeimage'
   provides []
