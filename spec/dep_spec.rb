@@ -18,6 +18,14 @@ describe "dep creation" do
       end
     }.should change(Dep, :count).by(1)
   end
+  it "should accept deps as dep names" do
+    L{
+      dep 'parent dep' do
+        requires dep('nested dep')
+      end
+    }.should change(Dep, :count).by(2)
+    Dep('parent dep').definer.requires.should == [ver('nested dep')]
+  end
   after { Dep.clear! }
 end
 

@@ -4,11 +4,11 @@ module Babushka
     include PromptHelpers
     include VersionList
 
-    attr_reader :dep, :payload, :source_path
+    attr_reader :payload, :source_path
 
     class_inheritable_accessor :default_blocks
 
-    delegate :name, :var, :define_var, :to => :dep
+    delegate :name, :var, :define_var, :to => :dependency
     delegate :set, :merge, :to => :runner
 
     def initialize dep, &block
@@ -16,6 +16,10 @@ module Babushka
       @payload = {}
       @block = block
       @source_path = self.class.current_load_path
+    end
+
+    def dependency
+      @dep
     end
 
     def runner
