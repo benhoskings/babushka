@@ -11,3 +11,16 @@ ext 'apt' do
     log "Your system doesn't seem to have Apt installed. Is it Debian-based?"
   end
 end
+
+dep 'homebrew' do
+  requires 'git'
+  met? {
+    if Babushka::BrewHelper.prefix && File.directory?(Babushka::BrewHelper.prefix / 'Library')
+      log_ok "homebrew is installed at #{Babushka::BrewHelper.prefix}."
+    else
+      log_error "no brews."
+      :fail
+    end
+  }
+  meet { }
+end

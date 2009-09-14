@@ -38,6 +38,9 @@ module Babushka
         cmd_dir(cmd_name).starts_with?(prefix)
       end
     end
+    def should_sudo
+      true
+    end
   end
   end
 
@@ -119,6 +122,39 @@ module Babushka
       installed = shell("gem list --local #{pkg_name}").split("\n").detect {|l| /^#{pkg_name}\b/ =~ l }
       versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
       versions.split(/[^0-9.]+/).sort.map(&:to_version)
+    end
+  end
+  end
+
+  class BrewHelper < PkgManager
+  class << self
+    def pkg_type; :brew end
+    def pkg_cmd; 'brew' end
+    def manager_key; :brew end
+    def manager_dep; 'homebrew' end
+
+    def install! pkgs
+      pkgs.each {|pkg|
+        log_shell "Installing #{pkg} via #{manager_key}", "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}", :sudo => should_sudo
+      }
+    end
+
+    private
+
+    def _has? pkg
+      versions_of(pkg).sort.reverse.detect {|version| pkg.matches? version }
+    end
+
+    def versions_of pkg
+      pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
+      installed = Dir[
+        prefix / 'Cellar' / pkg_name / '*'
+      ].map {|i|
+        File.basename i.chomp '/'
+      }.map(&:to_version)
+    end
+    def should_sudo
+      false
     end
   end
   end
