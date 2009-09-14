@@ -21,7 +21,7 @@ module Babushka
 
     delegate :set, :merge, :define_var, :to => :runner
 
-    def initialize name, in_opts, block, definer_class = DepDefiner, runner_class = DepRunner
+    def initialize name, in_opts, block, definer_class, runner_class
       @name = name
       @opts = {
         :for => :all
