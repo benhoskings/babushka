@@ -154,6 +154,7 @@ module Babushka
     rescue StandardError => e
       log "Exception during '#{name}' / #{task_name}{}.".colorize('red')
       log "#{e.backtrace.detect {|l| l[definer.source_path] }}: #{e.message}".colorize('red')
+      :fail
     end
 
     def unmet_message_for result
