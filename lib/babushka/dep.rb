@@ -48,6 +48,9 @@ module Babushka
     def self.clear!
       @@deps = {}
     end
+    def self.uncache
+      all.each {|dep| dep.send :uncache }
+    end
 
     def self.register dep
       raise "There is already a registered dep called '#{dep.name}'." unless deps[dep.name].nil?
@@ -60,15 +63,17 @@ module Babushka
     end
 
     def met?
-      process :dry_run => true
+      process :dry_run => true, :top_level => true
     end
     def meet
-      process :dry_run => false
+      process :dry_run => false, :top_level => true
     end
 
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
-      cached? ? cached_result : process_and_cache
+      returning cached? ? cached_result : process_and_cache do
+        Dep.uncache if with_run_opts[:top_level]
+      end
     end
 
     private
@@ -161,13 +166,16 @@ module Babushka
       end
     end
     def cached?
-      defined? @_cached_process
+      !@_cached_process.nil?
+    end
+    def uncache
+      @_cached_process = nil
     end
     def cached_process
       @_cached_process
     end
     def cache_process value
-      @_cached_process = value
+      @_cached_process = (value.nil? ? false : value)
     end
 
     def payload
