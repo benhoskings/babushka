@@ -1,19 +1,6 @@
 module Babushka
   Version = '0.0.1'
 
-  module BaseHelpers
-    def self.included base # :nodoc:
-      Object.send :include, HelperMethods
-    end
-
-    module HelperMethods
-      def Babushka argv
-        Babushka::Base.run argv
-      end
-    end
-  end
-
-
   class Base
   class << self
     Options = {
@@ -46,6 +33,10 @@ module Babushka
           dep.process unless dep.nil?
         }
       end
+    end
+
+    def setup_noninteractive
+      load_deps
     end
 
 
@@ -92,7 +83,7 @@ module Babushka
       extract_opts(args).tap{|obj| debug "opts=#{obj.inspect}" }
       extract_vars(args).tap{|obj| debug "vars=#{obj.inspect}" }
       extract_tasks(args).tap{|obj| debug "tasks=#{obj.inspect}" }
-      load_deps
+      setup_noninteractive
     end
 
     def extract_opts args

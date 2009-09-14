@@ -34,9 +34,12 @@
   require "#{File.dirname(__FILE__)}/../lib/#{component}"
 }
 
-include Babushka::BaseHelpers
 include Babushka::LoggerHelpers
 include Babushka::DepHelpers
 include Babushka::VersionHelpers
 
-Babushka ARGV if $0 == __FILE__
+if $0 == __FILE__
+  Babushka::Base.run ARGV
+else
+  Babushka::Base.setup_noninteractive
+end
