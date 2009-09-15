@@ -50,7 +50,7 @@ module Babushka
         rescue Exception => e
           log "#{e.backtrace.first}: #{e.message}"
           # log "#{e.backtrace.grep(/#{f}/).first}"
-          log "Failed to load #{f}."
+          log "Load error at #{e.backtrace.detect {|l| l[f] }}."
           return nil
         end
       }) do |result|
