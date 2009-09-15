@@ -17,8 +17,9 @@ end
 dep 'secured ssh logins' do
   requires 'sshd', 'sed'
   met? {
-    returning failable_shell('ssh -o StrictHostKeyChecking=no nonexistentuser@localhost').stderr['(publickey)'] do |result|
-      log_verbose "sshd #{'only ' if result}accepts #{(result || '').scan(/[a-z]+/).to_list} logins.", :as => (result ? :ok : :error)
+    auth_methods = failable_shell('ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no nonexistentuser@localhost').stderr.scan(/\((.*)\)/).first.first.split(/[^a-z]+/)
+    returning auth_methods == %w[publickey] do |result|
+      log_verbose "sshd #{'only ' if result}accepts #{auth_methods.to_list} logins.", :as => (result ? :ok : :error)
     end
   }
   meet {
