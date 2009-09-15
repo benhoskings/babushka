@@ -49,7 +49,7 @@ module Babushka
           end
         rescue Exception => e
           log_error "#{e.backtrace.first}: #{e.message}"
-          log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:[^:]+$/, '')}."
+          log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
           return nil
         end
       }) do |result|
