@@ -8,7 +8,7 @@ dep 'hostname', :for => :linux do
     !stored_hostname.blank? && hostname == stored_hostname
   }
   meet {
-    sudo "echo #{hostname shell('hostname')} > /etc/hostname"
+    sudo "echo #{var :hostname, :default => shell('hostname')} > /etc/hostname"
     sudo "sed -ri 's/^127.0.0.1.*$/127.0.0.1 #{hostname} localhost.localdomain localhost/' /etc/hosts"
     sudo "/etc/init.d/hostname.sh"
   }
