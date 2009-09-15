@@ -49,8 +49,7 @@ module Babushka
           end
         rescue Exception => e
           log "#{e.backtrace.first}: #{e.message}"
-          # log "#{e.backtrace.grep(/#{f}/).first}"
-          log "Load error at #{e.backtrace.detect {|l| l[f] }}."
+          log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:[^:]+$/, '')}."
           return nil
         end
       }) do |result|
