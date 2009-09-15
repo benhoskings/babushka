@@ -164,7 +164,7 @@ class String
     }.first || ''
   end
   def / other
-    empty? ? other : File.join(self, other)
+    empty? ? other.to_s : File.join(self, other.to_s)
   end
 
   def to_version
