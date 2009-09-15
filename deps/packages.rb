@@ -51,6 +51,10 @@ pkg 'libssl headers' do
   installs { apt 'libssl-dev' }
   provides []
 end
+pkg 'libxml' do
+  installs { apt 'libxml2-dev' }
+  provides []
+end
 pkg 'mdns' do
   installs {
     apt 'avahi-daemon'
