@@ -48,7 +48,7 @@ module Babushka
             @@current_load_path = nil
           end
         rescue Exception => e
-          log "#{e.backtrace.first}: #{e.message}"
+          log_error "#{e.backtrace.first}: #{e.message}"
           log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:[^:]+$/, '')}."
           return nil
         end
