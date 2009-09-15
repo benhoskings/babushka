@@ -9,7 +9,7 @@ dep 'github source' do
 end
 
 dep 'rubygems installed' do
-  requires 'ruby', 'wget'
+  requires 'ruby', 'curl'
   met? {
     if which('gem').nil?
       unmet "'gem' is not installed"
