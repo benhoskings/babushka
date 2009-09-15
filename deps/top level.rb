@@ -1,5 +1,5 @@
 dep 'system' do
-  requires 'hostname', 'secured ssh logins', 'lax host key checking', 'admins can sudo', 'core software'
+  requires 'hostname', 'secured ssh logins', 'lax host key checking', 'admins can sudo', 'tmp cleaning grace period', 'core software'
 end
 
 dep 'user setup' do
