@@ -64,6 +64,7 @@ pkg 'ncurses' do
   }
   provides []
 end
+pkg 'nmap'
 gem 'passenger' do
   provides 'passenger-install-nginx-module'
 end
