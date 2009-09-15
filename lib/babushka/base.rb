@@ -29,8 +29,7 @@ module Babushka
         fail_with "Nothing to do."
       else
         @tasks.all? {|dep_name|
-          dep = Dep(dep_name)
-          dep.process unless dep.nil?
+          Dep.process dep_name
         }
       end
     end

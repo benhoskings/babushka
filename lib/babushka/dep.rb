@@ -58,8 +58,13 @@ module Babushka
       deps[dep.name] = dep
     end
     def self.for name
-      returning dep = deps[name] do |result|
-        log"#{name.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}" unless result
+      deps[name]
+    end
+    def self.process name
+      if (dep = Dep(name)).nil?
+        log "#{name.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
+      else
+        dep.process
       end
     end
 
