@@ -91,6 +91,8 @@ end
 
 def change_line line, replacement, filename
   path = pathify filename
+
+  log "Patching #{path}"
   sudo "cat > #{path}", :as => File.owner(path), :input => IO.readlines(path).map {|l|
     l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
   }
@@ -102,6 +104,7 @@ def insert_into_file insert_after, insert_before, filename, lines
   nlines = lines.split("\n").length
   before, after = IO.readlines(path).cut {|l| l.strip == insert_before.strip }
 
+  log "Patching #{path}"
   if before.last == end_of_insertion
     log_extra "Already written to line #{before.length + 1 - 2 - nlines} of #{filename}."
   elsif before.last.strip != insert_after.strip
