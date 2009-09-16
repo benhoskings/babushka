@@ -46,6 +46,8 @@ module Babushka
         print_version :full => true
         print_usage
         print_options
+        print_examples
+        log "\n"
         true
       elsif !(args & %w[-V --version]).empty?
         print_version
@@ -71,7 +73,19 @@ module Babushka
       Options.each_pair {|name,option|
         log "  #{printable_option(option).ljust(indent)}#{OptionDescriptions[name]}"
       }
+    end
+
+    def print_examples
+      log "\nExamples:"
+      log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
+      log "  babushka system --dry-run"
       log "\n"
+      log "  # Meet the 'fish' dep (i.e. install fish and all its dependencies).".colorize('grey')
+      log "  babushka fish"
+      log "\n"
+      log "  # Meet the 'user setup' dep, printing lots of debugging (including realtime".colorize('grey')
+      log "  # shell command output).".colorize('grey')
+      log "  babushka 'user setup' --debug"
     end
 
     def printable_option option
