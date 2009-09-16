@@ -138,9 +138,9 @@ def sed
   linux? ? 'sed' : 'gsed'
 end
 
-def append_to_file text, file
+def append_to_file text, file, opts = {}
   if failable_shell("grep '^#{text}' #{file}").stdout.empty?
-    shell %Q{echo "# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}
+    shell %Q{echo "# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}, opts
   end
 end
 
