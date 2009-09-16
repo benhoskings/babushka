@@ -1,14 +1,13 @@
-def www_aliases
-  "#{var :domain} #{var :extra_domains}".split(' ').compact.map(&:strip).reject {|d|
-    d.starts_with? '*.'
-  }.reject {|d|
-    d.starts_with? 'www.'
-  }.map {|d|
-    "www.#{d}"
-  }.join(' ')
-end
-
 dep 'vhost enabled' do
+  define_var :www_aliases, :default => L{
+    "#{var :domain} #{var :extra_domains}".split(' ').compact.map(&:strip).reject {|d|
+      d.starts_with? '*.'
+    }.reject {|d|
+      d.starts_with? 'www.'
+    }.map {|d|
+      "www.#{d}"
+    }.join(' ')
+  }
   requires 'vhost configured'
   met? { File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
   meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{var :domain}.conf' '/opt/nginx/conf/vhosts/on/#{var :domain}.conf'" }
