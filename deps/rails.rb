@@ -45,7 +45,10 @@ dep 'migrated db' do
   requires 'deployed app', 'existing db', 'rails'
   met? {
     current_version = rails_rake("db:version") {|shell| shell.stdout.val_for('Current version') }
-    latest_version = Dir.glob('db/migrate').push('0').sort.last.split('_', 2).first
+    latest_version = Dir[
+      pathify var(:rails_root) / 'db/migrate/*.rb'
+    ].map {|f| File.basename f }.push('0').sort.last.split('_', 2).first
+
     returning current_version == latest_version do |result|
       unless current_version.blank?
         if latest_version == '0'
