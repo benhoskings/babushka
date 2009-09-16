@@ -13,15 +13,15 @@ module Babushka
     include PromptHelpers
     include DefinerHelpers
 
-    attr_reader :dep
-
-    delegate :name, :to => :dep
     delegate :source_path, :to => :definer
 
     def initialize dep
       @dep = dep
     end
 
+    def name
+      @dep.name
+    end
     def definer
       @dep.definer
     end
