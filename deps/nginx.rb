@@ -106,10 +106,10 @@ dep 'webserver startup script' do
   }
   meet {
     if linux?
-      render_erb 'nginx/nginx.init.d', :to => '/etc/init.d/nginx', :perms => '755'
+      render_erb 'nginx/nginx.init.d.erb', :to => '/etc/init.d/nginx', :perms => '755'
       sudo 'update-rc.d nginx defaults'
     elsif osx?
-      render_erb 'nginx/nginx.launchd', :to => '/Library/LaunchDaemons/org.nginx.plist'
+      render_erb 'nginx/nginx.launchd.erb', :to => '/Library/LaunchDaemons/org.nginx.plist'
       sudo 'launchctl load -w /Library/LaunchDaemons/org.nginx.plist'
     end
   }
