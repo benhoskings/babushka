@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 %w[
   support/core_patches
   support/utils
