@@ -135,7 +135,7 @@ end
 
 def append_to_file text, file
   if failable_shell("grep '^#{text}' #{file}").stdout.empty?
-    shell %Q{echo "#{text.gsub('"', '\"')}" >> #{file}}
+    shell %Q{echo "# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}
   end
 end
 
