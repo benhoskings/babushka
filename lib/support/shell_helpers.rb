@@ -72,7 +72,7 @@ def rake cmd, &block
 end
 
 def rails_rake cmd, &block
-  in_dir rails_root '~/current' do
+  in_dir var(:rails_root) do
     rake cmd, &block
   end
 end
