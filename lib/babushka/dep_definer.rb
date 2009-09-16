@@ -8,8 +8,8 @@ module Babushka
 
     class_inheritable_accessor :default_blocks
 
-    delegate :name, :var, :define_var, :to => :dependency
-    delegate :set, :merge, :to => :runner
+    delegate :name, :to => :dependency
+    delegate :set, :merge, :var, :define_var, :to => :runner
 
     def initialize dep, &block
       @dep = dep
