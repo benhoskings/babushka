@@ -1,5 +1,5 @@
 module Babushka
-  Version = '0.1'
+  VERSION = '0.1'
 
   class Base
   class << self
@@ -57,9 +57,9 @@ module Babushka
 
     def print_version opts = {}
       if opts[:full]
-        log "Babushka v#{Babushka::Version}, (c) 2009 Ben Hoskings <ben@hoskings.net>"
+        log "Babushka v#{Babushka::VERSION}, (c) 2009 Ben Hoskings <ben@hoskings.net>"
       else
-        log Babushka::Version
+        log Babushka::VERSION
       end
     end
 

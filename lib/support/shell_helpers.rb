@@ -174,7 +174,7 @@ def archive_basename filename
 end
 
 def _by_babushka
-  "by babushka-#{Babushka::Version} at #{Time.now}"
+  "by babushka-#{Babushka::VERSION} at #{Time.now}"
 end
 def generated_by_babushka
   "Generated #{_by_babushka}"
