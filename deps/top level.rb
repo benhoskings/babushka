@@ -5,7 +5,9 @@ end
 dep 'user setup' do
   requires 'user shell setup', 'passwordless ssh logins', 'public key'
   define_var :username, :default => shell('whoami')
-  set :home_dir_base, "/home"
+  setup {
+    set :home_dir_base, "/home"
+  }
 end
 
 dep 'rails app' do
@@ -27,7 +29,9 @@ end
 dep 'webapp' do
   requires 'user setup', 'vhost enabled', 'webserver running'
   define_var :domain, :default => :username
-  set :home_dir_base, "/srv/http"
+  setup {
+    set :home_dir_base, "/srv/http"
+  }
 end
 
 dep 'core software' do
