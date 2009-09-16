@@ -157,7 +157,9 @@ module Babushka
       runner.instance_eval &(@definer.send(task_name) || @definer.default_task(task_name))
     rescue StandardError => e
       log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
-      log "#{e.backtrace.detect {|l| l[definer.source_path] } || e.backtrace.first}: #{e.message}".colorize('red')
+      log "#{e.backtrace.first}: #{e.message}".colorize('red')
+      dep_callpoint = e.backtrace.detect {|l| l[definer.source_path] }
+      log "Check #{dep_callpoint}." unless dep_callpoint.nil?
       :fail
     end
 
