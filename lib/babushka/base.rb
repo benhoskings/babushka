@@ -11,9 +11,9 @@ module Babushka
     }.freeze
     OptionDescriptions = {
       :quiet => "Run with minimal logging",
-      :debug => "Print internal Babushka info, as well as the output of shell commands",
+      :debug => "Show more verbose logging, and realtime shell command output",
       :dry_run => "Discover the curent state without making any changes",
-      :force => "Always attempt to meet the dependency, even if it's already met"
+      :force => "Attempt to meet the dependency even if it's already met"
     }.freeze
 
     def task
