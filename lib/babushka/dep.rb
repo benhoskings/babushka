@@ -109,9 +109,7 @@ module Babushka
 
     def process_deps
       @definer.requires.send(task.dry_run? ? :each : :all?, &L{|dep_name|
-        unless (dep = Dep(dep_name)).nil?
-          dep.send :process
-        end
+        Dep.process dep_name
       })
     end
 
