@@ -9,10 +9,24 @@ dep 'user setup' do
 end
 
 dep 'rails app' do
-  requires 'user setup', 'deploy repo', 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
-  define_var :domain, :default => :username
+  requires 'webapp', 'deploy repo', 'gems installed', 'migrated db'
   define_var :rails_env, :default => 'production'
   define_var :rails_root, :default => '~/current'
+  setup {
+    set :vhost_type, 'passenger'
+  }
+end
+
+dep 'proxied app' do
+  requires 'webapp'
+  setup {
+    set :vhost_type, 'proxy'
+  }
+end
+
+dep 'webapp' do
+  requires 'user setup', 'vhost enabled', 'webserver running'
+  define_var :domain, :default => :username
   set :home_dir_base, "/srv/http"
 end
 

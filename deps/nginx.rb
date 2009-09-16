@@ -17,10 +17,10 @@ end
 
 dep 'vhost configured' do
   requires 'webserver configured'
-  met? { %w[conf common].all? {|suffix| File.exists? "/opt/nginx/conf/vhosts/#{var :domain}.#{suffix}" } }
+  met? { File.exists? "/opt/nginx/conf/vhosts/#{var :domain}.conf" }
   meet {
-    render_erb 'nginx/vhost.conf.erb',   :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
-    render_erb 'nginx/vhost.common.erb', :to => "/opt/nginx/conf/vhosts/#{var :domain}.common"
+    render_erb "nginx/#{var :vhost_type, :default => 'passenger'}_vhost.conf.erb",   :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
+    render_erb "nginx/#{var :vhost_type, :default => 'passenger'}_vhost.common.erb", :to => "/opt/nginx/conf/vhosts/#{var :domain}.common", :optional => true
   }
   after { restart_nginx if File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
 end
@@ -29,22 +29,6 @@ dep 'self signed cert' do
   requires 'webserver installed'
   met? { %w[key csr crt].all? {|ext| File.exists? "/opt/nginx/conf/certs/#{var :domain}.#{ext}" } }
   meet { generate_self_signed_cert }
-end
-
-# TODO duplication
-dep 'proxy enabled' do
-  requires 'proxy configured'
-  met? { File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
-  meet { sudo "ln -sf '/opt/nginx/conf/vhosts/#{var :domain}.conf' '/opt/nginx/conf/vhosts/on/#{var :domain}.conf'" }
-  after { restart_nginx }
-end
-
-dep 'proxy configured' do
-  requires 'webserver configured'
-  met? { File.exists? "/opt/nginx/conf/vhosts/#{var :domain}.conf" }
-  meet {
-    render_erb 'nginx/http_proxy.conf.erb', :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
-  }
 end
 
 def build_nginx opts = {}

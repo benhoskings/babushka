@@ -1,9 +1,11 @@
+# <%= generated_by_babushka %>
+
 server {
   listen       80;
-  server_name  <%= domain %> <%= extra_domains '' %> <%= www_aliases %>;
+  server_name  <%= var :domain %> <%= var :extra_domains, :default => '' %> <%= var :www_aliases %>;
 
   location / {
-    proxy_pass         http://<%= host 'localhost' %>:<%= port '8080' %>/;
+    proxy_pass         http://<%= var :host , :default => 'localhost' %>:<%= var :port , :default => '8080' %>/;
     proxy_redirect     off;
 
     proxy_set_header   Host             $host;
