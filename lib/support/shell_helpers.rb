@@ -178,7 +178,11 @@ def edited_by_babushka
   "This line edited #{_by_babushka}"
 end
 def added_by_babushka nlines
-  "These #{nlines} lines added #{_by_babushka}"
+  if nlines == 1
+    "This line added #{_by_babushka}"
+  else
+    "These #{nlines} lines added #{_by_babushka}"
+  end
 end
 
 def read_file filename
