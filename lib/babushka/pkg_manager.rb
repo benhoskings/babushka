@@ -3,6 +3,8 @@ module Babushka
   class << self
     include ShellHelpers
 
+    def pkg_binary; pkg_cmd end
+
     def for_system
       {
         'Darwin' => MacportsHelper,
@@ -26,7 +28,7 @@ module Babushka
       log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
     end
     def prefix
-      cmd_dir(pkg_cmd.split(' ', 2).first).sub(/\/bin\/?$/, '')
+      cmd_dir(pkg_binary).sub(/\/bin\/?$/, '')
     end
     def bin_path
       prefix / 'bin'
@@ -68,7 +70,8 @@ module Babushka
   class AptHelper < PkgManager
   class << self
     def pkg_type; :deb end
-    def pkg_cmd; 'apt-get -y' end
+    def pkg_cmd; "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' apt-get -qyu" end
+    def pkg_binary; "apt-get" end
     def manager_key; :apt end
 
     def install! pkgs
