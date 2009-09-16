@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-%w[
+babushka_components = %w[
   support/core_patches
   support/utils
   support/logger
@@ -33,9 +33,12 @@
   babushka/dep_definers/src_dep_definer
   babushka/dep_definers/ext_dep_definer
   babushka/dep_definers/brew_dep_definer
+]
 
-].each {|component|
-  require "#{File.dirname(__FILE__)}/../lib/#{component}"
+dereferenced_file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+
+babushka_components.each {|component|
+  require "#{File.dirname(dereferenced_file)}/../lib/#{component}"
 }
 
 include Babushka::LoggerHelpers
