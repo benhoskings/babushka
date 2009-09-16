@@ -22,7 +22,7 @@ module Babushka
     delegate :set, :merge, :define_var, :to => :runner
 
     def initialize name, in_opts, block, definer_class, runner_class
-      @name = name
+      @name = name.to_s
       @opts = {
         :for => :all
       }.merge in_opts
@@ -60,9 +60,9 @@ module Babushka
     def self.for name
       deps[name]
     end
-    def self.process name
-      if (dep = Dep(name)).nil?
-        log "#{name.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
+    def self.process dep_name
+      if (dep = Dep(dep_name)).nil?
+        log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
       else
         dep.process
       end
