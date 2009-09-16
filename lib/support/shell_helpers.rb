@@ -1,3 +1,8 @@
+def shell cmd, opts = {}, &block
+  shell_method = opts.delete(:sudo) ? :sudo : :shell_cmd
+  send shell_method, cmd, opts, &block
+end
+
 def failable_shell cmd, opts = {}
   shell = nil
   Babushka::Shell.new(cmd).run opts.merge(:fail_ok => true) do |s|

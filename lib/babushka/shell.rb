@@ -5,7 +5,7 @@ module Babushka
     end
 
     module HelperMethods
-      def shell cmd, opts = {}, &block
+      def shell_cmd cmd, opts = {}, &block
         Shell.new(cmd).run opts, &block
       end
     end
