@@ -10,6 +10,7 @@ src 'fish' do
   preconfigure { shell "autoconf" }
   configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if osx?
   configure_args "--without-xsel"
+  meet { append_to_file which('fish'), '/etc/shells' }
 end
 
 dep 'passwordless ssh logins' do
