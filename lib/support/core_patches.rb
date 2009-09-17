@@ -119,6 +119,35 @@ class IO
   end
 end
 
+class Numeric
+  def commas
+    if self < 1000
+      self
+    else
+      whole, fract = self.to_s.split('.')
+      [ whole.reverse.scan(/\d{1,3}/).join(',').reverse, fract ].squash.join('.')
+    end
+  end
+end
+
+class Integer
+  def xsecs
+    value = self.abs
+    past = (self < 0)
+
+    case value
+    when 0; return 'now'
+    when 1...60; return "less than a minute#{' ago' if past}"
+    when 61...3600;        value /= 60;        unit = 'minute'
+    when 3600...(3600*24); value /= 3600;      unit = 'hour'
+    else                   value /= (3600*24); unit = 'day'
+    end
+
+    value = 1 if value == 0
+    "#{value.commas} #{unit}#{'s' unless value == 1}#{' ago' if past}"
+  end
+end
+
 class Object
   def returning obj, &block
     yield obj
