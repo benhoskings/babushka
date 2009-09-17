@@ -43,26 +43,22 @@ module Babushka
     end
 
     def debug message, opts = {}, &block
-      if opts[:log] || Base.task.debug?
-        log message, opts, &block
-      elsif block_given?
-        yield
-      end
+      log message, opts.merge(:debug => !opts[:log]), &block
     end
 
     def log message, opts = {}, &block
-      print indentation unless opts[:indentation] == false
+      print_log indentation, opts unless opts[:indentation] == false
       if block_given?
-        print "#{message} {\n".colorize('grey')
+        print_log "#{message} {\n".colorize('grey'), opts
         @@indentation_level += 1
         returning yield do |result|
           @@indentation_level -= 1
           if opts[:closing_status] == :dry_run
-            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : '~'} #{message}".colorize(result ? 'green' : 'blue')
+            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : '~'} #{message}".colorize(result ? 'green' : 'blue'), opts
           elsif opts[:closing_status]
-            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar} #{message}".colorize(result ? 'green' : 'red')
+            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar} #{message}".colorize(result ? 'green' : 'red'), opts
           else
-            log "}".colorize('grey')
+            log "}".colorize('grey'), opts
           end
         end
       else
@@ -71,7 +67,7 @@ module Babushka
         message = message.colorize 'red' if opts[:as] == :error
         message = message.colorize 'blue' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
-        print message
+        print_log message, opts
         $stdout.flush
         nil
       end
@@ -79,6 +75,15 @@ module Babushka
 
 
     private
+
+    def print_log message, opts
+      print message if !opts[:debug] || Base.task.debug?
+      write_to_persistent_log message
+    end
+
+    def write_to_persistent_log message
+      Base.task.persistent_log.write message unless Base.task.persistent_log.nil?
+    end
 
     def indentation
       ' ' * @@indentation_level * 2
