@@ -119,7 +119,13 @@ module Babushka
     end
 
     def load_deps
-      %w[~/.babushka/deps ./deps].all? {|dep_path| DepDefiner.load_deps_from dep_path }
+      %W[
+        #{File.dirname(File.dirname(real_bin_babushka)) / 'deps'}
+        ~/.babushka/deps
+        ./deps
+      ].all? {|dep_path|
+        DepDefiner.load_deps_from dep_path
+      }
     end
 
     def fail_with message
