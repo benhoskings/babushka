@@ -101,6 +101,16 @@ class Hash
       acc
     }
   end
+
+  def reject_r &block
+    dup.each_pair {|k,v|
+      if v.is_a? Hash
+        self[k] = v.reject_r
+      else
+        self.delete k unless [String, Symbol].include?(v.class)
+      end
+    }
+  end
 end
 
 class Hashish

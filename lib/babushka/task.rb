@@ -1,12 +1,24 @@
 module Babushka
+  LogPrefix = '~/.babushka/logs'.freeze
+  VarsPrefix = '~/.babushka/vars'.freeze
   class Task
 
-    attr_reader :base_opts, :run_opts, :vars
+    attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
 
     def initialize
-      @vars = Hash.new {|hsh,k| hsh[k] = {} }
+      @vars = Hashish.hash
+      @saved_vars = Hashish.hash
       @base_opts = default_base_opts
       @run_opts = default_run_opts
+    end
+
+    def process dep_name
+      load_previous_run_info_for dep_name
+      log_dep dep_name do
+        returning Dep.process dep_name do |result|
+          save_run_info_for dep_name, result
+        end
+      end
     end
 
     def opts
@@ -26,6 +38,44 @@ module Babushka
       opts[:callstack]
     end
 
+    def log_dep dep_name
+      log_prefix = pathify LogPrefix
+      FileUtils.mkdir_p log_prefix unless File.exists? log_prefix
+      File.open(log_prefix / dep_name, 'w') {|f|
+        @persistent_log = f
+        returning(yield) { @persistent_log = nil }
+      }
+    end
+
+    require 'yaml'
+    def load_previous_run_info_for dep_name
+      path = pathify(VarsPrefix / dep_name)
+      unless File.exists? path
+        log "No log to load for '#{path}'."
+      else
+        dep_log = YAML.load_file path
+        unless dep_log.is_a?(Hash) && dep_log[:vars].is_a?(Hash)
+          log_error "Ignoring corrupt var log at #{path}."
+        else
+          dep_log[:vars].each_pair {|var_name,var_data|
+            @saved_vars[var_name].update var_data.tap{|obj| log "updating #{saved_vars[var_name]} with #{obj.inspect}" }
+          }
+        end
+      end
+    end
+
+    def save_run_info_for dep_name, result
+      in_dir VarsPrefix, :create => true do |path|
+        File.open(dep_name, 'w') {|f|
+          YAML.dump({
+            :info => task_info(dep_name, result),
+            :vars => vars.dup.reject_r {|var,data|
+              ![String, Symbol].include?(v.class)
+            }
+          }, f)
+        }
+      end
+    end
 
     private
 
@@ -33,10 +83,20 @@ module Babushka
       {}
     end
 
-
     def default_run_opts
       {
         :callstack => []
+      }
+    end
+
+    def task_info dep_name, result
+      now = Time.now
+      {
+        :version => Babushka::VERSION,
+        :date => now,
+        :unix_date => now.to_i,
+        :dep_name => dep_name,
+        :result => result
       }
     end
 
