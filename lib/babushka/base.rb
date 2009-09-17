@@ -24,7 +24,7 @@ module Babushka
       if usage(args)
         # nothing to do
       elsif !setup(args)
-        # fail
+        fail_with "Error during load."
       elsif @tasks.empty?
         fail_with "Nothing to do."
       else
