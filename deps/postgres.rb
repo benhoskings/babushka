@@ -29,7 +29,6 @@ dep 'db backups' do
 end
 
 pkg 'db software' do
-  requires 'db in path'
   installs {
     macports 'postgresql83-server'
     apt %w[postgresql postgresql-client libpq-dev]
@@ -37,18 +36,12 @@ pkg 'db software' do
   provides 'psql'
   after {
     if osx?
+      sudo "ln -s #{Babushka::MacportsHelper.prefix / "lib/postgresql83/bin/*"} #{Babushka::MacportsHelper.prefix / 'bin/'}"
+
       sudo "launchctl load -w /Library/LaunchDaemons/org.macports.postgresql83-server.plist" and
       sudo "mkdir -p /opt/local/var/db/postgresql83/defaultdb" and
       sudo "chown postgres:postgres /opt/local/var/db/postgresql83/defaultdb" and
       sudo "su postgres -c '/opt/local/lib/postgresql83/bin/initdb -D /opt/local/var/db/postgresql83/defaultdb'"
     end
-  }
-end
-
-dep 'db in path', :for => :osx do
-  met? { ENV['PATH'].split(':').include? '/opt/local/lib/postgresql83/bin' }
-  meet {
-    sudo "echo '/opt/local/lib/postgresql83/bin' > /etc/paths.d/postgres"
-    ENV['PATH'] = "/opt/local/lib/postgresql83/bin:#{ENV['PATH']}"
   }
 end
