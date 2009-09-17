@@ -118,9 +118,11 @@ module Babushka
         if task.dry_run?
           false # unmet
         else
-          call_task :before and
-          call_task :meet and
-          call_task :after
+          unless call_task(:before).in? [nil, false, :fail]
+            unless call_task(:meet).in? [nil, false, :fail]
+              call_task(:after)
+            end
+          end
           process_met_task
         end
       }
