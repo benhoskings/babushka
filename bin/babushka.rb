@@ -35,10 +35,12 @@ babushka_components = %w[
   babushka/dep_definers/brew_dep_definer
 ]
 
-dereferenced_file = File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+def real_bin_babushka
+  File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+end
 
 babushka_components.each {|component|
-  require "#{File.dirname(dereferenced_file)}/../lib/#{component}"
+  require "#{File.dirname(real_bin_babushka)}/../lib/#{component}"
 }
 
 include Babushka::LoggerHelpers
