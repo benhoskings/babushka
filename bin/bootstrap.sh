@@ -63,5 +63,5 @@ function bootstrap_babushka {
 }
 
 # Do it live.
-echo "\n"
+echo ""
 not_already_installed && have_ruby && bootstrap_babushka
