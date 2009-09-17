@@ -35,5 +35,5 @@ dep 'webapp' do
 end
 
 dep 'core software' do
-  requires 'fish', 'vim', 'curl', 'mdns', 'htop', 'jnettop', 'screen', 'nmap'
+  requires 'fish', 'vim', 'curl', 'htop', 'jnettop', 'screen', 'nmap'
 end
