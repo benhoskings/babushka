@@ -19,6 +19,7 @@ module Babushka
           packages_present and cmds_in_path
         end
       }
+      before { pkg_manager.update_pkg_lists_if_required }
       meet { install_packages }
     end
 
