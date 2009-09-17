@@ -41,20 +41,18 @@ module Babushka
     def self.load_deps_from path
       $stdout.flush
       previous_length = Dep.deps.length
-      returning(Dir.glob(pathify(path) / '**/*.rb').all? {|f|
+      Dir.glob(pathify(path) / '**/*.rb').each {|f|
         @@current_load_path = f
         begin
-          returning require f do
-            @@current_load_path = nil
-          end
+          require f
+          @@current_load_path = nil
         rescue Exception => e
           log_error "#{e.backtrace.first}: #{e.message}"
           log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
           return nil
         end
-      }) do |result|
-        log "Loaded #{Dep.deps.length - previous_length} dependencies from #{path}."
-      end
+      }
+      log_ok "Loaded #{Dep.deps.length - previous_length} deps from #{path}."
     end
 
     def self.accepts_block_for method_name, &default_block
