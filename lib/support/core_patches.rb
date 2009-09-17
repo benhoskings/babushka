@@ -206,6 +206,10 @@ class String
     empty? ? other.to_s : File.join(self, other.to_s)
   end
 
+  def words
+    split(/[^a-z0-9_.-]+/i)
+  end
+
   def to_version
     Babushka::VersionStr.new self
   end
