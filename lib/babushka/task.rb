@@ -69,9 +69,7 @@ module Babushka
         File.open(dep_name, 'w') {|f|
           YAML.dump({
             :info => task_info(dep_name, result),
-            :vars => vars.dup.reject_r {|var,data|
-              ![String, Symbol, Hash].include?(data.class) || var.to_s['password']
-            }
+            :vars => vars_for_save
           }, f)
         }
       end
@@ -97,6 +95,15 @@ module Babushka
         :unix_date => now.to_i,
         :dep_name => dep_name,
         :result => result
+      }
+    end
+
+    def vars_for_save
+      vars.inject(saved_vars.dup) {|vars_to_save,(var,data)|
+        vars_to_save[var].update vars[var]
+        vars_to_save
+      }.reject_r {|var,data|
+        ![String, Symbol, Hash].include?(data.class) || var.to_s['password']
       }
     end
 
