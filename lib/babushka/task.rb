@@ -70,7 +70,7 @@ module Babushka
           YAML.dump({
             :info => task_info(dep_name, result),
             :vars => vars.dup.reject_r {|var,data|
-              ![String, Symbol].include?(v.class)
+              ![String, Symbol, Hash].include?(data.class) || var.to_s['password']
             }
           }, f)
         }
