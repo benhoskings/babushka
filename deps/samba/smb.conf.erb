@@ -1,0 +1,53 @@
+# <%= generated_by_babushka %>
+
+[global]
+  workgroup = <%= var :workgroup %>
+  server string = %h/samba
+  wins support = yes
+  domain master = yes
+  local master = yes
+  preferred master = yes
+  dns proxy = yes
+  # interfaces = eth0
+  # netbios name = <%= var :hostname, :default => hostname %>
+  # netbios aliases = <%= var :hostname %>
+  # name resolve order = lmhosts host wins bcast
+  socket options = TCP_NODELAY
+
+  log file = /var/log/samba/log.%m
+  max log size = 4096
+  syslog = 0
+  panic action = /usr/share/samba/panic-action %d
+
+  security = user
+  encrypt passwords = true
+  passdb backend = tdbsam
+  obey pam restrictions = yes
+  guest account = nobody
+  invalid users = root
+  create mask = 0644
+  directory mask = 0755
+  unix password sync = yes
+  passwd program = /usr/bin/passwd %u
+  passwd chat = *Enter\snew\sUNIX\spassword:* %n\n *Retype\snew\sUNIX\spassword:* %n\n .
+  pam password change = no
+
+  dont descend = /boot,/dev,/etc,/lib,/proc,/root,/sys
+  default case = lower
+  preserve case = yes
+  short preserve case = yes
+
+### shares ####################################################################
+
+[homes]
+  comment = Home Directories
+  browseable = no
+  writable = yes
+
+<% var(:share_names).words.each do |share_name| %>
+[<%= share_name %>]
+  path = <%= var "path_for_#{share_name}", :default => share_name.start_with('/'), :type => :path %>
+  browseable = yes
+  guest ok = <%= var "guest_ok_for_#{share_name}", :default => 'no' %>
+  writable = <%= var "should_#{share_name}_be_writeable", :default => 'yes' %>
+<% end %>
