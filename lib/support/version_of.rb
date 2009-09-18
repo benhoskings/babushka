@@ -5,7 +5,9 @@ module Babushka
     end
 
     module HelperMethods
-      def ver name, version = nil; VersionOf.new name, version end
+      def ver name, version = nil
+        VersionOf.new name, version
+      end
     end
   end
 
