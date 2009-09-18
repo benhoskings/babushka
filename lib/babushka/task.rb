@@ -101,10 +101,18 @@ module Babushka
     def vars_for_save
       vars.inject(saved_vars.dup) {|vars_to_save,(var,data)|
         vars_to_save[var].update vars[var]
+        save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
         vars_to_save
       }.reject_r {|var,data|
         ![String, Symbol, Hash].include?(data.class) || var.to_s['password']
       }
+    end
+
+    def save_referenced_default_for var, vars_to_save
+      vars_to_save[var][:values] ||= {}
+      vars_to_save[var][:values][ # set the saved value of this var
+        vars[vars[var][:default].to_s][:value] # for this var's current default reference
+      ] = vars_to_save[var].delete(:value) # to the referenced var's value
     end
 
   end
