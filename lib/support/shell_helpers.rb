@@ -228,3 +228,7 @@ def log_and_open message, url
   read_from_prompt ' '
   shell "open #{url}"
 end
+
+def mysql cmd, username = 'root'
+  shell "echo \"#{cmd.gsub('"', '\"').end_with(';')}\" | mysql -u #{username} --password='#{var :db_pass}'"
+end
