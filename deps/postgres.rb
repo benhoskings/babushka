@@ -1,17 +1,17 @@
-gem 'db gem' do
-  requires 'db software'
+gem 'postgres gem' do
+  requires 'postgres software'
   installs 'pg'
   provides []
 end
 
-dep 'db access' do
-  requires 'db software', 'user exists'
+dep 'postgres access' do
+  requires 'postgres software', 'user exists'
   met? { !sudo("echo '\\du' | #{which 'psql'}", :as => 'postgres').split("\n").grep(/^\W*\b#{var :username}\b/).empty? }
   meet { sudo "createuser -SdR #{var :username}", :as => 'postgres' }
 end
 
-dep 'db backups' do
-  requires 'db software'
+dep 'postgres backups' do
+  requires 'postgres software'
   met? { shell "test -x /etc/cron.hourly/postgres_offsite_backup" }
   before {
     returning sudo "ssh #{var :offsite_host} 'true'" do |result|
@@ -28,7 +28,7 @@ dep 'db backups' do
   }
 end
 
-pkg 'db software' do
+pkg 'postgres software' do
   installs {
     macports 'postgresql83-server'
     apt %w[postgresql postgresql-client libpq-dev]
