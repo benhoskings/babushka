@@ -229,6 +229,7 @@ def log_and_open message, url
   shell "open #{url}"
 end
 
-def mysql cmd, username = 'root'
-  shell "echo \"#{cmd.gsub('"', '\"').end_with(';')}\" | mysql -u #{username} --password='#{var :db_pass}'"
+def mysql cmd, username = 'root', include_password = true
+  password_segment = "--password='#{var :db_password}'" if include_password
+  shell "echo \"#{cmd.gsub('"', '\"').end_with(';')}\" | mysql -u #{username} #{password_segment}"
 end
