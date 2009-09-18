@@ -103,11 +103,15 @@ class Hash
   end
 
   def reject_r &block
-    dup.each_pair {|k,v|
-      if v.is_a? Hash
-        self[k] = v.reject_r
-      else
-        self.delete k unless [String, Symbol].include?(v.class)
+    dup.reject_r! &block
+  end
+
+  def reject_r! &block
+    each_pair {|k,v|
+      if yield k, v
+        self.delete k
+      elsif v.is_a? Hash
+        self[k] = v.reject_r &block
       end
     }
   end
