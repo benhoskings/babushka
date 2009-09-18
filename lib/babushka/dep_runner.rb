@@ -68,7 +68,7 @@ module Babushka
       printable_key = key.to_s.gsub '_', ' '
       set key, send("read_#{vars[key][:type] || 'value'}_from_prompt",
         "#{printable_key}#{" for #{name}" unless printable_key == name}",
-        :default => default_for(key)
+        :default => default_for(key), :dynamic => vars[key][:default].respond_to?(:call)
       )
     end
 

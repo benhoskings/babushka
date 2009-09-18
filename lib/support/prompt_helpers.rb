@@ -14,7 +14,7 @@ module Babushka
       }.merge in_opts
 
       value = nil
-      message = "#{message}#{" [#{opts[:default]}]" if opts[:default]}"
+      message = "#{message}#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
       log message, :newline => false
       loop do
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
