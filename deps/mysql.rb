@@ -5,7 +5,7 @@ gem 'mysql gem' do
 end
 
 dep 'mysql access' do
-  requires 'mysql db exists', 'user exists'
+  requires 'mysql db exists'
   define_var :db_user, :default => :username
   define_var :db_host, :default => 'localhost'
   met? { mysql "use #{var(:db_name)}", var(:db_user) }
