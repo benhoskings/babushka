@@ -7,9 +7,9 @@ module Babushka
 
     def for_system
       {
-        'Darwin' => MacportsHelper,
-        'Linux' => AptHelper
-      }[`uname -s`.chomp]
+        :osx => MacportsHelper,
+        :linux => AptHelper
+      }[uname]
     end
 
     def manager_dep
