@@ -70,9 +70,7 @@ module Babushka
     end
 
     def default_for key
-      if Base.task.saved_vars[key.to_s][:value]
-        Base.task.saved_vars[key.to_s][:value]
-      elsif vars[key.to_s][:default].respond_to? :call
+      if vars[key.to_s][:default].respond_to? :call
         instance_eval { vars[key.to_s][:default].call }
       elsif vars[key.to_s][:default].is_a? Symbol
         var vars[key.to_s][:default], :ask => false
