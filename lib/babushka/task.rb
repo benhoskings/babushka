@@ -58,7 +58,7 @@ module Babushka
           log_error "Ignoring corrupt var log at #{path}."
         else
           dep_log[:vars].each_pair {|var_name,var_data|
-            @saved_vars[var_name].update var_data.tap{|obj| log "updating #{var_name}: #{saved_vars[var_name].inspect} -> #{obj.inspect}" }
+            @saved_vars[var_name].update var_data
           }
         end
       end
