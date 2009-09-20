@@ -61,15 +61,19 @@ module Babushka
     end
 
     def define_var name, opts = {}
-      vars[name.to_s].update opts.dragnet(:default, :type)
+      vars[name.to_s].update opts.dragnet(:default, :type, :message)
     end
 
     def ask_for_var key
-      printable_key = key.to_s.gsub '_', ' '
       set key, send("read_#{vars[key][:type] || 'value'}_from_prompt",
-        "#{printable_key}#{" for #{name}" unless printable_key == name}",
+        message_for(key),
         :default => default_for(key), :dynamic => vars[key][:default].respond_to?(:call)
       )
+    end
+
+    def message_for key
+      printable_key = key.to_s.gsub '_', ' '
+      vars[key][:message] || "#{printable_key}#{" for #{name}" unless printable_key == name}"
     end
 
     def default_for key
