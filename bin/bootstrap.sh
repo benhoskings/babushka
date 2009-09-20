@@ -21,7 +21,7 @@ function not_already_installed {
 function have_ruby {
   if [ -x "`which ruby`" ]; then
     true_with "We haz a ruby."
-  elif [ -x "`which port`" ]; then
+  elif [ -x "`which apt-get`" ]; then
     echo "First, we need to install ruby (you'll need to type your sudo password)."
     sudo apt-get install -qqy ruby
     if [ ! -x "`which ruby`" ]; then
