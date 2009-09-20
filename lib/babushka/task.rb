@@ -51,7 +51,7 @@ module Babushka
     def load_previous_run_info_for dep_name
       path = pathify(VarsPrefix / dep_name)
       unless File.exists? path
-        log "No log to load for '#{path}'."
+        debug "No log to load for '#{path}'."
       else
         dep_log = YAML.load_file path
         unless dep_log.is_a?(Hash) && dep_log[:vars].is_a?(Hash)
