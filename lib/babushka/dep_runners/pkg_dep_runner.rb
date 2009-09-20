@@ -9,11 +9,11 @@ module Babushka
       !installs.blank?
     end
 
-    def packages_present
+    def packages_present?
       installs.all? {|pkg| pkg_manager.has? pkg }
     end
 
-    def cmds_in_path
+    def cmds_in_path?
       present, missing = provides.partition {|cmd_name| cmd_dir(cmd_name) }
       good, bad = present.partition {|cmd_name| pkg_manager.cmd_in_path? cmd_name }
 
@@ -29,7 +29,7 @@ module Babushka
       end
     end
 
-    def install_packages
+    def install_packages!
       pkg_manager.install! installs
     end
 
