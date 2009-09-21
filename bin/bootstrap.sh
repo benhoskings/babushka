@@ -1,67 +1,98 @@
 #!/bin/bash
 
-prefix="/usr/local"
-binpath="$prefix/bin"
-
-# The tarball
 from="http://github.com/benhoskings/babushka/tarball/stable"
-# Where the tarball goes
-to="$prefix/babushka"
+to="$HOME/.babushka/temporary_bootstrap_install"
 
 function true_with { echo "$1"; true; }
 function false_with { echo "$1"; false; }
 
-function not_already_installed {
-  if [ -e "$to" ]; then
-    false_with "Looks like babushka is already installed at /usr/local/babushka."
+function check {
+  if [ ! -x "`which ruby`" ] && [ ! -x "`which apt-get`" ]; then
+    echo "Sorry, you don't have ruby installed, and I only know how to install it for you"
+    false_with "on apt-based systems."
+  elif [ ! -x "`which curl`" ] && [ ! -x "`which wget`" ]; then
+    false_with "Sorry, you need either curl or wget installed before I can download."
   else
     true
   fi
 }
-function have_ruby {
+
+function welcome {
+  echo ""
+  echo ".       .           .   .      "
+  echo "|-. ,-. |-. . . ,-. |-. | , ,-."
+  echo "| | ,-| | | | | \`-. | | |<  ,-|"
+  echo "^-' \`-^ ^-' \`-^ \`-' ' ' ' \` \`-^"
+  echo ""
+  echo "So let's get down to business - First, downloading a temporary babushka from"
+  echo "GitHub. Then, using it to properly install itself with all the trimmings."
+  echo ""
   if [ -x "`which ruby`" ]; then
-    true_with "We haz a ruby."
-  elif [ -x "`which apt-get`" ]; then
-    echo "First, we need to install ruby (you'll need to type your sudo password)."
+    echo "You already have ruby `ruby --version | awk '{print $2}'`, so you're all set."
+  else
+    echo "You don't have ruby installed, so we'll take care of that first (using apt)."
+  fi
+  echo ""
+  read -p "Sound good? [y/N] " -n 1 f
+  [[ "$f" == y* ]]
+}
+
+function install_ruby_if_required {
+  if [ -x "`which ruby`" ]; then
+    true # already installed
+  else
+    echo "First we need to install ruby (via apt)."
     sudo apt-get install -qqy ruby
     if [ ! -x "`which ruby`" ]; then
       false_with "Argh, the ruby install failed."
     else
-      true_with "We haz a ruby."
+      true_with "Nice, ruby `ruby --version | awk '{print $2}'` was installed at `which ruby`."
     fi
-  else
-    false_with "You don't have ruby installed, and I only know how to install it for you on apt-based systems."
   fi
+}
+
+function create_install_dir {
+  rm -rf "$to"
+  mkdir -p "$to" &&
+  cd "$to"
 }
 
 function stream_tarball {
-  mkdir -p "$to"
-  cd "$to"
-  curl -L -\# "$from" | tar -zxf - --strip-components 1
-}
-function link_binary {
-  echo "Linking to $binpath."
-  cd "$binpath"
-  ln -sf "$to/bin/babushka.rb" "./babushka"
-  chmod +x './babushka'
-}
-function report_result {
-  echo ""
-  if [ -x "$binpath/babushka" ]; then
-    echo "Done! If you're new to babushka, check out the help:"
-    true_with "$ babushka --help"
-  else
-    false_with "Something went wrong during the install."
+  if [ -x "`which curl`" ]; then
+    curl -L -\# "$from" | tar -zxf - --strip-components 1
+  elif [ -x "`which wget`" ]; then
+    wget --progress=bar "$from" -O - | tar -zxf - --strip-components 1
   fi
 }
 
-function bootstrap_babushka {
-  echo "Installing babushka to $to (via a series of tubes)."
-  stream_tarball
-  link_binary
-  report_result
+function handle_install {
+  echo ""
+  ruby "$to/bin/babushka.rb" 'babushka'
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo "All installed! If you're new, the basic idea is 'babushka <dep name>'."
+    echo ""
+    echo "Some top-level deps you might want to try:"
+    echo "  'system', 'user setup', 'rails app', 'webserver running'"
+    echo "Also, check out 'babushka --help' for usage info and some examples."
+    true
+  else
+    echo ""
+    echo "Something went wrong during the install."
+    echo "There's a full log in ~/.babushka/logs/babushka. Would you mind"
+    echo "emailing it to ben@hoskings.net to help improve the installation"
+    echo "process? Thanks a lot."
+    false
+  fi
 }
 
-# Do it live.
-echo ""
-not_already_installed && have_ruby && bootstrap_babushka
+if check; then
+  if welcome; then
+    echo " -> Excellent."
+    echo ""
+    install_ruby_if_required && create_install_dir && stream_tarball && handle_install
+  else
+    echo ""
+    echo "OK, maybe another time. :)"
+  fi
+fi
