@@ -43,7 +43,7 @@ function install_ruby_if_required {
     true # already installed
   else
     echo "First we need to install ruby (via apt)."
-    sudo apt-get install -qqy ruby
+    sudo apt-get install -qqy ruby irb
     if [ ! -x "`which ruby`" ]; then
       false_with "Argh, the ruby install failed."
     else
