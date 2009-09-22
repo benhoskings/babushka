@@ -32,10 +32,9 @@ function welcome {
   else
     echo "You don't have ruby installed, so we'll take care of that first (using apt)."
   fi
-  # echo ""
-  # read -p "Sound good? [y/N] " -n 1 f
-  # [[ "$f" == y* ]]
-  true
+  echo ""
+  read -p "Sound good? [y/N] " -n 1 f
+  [[ "$f" == y* ]]
 }
 
 function install_ruby_if_required {
@@ -89,7 +88,7 @@ function handle_install {
 
 if check; then
   if welcome; then
-    # echo " -> Excellent."
+    echo " -> Excellent."
     echo ""
     install_ruby_if_required && create_install_dir && stream_tarball && handle_install
   else
