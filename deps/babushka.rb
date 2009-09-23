@@ -8,8 +8,8 @@ dep 'babushka in path' do
   requires 'babushka installed'
   met? { which 'babushka' }
   meet {
-    sudo %Q{ln -sf "#{var(:install_prefix) / 'babushka/bin/babushka.rb'}" "#{var(:install_prefix) / 'bin/babushka'}"}
-    sudo %Q{chmod +x "#{var(:install_prefix) / 'bin/babushka'}"}
+    log_shell "Linking babushka into #{var(:install_prefix) / 'bin'}", %Q{ln -sf "#{var(:install_prefix) / 'babushka/bin/babushka.rb'}" "#{var(:install_prefix) / 'bin/babushka'}"}
+    shell %Q{chmod +x "#{var(:install_prefix) / 'bin/babushka'}"}
   }
 end
 
