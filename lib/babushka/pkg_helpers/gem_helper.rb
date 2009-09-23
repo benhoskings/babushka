@@ -1,5 +1,5 @@
 module Babushka
-  class GemHelper < PkgManager
+  class GemHelper < PkgHelper
   class << self
     def pkg_type; :gem end
     def pkg_cmd; 'gem' end

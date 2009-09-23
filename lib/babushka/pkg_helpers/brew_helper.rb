@@ -1,5 +1,5 @@
 module Babushka
-  class BrewHelper < PkgManager
+  class BrewHelper < PkgHelper
   class << self
     def pkg_type; :brew end
     def pkg_cmd; 'brew' end

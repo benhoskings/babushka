@@ -1,5 +1,5 @@
 module Babushka
-  class AptHelper < PkgManager
+  class AptHelper < PkgHelper
   class << self
     def pkg_type; :deb end
     def pkg_cmd; "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' apt-get -qyu" end

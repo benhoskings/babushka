@@ -1,5 +1,5 @@
 module Babushka
-  class PkgManager
+  class PkgHelper
   class << self
     include ShellHelpers
 

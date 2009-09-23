@@ -1,5 +1,5 @@
 module Babushka
-  class MacportsHelper < PkgManager
+  class MacportsHelper < PkgHelper
   class << self
     def existing_packages
       Dir.glob(prefix / "var/macports/software/*").map {|i| File.basename i }

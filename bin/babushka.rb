@@ -15,11 +15,11 @@ babushka_components = %w[
 
   babushka/base
   babushka/shell
-  babushka/pkg_manager
-  babushka/pkg_managers/apt_helper
-  babushka/pkg_managers/brew_helper
-  babushka/pkg_managers/gem_helper
-  babushka/pkg_managers/macports_helper
+  babushka/pkg_helper
+  babushka/pkg_helpers/apt_helper
+  babushka/pkg_helpers/brew_helper
+  babushka/pkg_helpers/gem_helper
+  babushka/pkg_helpers/macports_helper
   babushka/dep
   babushka/definer_helpers
   babushka/task

@@ -5,7 +5,7 @@ module Babushka
     accepts_list_for :provides, :default_pkg
 
     def pkg_manager
-      PkgManager.for_system
+      PkgHelper.for_system
     end
 
     def process
@@ -27,7 +27,7 @@ module Babushka
     private
 
     def chooser
-      PkgManager.for_system.manager_key
+      PkgHelper.for_system.manager_key
     end
 
     def default_pkg
