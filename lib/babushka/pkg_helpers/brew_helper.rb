@@ -23,11 +23,16 @@ module Babushka
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
       installed = Dir[
-        prefix / 'Cellar' / pkg_name / '*'
+        installed_pkgs_prefix / pkg_name / '*'
       ].map {|i|
         File.basename i.chomp '/'
       }.map(&:to_version)
     end
+
+    def installed_pkgs_prefix
+      prefix / 'Cellar'
+    end
+
     def should_sudo
       false
     end
