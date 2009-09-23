@@ -46,6 +46,9 @@ module Babushka
     def update_pkg_lists_if_required
       true # not required by default
     end
+    def cmdline_spec_for pkg
+      "#{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}"
+    end
   end
   end
 end
