@@ -120,9 +120,9 @@ module Babushka
 
     def load_deps
       %W[
-        #{File.dirname(File.dirname(real_bin_babushka)) / 'deps'}
+        ./babushka_deps
         ~/.babushka/deps
-        ./deps
+        #{File.dirname(File.dirname(real_bin_babushka)) / 'deps'}
       ].all? {|dep_path|
         DepDefiner.load_deps_from dep_path
       }
