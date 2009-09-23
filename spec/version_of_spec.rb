@@ -16,6 +16,24 @@ describe "creation" do
   end
 end
 
+describe "to_s" do
+  describe "versionless" do
+    it "should be just the name" do
+      ver('ruby').to_s.should == 'ruby'
+    end
+  end
+  describe "nameless" do
+    it "should be just the version" do
+      ver(nil, '1.8').to_s.should == '1.8'
+    end
+  end
+  describe "versioned" do
+    it "should be separated with -" do
+      ver('ruby', '1.8').to_s.should == 'ruby-1.8'
+    end
+  end
+end
+
 describe "comparisons" do
   it "should compare to versionless strings" do
     ver('ruby'       ).should     == ver('ruby')
