@@ -51,8 +51,13 @@ function install_ruby_if_required {
   fi
 }
 
-function create_install_dir {
+function remove_temporary_install {
+  cd
   rm -rf "$to"
+}
+
+function create_install_dir {
+  remove_temporary_install &&
   mkdir -p "$to" &&
   cd "$to"
 }
@@ -68,29 +73,47 @@ function stream_tarball {
 function handle_install {
   echo ""
   ruby "$to/bin/babushka.rb" 'babushka'
-  if [ $? -eq 0 ]; then
-    echo ""
-    echo "All installed! If you're new, the basic idea is 'babushka <dep name>'."
-    echo ""
-    echo "Some top-level deps you might want to try:"
-    echo "  'system', 'user setup', 'rails app', 'webserver running'"
-    echo "Also, check out 'babushka --help' for usage info and some examples."
-    true
-  else
-    echo ""
-    echo "Something went wrong during the install."
-    echo "There's a full log in ~/.babushka/logs/babushka. Would you mind"
-    echo "emailing it to ben@hoskings.net to help improve the installation"
-    echo "process? Thanks a lot."
-    false
-  fi
+  [ $? -eq 0 ]
+}
+
+function on_install_success {
+  remove_temporary_install
+
+  echo ""
+  echo "All installed! If you're new, the basic idea is 'babushka <dep name>'."
+  echo ""
+  echo "Some top-level deps you might want to try:"
+  echo "  'system', 'user setup', 'rails app', 'webserver running'"
+  echo ""
+  echo "Also, check out 'babushka --help' for usage info and some examples."
+  true
+}
+
+function on_install_failure {
+  echo ""
+  echo "Something went wrong during the install."
+  echo ""
+  echo "If you fix the problem, you can re-run the install with:"
+  echo "  ruby ~/.babushka/temporary_bootstrap_install/bin/babushka.rb babushka"
+  echo ""
+  echo "There's a full log in ~/.babushka/logs/babushka. Would you mind"
+  echo "emailing it to ben@hoskings.net to help improve the installation"
+  echo "process? Thanks a lot."
+  false
+}
+
+function do_bootstrap {
+  install_ruby_if_required &&
+  create_install_dir &&
+  stream_tarball &&
+  handle_install && on_install_success || on_install_failure
 }
 
 if check; then
   if welcome; then
     echo " -> Excellent."
     echo ""
-    install_ruby_if_required && create_install_dir && stream_tarball && handle_install
+    do_bootstrap
   else
     echo ""
     echo "OK, maybe another time. :)"
