@@ -7,7 +7,7 @@ module Babushka
     def manager_dep; 'homebrew' end
 
     def install! pkgs
-      pkgs.each {|pkg|
+      pkgs.all? {|pkg|
         log_shell "Installing #{pkg} via #{manager_key}",
           "#{pkg_cmd} install #{cmdline_spec_for pkg}",
           :sudo => should_sudo
