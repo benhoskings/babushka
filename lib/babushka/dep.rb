@@ -115,7 +115,7 @@ module Babushka
     def process_in_dir
       path = payload[:run_in].is_a?(Symbol) ? vars[payload[:run_in]] : payload[:run_in]
       in_dir path do
-        call_task(:setup) and process_deps and process_self
+        process_task(:setup) and process_deps and process_self
       end
     end
 
@@ -130,11 +130,7 @@ module Babushka
         if task.dry_run?
           false # unmet
         else
-          unless call_task(:before).in? [nil, false, :fail]
-            unless call_task(:meet).in? [nil, false, :fail]
-              call_task(:after)
-            end
-          end
+          process_task(:before) and process_task(:meet) and process_task(:after)
           process_met_task
         end
       }
@@ -164,6 +160,10 @@ module Babushka
           log "#{name} met.".colorize('green')
         end
       end
+    end
+
+    def process_task task_name
+      !call_task(task_name).in? [nil, false, :fail]
     end
 
     def call_task task_name
