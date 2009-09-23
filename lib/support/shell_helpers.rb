@@ -61,9 +61,9 @@ def log_block message, opts = {}, &block
   end
 end
 
-def log_shell message, cmd, opts = {}
+def log_shell message, cmd, opts = {}, &block
   log_block message do
-    opts.delete(:sudo) ? sudo(cmd, opts) : shell(cmd, opts)
+    opts.delete(:sudo) ? sudo(cmd, opts, &block) : shell(cmd, opts, &block)
   end
 end
 
