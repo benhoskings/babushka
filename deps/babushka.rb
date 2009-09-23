@@ -14,7 +14,7 @@ dep 'babushka in path' do
 end
 
 dep 'babushka installed' do
-  requires 'git', 'writable install location', 'install location in path'
+  requires 'ruby', 'git', 'writable install location', 'install location in path'
   set :babushka_source, "git://github.com/benhoskings/babushka.git"
   met? { File.exists? var(:install_prefix) / 'babushka/bin/babushka.rb' }
   meet {
