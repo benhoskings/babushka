@@ -18,8 +18,8 @@ dep 'vhost configured' do
   requires 'webserver configured'
   met? { File.exists? "/opt/nginx/conf/vhosts/#{var :domain}.conf" }
   meet {
-    render_erb "nginx/#{var :vhost_type, :default => 'passenger'}_vhost.conf.erb",   :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf"
-    render_erb "nginx/#{var :vhost_type, :default => 'passenger'}_vhost.common.erb", :to => "/opt/nginx/conf/vhosts/#{var :domain}.common", :optional => true
+    render_erb "nginx/#{var :vhost_type, :default => 'passenger'}_vhost.conf.erb",   :to => "/opt/nginx/conf/vhosts/#{var :domain}.conf", :sudo => true
+    render_erb "nginx/#{var :vhost_type, :default => 'passenger'}_vhost.common.erb", :to => "/opt/nginx/conf/vhosts/#{var :domain}.common", :sudo => true, :optional => true
   }
   after { restart_nginx if File.exists? "/opt/nginx/conf/vhosts/on/#{var :domain}.conf" }
 end
@@ -105,10 +105,10 @@ dep 'webserver startup script' do
   }
   meet {
     if linux?
-      render_erb 'nginx/nginx.init.d.erb', :to => '/etc/init.d/nginx', :perms => '755'
+      render_erb 'nginx/nginx.init.d.erb', :to => '/etc/init.d/nginx', :perms => '755', :sudo => true
       sudo 'update-rc.d nginx defaults'
     elsif osx?
-      render_erb 'nginx/nginx.launchd.erb', :to => '/Library/LaunchDaemons/org.nginx.plist'
+      render_erb 'nginx/nginx.launchd.erb', :to => '/Library/LaunchDaemons/org.nginx.plist', :sudo => true
       sudo 'launchctl load -w /Library/LaunchDaemons/org.nginx.plist'
     end
   }
@@ -127,7 +127,7 @@ dep 'webserver configured' do
   }
   meet {
     set :passenger_root, Babushka::GemHelper.gem_path_for('passenger')
-    render_erb 'nginx/nginx.conf.erb', :to => '/opt/nginx/conf/nginx.conf'
+    render_erb 'nginx/nginx.conf.erb', :to => '/opt/nginx/conf/nginx.conf', :sudo => true
   }
   after {
     sudo "mkdir -p /opt/nginx/conf/vhosts/on"

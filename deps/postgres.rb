@@ -35,7 +35,7 @@ dep 'postgres backups' do
     end
   }
   meet {
-    render_erb 'postgres/offsite_backup.rb.erb', :to => '/usr/local/bin/postgres_offsite_backup', :perms => '755'
+    render_erb 'postgres/offsite_backup.rb.erb', :to => '/usr/local/bin/postgres_offsite_backup', :perms => '755', :sudo => true
     sudo "ln -sf /usr/local/bin/postgres_offsite_backup /etc/cron.hourly/"
   }
 end
