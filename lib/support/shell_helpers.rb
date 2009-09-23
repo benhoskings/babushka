@@ -205,6 +205,11 @@ def babushka_config? path
   end
 end
 
+require 'yaml'
+def yaml path
+  YAML.load_file pathify path
+end
+
 def render_erb erb, opts = {}
   path = File.dirname(source_path) / erb
   if !File.exists?(path) && !opts[:optional]
