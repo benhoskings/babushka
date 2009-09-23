@@ -29,6 +29,10 @@ module Babushka
       end
     end
 
+    def setup_for_install
+      pkg_manager.setup_for_install_of the_dep, installs
+    end
+
     def install_packages!
       pkg_manager.install! installs
     end

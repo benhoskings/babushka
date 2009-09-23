@@ -12,6 +12,7 @@ module Babushka
       super
 
       requires pkg_manager.manager_dep
+      internal_setup { setup_for_install }
       met? {
         if !applicable?
           log_ok "Not required on #{pkg_manager.manager_key}-based systems."

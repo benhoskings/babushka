@@ -19,6 +19,9 @@ module Babushka
       @dep = dep
     end
 
+    def the_dep
+      @dep
+    end
     def name
       @dep.name
     end

@@ -27,6 +27,9 @@ module Babushka
     def install! pkgs
       log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
     end
+    def setup_for_install_of dep, pkgs
+      true
+    end
     def prefix
       cmd_dir(pkg_binary).sub(/\/bin\/?$/, '')
     end
