@@ -75,9 +75,6 @@ end
 pkg 'rcconf' do
   installs { apt 'rcconf' }
 end
-brew 'readline' do
-  provides []
-end
 pkg 'screen'
 pkg 'sed' do
   installs { macports 'gsed' }
