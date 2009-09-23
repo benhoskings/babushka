@@ -6,12 +6,12 @@ module Babushka
 
     module HelperMethods
       def Dep  name;                    Dep.for name.to_s                                        end
-      def dep  name, opts = {}, &block; Dep.new name, opts, block, BaseDepDefiner, BaseDepRunner end
-      def pkg  name, opts = {}, &block; Dep.new name, opts, block, PkgDepDefiner , PkgDepRunner  end
-      def gem  name, opts = {}, &block; Dep.new name, opts, block, GemDepDefiner , GemDepRunner  end
-      def src  name, opts = {}, &block; Dep.new name, opts, block, SrcDepDefiner , SrcDepRunner  end
-      def ext  name, opts = {}, &block; Dep.new name, opts, block, ExtDepDefiner , ExtDepRunner  end
-      def brew name, opts = {}, &block; Dep.new name, opts, block, BrewDepDefiner, BrewDepRunner end
+      def dep  name, opts = {}, &block; Dep.add name, opts, block, BaseDepDefiner, BaseDepRunner end
+      def pkg  name, opts = {}, &block; Dep.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
+      def gem  name, opts = {}, &block; Dep.add name, opts, block, GemDepDefiner , GemDepRunner  end
+      def src  name, opts = {}, &block; Dep.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
+      def ext  name, opts = {}, &block; Dep.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
+      def brew name, opts = {}, &block; Dep.add name, opts, block, BrewDepDefiner, BrewDepRunner end
     end
   end
 
@@ -34,11 +34,24 @@ module Babushka
       Dep.register self
     end
 
+    def self.add name, in_opts, block, definer_class, runner_class
+      if self.for name
+        @@skipped += 1
+        self.for name
+      else
+        new name, in_opts, block, definer_class, runner_class
+      end
+    end
+
     def self.deps
       @@deps ||= {}
     end
     def self.count
       deps.length
+    end
+    @@skipped = 0
+    def self.skipped
+      @@skipped
     end
     def self.names
       @@deps.keys
