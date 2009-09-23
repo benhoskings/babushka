@@ -1,12 +1,12 @@
-dep 'deploy repo' do
+dep 'passenger deploy repo' do
   requires 'git', 'user exists'
-  met? { File.directory? pathify var(:rails_root) / '.git' }
+  met? { File.directory? pathify var(:passenger_root) / '.git' }
   meet {
-    FileUtils.mkdir_p pathify var(:rails_root) and
-    in_dir var(:rails_root) do
+    FileUtils.mkdir_p pathify var(:passenger_root) and
+    in_dir var(:passenger_root) do
       shell "git init"
-      shell "echo 'cd ..; env -i git reset --hard' > #{pathify var(:rails_root) / '.git/hooks/post-receive'}"
-      shell "chmod +x #{pathify var(:rails_root) / '.git/hooks/post-receive'}"
+      render_erb "git/deploy-repo-post-receive", :to => pathify(var(:passenger_root) / '.git/hooks/post-receive')
+      shell "chmod +x #{pathify var(:passenger_root) / '.git/hooks/post-receive'}"
     end
   }
 end

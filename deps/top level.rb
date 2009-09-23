@@ -11,7 +11,7 @@ dep 'user setup' do
 end
 
 dep 'rails app' do
-  requires 'webapp', 'deploy repo', 'gems installed', 'migrated db'
+  requires 'webapp', 'passenger deploy repo', 'gems installed', 'migrated db'
   define_var :rails_env, :default => 'production'
   define_var :rails_root, :default => '~/current'
   setup {
