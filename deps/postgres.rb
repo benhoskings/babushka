@@ -1,3 +1,15 @@
+dep 'existing postgres db' do
+  requires 'postgres gem', 'postgres access'
+  met? {
+    !shell("psql -l") {|shell|
+      shell.stdout.split("\n").grep(/^\s*#{var :db_name}\s+\|/)
+    }.empty?
+  }
+  meet {
+    shell "createdb -O '#{var :username}' '#{var :db_name}'"
+  }
+end
+
 gem 'postgres gem' do
   requires 'postgres software'
   installs 'pg'

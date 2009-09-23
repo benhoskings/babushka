@@ -68,19 +68,4 @@ dep 'deployed app' do
   met? { File.directory? pathify var(:rails_root) / 'app' }
 end
 
-dep 'existing db' do
-  requires 'rails'
-  setup {
-    requires "#{var(:db, :default => 'postgres')} gem"
-    requires "#{var(:db, :default => 'postgres')} access"
-    true
-  }
-  met? {
-    !shell("psql -l") {|shell|
-      shell.stdout.split("\n").grep(/^\s*#{var :db_name, :default => :username}\s+\|/)
-    }.empty?
-  }
-  meet { rails_rake "db:create" }
-end
-
 gem 'rails'
