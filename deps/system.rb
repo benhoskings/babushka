@@ -9,7 +9,7 @@ dep 'hostname', :for => :linux do
   }
   meet {
     sudo "echo #{var :hostname, :default => shell('hostname')} > /etc/hostname"
-    sudo "sed -ri 's/^127.0.0.1.*$/127.0.0.1 #{hostname} localhost.localdomain localhost/' /etc/hosts"
+    sudo "sed -ri 's/^127.0.0.1.*$/127.0.0.1 #{var :hostname} localhost.localdomain localhost/' /etc/hosts"
     sudo "/etc/init.d/hostname.sh"
   }
 end
