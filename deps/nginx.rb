@@ -143,7 +143,7 @@ dep 'webserver installed' do
       unmet "nginx isn't installed"
     else
       installed_version = shell('/opt/nginx/sbin/nginx -V') {|shell| shell.stderr }.val_for('nginx version').sub('nginx/', '')
-      if installed_version != versions[:nginx]
+      if installed_version != var(:versions)[:nginx]
         unmet "an outdated version of nginx is installed (#{installed_version})"
       elsif !shell('/opt/nginx/sbin/nginx -V') {|shell| shell.stderr }[Babushka::GemHelper.gem_path_for('passenger')]
         unmet "nginx is installed, but built against the wrong passenger version"
@@ -152,5 +152,5 @@ dep 'webserver installed' do
       end
     end
   }
-  meet { build_nginx versions }
+  meet { build_nginx var(:versions) }
 end
