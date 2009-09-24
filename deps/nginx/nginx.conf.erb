@@ -28,7 +28,7 @@ http {
     }
   }
 
-  passenger_root <%= passenger_root %>;
+  passenger_root <%= var :passenger_root %>;
   passenger_ruby <%= Babushka::PkgHelper.for_system.prefix %>/bin/ruby;
   passenger_max_pool_size 16;
   passenger_pool_idle_time 1800;
