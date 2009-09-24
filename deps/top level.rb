@@ -6,6 +6,7 @@ dep 'user setup' do
   requires 'user shell setup', 'passwordless ssh logins', 'public key'
   define_var :username, :default => shell('whoami')
   setup {
+    set :username, shell('whoami')
     set :home_dir_base, "/home"
   }
 end
