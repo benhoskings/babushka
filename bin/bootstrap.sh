@@ -35,7 +35,7 @@ function welcome {
     echo "You don't have ruby installed, so we'll take care of that first (using apt)."
   fi
   echo ""
-  read -p "Sound good? [y/N] " -n 1 f
+  read -p "Sound good? [y/N] " f
   [[ "$f" == y* ]]
 }
 
@@ -113,7 +113,7 @@ function do_bootstrap {
 
 if check; then
   if welcome; then
-    echo " -> Excellent."
+    echo "Excellent."
     echo ""
     do_bootstrap
   else
