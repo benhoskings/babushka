@@ -38,6 +38,9 @@ module Babushka
     def set key, value
       vars[key.to_s][:value] = value
     end
+    def set_if_unset key, value
+      vars[key.to_s][:value] ||= value
+    end
     def merge key, value
       set key, ((vars[key.to_s] || {})[:value] || {}).merge(value)
     end
