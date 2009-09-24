@@ -24,6 +24,8 @@ function welcome {
   echo "| | ,-| | | | | \`-. | | |<  ,-|"
   echo "^-' \`-^ ^-' \`-^ \`-' ' ' ' \` \`-^"
   echo ""
+  echo "Hi there :)"
+  echo ""
   echo "So let's get down to business - First, downloading a temporary babushka from"
   echo "GitHub. Then, using it to properly install itself with all the trimmings."
   echo ""
