@@ -36,6 +36,9 @@ dep 'dot files' do
 end
 
 dep 'user exists' do
+  setup {
+    set_if_unset :home_dir_base, '/home'
+  }
   met? {
     if linux?
       grep(/^#{var(:username)}:/, '/etc/passwd')
