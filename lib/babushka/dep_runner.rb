@@ -36,8 +36,7 @@ module Babushka
     end
 
     def set key, value
-      define_var_accessors key unless respond_to? key
-      send "#{key}=", value
+      vars[key.to_s][:value] = value
     end
     def merge key, value
       set key, ((vars[key.to_s] || {})[:value] || {}).merge(value)
@@ -50,17 +49,6 @@ module Babushka
       elsif opts[:ask] != false
         ask_for_var name.to_s
       end
-    end
-
-    def define_var_accessors key
-      self.class.instance_eval {
-        define_method key do
-          vars[key.to_s][:value]
-        end
-        define_method "#{key}=" do |value|
-          vars[key.to_s][:value] = value
-        end
-      }
     end
 
     def define_var name, opts = {}
