@@ -18,7 +18,7 @@ module Babushka
       super
 
       requires 'build tools'
-      setup {
+      internal_setup {
         returning(parse_uris) {
           definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
         }
