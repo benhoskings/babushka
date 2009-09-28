@@ -50,7 +50,7 @@ include Babushka::DepHelpers
 include Babushka::VersionHelpers
 
 if $0 == __FILE__
-  exit Babushka::Base.run ARGV
+  exit Babushka::Base.run(ARGV) || 0
 else
   Babushka::Base.setup_noninteractive
 end
