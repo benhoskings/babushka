@@ -62,16 +62,16 @@ This isn't only about deploying webapps though. Deps like to do anything that yo
 
     dep 'passwordless ssh logins' do
       requires 'user exists'
-      met? { grep your_ssh_public_key, '~/.ssh/authorized_keys' }
+      met? { grep var(:your_ssh_public_key), '~/.ssh/authorized_keys' }
       meet {
         shell 'mkdir -p ~/.ssh'
-        append_to_file your_ssh_public_key.end_with("\n"), "~/.ssh/authorized_keys"
+        append_to_file var(:your_ssh_public_key).end_with("\n"), "~/.ssh/authorized_keys"
         shell 'chmod 700 ~/.ssh'
         shell 'chmod 600 ~/.ssh/authorized_keys'
       }
     end
 
-Don't worry about `your_ssh_public_key` - Babushka will ask for it when it needs the value.
+Don't worry about the `your_ssh_public_key` var - Babushka will ask for it when it needs the value.
 
 So in general:
 
