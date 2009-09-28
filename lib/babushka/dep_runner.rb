@@ -59,7 +59,7 @@ module Babushka
     end
 
     def ask_for_var key
-      set key, send("read_#{vars[key][:type] || 'value'}_from_prompt",
+      set key, send("prompt_for_#{vars[key][:type] || 'value'}",
         message_for(key),
         :default => default_for(key), :dynamic => vars[key][:default].respond_to?(:call)
       )

@@ -7,12 +7,14 @@ module Babushka
       :quiet => %w[-q --quiet],
       :debug => '--debug',
       :dry_run => %w[-n --dry-run],
+      :defaults => %w[-y --defaults],
       :force => %w[-f --force]
     }.freeze
     OptionDescriptions = {
       :quiet => "Run with minimal logging",
       :debug => "Show more verbose logging, and realtime shell command output",
       :dry_run => "Discover the curent state without making any changes",
+      :defaults => "Assume the default value for all vars without prompting, where possible",
       :force => "Attempt to meet the dependency even if it's already met"
     }.freeze
 

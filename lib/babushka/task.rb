@@ -34,6 +34,9 @@ module Babushka
     def dry_run?
       opts[:dry_run]
     end
+    def defaults?
+      opts[:defaults]
+    end
     def callstack
       opts[:callstack]
     end

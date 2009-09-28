@@ -1,6 +1,6 @@
 module Babushka
   module PromptHelpers
-    def read_path_from_prompt message, opts = {}
+    def prompt_for_path message, opts = {}
       read_value_from_prompt(message, opts.merge(
         :retry => "Doesn't exist, or not a directory."
       )) {|value|
@@ -8,14 +8,24 @@ module Babushka
       }
     end
 
-    def read_value_from_prompt message, in_opts = {}
+    def prompt_for_value message, in_opts = {}
       opts = {
         :prompt => '? '
       }.merge in_opts
 
-      value = nil
       message = "#{message}#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
       log message, :newline => false
+
+      if Base.task.defaults? && opts[:default]
+        puts '.'
+        opts[:default]
+      else
+        read_value_from_prompt message, opts
+      end
+    end
+
+    def read_value_from_prompt message, opts
+      value = nil
       loop do
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
         if block_given?
