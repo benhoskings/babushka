@@ -14,6 +14,10 @@ module Babushka
     accepts_block_for(:build) { shell "make" }
     accepts_block_for(:install) { sudo "make install" }
 
+    def pkg_manager
+      SrcHelper
+    end
+
     def process
       requires 'build tools'
       internal_setup {
