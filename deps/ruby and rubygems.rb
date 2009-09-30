@@ -23,8 +23,6 @@ dep 'rubygems installed' do
     rubygems_version = '1.3.5'
 
     in_build_dir {
-      # disable ri and rdoc generation
-      change_line "# gem: --no-rdoc --no-ri", "gem: --no-rdoc --no-ri", '~/.dot-files/.gemrc'
       get_source("http://rubyforge.org/frs/download.php/60718/rubygems-#{rubygems_version}.tgz") and
 
       in_dir "rubygems-#{rubygems_version}" do
