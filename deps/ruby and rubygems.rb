@@ -10,21 +10,21 @@ end
 
 dep 'rubygems installed' do
   requires 'ruby', 'curl'
+  merge :versions, :rubygems => '1.3.5'
   met? { cmds_in_path? 'gem', cmd_dir('ruby') }
   meet {
-    rubygems_version = '1.3.5'
-
     in_build_dir {
-      get_source("http://rubyforge.org/frs/download.php/60718/rubygems-#{rubygems_version}.tgz") and
+      get_source("http://rubyforge.org/frs/download.php/60718/rubygems-#{var(:versions)[:rubygems]}.tgz") and
 
-      in_dir "rubygems-#{rubygems_version}" do
+      in_dir "rubygems-#{var(:versions)[:rubygems]}" do
         sudo "ruby setup.rb"
       end
-
-      in_dir cmd_dir('ruby') do
-        sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
-      end
     }
+  }
+  after {
+    in_dir cmd_dir('ruby') do
+      sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
+    end
   }
 end
 
