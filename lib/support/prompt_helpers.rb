@@ -26,14 +26,18 @@ module Babushka
 
     def read_value_from_prompt message, opts, &block
       value = nil
-      loop do
+      10.times do
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
+        blank_but_required = value.blank? && !(opts[:default] && opts[:default].empty?)
+        value = opts[:default] if blank_but_required
+
         if block_given?
           break if yield value
         else
-          value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].empty?)
           break unless value.blank? && !(opts[:default] && opts[:default].empty?)
         end
+
+        value = nil
         log "#{opts[:retry] || 'That was blank.'} #{message}", :newline => false
       end
       value
