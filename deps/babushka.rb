@@ -28,8 +28,10 @@ dep 'writable install location' do
   requires 'admins can sudo'
   met? { File.writable? var(:install_prefix) }
   meet {
-    sudo %Q{chgrp -R admin '#{var :install_prefix}'}
-    sudo %Q{chmod -R g+w '#{var :install_prefix}'}
+    confirm "About to enable write access to #{var :install_prefix} for admin users - is that OK?" do
+      sudo %Q{chgrp -R admin '#{var :install_prefix}'}
+      sudo %Q{chmod -R g+w '#{var :install_prefix}'}
+    end
   }
 end
 
