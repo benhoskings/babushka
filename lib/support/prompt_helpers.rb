@@ -1,7 +1,7 @@
 module Babushka
   module PromptHelpers
     def prompt_for_path message, opts = {}
-      read_value_from_prompt(message, opts.merge(
+      prompt_for_value(message, opts.merge(
         :retry => "Doesn't exist, or not a directory."
       )) {|value|
         File.directory? value || ''
