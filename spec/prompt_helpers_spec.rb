@@ -24,6 +24,12 @@ describe "prompt_for_path" do
   it "should return the path" do
     prompt_for_path('path', :type => :path).should == tmp_prefix
   end
+  describe "with ~" do
+    before { @value = '~' }
+    it "should return the path" do
+      prompt_for_path('path').should == '~'
+    end
+  end
   describe "with default" do
     it "should return the value when it's specified" do
       @value = tmp_prefix
