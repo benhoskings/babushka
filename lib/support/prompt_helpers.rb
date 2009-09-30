@@ -8,7 +8,7 @@ module Babushka
       }
     end
 
-    def prompt_for_value message, in_opts = {}, &block
+    def prompt_for_value message, in_opts = {}
       opts = {
         :prompt => '? '
       }.merge in_opts
@@ -20,11 +20,11 @@ module Babushka
         puts '.'
         opts[:default]
       else
-        read_value_from_prompt message, opts, &block
+        read_value_from_prompt message, opts
       end
     end
 
-    def read_value_from_prompt message, opts, &block
+    def read_value_from_prompt message, opts
       value = nil
       loop do
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
