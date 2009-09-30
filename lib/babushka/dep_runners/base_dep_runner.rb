@@ -7,9 +7,13 @@ module Babushka
 
     # This probably should be elsewhere, because it only works on DepRunners that
     # define #provides.
-    def cmds_in_path? commands = provides
+    def cmds_in_path? commands = provides, custom_cmd_dir = nil
       present, missing = commands.partition {|cmd_name| cmd_dir(cmd_name) }
-      good, bad = present.partition {|cmd_name| pkg_manager.cmd_in_path? cmd_name }
+      good, bad = if custom_cmd_dir
+        present.partition {|cmd_name| cmd_dir(cmd_name) == custom_cmd_dir }
+      else
+        present.partition {|cmd_name| pkg_manager.cmd_in_path? cmd_name }
+      end
 
       log_ok "#{good.map {|i| "'#{i}'" }.to_list} run#{'s' if good.length == 1} from #{cmd_dir(good.first)}." unless good.empty?
       log_error "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing from your PATH." unless missing.empty?
