@@ -28,7 +28,7 @@ module Babushka
       @vars = {}
       @runner = runner_class.new self
       @definer = definer_class.new self, &block
-      @definer.process
+      @definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       Dep.register self
     end

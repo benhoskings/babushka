@@ -9,8 +9,6 @@ module Babushka
     end
 
     def process
-      super
-
       requires pkg_manager.manager_dep
       internal_setup { setup_for_install }
       met? { packages_met? }

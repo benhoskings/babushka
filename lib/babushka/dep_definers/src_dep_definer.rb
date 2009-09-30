@@ -15,8 +15,6 @@ module Babushka
     accepts_block_for(:install) { sudo "make install" }
 
     def process
-      super
-
       requires 'build tools'
       internal_setup {
         returning(parse_uris) {

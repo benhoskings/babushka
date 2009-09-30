@@ -26,8 +26,13 @@ module Babushka
       @dep.runner
     end
 
-    def process
+    def define_and_process
+      process
       instance_eval &@block unless @block.nil?
+    end
+
+    def process
+      true # overridden in subclassed definers
     end
 
     def self.current_load_path
