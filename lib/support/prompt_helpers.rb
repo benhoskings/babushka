@@ -28,8 +28,7 @@ module Babushka
       value = nil
       10.times do
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
-        blank_but_required = value.blank? && !(opts[:default] && opts[:default].empty?)
-        value = opts[:default] if blank_but_required
+        value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].empty?)
 
         if block_given?
           break if yield value
