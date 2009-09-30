@@ -211,6 +211,15 @@ def babushka_config? path
   end
 end
 
+def confirm message, &block
+  answer = var("confirm - #{message}",
+    :message => message.chomp('?'),
+    :default => 'n'
+  ).starts_with?('y')
+
+  block.call if answer
+end
+
 require 'yaml'
 def yaml path
   YAML.load_file pathify path
