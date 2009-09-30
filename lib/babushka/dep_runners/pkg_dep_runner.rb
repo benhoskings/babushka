@@ -9,6 +9,14 @@ module Babushka
       !installs.blank?
     end
 
+    def packages_met?
+      if !applicable?
+        log_ok "Not required on #{pkg_manager.manager_key}-based systems."
+      else
+        packages_present? and cmds_in_path?
+      end
+    end
+
     def packages_present?
       installs.all? {|pkg| pkg_manager.has? pkg }
     end
