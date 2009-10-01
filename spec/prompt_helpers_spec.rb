@@ -45,5 +45,8 @@ describe "prompt_for_path" do
     it "should fail" do
       prompt_for_path('path', :type => :path).should be_nil
     end
+    it "should fail with a valid default" do
+      prompt_for_path('path', :type => :path, :default => '/tmp').should be_nil
+    end
   end
 end
