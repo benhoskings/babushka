@@ -47,9 +47,9 @@ module Babushka
       end
     end
 
-    def source url, &block
+    def source url, filename = nil, &block
       in_build_dir {
-        output = get_source url
+        output = get_source url, filename
         unless output.nil?
           in_build_dir output do |path|
             yield path
