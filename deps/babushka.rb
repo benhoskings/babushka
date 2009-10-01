@@ -9,7 +9,6 @@ dep 'babushka in path' do
   met? { which 'babushka' }
   meet {
     log_shell "Linking babushka into #{var(:install_prefix) / 'bin'}", %Q{ln -sf "#{var(:install_prefix) / 'babushka/bin/babushka.rb'}" "#{var(:install_prefix) / 'bin/babushka'}"}
-    shell %Q{chmod +x "#{var(:install_prefix) / 'bin/babushka'}"}
   }
 end
 
