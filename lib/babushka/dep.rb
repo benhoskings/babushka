@@ -174,6 +174,7 @@ module Babushka
       log "#{e.backtrace.first}: #{e.message}".colorize('red')
       dep_callpoint = e.backtrace.detect {|l| l[definer.source_path] }
       log "Check #{dep_callpoint}." unless dep_callpoint.nil?
+      debug e.backtrace * "\n"
       :fail
     end
 

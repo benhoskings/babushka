@@ -49,6 +49,7 @@ module Babushka
         rescue Exception => e
           log_error "#{e.backtrace.first}: #{e.message}"
           log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
+          debug e.backtrace * "\n"
           return nil
         end
       }
