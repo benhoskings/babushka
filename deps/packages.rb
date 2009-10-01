@@ -33,6 +33,7 @@ pkg 'git' do
   installs {
     apt 'git-core'
     macports 'git-core +svn +bash_completion'
+    brew 'git'
   }
 end
 pkg 'htop'

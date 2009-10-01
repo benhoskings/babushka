@@ -49,6 +49,7 @@ end
 pkg 'pkg ruby' do
   installs {
     macports 'ruby'
+    brew 'ruby'
     apt %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
   }
   provides %w[ruby irb ri rdoc]
