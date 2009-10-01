@@ -19,9 +19,8 @@ module Babushka
       log_error "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing from your PATH." unless missing.empty?
 
       unless bad.empty?
-        path_error = "#{bad.map {|i| "'#{i}'" }.to_list} incorrectly run#{'s' if bad.length == 1} from #{cmd_dir(bad.first)}."
+        log_error "#{bad.map {|i| "'#{i}'" }.to_list} incorrectly run#{'s' if bad.length == 1} from #{cmd_dir(bad.first)}."
         unless /#{pkg_manager.bin_path}.*#{cmd_dir(bad.first)}/ =~ ENV['PATH']
-          log_error path_error
           # The incorrect paths were caused by path order, not just binaries missing from the correct path.
           unless pkg_manager == Babushka::BaseHelper
             # Don't recommend putting the system path ahead of manager-specific paths.
@@ -29,7 +28,8 @@ module Babushka
           end
           :fail
         else
-          log path_error
+          # The path order is right, so the correct binary is just missing.
+          nil
         end
       else
         missing.empty?
