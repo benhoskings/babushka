@@ -72,9 +72,7 @@ module Babushka
         end
 
         if update_success
-          in_build_dir repo do |path|
-            yield path
-          end
+          block.nil? || in_build_dir(repo) {|path| block.call path }
         end
       }
     end
