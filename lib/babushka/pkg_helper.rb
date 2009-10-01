@@ -7,7 +7,7 @@ module Babushka
 
     def for_system
       {
-        :osx => MacportsHelper,
+        :osx => BrewHelper,
         :linux => AptHelper
       }[uname]
     end
