@@ -213,7 +213,7 @@ end
 
 def confirm message, &block
   answer = var("confirm - #{message}",
-    :message => message.chomp('?'),
+    :message => message,
     :default => 'n'
   ).starts_with?('y')
 

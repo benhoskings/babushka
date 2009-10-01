@@ -21,9 +21,9 @@ module Babushka
 
     def prompt_message message, opts
       if opts[:choices]
-        "#{message} (#{opts[:choices] * ','})"
+        "#{message.chomp '?'} (#{opts[:choices] * ','})"
       else
-        message
+        message.chomp '?'
       end + "#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
     end
 
