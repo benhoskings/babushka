@@ -24,7 +24,7 @@ dep 'babushka installed' do
 end
 
 dep 'writable install location' do
-  requires 'admins can sudo'
+  requires 'install location exists', 'admins can sudo'
   met? { File.writable? var(:install_prefix) }
   meet {
     confirm "About to enable write access to #{var :install_prefix} for admin users - is that OK?" do
@@ -32,6 +32,11 @@ dep 'writable install location' do
       sudo %Q{chmod -R g+w '#{var :install_prefix}'}
     end
   }
+end
+
+dep 'install location exists' do
+  met? { File.directory? var :install_prefix }
+  meet { sudo "mkdir -p '#{var :install_prefix}'" }
 end
 
 ext 'install location in path' do
