@@ -13,7 +13,21 @@ module Babushka
         :prompt => '? '
       }.merge in_opts
 
-      message = "#{message}#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
+      prompt_and_read_value prompt_message(message, opts), opts, &block
+    end
+
+
+    private
+
+    def prompt_message message, opts
+      if opts[:choices]
+        "#{message} (#{opts[:choices] * ','})"
+      else
+        message
+      end + "#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
+    end
+
+    def prompt_and_read_value message, opts, &block
       log message, :newline => false
 
       if Base.task.defaults? && opts[:default]
@@ -30,14 +44,19 @@ module Babushka
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
         value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].empty?)
 
-        if block_given?
-          break if yield value
+        error_message = if opts[:choices] && !value.in?(opts[:choices])
+          "That's not a valid choice"
+        elsif block_given? && !yield(value)
+          opts[:retry]
+        elsif value.blank? && !(opts[:default] && opts[:default].empty?)
+          "That was blank"
         else
-          break unless value.blank? && !(opts[:default] && opts[:default].empty?)
+          break # success
+          nil
         end
 
         value = nil
-        log "#{opts[:retry] || 'That was blank.'} #{message}", :newline => false
+        log "#{error_message.end_with('.')} #{message}", :newline => false
       end
       value
     end

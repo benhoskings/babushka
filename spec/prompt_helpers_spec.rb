@@ -17,6 +17,36 @@ describe "prompt_for_value" do
       prompt_for_value('value', :default => 'default').should == 'default'
     end
   end
+
+  describe "with choices" do
+    it "should accept a valid choice" do
+      @value = 'a'
+      prompt_for_value('value', :choices => %w[a b c]).should == 'a'
+    end
+    it "should reject an invalid choice" do
+      @value = 'd'
+      prompt_for_value('value', :choices => %w[a b c]).should == nil
+    end
+    describe "with default" do
+      it "should accept a valid choice" do
+        @value = 'a'
+        prompt_for_value('value', :choices => %w[a b c], :default => 'b').should == 'a'
+      end
+      it "should reject an invalid choice" do
+        @value = 'd'
+        prompt_for_value('value', :choices => %w[a b c], :default => 'b').should == nil
+      end
+      describe "with no value specified" do
+        before { @value = '' }
+        it "should accept a valid default" do
+          prompt_for_value('value', :choices => %w[a b c], :default => 'b').should == 'b'
+        end
+        it "should reject an invalid default" do
+          prompt_for_value('value', :choices => %w[a b c], :default => 'd').should == nil
+        end
+      end
+    end
+  end
 end
 
 describe "prompt_for_path" do
