@@ -36,6 +36,9 @@ module Babushka
     def bin_path
       prefix / 'bin'
     end
+    def present?
+      which pkg_binary
+    end
     def cmd_in_path? cmd_name
       if (_cmd_dir = cmd_dir(cmd_name)).nil?
         log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
