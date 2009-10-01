@@ -9,6 +9,10 @@ module Babushka
     accepts_block_for :before
     accepts_block_for :after
 
+    def pkg_manager
+      BaseHelper
+    end
+
     private
 
     def chooser

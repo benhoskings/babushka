@@ -7,7 +7,7 @@ module Babushka
 
     def for_system
       {
-        :osx => MacportsHelper,
+        :osx => BrewHelper,
         :linux => AptHelper
       }[uname]
     end
@@ -36,11 +36,14 @@ module Babushka
     def bin_path
       prefix / 'bin'
     end
+    def present?
+      which pkg_binary
+    end
     def cmd_in_path? cmd_name
       if (_cmd_dir = cmd_dir(cmd_name)).nil?
         log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
       else
-        cmd_dir(cmd_name).starts_with?(prefix)
+        _cmd_dir.starts_with?(prefix)
       end
     end
     def should_sudo

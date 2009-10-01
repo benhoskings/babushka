@@ -20,6 +20,7 @@ dep 'doc' do
   requires 'doxygen', 'gettext'
 end
 pkg 'doxygen'
+pkg 'erlang'
 pkg 'freeimage' do
   installs {
     apt %w[libfreeimage3 libfreeimage-dev]
@@ -32,6 +33,7 @@ pkg 'git' do
   installs {
     apt 'git-core'
     macports 'git-core +svn +bash_completion'
+    brew 'git'
   }
 end
 pkg 'htop'
@@ -61,14 +63,17 @@ pkg 'mdns' do
   }
   provides []
 end
+pkg 'memcached'
 pkg 'ncurses' do
   installs {
     apt 'libncurses5-dev', 'libncursesw5-dev'
     macports 'ncurses', 'ncursesw'
+    brew 'ncurses'
   }
   provides []
 end
 pkg 'nmap'
+pkg 'oniguruma'
 gem 'passenger' do
   provides 'passenger-install-nginx-module'
 end

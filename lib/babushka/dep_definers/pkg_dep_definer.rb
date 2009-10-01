@@ -9,17 +9,9 @@ module Babushka
     end
 
     def process
-      super
-
       requires pkg_manager.manager_dep
       internal_setup { setup_for_install }
-      met? {
-        if !applicable?
-          log_ok "Not required on #{pkg_manager.manager_key}-based systems."
-        else
-          packages_present? and cmds_in_path?
-        end
-      }
+      met? { packages_met? }
       before { pkg_manager.update_pkg_lists_if_required }
       meet { install_packages! }
     end

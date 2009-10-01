@@ -28,7 +28,7 @@ module Babushka
       @vars = {}
       @runner = runner_class.new self
       @definer = definer_class.new self, &block
-      @definer.process
+      @definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       Dep.register self
     end
@@ -174,6 +174,7 @@ module Babushka
       log "#{e.backtrace.first}: #{e.message}".colorize('red')
       dep_callpoint = e.backtrace.detect {|l| l[definer.source_path] }
       log "Check #{dep_callpoint}." unless dep_callpoint.nil?
+      debug e.backtrace * "\n"
       :fail
     end
 

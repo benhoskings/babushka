@@ -10,42 +10,65 @@ end
 
 dep 'rubygems installed' do
   requires 'ruby', 'curl'
-  met? {
-    if which('gem').nil?
-      unmet "'gem' is not installed"
-    elsif cmd_dir('gem') != cmd_dir('ruby')
-      unmet "'gem' incorrectly runs from #{cmd_dir('gem')}"
-    else
-      shell 'gem env gemdir'
-    end
-  }
+  merge :versions, :rubygems => '1.3.5'
+  met? { cmds_in_path? 'gem', cmd_dir('ruby') }
   meet {
-    rubygems_version = '1.3.5'
-
     in_build_dir {
-      # disable ri and rdoc generation
-      change_line "# gem: --no-rdoc --no-ri", "gem: --no-rdoc --no-ri", '~/.dot-files/.gemrc'
-      get_source("http://rubyforge.org/frs/download.php/60718/rubygems-#{rubygems_version}.tgz") and
+      get_source("http://rubyforge.org/frs/download.php/60718/rubygems-#{var(:versions)[:rubygems]}.tgz") and
 
-      in_dir "rubygems-#{rubygems_version}" do
+      in_dir "rubygems-#{var(:versions)[:rubygems]}" do
         sudo "ruby setup.rb"
-      end
-
-      in_dir cmd_dir('ruby') do
-        sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
       end
     }
   }
+  after {
+    in_dir cmd_dir('ruby') do
+      sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
+    end
+  }
 end
 
-pkg 'ruby' do
+dep 'ruby' do
+  setup {
+    rubies = {
+      'pkg' => "Install via #{Babushka::PkgHelper.for_system.manager_dep}",
+      'ree' => "Build Ruby Enterprise Edition from source"
+    }
+    rubies['system'] = "Use the OS X-supplied version" if osx?
+    rubies.each_pair {|ruby_type,description|
+      log "#{ruby_type.ljust(rubies.keys.map(&:length).max)} - #{description}"
+    }
+    chosen_ruby = var(:ruby_type,
+      :message => "Which ruby would you like to use",
+      :default => 'pkg'
+    )
+    requires "#{chosen_ruby} ruby"
+  }
+end
+
+pkg 'pkg ruby' do
   installs {
     macports 'ruby'
+    brew 'ruby'
     apt %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
   }
   provides %w[ruby irb ri rdoc]
 end
 
+dep 'system ruby', :for => :osx do
+  met? {
+    cmds_in_path? ['ruby', 'irb', 'ri', 'rdoc']
+  }
+end
+
+src 'ree ruby' do
+  source "http://rubyforge.org/frs/download.php/64475/ruby-enterprise-1.8.7-20090928.tar.gz"
+  provides 'ruby', 'irb', 'ri', 'rdoc'
+  met? {
+    log_error "Not implemented yet - bug me on twitter (@ben_h) or even better, send me your dep :)"
+    :fail
+  }
+end
 
 pkg 'ruby 1.9' do
   installs {

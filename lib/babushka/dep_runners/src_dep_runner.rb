@@ -40,27 +40,12 @@ module Babushka
     def handle_source uri
       send({
         'http' => :get_source,
-        'git' => :git_update
+        'git' => :git
       }[uri.scheme] || :unsupported_scheme, uri)
-    end
-
-    def git_update uri
-      repo = build_path_for uri
-      in_build_dir {
-        if File.directory? repo
-          in_build_dir(repo) { log_shell "Already cloned; updating.", %Q{git pull origin master} }
-        else
-          log_shell "Cloning", %Q{git clone "#{uri}" "./#{repo}"}
-        end
-      }
     end
 
     def default_configure_command
       "#{configure_env} ./configure --prefix=#{prefix} #{configure_args}"
-    end
-
-    def build_path_for uri
-      archive_basename uri.path
     end
 
     def call_task task_name
