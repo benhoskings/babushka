@@ -8,11 +8,14 @@ module Babushka
 
     def install! pkgs
       check_for_formulas(pkgs) && pkgs.all? {|pkg|
-        log_shell(
-          "Installing #{pkg} via #{manager_key}",
-          "#{pkg_cmd} install #{cmdline_spec_for pkg}",
-          :sudo => should_sudo
-        )
+        log "Installing #{pkg} via #{manager_key}" do
+          shell(
+            "#{pkg_cmd} install #{cmdline_spec_for pkg}",
+            :sudo => should_sudo,
+            :log => true,
+            :closing_status => :status_only
+          )
+        end
       }
     end
 
