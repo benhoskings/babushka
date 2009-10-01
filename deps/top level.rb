@@ -15,7 +15,6 @@ dep 'rails app' do
   requires 'webapp', 'passenger deploy repo', 'gems installed', 'migrated db'
   define_var :rails_env, :default => 'production'
   define_var :rails_root, :default => '~/current', :type => :path
-  define_var :passenger_repo_root, :default => :rails_root
   setup {
     set :vhost_type, 'passenger'
     set :db_name, yaml(var(:rails_root) / 'config/database.yml')[var(:rails_env)]['database']

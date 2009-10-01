@@ -1,5 +1,6 @@
 dep 'passenger deploy repo' do
   requires 'git', 'user exists'
+  define_var :passenger_repo_root, :default => :rails_root
   met? { File.directory? pathify var(:passenger_repo_root) / '.git' }
   meet {
     FileUtils.mkdir_p pathify var(:passenger_repo_root) and
