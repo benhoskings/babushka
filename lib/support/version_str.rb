@@ -9,11 +9,11 @@ module Babushka
       pieces <=> other.pieces unless pieces.nil? || other.pieces.nil?
     end
     def initialize str
-      captures = str.strip.scan(/^(#{GemVersionOperators.join('|')})?\s*([0-9.]+)$/)
+      captures = str.strip.scan(/^(#{GemVersionOperators.join('|')})?\s*([0-9.]+)/)
       if captures.nil? || captures.first.nil? || captures.first.last.nil?
-        # bad input
+        raise "Bad input: '#{str}'"
       elsif !(captures.first.first.nil? || GemVersionOperators.include?(captures.first.first))
-        # bad operator
+        raise "Bad operator: '#{captures.first.first}'"
       else
         @pieces = captures.first.last.split('.').map(&:to_i)
         @operator = captures.first.first
