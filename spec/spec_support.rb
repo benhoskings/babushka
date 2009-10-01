@@ -15,12 +15,6 @@ end
 FileUtils.mkdir_p tmp_prefix unless File.exists? tmp_prefix
 
 module Babushka
-  class Logger
-    def self.log message, opts = {}, &block
-      # Don't log while running specs.
-      yield if block_given?
-    end
-  end
   class VersionOf
     # VersionOf#== should return false in testing unless other is also a VersionOf.
     def == other
@@ -30,4 +24,8 @@ module Babushka
       end
     end
   end
+end
+
+def print_log message, opts
+  # Don't log while running specs.
 end
