@@ -58,12 +58,24 @@ module Babushka
       }
     end
 
-    def git url, &block
+    def build_path_for uri
+      archive_basename(uri.respond_to?(:path) ? uri.path : uri)
+    end
+
+    def git uri, &block
+      repo = build_path_for uri
       in_build_dir {
-        shell "git clone #{url}" and
-        in_build_dir(File.basename(url)) {|path|
-          yield path
-        }
+        update_success = if File.directory? repo / '.git'
+          in_build_dir(repo) { log_shell "Updating from #{uri}", %Q{git pull origin master} }
+        else
+          log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "./#{repo}"}
+        end
+
+        if update_success
+          in_build_dir repo do |path|
+            yield path
+          end
+        end
       }
     end
 
