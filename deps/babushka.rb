@@ -25,7 +25,11 @@ end
 
 dep 'writable install location' do
   requires 'install location exists', 'admins can sudo'
-  met? { File.writable? var(:install_prefix) }
+  met? {
+    returning File.writable? var(:install_prefix) do |result|
+      log "#{var :install_prefix} isn't writable by #{shell 'whoami'}."
+    end
+  }
   meet {
     confirm "About to enable write access to #{var :install_prefix} for admin users - is that OK?" do
       sudo %Q{chgrp -R admin '#{var :install_prefix}'}
