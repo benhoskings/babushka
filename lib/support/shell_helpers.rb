@@ -212,7 +212,8 @@ def babushka_config? path
 end
 
 def confirm message, &block
-  answer = var("confirm - #{message}",
+  prompter = respond_to?(:var) ? :var : :prompt_for_value
+  answer = send(prompter, "confirm - #{message}",
     :message => message.chomp('?'),
     :default => 'n'
   ).starts_with?('y')
