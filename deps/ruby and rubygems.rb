@@ -35,11 +35,9 @@ dep 'ruby' do
       'ree' => "Build Ruby Enterprise Edition from source"
     }
     rubies['system'] = "Use the OS X-supplied version" if osx?
-    rubies.each_pair {|ruby_type,description|
-      log "#{ruby_type.ljust(rubies.keys.map(&:length).max)} - #{description}"
-    }
     chosen_ruby = var(:ruby_type,
       :message => "Which ruby would you like to use",
+      :choice_descriptions => rubies,
       :default => 'pkg'
     )
     requires "#{chosen_ruby} ruby"
