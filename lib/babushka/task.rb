@@ -126,7 +126,8 @@ module Babushka
         save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
         vars_to_save
       }.reject_r {|var,data|
-        ![String, Symbol, Hash].include?(data.class) || var.to_s['password']
+        !data.class.in?([String, Symbol, Hash, Numeric, TrueClass, FalseClass]) ||
+        var.to_s['password']
       }
     end
 
