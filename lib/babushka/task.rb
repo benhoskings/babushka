@@ -15,11 +15,13 @@ module Babushka
 
     def process dep_name
       load_previous_run_info_for dep_name
-      log_dep dep_name do
+      returning(log_dep(dep_name) {
         returning Dep.process dep_name do |result|
           save_run_info_for dep_name, result
         end
-      end
+      }) {
+        BugReporter.report dep_name if reportable
+      }
     end
 
     def opts

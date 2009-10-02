@@ -15,6 +15,7 @@ babushka_components = %w[
 
   babushka/base
   babushka/shell
+  babushka/bug_reporter
   babushka/pkg_helper
   babushka/pkg_helpers/apt_helper
   babushka/pkg_helpers/brew_helper
