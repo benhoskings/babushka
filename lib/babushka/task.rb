@@ -54,6 +54,10 @@ module Babushka
       pathify(VarsPrefix) / dep_name
     end
 
+    def sticky_var_path
+      pathify(WorkingPrefix) / 'sticky_vars'
+    end
+
     private
 
     def log_dep dep_name
@@ -70,31 +74,23 @@ module Babushka
 
     require 'yaml'
     def load_previous_run_info_for dep_name
-      path = var_path_for dep_name
-      unless File.exists? path
-        debug "No log to load for '#{path}'."
-      else
-        dep_log = YAML.load_file path
-        unless dep_log.is_a?(Hash) && dep_log[:vars].is_a?(Hash)
-          log_error "Ignoring corrupt var log at #{path}."
-        else
-          dep_log[:vars].each_pair {|var_name,var_data|
-            @saved_vars[var_name].update var_data
-          }
-        end
-      end
+      load_var_log_for(var_path_for(dep_name)).each_pair {|var_name,var_data|
+        @saved_vars[var_name].update var_data
+      }
+      load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
+        debug "Updating sticky var #{var_name}: #{var_data.inspect}"
+        @vars[var_name].update var_data
+      }
     end
 
     def save_run_info_for dep_name, result
-      in_dir VarsPrefix, :create => true do |path|
-        File.open(dep_name, 'w') {|f|
-          YAML.dump({
-            :info => task_info(dep_name, result),
-            :vars => vars_for_save
-          }, f)
-        }
-      end
+      save_var_log_for sticky_var_path, :vars => sticky_vars_for_save
+      save_var_log_for var_path_for(dep_name), {
+        :info => task_info(dep_name, result),
+        :vars => vars_for_save
+      }
     end
+
 
     private
 
@@ -108,6 +104,30 @@ module Babushka
       }
     end
 
+    def load_var_log_for path
+      unless File.exists? path
+        debug "No log to load for '#{path}'."
+      else
+        dep_log = YAML.load_file path
+        unless dep_log.is_a?(Hash) && dep_log[:vars].is_a?(Hash)
+          log_error "Ignoring corrupt var log at #{path}."
+        else
+          dep_log[:vars]
+        end
+      end || {}
+    end
+
+    def save_var_log_for var_path, data
+      in_dir File.dirname(var_path), :create => true do |path|
+        debug "Saving #{var_path}"
+        dump_yaml_to File.basename(var_path), data
+      end
+    end
+
+    def dump_yaml_to filename, data
+      File.open(filename, 'w') {|f| YAML.dump data, f }
+    end
+
     def task_info dep_name, result
       now = Time.now
       {
@@ -117,6 +137,14 @@ module Babushka
         :uname => `uname -a`,
         :dep_name => dep_name,
         :result => result
+      }
+    end
+
+    def sticky_vars_for_save
+      vars.reject {|var,data|
+        !data[:sticky]
+      }.map_values {|k,v|
+        v.reject {|k,v| k != :value }
       }
     end
 
