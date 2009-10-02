@@ -55,13 +55,18 @@ module Babushka
     end
 
     def define_var name, opts = {}
-      vars[name.to_s].update opts.dragnet(:default, :type, :message)
+      vars[name.to_s].update opts.dragnet(:default, :type, :message, :choices, :choice_descriptions)
+      vars[name.to_s][:choices] ||= vars[name.to_s][:choice_descriptions].keys unless vars[name.to_s][:choice_descriptions].nil?
+      vars[name.to_s]
     end
 
     def ask_for_var key
       set key, send("prompt_for_#{vars[key][:type] || 'value'}",
         message_for(key),
-        :default => default_for(key), :dynamic => vars[key][:default].respond_to?(:call)
+        vars[key].dragnet(:choices, :choice_descriptions).merge(
+          :default => default_for(key),
+          :dynamic => vars[key][:default].respond_to?(:call)
+        )
       )
     end
 
