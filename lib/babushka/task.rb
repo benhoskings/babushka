@@ -41,18 +41,31 @@ module Babushka
       opts[:callstack]
     end
 
+    def log_path_for dep_name
+      log_prefix / dep_name
+    end
+
+    def var_path_for dep_name
+      pathify(VarsPrefix) / dep_name
+    end
+
+    private
+
     def log_dep dep_name
-      log_prefix = pathify LogPrefix
       FileUtils.mkdir_p log_prefix unless File.exists? log_prefix
-      File.open(log_prefix / dep_name, 'w') {|f|
+      File.open(log_path_for(dep_name), 'w') {|f|
         @persistent_log = f
         returning(yield) { @persistent_log = nil }
       }
     end
 
+    def log_prefix
+      pathify LogPrefix
+    end
+
     require 'yaml'
     def load_previous_run_info_for dep_name
-      path = pathify(VarsPrefix / dep_name)
+      path = var_path_for dep_name
       unless File.exists? path
         debug "No log to load for '#{path}'."
       else
