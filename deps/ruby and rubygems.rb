@@ -35,7 +35,7 @@ dep 'ruby' do
       'ree' => "Build Ruby Enterprise Edition from source"
     }
     rubies['system'] = "Use the OS X-supplied version" if osx?
-    chosen_ruby = var(:ruby_type,
+    chosen_ruby = sticky_var(:ruby_type,
       :message => "Which ruby would you like to use",
       :choice_descriptions => rubies,
       :default => 'pkg'
