@@ -230,6 +230,15 @@ class String
     replace colorize(description, start_at) unless description.blank?
   end
 
+  def decolorize
+    dup.decolorize!
+  end
+
+  def decolorize!
+    gsub! /\e\[\d+[;\d]*m/, ''
+    self
+  end
+
 end
 
 unless :to_proc.respond_to? :to_proc
