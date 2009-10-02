@@ -102,6 +102,17 @@ class Hash
     }
   end
 
+  def map_values &block
+    dup.map_values! &block
+  end
+
+  def map_values! &block
+    keys.each {|k|
+      self[k] = yield k, self[k]
+    }
+    self
+  end
+
   def reject_r &block
     dup.reject_r! &block
   end
