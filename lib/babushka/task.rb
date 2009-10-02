@@ -4,6 +4,7 @@ module Babushka
   class Task
 
     attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
+    attr_accessor :reportable
 
     def initialize
       @vars = Hashish.hash

@@ -175,6 +175,7 @@ module Babushka
       dep_callpoint = e.backtrace.detect {|l| l[definer.source_path] }
       log "Check #{dep_callpoint}." unless dep_callpoint.nil?
       debug e.backtrace * "\n"
+      Base.task.reportable = true
       :fail
     end
 
