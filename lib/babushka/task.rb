@@ -1,6 +1,8 @@
 module Babushka
-  LogPrefix = '~/.babushka/logs'.freeze
-  VarsPrefix = '~/.babushka/vars'.freeze
+  WorkingPrefix = '~/.babushka'
+  LogPrefix = WorkingPrefix / 'logs'
+  VarsPrefix = WorkingPrefix / 'vars'
+
   class Task
 
     attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
