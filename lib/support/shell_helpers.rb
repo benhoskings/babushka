@@ -211,13 +211,18 @@ def babushka_config? path
   end
 end
 
-def confirm message, &block
-  answer = var("confirm - #{message}",
+def confirm message, opts = {}, &block
+  prompter = respond_to?(:var) ? :var : :prompt_for_value
+  answer = send(prompter, message,
     :message => message,
     :default => 'n'
   ).starts_with?('y')
 
-  block.call if answer
+  if answer
+    block.call
+  elsif opts[:otherwise]
+    log opts[:otherwise]
+  end
 end
 
 require 'yaml'

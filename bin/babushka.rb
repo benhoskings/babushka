@@ -15,6 +15,7 @@ babushka_components = %w[
 
   babushka/base
   babushka/shell
+  babushka/bug_reporter
   babushka/pkg_helper
   babushka/pkg_helpers/base_helper
   babushka/pkg_helpers/apt_helper
@@ -52,7 +53,7 @@ include Babushka::DepHelpers
 include Babushka::VersionHelpers
 
 if $0 == __FILE__
-  exit Babushka::Base.run(ARGV) || 0
+  exit Babushka::Base.run(ARGV) ? 0 : 1
 else
   Babushka::Base.setup_noninteractive
 end
