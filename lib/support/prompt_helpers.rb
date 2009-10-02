@@ -20,14 +20,26 @@ module Babushka
     private
 
     def prompt_message message, opts
-      if opts[:choices]
+      if opts[:choices] && opts[:choice_descriptions].blank?
         "#{message.chomp '?'} (#{opts[:choices] * ','})"
       else
         message.chomp '?'
       end + "#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
     end
 
+    def log_choice_descriptions descriptions
+      unless descriptions.blank?
+        max_length = descriptions.keys.map(&:length).max
+        log "There are #{descriptions.length} choices:"
+        descriptions.each_pair {|choice,description|
+          log "#{choice.ljust(max_length)} - #{description}"
+        }
+      end
+    end
+
     def prompt_and_read_value message, opts, &block
+      log_choice_descriptions opts[:choice_descriptions]
+
       log message, :newline => false
 
       if Base.task.defaults? && opts[:default]
