@@ -9,7 +9,7 @@ module Babushka
     def _install! pkgs, opts
       pkgs.each {|pkg|
         log_shell "Installing #{pkg} via #{manager_key}",
-          "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?} #{opts}",
+          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
           :sudo => should_sudo?
       }
     end
