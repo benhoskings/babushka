@@ -131,11 +131,10 @@ describe "in_dir" do
 
   it "should yield if no chdir is required" do
     has_yielded = false
-    l = L{
+    in_dir(@original_pwd) {
       Dir.pwd.should == @original_pwd
       has_yielded = true
     }
-    in_dir @original_pwd, &l
     has_yielded.should be_true
   end
   it "should change dir for the duration of the block" do
