@@ -8,7 +8,7 @@ module Babushka
     # This probably should be elsewhere, because it only works on DepRunners that
     # define #provides.
     def cmds_in_path? commands = provides, custom_cmd_dir = nil
-      present, missing = commands.partition {|cmd_name| cmd_dir(cmd_name) }
+      present, missing = [*commands].partition {|cmd_name| cmd_dir(cmd_name) }
       good, bad = if custom_cmd_dir
         present.partition {|cmd_name| cmd_dir(cmd_name) == custom_cmd_dir }
       else
