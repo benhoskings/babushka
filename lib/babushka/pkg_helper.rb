@@ -29,7 +29,7 @@ module Babushka
       _install! [*pkgs].map {|pkg| ver pkg }, opts
     end
     def _install! pkgs, opts
-      log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => true
+      log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
     end
     def setup_for_install_of dep, pkgs
       true
@@ -51,7 +51,7 @@ module Babushka
       end
     end
     def should_sudo?
-      true
+      !File.writable?(bin_path)
     end
     def update_pkg_lists_if_required
       true # not required by default
