@@ -5,7 +5,7 @@ module Babushka
   class << self
     Options = {
       :quiet => %w[-q --quiet],
-      :debug => '--debug',
+      :debug => %w[--debug],
       :dry_run => %w[-n --dry-run],
       :defaults => %w[-y --defaults],
       :force => %w[-f --force]
