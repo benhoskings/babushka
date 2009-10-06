@@ -43,6 +43,9 @@ end
 
 dep 'migrated db' do
   requires 'deployed app', 'existing db', 'rails'
+  setup {
+    set :db_name, yaml(var(:rails_root) / 'config/database.yml')[var(:rails_env)]['database']
+  }
   met? {
     current_version = rails_rake("db:version") {|shell| shell.stdout.val_for('Current version') }
     latest_version = Dir[

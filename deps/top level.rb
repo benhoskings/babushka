@@ -17,7 +17,6 @@ dep 'rails app' do
   define_var :rails_root, :default => '~/current', :type => :path
   setup {
     set :vhost_type, 'passenger'
-    set :db_name, yaml(var(:rails_root) / 'config/database.yml')[var(:rails_env)]['database']
   }
 end
 
