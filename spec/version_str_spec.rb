@@ -39,14 +39,17 @@ describe "parsing" do
     v.pieces.should == [0, 2]
     v.operator.should == '=='
   end
+  it "should ignore patchlevel suffixes" do
+    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1]
+  end
   it "should reject invalid operators" do
-    v = VersionStr.new('~ 0.2')
-    v.pieces.should be_nil
-    v.operator.should be_nil
+    L{
+      VersionStr.new('~ 0.2')
+    }.should raise_error "Bad input: '~ 0.2'"
 
-    v = VersionStr.new('>> 0.2')
-    v.pieces.should be_nil
-    v.operator.should be_nil
+    L{
+      VersionStr.new('>> 0.2')
+    }.should raise_error "Bad input: '>> 0.2'"
   end
 end
 
