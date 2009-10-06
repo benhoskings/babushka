@@ -8,7 +8,9 @@ module Babushka
 
     def install! pkgs
       pkgs.each {|pkg|
-        log_shell "Installing #{pkg} via #{manager_key}", "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}", :sudo => true
+        log_shell "Installing #{pkg} via #{manager_key}",
+          "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}",
+          :sudo => should_sudo?
       }
     end
 
@@ -34,6 +36,9 @@ module Babushka
       installed = shell("gem list --local #{pkg_name}").split("\n").detect {|l| /^#{pkg_name}\b/ =~ l }
       versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
       versions.split(/[^0-9.]+/).sort.map(&:to_version)
+    end
+    def should_sudo?
+      !(File.writable?(shell('gem env gemdir')) && File.writable?(bin_path))
     end
   end
   end

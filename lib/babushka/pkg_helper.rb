@@ -46,7 +46,7 @@ module Babushka
         _cmd_dir.starts_with?(prefix)
       end
     end
-    def should_sudo
+    def should_sudo?
       true
     end
     def update_pkg_lists_if_required

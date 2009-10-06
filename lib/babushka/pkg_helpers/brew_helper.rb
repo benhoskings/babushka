@@ -11,7 +11,7 @@ module Babushka
         log "Installing #{pkg} via #{manager_key}" do
           shell(
             "#{pkg_cmd} install #{cmdline_spec_for pkg}",
-            :sudo => should_sudo,
+            :sudo => should_sudo?,
             :log => true,
             :closing_status => :status_only
           )
@@ -71,7 +71,7 @@ module Babushka
       prefix / 'Library/Homebrew'
     end
 
-    def should_sudo
+    def should_sudo?
       false
     end
   end
