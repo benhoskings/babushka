@@ -26,6 +26,9 @@ module Babushka
       end
     end
     def install! pkgs
+      _install! [*pkgs].map {|pkg| ver pkg }
+    end
+    def _install! pkgs
       log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')}", :sudo => true
     end
     def setup_for_install_of dep, pkgs

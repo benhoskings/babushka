@@ -6,7 +6,7 @@ module Babushka
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
 
-    def install! pkgs
+    def _install! pkgs
       pkgs.each {|pkg|
         log_shell "Installing #{pkg} via #{manager_key}",
           "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}",

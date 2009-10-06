@@ -6,7 +6,7 @@ module Babushka
     def manager_key; :brew end
     def manager_dep; 'homebrew' end
 
-    def install! pkgs
+    def _install! pkgs
       check_for_formulas(pkgs) && pkgs.all? {|pkg|
         log "Installing #{pkg} via #{manager_key}" do
           shell(

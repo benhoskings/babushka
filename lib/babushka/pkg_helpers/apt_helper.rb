@@ -6,7 +6,7 @@ module Babushka
     def pkg_binary; "apt-get" end
     def manager_key; :apt end
 
-    def install! pkgs
+    def _install! pkgs
       package_count = sudo("#{pkg_cmd} -s install #{pkgs.join(' ')}").split.grep(/^Inst\b/).length
       dep_count = package_count - pkgs.length
 
