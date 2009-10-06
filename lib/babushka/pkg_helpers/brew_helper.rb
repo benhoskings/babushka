@@ -6,11 +6,11 @@ module Babushka
     def manager_key; :brew end
     def manager_dep; 'homebrew' end
 
-    def _install! pkgs
+    def _install! pkgs, opts
       check_for_formulas(pkgs) && pkgs.all? {|pkg|
         log "Installing #{pkg} via #{manager_key}" do
           shell(
-            "#{pkg_cmd} install #{cmdline_spec_for pkg}",
+            "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
             :sudo => should_sudo?,
             :log => true,
             :closing_status => :status_only

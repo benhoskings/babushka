@@ -6,10 +6,10 @@ module Babushka
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
 
-    def _install! pkgs
+    def _install! pkgs, opts
       pkgs.each {|pkg|
         log_shell "Installing #{pkg} via #{manager_key}",
-          "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}",
+          "#{pkg_cmd} install #{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?} #{opts}",
           :sudo => should_sudo?
       }
     end

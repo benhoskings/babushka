@@ -8,7 +8,7 @@ module Babushka
     def pkg_cmd; 'port' end
     def manager_key; :macports end
 
-    def _install! pkgs
+    def _install! pkgs, opts
       log_shell "Fetching #{pkgs.join(', ')}", "#{pkg_cmd} fetch #{pkgs.join(' ')}", :sudo => true
       super
     end
