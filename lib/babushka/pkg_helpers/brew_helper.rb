@@ -72,7 +72,7 @@ module Babushka
     end
 
     def should_sudo?
-      false
+      super || !File.writable?(installed_pkgs_path)
     end
   end
   end
