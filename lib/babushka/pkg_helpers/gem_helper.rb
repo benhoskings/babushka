@@ -38,7 +38,7 @@ module Babushka
       versions.split(/[^0-9.]+/).sort.map(&:to_version)
     end
     def should_sudo?
-      !(File.writable?(shell('gem env gemdir')) && File.writable?(bin_path))
+      super || !File.writable?(gem_root)
     end
   end
   end
