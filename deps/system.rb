@@ -48,8 +48,8 @@ end
 
 dep 'build tools' do
   requires {
-    osx 'xcode tools'
-    linux ['build-essential', 'autoconf']
+    osx 'xcode tools', 'llvm in path'
+    linux 'build-essential', 'autoconf'
   }
 end
 
