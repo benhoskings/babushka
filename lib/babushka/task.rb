@@ -20,6 +20,7 @@ module Babushka
       returning(log_dep(dep_name) {
         returning Dep.process dep_name do |result|
           save_run_info_for dep_name, result
+          log "You can view #{debug? ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
         end
       }) {
         BugReporter.report dep_name if reportable
