@@ -37,7 +37,7 @@ module Babushka
     def first_nonmatch_for spec
       if spec == :all
         nil
-      elsif spec.in? self.class.system_map.keys
+      elsif spec.in? all_systems
         spec == system ? nil : :system
       elsif spec.in? name_map.keys
         spec == flavour ? nil : :flavour
@@ -62,6 +62,10 @@ module Babushka
         :osx => OSXSystemSpec,
         :linux => LinuxSystemSpec
       }
+    end
+
+    def all_systems
+      self.class.system_map.keys
     end
 
   end
