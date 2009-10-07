@@ -15,6 +15,7 @@ babushka_components = %w[
 
   babushka/base
   babushka/shell
+  babushka/system_spec
   babushka/bug_reporter
   babushka/pkg_helper
   babushka/pkg_helpers/base_helper
