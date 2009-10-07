@@ -30,19 +30,22 @@ dep 'self signed cert' do
   meet { generate_self_signed_cert }
 end
 
-def build_nginx opts = {}
+def build_nginx
   in_build_dir {
-    get_source("http://sysoev.ru/nginx/nginx-#{opts[:nginx]}.tar.gz") and
-    get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{opts[:upload_module]}.tar.gz") and
-    log_shell("Building nginx (this takes a minute or two)", "sudo passenger-install-nginx-module", :input => [
-      '', # enter to continue
-      '2', # custom build
-      pathify("nginx-#{opts[:nginx]}"), # path to nginx source
-      '', # accept /opt/nginx target path
-      "--with-http_ssl_module --add-module='#{pathify "nginx_upload_module-#{opts[:upload_module]}"}'",
-      '', # confirm settings
-      '', # enter to continue
-      '' # done
+    get_source("http://sysoev.ru/nginx/nginx-#{var(:versions)[:nginx]}.tar.gz") and
+    get_source("http://www.grid.net.ru/nginx/download/nginx_upload_module-#{var(:versions)[:upload_module]}.tar.gz") and
+    log_shell("Building nginx (this takes a minute or two)",
+      "sudo passenger-install-nginx-module",
+      :sudo => true,
+      :input => [
+        '', # enter to continue
+        '2', # custom build
+        pathify("nginx-#{var(:versions)[:nginx]}"), # path to nginx source
+        '', # accept /opt/nginx target path
+        "--with-http_ssl_module --add-module='#{pathify "nginx_upload_module-#{var(:versions)[:upload_module]}"}'",
+        '', # confirm settings
+        '', # enter to continue
+        '' # done
       ].join("\n")
     )
   }
@@ -152,5 +155,5 @@ dep 'webserver installed' do
       end
     end
   }
-  meet { build_nginx var(:versions) }
+  meet { build_nginx }
 end
