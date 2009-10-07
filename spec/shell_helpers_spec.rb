@@ -187,7 +187,7 @@ end
 
 describe "cmd_dir" do
   it "should return the cmd_dir of an existing command" do
-    cmd_dir('ruby').should == `which ruby`.chomp.gsub('/ruby', '')
+    cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
   end
   it "should return nil for nonexistent commands" do
     cmd_dir('nonexistent').should be_nil
