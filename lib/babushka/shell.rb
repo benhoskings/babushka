@@ -3,6 +3,9 @@ module Babushka
     def self.included base # :nodoc:
       base.send :include, HelperMethods
     end
+    def self.extended base # :nodoc:
+      base.send :extend, HelperMethods
+    end
 
     module HelperMethods
       def shell_cmd cmd, opts = {}, &block
