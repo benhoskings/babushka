@@ -100,9 +100,8 @@ module Babushka
       log name, :closing_status => (task.dry_run? ? :dry_run : true) do
         if task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif ![:all, uname].include?(opts[:for])
-          log_extra "not required on #{uname_str}."
-          true
+        elsif [*opts[:for]].all? {|spec| !host.matches? spec }
+          log_ok "Not required on #{host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
           returning process_in_dir do
