@@ -39,9 +39,9 @@ module Babushka
         nil
       elsif spec.in? self.class.system_map.keys
         spec == system ? nil : :system
-      elsif name_map.keys.include? spec
+      elsif spec.in? name_map.keys
         spec == flavour ? nil : :flavour
-      elsif name_map[flavour].values.include? spec
+      elsif spec.in? name_map[flavour].values
         spec == name ? nil : :name
       else
         :system
