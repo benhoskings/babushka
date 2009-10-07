@@ -19,6 +19,12 @@ module Babushka
       }
     end
 
+    def brew_path_for pkg_name
+      if active_version = active_version_of(pkg_name)
+        installed_pkgs_path / pkg_name / active_version
+      end
+    end
+
 
     private
 
@@ -47,6 +53,10 @@ module Babushka
 
     def existing_formulas
       Dir[formulas_path / '*.rb'].map {|i| File.basename i, '.rb' }
+    end
+
+    def active_version_of pkg_name
+      (shell("brew version #{pkg_name}") || '').split(' ', 2).last
     end
 
     def versions_of pkg
