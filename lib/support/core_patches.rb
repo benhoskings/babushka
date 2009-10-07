@@ -202,6 +202,9 @@ class Object
   def tap &block
     returning(self) { yield self }
   end
+  def tapp
+    tap { puts "#{File.basename caller[4]}: #{self.inspect}" }
+  end
   def tap_log
     returning(self) { log_verbose self }
   end
