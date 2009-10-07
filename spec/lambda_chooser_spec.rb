@@ -2,15 +2,11 @@ require 'spec/spec_support'
 
 
 describe "lambda choosing" do
-  it "should choose the block value if there are no calls" do
-    LambdaChooser.new { "value" }.choose.should == "value"
-  end
-
   it "should choose the specified call" do
     LambdaChooser.new {
       ours "this is ours"
       theirs "this is theirs"
-    }.choose(:ours).should == ["this is ours"]
+    }.choose(:ours, [:ours, :theirs]).should == ["this is ours"]
   end
 
   it "should return the data intact" do
@@ -22,7 +18,7 @@ describe "lambda choosing" do
       LambdaChooser.new {
         ours input
         theirs "this is theirs"
-      }.choose(:ours).should == expected
+      }.choose(:ours, [:ours, :theirs]).should == expected
     }
   end
   

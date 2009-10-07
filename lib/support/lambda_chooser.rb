@@ -3,27 +3,29 @@ module Babushka
 
     def initialize &block
       @block = block
+      @results = {}
     end
 
-    def choose name = nil
-      if (@name = name).nil?
-        @block.call
-      else
-        instance_eval &@block
-        @result
-      end
+    def choose choice, choices
+      setup choices
+      instance_eval &@block
+      @results[choice]
     end
 
-    def method_missing method_name, first = nil, *rest, &block
-      if @name == method_name
-        @result = if block_given?
-          block
-        elsif first.is_a? Hash
-          first
-        else
-          [*first].concat(rest)
-        end
-      end
+    def setup choices
+      choices.map {|choice|
+        instance_eval <<-LOL
+          def #{choice} first = nil, *rest, &block
+            @results[#{choice.inspect}] = if block_given?
+              block
+            elsif first.is_a? Hash
+              first
+            else
+              [*first].concat(rest)
+            end
+          end
+        LOL
+      }
     end
 
   end

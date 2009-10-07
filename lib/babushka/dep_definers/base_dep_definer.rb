@@ -19,5 +19,9 @@ module Babushka
       host.system
     end
 
+    def chooser_choices
+      host.all_systems
+    end
+
   end
 end

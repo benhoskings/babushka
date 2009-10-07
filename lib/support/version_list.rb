@@ -33,7 +33,7 @@ module Babushka
 
       def store_list_for method_name, data
         if data.respond_to? :call
-          store_list_for method_name, LambdaChooser.new(&data).choose(chooser)
+          store_list_for method_name, LambdaChooser.new(&data).choose(chooser, chooser_choices)
         else
           (payload[method_name] ||= []).concat versions_for data
         end

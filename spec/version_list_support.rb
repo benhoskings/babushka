@@ -8,6 +8,9 @@ class VersionListTest
   def chooser
     :macports
   end
+  def chooser_choices
+    [:apt, :macports]
+  end
   def default_formats
     %w[html xml js json]
   end

@@ -23,6 +23,11 @@ module Babushka
       PkgHelper.for_system.manager_key
     end
 
+    def chooser_choices
+      # TODO integrate into SystemSpec, like SystemSpec.all_systems
+      [:apt, :brew, :macports, :src]
+    end
+
     def default_pkg
       VersionOf.new name
     end
