@@ -63,7 +63,7 @@ dep 'ruby' do
       'pkg' => "Install via #{Babushka::PkgHelper.for_system.manager_dep}",
       'ree' => "Build Ruby Enterprise Edition from source"
     }
-    rubies['system'] = "Use the OS X-supplied version" if osx?
+    rubies['system'] = "Use the OS X-supplied version" if host.osx?
     chosen_ruby = sticky_var(:ruby_type,
       :message => "Which ruby would you like to use",
       :choice_descriptions => rubies,

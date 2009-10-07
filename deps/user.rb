@@ -8,7 +8,7 @@ src 'fish' do
   requires 'ncurses', 'doc', 'coreutils', 'sed'
   source "git://github.com/benhoskings/fish.git"
   preconfigure { shell "autoconf" }
-  configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if osx?
+  configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if host.osx?
   configure_args "--without-xsel"
   after { append_to_file which('fish'), '/etc/shells' }
 end
@@ -37,9 +37,9 @@ end
 
 dep 'user exists' do
   met? {
-    if linux?
+    if host.linux?
       grep(/^#{var(:username)}:/, '/etc/passwd')
-    elsif osx?
+    elsif host.osx?
       !shell("dscl . -list /Users").split("\n").grep(var(:username)).empty?
     end
   }

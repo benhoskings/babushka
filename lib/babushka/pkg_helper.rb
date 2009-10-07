@@ -9,7 +9,7 @@ module Babushka
       {
         :osx => BrewHelper,
         :linux => AptHelper
-      }[uname]
+      }[host.system]
     end
 
     def manager_dep

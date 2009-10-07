@@ -113,7 +113,7 @@ src 'fish' do
   preconfigure { shell "autoconf" }
 
   # Specify env vars to set for configure, to achieve e.g. KEY='val' ./configure
-  configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if osx?
+  configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if host.osx?
 
   # Specify configure args, to achieve e.g. ./configure --with-feature
   configure_args "--without-xsel"

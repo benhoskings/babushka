@@ -16,7 +16,7 @@ module Babushka
     private
 
     def chooser
-      uname
+      host.system
     end
 
   end

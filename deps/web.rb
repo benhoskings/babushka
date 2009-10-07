@@ -1,5 +1,5 @@
 dep 'www user and group' do
-  www_name = osx? ? '_www' : 'www'
+  www_name = host.osx? ? '_www' : 'www'
   met? { grep(/^#{www_name}\:/, '/etc/passwd') and grep(/^#{www_name}\:/, '/etc/group') }
   meet {
     sudo "groupadd #{www_name}"

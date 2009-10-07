@@ -1,5 +1,5 @@
 def ssh_conf_path file
-  "/etc#{'/ssh' if linux?}/#{file}_config"
+  "/etc#{'/ssh' if host.linux?}/#{file}_config"
 end
 
 dep 'hostname', :for => :linux do

@@ -86,9 +86,9 @@ dep 'webserver running' do
     end
   }
   meet {
-    if linux?
+    if host.linux?
       sudo '/etc/init.d/nginx start'
-    elsif osx?
+    elsif host.osx?
       log_error "launchctl should have already started nginx. Check /var/log/system.log for errors."
     end
   }
@@ -97,17 +97,17 @@ end
 dep 'webserver startup script' do
   requires 'webserver installed', 'rcconf'
   met? {
-    if linux?
+    if host.linux?
       shell("rcconf --list").val_for('nginx') == 'on'
-    elsif osx?
+    elsif host.osx?
       !sudo('launchctl list').val_for('org.nginx').blank?
     end
   }
   meet {
-    if linux?
+    if host.linux?
       render_erb 'nginx/nginx.init.d.erb', :to => '/etc/init.d/nginx', :perms => '755', :sudo => true
       sudo 'update-rc.d nginx defaults'
-    elsif osx?
+    elsif host.osx?
       render_erb 'nginx/nginx.launchd.erb', :to => '/Library/LaunchDaemons/org.nginx.plist', :sudo => true
       sudo 'launchctl load -w /Library/LaunchDaemons/org.nginx.plist'
     end

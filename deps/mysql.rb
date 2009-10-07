@@ -35,7 +35,7 @@ pkg 'mysql software' do
   }
   provides 'mysql'
   after {
-    if osx?
+    if host.osx?
       sudo "ln -s #{Babushka::MacportsHelper.prefix / 'lib/mysql5/bin/mysql*'} #{Babushka::MacportsHelper.prefix / 'bin/'}"
     end
   }

@@ -141,7 +141,7 @@ def change_with_sed keyword, from, to, file
 end
 
 def sed
-  linux? ? 'sed' : 'gsed'
+  host.linux? ? 'sed' : 'gsed'
 end
 
 def append_to_file text, file, opts = {}

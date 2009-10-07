@@ -47,7 +47,7 @@ pkg 'postgres software' do
   }
   provides 'psql'
   after {
-    if osx?
+    if host.osx?
       sudo "ln -s #{Babushka::MacportsHelper.prefix / "lib/postgresql83/bin/*"} #{Babushka::MacportsHelper.prefix / 'bin/'}"
 
       sudo "mkdir -p /opt/local/var/db/postgresql83/defaultdb" and

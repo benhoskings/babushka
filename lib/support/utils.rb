@@ -1,42 +1,12 @@
 alias :L :lambda
 
-def uname
-  {
-    'Linux' => :linux,
-    'Darwin' => :osx
-  }[`uname -s`.chomp]
+def host
+  @host ||= Babushka::SystemSpec.for_system
 end
-def uname_str
-  {
-    :osx => "OS X",
-    :linux => "Linux"
-  }[uname]
-end
-def system_version
-  if osx?
-    shell('sw_vers').val_for('ProductVersion')
-  end
-end
-def system_release
-  if osx?
-    system_version.match(/\d+\.\d+/).to_s
-  end
-end
-def system_name
-  if osx?
-    {
-      '10.3' => 'Panther',
-      '10.4' => 'Tiger',
-      '10.5' => 'Leopard',
-      '10.6' => 'Snow Leopard'
-    }[system_release]
-  end
-end
+
 def hostname
   shell 'hostname -f'
 end
-def linux?; :linux == uname end
-def osx?; :osx == uname end
 
 require 'etc'
 def pathify str
