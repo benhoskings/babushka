@@ -8,7 +8,7 @@ src 'fish' do
   requires 'ncurses', 'doc', 'coreutils', 'sed'
   source "git://github.com/benhoskings/fish.git"
   preconfigure { shell "autoconf" }
-  configure_env "LDFLAGS='-liconv -L/opt/local/lib'" if host.osx?
+  configure_env { on :osx, "LDFLAGS='-liconv -L/opt/local/lib'" }
   configure_args "--without-xsel"
   after { append_to_file which('fish'), '/etc/shells' }
 end
@@ -36,16 +36,15 @@ dep 'dot files' do
 end
 
 dep 'user exists' do
-  met? {
-    if host.linux?
-      grep(/^#{var(:username)}:/, '/etc/passwd')
-    elsif host.osx?
-      !shell("dscl . -list /Users").split("\n").grep(var(:username)).empty?
-    end
-  }
-  meet {
-    sudo "mkdir -p #{var :home_dir_base}" and
-    sudo "useradd #{var(:username)} -m -s /bin/bash -b #{var :home_dir_base} -G admin" and
-    sudo "chmod 701 #{var(:home_dir_base) / var(:username)}"
-  }
+  on :osx do
+    met? { !shell("dscl . -list /Users").split("\n").grep(var(:username)).empty? }
+  end
+  on :linux do
+    met? { grep(/^#{var(:username)}:/, '/etc/passwd') }
+    meet {
+      sudo "mkdir -p #{var :home_dir_base}" and
+      sudo "useradd #{var(:username)} -m -s /bin/bash -b #{var :home_dir_base} -G admin" and
+      sudo "chmod 701 #{var(:home_dir_base) / var(:username)}"
+    }
+  end
 end
