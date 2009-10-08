@@ -7,5 +7,5 @@ dep 'irc' do
 end
 
 pkg 'ngircd' do
-  installs { apt 'ngircd' }
+  installs { via :apt, 'ngircd' }
 end

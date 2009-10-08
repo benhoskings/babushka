@@ -6,6 +6,6 @@ dep 'samba' do
 end
 
 pkg 'samba installed' do
-  installs { apt 'samba' }
+  installs { via :apt, 'samba' }
   provides []
 end

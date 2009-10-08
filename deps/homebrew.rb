@@ -34,7 +34,7 @@ end
 pkg 'homebrew git' do
   requires 'homebrew bootstrap'
   setup { definer.requires.delete 'homebrew' }
-  installs { brew 'git' }
+  installs { via :brew, 'git' }
   provides 'git'
 end
 
