@@ -100,7 +100,7 @@ module Babushka
       log name, :closing_status => (task.dry_run? ? :dry_run : true) do
         if task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif [*opts[:for]].all? {|spec| !host.matches? spec }
+        elsif !host.matches?(opts[:for])
           log_ok "Not required on #{host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
