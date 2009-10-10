@@ -96,12 +96,13 @@ module Babushka
     private
 
     def store_block_for method_name, args, block
-      opts = {:on => :all}.merge(args.first || {})
-      payload[method_name][opts[:on]] = block
+      opts = {:on => :unassigned}.merge(args.first || {})
+      store_block_for method_name, [{:on => :all}], payload[method_name].delete(:unassigned) unless payload[method_name][:unassigned].nil?
+      [method_name, payload[method_name][opts[:on]] = block]
     end
 
     def block_for method_name
-      payload[method_name][(host.match_list & payload[method_name].keys).first] ||
+      payload[method_name][(host.match_list & payload[method_name].keys).push(:unassigned).first] ||
       default_task(method_name)
     end
 
