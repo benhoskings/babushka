@@ -1,7 +1,7 @@
 alias :L :lambda
 
 def host
-  @host ||= Babushka::SystemSpec.for_system
+  Babushka::Base.host
 end
 
 def hostname

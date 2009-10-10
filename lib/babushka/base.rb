@@ -22,6 +22,10 @@ module Babushka
       @task ||= Task.new
     end
 
+    def host
+      @host ||= Babushka::SystemSpec.for_system
+    end
+
     def run args
       if usage(args)
         # nothing to do
