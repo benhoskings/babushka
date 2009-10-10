@@ -20,8 +20,8 @@ end
 def make_test_deps
   dep 'build tools' do
     requires {
-      osx 'xcode tools'
-      linux ['build-essential', 'autoconf']
+      on :osx, 'xcode tools'
+      on :linux, 'build-essential', 'autoconf'
     }
   end
 end
