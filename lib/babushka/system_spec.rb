@@ -57,8 +57,8 @@ module Babushka
         first_nonmatch_for spec
       }.sort_by {|spec|
         [:system, :flavour, :name].index spec
-      }
-      send "#{nonmatches.last}_str"
+      }.compact
+      send "#{nonmatches.last}_str" unless nonmatches.empty?
     end
 
     def self.system_map
