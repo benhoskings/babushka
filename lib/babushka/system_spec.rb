@@ -52,11 +52,11 @@ module Babushka
       end
     end
 
-    def differentiator_for spec
-      nonmatches = spec.map {|s|
-        first_nonmatch_for(s)
-      }.sort_by {|s|
-        [:system, :flavour, :name].index s
+    def differentiator_for specs
+      nonmatches = [*specs].map {|spec|
+        first_nonmatch_for spec
+      }.sort_by {|spec|
+        [:system, :flavour, :name].index spec
       }
       send "#{nonmatches.last}_str"
     end
