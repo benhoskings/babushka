@@ -1,21 +1,22 @@
 module Babushka
   class LambdaChooser
 
-    def initialize *choices, &block
-      @choices = choices
+    def initialize *possible_choices, &block
+      @possible_choices = possible_choices
       @block = block
       @results = {}
     end
 
-    def choose choice, method_name = nil
+    def choose choices, method_name = nil
       self.class.send :alias_method, (method_name || :on), :process_choice
       instance_eval &@block
-      @results[choice]
+      # @results[choices]
+      [*choices].pick {|c| @results[c] }
     end
 
     def process_choice choice, first = nil, *rest, &block
       raise "You can supply values or a block, but not both." if first && block
-      raise "The choice '#{choice}' isn't valid." unless choice.in? @choices
+      raise "The choice '#{choice}' isn't valid." unless choice.in? @possible_choices
 
       @results[choice] = if block
         block

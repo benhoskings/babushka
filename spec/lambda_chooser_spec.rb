@@ -9,6 +9,19 @@ describe "lambda choosing" do
     }.choose(:ours, :on).should == ["this is ours"]
   end
 
+  it "should pick the first choice from multiple choices" do
+    LambdaChooser.new(:ours, :yours, :theirs) {
+      on :ours, "this is ours"
+      on :yours, "this is yours"
+      on :theirs, "this is theirs"
+    }.choose([:ours, :yours], :on).should == ["this is ours"]
+    LambdaChooser.new(:ours, :yours, :theirs) {
+      on :yours, "this is yours"
+      on :ours, "this is ours"
+      on :theirs, "this is theirs"
+    }.choose([:ours, :yours], :on).should == ["this is ours"]
+  end
+
   it "should default the choice method to #on" do
     LambdaChooser.new(:ours, :theirs) {
       on :ours, "this is ours"
