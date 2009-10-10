@@ -171,7 +171,7 @@ module Babushka
     rescue StandardError => e
       log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
       log "#{e.backtrace.first}: #{e.message}".colorize('red')
-      dep_callpoint = e.backtrace.detect {|l| l[definer.source_path] }
+      dep_callpoint = e.backtrace.detect {|l| l[definer.source_path] } unless definer.source_path.nil?
       log "Check #{dep_callpoint}." unless dep_callpoint.nil?
       debug e.backtrace * "\n"
       Base.task.reportable = true
