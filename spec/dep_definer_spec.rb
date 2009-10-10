@@ -24,6 +24,16 @@ describe "accepts_block_for behaviour" do
     Dep('default').definer.should respond_to :test_defining
   end
 
+  it "should return [method_name, lambda]" do
+    DepDefiner.accepts_block_for :test_defining
+    lambda = L{ 'blah' }
+    value_from_block = nil
+    dep 'returning test' do
+      value_from_block = test_defining &lambda
+    end
+    value_from_block.should == [:test_defining, lambda]
+  end
+
   it "should accept and return a block" do
     test_accepts_block_for_response :test_response, @lambda_hello, @lambda_hello
   end
