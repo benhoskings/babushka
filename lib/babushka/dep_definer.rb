@@ -100,7 +100,8 @@ module Babushka
     end
 
     def block_for method_name
-      payload[method_name][host.system] || payload[method_name][:all] || default_task(method_name)
+      payload[method_name][(host.match_list & payload[method_name].keys).first] ||
+      default_task(method_name)
     end
 
     def self.set_up_delegating_for method_name
