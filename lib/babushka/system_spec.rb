@@ -43,9 +43,9 @@ module Babushka
         nil
       elsif spec.in? all_systems
         spec == system ? nil : :system
-      elsif spec.in? name_map.keys
+      elsif spec.in? all_flavours
         spec == flavour ? nil : :flavour
-      elsif spec.in? name_map[flavour].values
+      elsif spec.in? all_names
         spec == name ? nil : :name
       else
         :system
@@ -70,6 +70,18 @@ module Babushka
 
     def all_systems
       self.class.system_map.keys
+    end
+
+    def all_flavours
+      name_map.keys
+    end
+
+    def all_names
+      all_flavours.map {|f| name_map[flavour].values }.flatten
+    end
+
+    def all_tokens
+      all_systems + all_flavours + all_names
     end
 
   end
