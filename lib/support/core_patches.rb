@@ -23,6 +23,13 @@ end
 class Array
   include StartsAndEndsChecks
 
+  # Like #detect, but return the result of the block instead of the element.
+  def pick &block
+    value = nil
+    detect {|i| value = yield(i) }
+    value
+  end
+
   def cut &block
     if (cut_at = index {|i| yield i }).nil?
       [self, nil]

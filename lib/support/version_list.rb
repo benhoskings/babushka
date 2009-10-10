@@ -7,7 +7,10 @@ module Babushka
 
     module ClassMethods
 
-      def accepts_list_for method_name, default = nil
+      def accepts_list_for method_name, *args
+        opts = args.extract_options!
+        default = args.shift
+
         file, line = caller.first.split(':', 2)
         line = line.to_i
 
@@ -18,7 +21,7 @@ module Babushka
             elsif args.blank? && block.nil?
               list_for #{method_name.inspect}, #{default.inspect}
             else
-              store_list_for #{method_name.inspect}, block || [*args].flatten
+              store_list_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
               self
             end
           end
@@ -31,9 +34,9 @@ module Babushka
 
     module InstanceMethods
 
-      def store_list_for method_name, data
+      def store_list_for method_name, data, choose_with
         if data.respond_to? :call
-          store_list_for method_name, LambdaChooser.new(&data).choose(chooser, chooser_choices)
+          store_list_for method_name, LambdaChooser.new(*chooser_choices, &data).choose(chooser, choose_with), choose_with
         else
           (payload[method_name] ||= []).concat versions_for data
         end

@@ -76,7 +76,7 @@ describe "lambda and value input" do
   it "should return the correct data" do
     test_lists.each_pair {|input, expected|
       l = L{
-        macports input
+        via :macports, input
       }
       list = VersionListTest.new
       list.records &l
@@ -88,14 +88,14 @@ end
 describe "nested lambdas" do
   it "should choose recursively" do
     l = L{
-      macports {
-        macports "haha, excellent"
-        apt ":|"
-      }
-      apt {
-        macports "no, not this one"
-        apt "OK this one is just completely wrong"
-      }
+      via :macports do
+        via :macports, "haha, excellent"
+        via :apt, ":|"
+      end
+      via :apt do
+        via :macports, "no, not this one"
+        via :apt, "OK this one is just completely wrong"
+      end
     }
     list = VersionListTest.new
     list.records &l

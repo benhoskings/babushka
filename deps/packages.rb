@@ -3,7 +3,7 @@ pkg 'build-essential' do
   provides 'gcc', 'g++', 'make', 'ld'
 end
 pkg 'coreutils' do
-  installs { macports 'coreutils' }
+  installs { via :macports, 'coreutils' }
   provides 'gecho'
   after {
     in_dir '/opt/local/bin' do
@@ -13,7 +13,7 @@ pkg 'coreutils' do
 end
 pkg 'curl' do
   installs {
-    apt 'curl'
+    via :apt, 'curl'
   }
 end
 dep 'doc' do
@@ -23,17 +23,17 @@ pkg 'doxygen'
 pkg 'erlang'
 pkg 'freeimage' do
   installs {
-    apt %w[libfreeimage3 libfreeimage-dev]
-    macports 'freeimage'
+    via :apt, %w[libfreeimage3 libfreeimage-dev]
+    via :macports, 'freeimage'
   }
   provides []
 end
 pkg 'gettext'
 pkg 'git' do
   installs {
-    apt 'git-core'
-    macports 'git-core +svn +bash_completion'
-    brew 'git'
+    via :apt, 'git-core'
+    via :macports, 'git-core +svn +bash_completion'
+    via :brew, 'git'
   }
 end
 pkg 'htop'
@@ -42,33 +42,33 @@ gem 'image_science' do
   provides []
 end
 pkg 'java' do
-  installs { apt 'sun-java6-jre' }
+  installs { via :apt, 'sun-java6-jre' }
   provides 'java'
   after { shell "set -Ux JAVA_HOME /usr/lib/jvm/java-6-sun" }
 end
 pkg 'jnettop' do
-  installs { apt 'jnettop' }
+  installs { via :apt, 'jnettop' }
 end
 pkg 'libssl headers' do
-  installs { apt 'libssl-dev' }
+  installs { via :apt, 'libssl-dev' }
   provides []
 end
 pkg 'libxml' do
-  installs { apt 'libxml2-dev' }
+  installs { via :apt, 'libxml2-dev' }
   provides []
 end
 pkg 'mdns' do
   installs {
-    apt 'avahi-daemon'
+    via :apt, 'avahi-daemon'
   }
   provides []
 end
 pkg 'memcached'
 pkg 'ncurses' do
   installs {
-    apt 'libncurses5-dev', 'libncursesw5-dev'
-    macports 'ncurses', 'ncursesw'
-    brew 'ncurses'
+    via :apt, 'libncurses5-dev', 'libncursesw5-dev'
+    via :macports, 'ncurses', 'ncursesw'
+    via :brew, 'ncurses'
   }
   provides []
 end
@@ -78,11 +78,11 @@ gem 'passenger' do
   provides 'passenger-install-nginx-module'
 end
 pkg 'rcconf' do
-  installs { apt 'rcconf' }
+  installs { via :apt, 'rcconf' }
 end
 pkg 'screen'
 pkg 'sed' do
-  installs { macports 'gsed' }
+  installs { via :macports, 'gsed' }
   provides 'sed'
   after {
     in_dir '/opt/local/bin' do
@@ -92,12 +92,12 @@ pkg 'sed' do
 end
 pkg 'sshd' do
   installs {
-    apt 'openssh-server'
+    via :apt, 'openssh-server'
   }
 end
 pkg 'vim'
 pkg 'wget'
 pkg 'zlib headers' do
-  installs { apt 'zlib1g-dev' }
+  installs { via :apt, 'zlib1g-dev' }
   provides []
 end

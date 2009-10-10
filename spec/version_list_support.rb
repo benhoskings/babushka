@@ -17,9 +17,9 @@ class VersionListTest
   def self.set_up_delegating_for method_name
     # nothing to do
   end
-  accepts_list_for :records
-  accepts_list_for :produces, "a default response"
-  accepts_list_for :valid_formats, :default_formats
+  accepts_list_for :records, :choose_with => :via
+  accepts_list_for :produces, "a default response", :choose_with => :via
+  accepts_list_for :valid_formats, :default_formats, :choose_with => :via
 end
 
 def test_lists
@@ -35,15 +35,15 @@ def test_lambdas
   {
     L{ } => [],
     L{
-      apt %w[ruby irb ri rdoc]
+      via :apt, %w[ruby irb ri rdoc]
     } => [],
     L{
-      macports 'ruby'
-      apt %w[ruby irb ri rdoc]
+      via :macports, 'ruby'
+      via :apt, %w[ruby irb ri rdoc]
     } => [ver('ruby')],
     L{
-      macports 'something else'
-      apt 'some apt packages'
+      via :macports, 'something else'
+      via :apt, 'some apt packages'
     } => [ver('something else')]
   }
 end
