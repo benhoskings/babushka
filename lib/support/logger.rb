@@ -47,6 +47,8 @@ module Babushka
     end
 
     def log message, opts = {}, &block
+      # now = Time.now
+      # print "#{now.to_i}.#{now.usec}: ".ljust(20) unless opts[:debug]
       print_log indentation, opts unless opts[:indentation] == false
       if block_given?
         print_log "#{message} {\n".colorize('grey'), opts
