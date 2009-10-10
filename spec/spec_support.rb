@@ -5,6 +5,8 @@ include Babushka::LoggerHelpers
 include Babushka::DepHelpers
 include Babushka::ShellHelpers
 
+Dep.clear!
+
 require 'spec'
 include Spec::DSL::Main
 
