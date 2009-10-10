@@ -1,8 +1,8 @@
 module Babushka
   class PkgDepDefiner < BaseDepDefiner
 
-    accepts_list_for :installs, :default_pkg
-    accepts_list_for :provides, :default_pkg
+    accepts_list_for :installs, :default_pkg, :choose_with => :via
+    accepts_list_for :provides, :default_pkg, :choose_with => :via
 
     def pkg_manager
       PkgHelper.for_system
