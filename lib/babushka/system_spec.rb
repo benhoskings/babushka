@@ -30,6 +30,10 @@ module Babushka
       (name_str_map[flavour] || {})[release]
     end
 
+    def match_list
+      [name, flavour, system, :all]
+    end
+
     def matches? specs
       [*specs].any? {|spec| first_nonmatch_for(spec).nil? }
     end
