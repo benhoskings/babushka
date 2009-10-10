@@ -96,6 +96,7 @@ module Babushka
     private
 
     def store_block_for method_name, args, block
+      payload[method_name] ||= {}
       opts = {:on => :unassigned}.merge(args.first || {})
       store_block_for method_name, [{:on => :all}], payload[method_name].delete(:unassigned) unless payload[method_name][:unassigned].nil?
       [method_name, payload[method_name][opts[:on]] = block]

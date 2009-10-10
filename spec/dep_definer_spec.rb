@@ -55,3 +55,35 @@ describe "accepts_list_for behaviour" do
     Dep('build tools').definer.requires.should == [ver('xcode tools')]
   end
 end
+
+describe "#on for filtering accepters" do
+  before {
+    @lambda = lambda = L{ 'hello from the lambda' }
+    dep 'matching' do
+      on :osx, met?(&lambda)
+    end
+  }
+  it "should allow choices that match" do
+    Dep('matching').send(:payload)[:met?].should == {:osx => @lambda}
+  end
+  it "should fail when :on is used" do
+    L{
+      dep 'with :on' do
+        on :osx, met?(:on => :osx) { 'bad usage' }
+      end
+    }.should raise_error("You can't pass the :on option to #met? when you're using it within #on.")
+  end
+  describe "with non-on calls" do
+    before {
+      lambda = @lambda
+      @all_lambda = all_lambda = L{ 'hello from the lambda' }
+      dep 'non-on calls' do
+        met? &all_lambda
+        on :osx, met?(&lambda)
+      end
+    }
+    it "should move existing unassigned lambdas to all" do
+      Dep('non-on calls').send(:payload)[:met?].should == {:osx => @lambda, :all => @all_lambda}
+    end
+  end
+end
