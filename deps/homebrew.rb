@@ -44,7 +44,7 @@ dep 'homebrew bootstrap' do
   meet {
     source "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew", 'masterbrew.tgz' do |path|
       log "Installing temporary homebrew to #{var :install_prefix}."
-      FileUtils.cp_r 'bin/brew', var(:install_prefix) / 'bin'
+      FileUtils.cp_r 'bin/brew', var(:install_prefix) / 'bin/brew'
       File.chmod 0755, var(:install_prefix) / 'bin/brew'
       FileUtils.cp_r 'Library', var(:install_prefix)
     end
