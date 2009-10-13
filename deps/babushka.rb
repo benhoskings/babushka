@@ -39,8 +39,8 @@ dep 'writable install location' do
 end
 
 dep 'install location exists' do
-  met? { File.directory? var :install_prefix }
-  meet { sudo "mkdir -p '#{var :install_prefix}'" }
+  met? { File.directory? var(:install_prefix) / 'bin' }
+  meet { sudo "mkdir -p '#{var(:install_prefix) / 'bin'}'" }
 end
 
 ext 'install location in path' do
