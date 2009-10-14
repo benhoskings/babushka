@@ -24,10 +24,10 @@ module Babushka
     def osx?; false end
 
     def name
-      (name_map[flavour] || {})[release]
+      (name_map[system][flavour] || {})[release]
     end
     def name_str
-      (name_str_map[flavour] || {})[release]
+      (name_str_map[system][flavour] || {})[release]
     end
 
     def match_list
@@ -43,9 +43,9 @@ module Babushka
         nil
       elsif spec.in? all_systems
         spec == system ? nil : :system
-      elsif spec.in? all_flavours
+      elsif spec.in? our_flavours
         spec == flavour ? nil : :flavour
-      elsif spec.in? all_names
+      elsif spec.in? our_flavor_names
         spec == name ? nil : :name
       else
         :system
@@ -69,19 +69,79 @@ module Babushka
     end
 
     def all_systems
-      self.class.system_map.keys
-    end
-
-    def all_flavours
       name_map.keys
     end
-
-    def all_names
-      all_flavours.map {|f| name_map[flavour].values }.flatten
+    def all_flavours
+      name_map.values.map(&:keys).flatten
     end
-
+    def all_names
+      name_map.values.map(&:values).map {|s| s.map(&:values) }.flatten
+    end
+    def our_flavours
+      name_map[system].keys
+    end
+    def our_flavor_names
+      name_map[system][flavour].values
+    end
     def all_tokens
       all_systems + all_flavours + all_names
+    end
+
+    def name_map
+      {
+        :osx => {
+          :osx => {
+            '10.3' => :panther,
+            '10.4' => :tiger,
+            '10.5' => :leopard,
+            '10.6' => :snow_leopard
+          }
+        },
+        :linux => {
+          :ubuntu => {
+            '4.10'  => :warty,
+            '5.04'  => :hoary,
+            '5.10'  => :breezy,
+            '6.06'  => :dapper,
+            '6.10'  => :edgy,
+            '7.04'  => :feisty,
+            '7.10'  => :gutsy,
+            '8.04'  => :hardy,
+            '8.10'  => :intrepid,
+            '9.04'  => :jaunty,
+            '9.10'  => :karmic,
+            '10.04' => :lucid
+          }
+        }
+      }
+    end
+    def name_str_map
+      {
+        :osx => {
+          :osx => {
+            '10.3' => 'Panther',
+            '10.4' => 'Tiger',
+            '10.5' => 'Leopard',
+            '10.6' => 'Snow Leopard'
+          }
+        },
+        :linux => {
+          :ubuntu => {
+            '4.10'  => 'Warty Warthog',
+            '5.04'  => 'Hoary Hedgehog',
+            '5.10'  => 'Breezy Badger',
+            '6.06'  => 'Dapper Drake',
+            '6.10'  => 'Edgy Eft',
+            '7.04'  => 'Feisty Fawn',
+            '7.10'  => 'Gutsy Gibbon',
+            '8.04'  => 'Hardy Heron',
+            '8.10'  => 'Intrepid Ibex',
+            '9.04'  => 'Jaunty Jackalope',
+            '9.10'  => 'Karmic Koala',
+            '10.04' => 'Lucid Lynx'
+          }
+        }
+      }
     end
 
   end
@@ -95,26 +155,6 @@ module Babushka
     def version; version_info.val_for 'ProductVersion' end
     def release; version.match(/^\d+\.\d+/).to_s end
     def get_version_info; shell 'sw_vers' end
-    def name_map
-      {
-        :osx => {
-          '10.3' => :panther,
-          '10.4' => :tiger,
-          '10.5' => :leopard,
-          '10.6' => :snow_leopard
-        }
-      }
-    end
-    def name_str_map
-      {
-        :osx => {
-          '10.3' => 'Panther',
-          '10.4' => 'Tiger',
-          '10.5' => 'Leopard',
-          '10.6' => 'Snow Leopard'
-        }
-      }
-    end
   end
   
   class LinuxSystemSpec < SystemSpec
@@ -126,41 +166,5 @@ module Babushka
     def version; version_info.val_for 'Release' end
     def release; version end
     def get_version_info; shell 'lsb_release -a' end
-    def name_map
-      {
-        :ubuntu => {
-          '4.10'  => :warty,
-          '5.04'  => :hoary,
-          '5.10'  => :breezy,
-          '6.06'  => :dapper,
-          '6.10'  => :edgy,
-          '7.04'  => :feisty,
-          '7.10'  => :gutsy,
-          '8.04'  => :hardy,
-          '8.10'  => :intrepid,
-          '9.04'  => :jaunty,
-          '9.10'  => :karmic,
-          '10.04' => :lucid
-        }
-      }
-    end
-    def name_str_map
-      {
-        :ubuntu => {
-          '4.10'  => 'Warty Warthog',
-          '5.04'  => 'Hoary Hedgehog',
-          '5.10'  => 'Breezy Badger',
-          '6.06'  => 'Dapper Drake',
-          '6.10'  => 'Edgy Eft',
-          '7.04'  => 'Feisty Fawn',
-          '7.10'  => 'Gutsy Gibbon',
-          '8.04'  => 'Hardy Heron',
-          '8.10'  => 'Intrepid Ibex',
-          '9.04'  => 'Jaunty Jackalope',
-          '9.10'  => 'Karmic Koala',
-          '10.04' => 'Lucid Lynx'
-        }
-      }
-    end
   end
 end
