@@ -44,6 +44,7 @@ pkg 'postgres software' do
   installs {
     via :macports, 'postgresql83-server'
     via :apt, %w[postgresql postgresql-client libpq-dev]
+    via :brew, 'postgresql'
   }
   provides 'psql'
   on :osx, after do
