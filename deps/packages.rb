@@ -67,7 +67,6 @@ pkg 'ncurses' do
   installs {
     via :apt, 'libncurses5-dev', 'libncursesw5-dev'
     via :macports, 'ncurses', 'ncursesw'
-    via :brew, 'ncurses'
   }
   provides []
 end
