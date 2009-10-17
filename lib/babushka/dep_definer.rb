@@ -6,10 +6,22 @@ module Babushka
 
     attr_reader :payload, :source_path
 
-    class_inheritable_accessor :default_blocks
-
     delegate :name, :to => :dependency
     delegate :set, :merge, :var, :define_var, :to => :runner
+
+    def default_blocks
+      self.class.default_blocks
+    end
+    def self.default_blocks
+      merged_default_blocks_for self
+    end
+    def self.merged_default_blocks_for klass
+      parent_values = klass == DepDefiner ? {} : merged_default_blocks_for(klass.superclass)
+      parent_values.merge(default_blocks_for(klass))
+    end
+    def self.default_blocks_for klass
+      (@@default_blocks ||= Hashish.hash)[klass]
+    end
 
     def initialize dep, &block
       @dep = dep
@@ -62,7 +74,7 @@ module Babushka
     end
 
     def self.accepts_block_for method_name, &default_block
-      (self.default_blocks ||= {})[method_name] = default_block
+      default_blocks_for(self)[method_name] = default_block
       class_eval %Q{
         def #{method_name} *args, &block
           payload[#{method_name.inspect}] ||= {}
@@ -104,6 +116,7 @@ module Babushka
 
     def block_for method_name
       payload[method_name][(host.match_list & payload[method_name].keys).push(:unassigned).first] ||
+      default_blocks[method_name] ||
       default_task(method_name)
     end
 

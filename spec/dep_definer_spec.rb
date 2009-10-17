@@ -44,6 +44,16 @@ describe "accepts_block_for behaviour" do
     test_accepts_block_for_response :test_other_system, @lambda_hello, nil, :on => :nonexistent
   end
 
+  it "should use default blocks when no specific one is specified" do
+    lambda = L{ 'default value' }
+    DepDefiner.accepts_block_for :test_defaults, &lambda
+    value_from_block = nil
+    dep 'default test' do
+      value_from_block = test_defaults
+    end
+    value_from_block.should == lambda
+  end
+
   after { Dep.clear! }
 end
 
