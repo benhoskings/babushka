@@ -2,14 +2,13 @@ pkg 'autoconf'
 pkg 'build-essential' do
   provides 'gcc', 'g++', 'make', 'ld'
 end
-pkg 'coreutils' do
-  installs { via :macports, 'coreutils' }
+pkg 'coreutils', :for => :osx do
   provides 'gecho'
-  after {
-    in_dir '/opt/local/bin' do
+  after :on => :osx do
+    in_dir pkg_manager.bin_path do
       sudo "ln -s gecho echo"
     end
-  }
+  end
 end
 pkg 'curl' do
   installs {
