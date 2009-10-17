@@ -34,7 +34,7 @@ end
 dep 'github source' do
   requires 'rubygems installed'
   met? { shell("gem sources")["http://gems.github.com"] }
-  meet { sudo "gem sources -a http://gems.github.com" }
+  meet { shell "gem sources -a http://gems.github.com", !File.writable?(which('ruby')) }
 end
 
 dep 'rubygems installed' do
@@ -46,13 +46,15 @@ dep 'rubygems installed' do
       get_source("http://rubyforge.org/frs/download.php/60718/rubygems-#{var(:versions)[:rubygems]}.tgz") and
 
       in_dir "rubygems-#{var(:versions)[:rubygems]}" do
-        sudo "ruby setup.rb"
+        shell "ruby setup.rb", :sudo => !File.writable?(which('ruby'))
       end
     }
   }
   after {
     in_dir cmd_dir('ruby') do
-      sudo "ln -sf gem1.8 gem" if File.exists?('gem1.8')
+      if File.exists? 'gem1.8'
+        shell "ln -sf gem1.8 gem", :sudo => !File.writable?(which('ruby'))
+      end
     end
   }
 end
