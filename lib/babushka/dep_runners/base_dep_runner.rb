@@ -9,31 +9,29 @@ module Babushka
     # define #provides.
     def cmds_in_path? commands = provides, custom_cmd_dir = nil
       present, missing = [*commands].partition {|cmd_name| cmd_dir(cmd_name) }
-      good, bad = if custom_cmd_dir
+      ours, other = if custom_cmd_dir
         present.partition {|cmd_name| cmd_dir(cmd_name) == custom_cmd_dir }
       else
         present.partition {|cmd_name| pkg_manager.cmd_in_path? cmd_name }
       end
 
-      log_ok "#{good.map {|i| "'#{i}'" }.to_list} run#{'s' if good.length == 1} from #{cmd_dir(good.first)}." unless good.empty?
-      log_error "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing from your PATH." unless missing.empty?
-
-      unless bad.empty?
-        log_error "#{bad.map {|i| "'#{i}'" }.to_list} incorrectly run#{'s' if bad.length == 1} from #{cmd_dir(bad.first)}."
-        unless /#{pkg_manager.bin_path}.*#{cmd_dir(bad.first)}/ =~ ENV['PATH']
-          # The incorrect paths were caused by path order, not just binaries missing from the correct path.
-          unless pkg_manager == Babushka::BaseHelper
-            # Don't recommend putting the system path ahead of manager-specific paths.
-            log "You need to put #{pkg_manager.bin_path} before #{cmd_dir(bad.first)} in your PATH."
-          end
-          :fail
-        else
-          # The path order is right, so the correct binary is just missing.
-          nil
-        end
+      if !ours.empty? and !other.empty?
+        log_error "The commands for #{name} run from more than one place."
+        log "#{cmd_location_str_for ours}, but #{cmd_location_str_for other}."
+        :fail
       else
-        missing.empty?
+        returning missing.empty? do |result|
+          if result
+            log cmd_location_str_for(ours.empty? ? other : ours)
+          else
+            log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing."
+          end
+        end
       end
+    end
+
+    def cmd_location_str_for cmds
+      "#{cmds.map {|i| "'#{i}'" }.to_list} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
     end
 
     def dmg url, &block
