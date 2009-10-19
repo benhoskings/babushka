@@ -3,20 +3,36 @@ module Babushka
 
   class Base
   class << self
-    Options = {
-      :quiet => %w[-q --quiet],
-      :debug => %w[--debug],
-      :dry_run => %w[-n --dry-run],
-      :defaults => %w[-y --defaults],
-      :force => %w[-f --force]
-    }.freeze
-    OptionDescriptions = {
-      :quiet => "Run with minimal logging",
-      :debug => "Show more verbose logging, and realtime shell command output",
-      :dry_run => "Discover the curent state without making any changes",
-      :defaults => "Assume the default value for all vars without prompting, where possible",
-      :force => "Attempt to meet the dependency even if it's already met"
-    }.freeze
+    def self.opt name, short, long, description, arg_hash = {}
+      Opt.new name, short, long, description, arg_hash.keys.map {|arg_name|
+        Arg.new arg_name, arg_hash[arg_name], false
+      }
+    end
+    Verbs = [
+      Verb.new('version', "Print the current version"),
+      Verb.new('help', "Print usage information", [
+        Arg.new('verb', "Print verb-specific usage info", true)
+      ]),
+      Verb.new('sources', "Manage dep sources", [
+        opt('add', '-a', '--add', "Add dep source", {:source_uri => "the URI of the source to add"}),
+        opt('list', '-l', '--list', "List dep sources"),
+        opt('remove', '-r', '--remove', "Remove dep source", {:source_uri => "the URI of the soure to remove"}),
+        opt('clear', '-c', '--clear', "Remove all dep sources")
+      ]),
+      Verb.new('pull', "Update dep sources", [
+        Arg.new('source', "Pull just a specific source", true)
+      ]),
+      Verb.new('push', "Push local dep updates to writable sources", [
+        Arg.new('source', "Push just a specific source", true)
+      ]),
+      Verb.new('meet', "Process deps", [
+        opt('quiet', '-q', '--quiet', "Run with minimal logging"),
+        opt('debug', '-d', '--debug', "Show more verbose logging, and realtime shell command output"),
+        opt('dry run', '-n', '--dry-run', "Discover the curent state without making any changes"),
+        opt('defaults', '-y', '--defaults', "Assume the default value for all vars without prompting, where possible"),
+        opt('force', '-f', '--force', "Attempt to meet the dependency even if it's already met")
+      ])
+    ]
 
     def task
       @task ||= Task.new
@@ -27,16 +43,10 @@ module Babushka
     end
 
     def run args
-      if usage(args)
-        # nothing to do
-      elsif !setup(args)
-        fail_with "Error during load."
-      elsif @tasks.empty?
-        fail_with "Nothing to do."
+      if !extract_verb(args)
+        fail_with "Not sure what you meant."
       else
-        @tasks.all? {|dep_name|
-          task.process dep_name
-        }
+        send "handle_#{@verb.name}", args
       end
     end
 
@@ -47,18 +57,52 @@ module Babushka
 
     private
 
-    def usage args
-      if !(args & %w[-h --help --halp]).empty?
-        print_version :full => true
-        print_usage
-        print_options
-        print_examples
-        log "\n"
-        true
-      elsif !(args & %w[-V --version]).empty?
-        print_version
-        true
+    def extract_verb args
+      if (verb = args.shift).nil?
+        fail_with handle_help args
+      else
+        verb = verb.dup.gsub /^-*/, ''
+        if !verb.in?(abbrevs.keys)
+          fail_with "'#{verb}' isn't a valid verb. Maybe you meant 'install #{verb}'?"
+        else
+          @verb = verb_for abbrevs[verb]
+        end
       end
+    end
+
+    def handle_help args
+      print_version :full => true
+      if (verb_name = args.first).nil?
+        print_usage
+        print_usage_for 'verbs', Verbs
+      elsif (verb = verb_for(verb_name)).nil?
+        log "No help for that."
+      else
+        print_usage_for 'options', verb.opts
+        # print_examples_for @verb
+      end
+      log "\n"
+    end
+    def handle_version args
+      print_version
+    end
+    def handle_meet args
+      if !setup(ARGV)
+        fail_with "Error during load."
+      elsif @tasks.empty?
+        fail_with "Nothing to do."
+      else
+        @tasks.all? {|dep_name| task.process dep_name }
+      end
+    end
+    def handle_sources args
+      puts 'sources lol'
+    end
+    def handle_pull args
+      puts 'pull lol'
+    end
+    def handle_push args
+      puts 'push lol'
     end
 
     def print_version opts = {}
@@ -70,14 +114,16 @@ module Babushka
     end
 
     def print_usage
-      log "\nUsage:\n  ruby bin/babushka.rb [options] <dep name(s)>"
+      log "\nUsage:"
+      log "  babushka <verb> [options]"
+      log "  babushka <dep name(s)>     # A shortcut for 'meet <dep name(s)>'"
     end
 
-    def print_options
-      log "\nOptions:"
-      indent = Options.values.map {|o| printable_option(o).length }.max + 4
-      Options.each_pair {|name,option|
-        log "  #{printable_option(option).ljust(indent)}#{OptionDescriptions[name]}"
+    def print_usage_for title, list
+      log "\n#{title.capitalize}:"
+      indent = list.map {|option| printable_option(option.name).length }.max + 4
+      list.each {|option|
+        log "  #{printable_option(option.name).ljust(indent)}#{option.description}"
       }
     end
 
@@ -98,30 +144,13 @@ module Babushka
       [*option].join(', ')
     end
 
-    def setup args
-      extract_opts(args).tap{|obj| debug "opts=#{obj.inspect}" }
-      extract_vars(args).tap{|obj| debug "vars=#{obj.inspect}" }
-      extract_tasks(args).tap{|obj| debug "tasks=#{obj.inspect}" }
-      setup_noninteractive
+    def verb_for verb_name
+      Verbs.detect {|v| v.name == verb_name }
     end
 
-    def extract_opts args
-      @opts = Options.inject({}) {|opts,(opt_name,opt_strings)|
-        task.base_opts[opt_name] = opt_strings.any? {|opt| !args.extract! {|arg| arg == opt }.empty? }
-        task.base_opts
-      }
-    end
-
-    def extract_vars args
-      args.extract! {|arg| arg['='] }.each {|arg|
-        key, value = arg.split('=', 2)
-        task.vars[key.to_sym].update :value => value, :from => :commandline
-      }
-      task.vars
-    end
-
-    def extract_tasks args
-      @tasks = args
+    require 'abbrev'
+    def abbrevs
+      Verbs.map(&:name).abbrev
     end
 
     def load_deps
@@ -135,7 +164,7 @@ module Babushka
     end
 
     def fail_with message
-      log message
+      log message if message.is_a? String
       exit 1
     end
   end

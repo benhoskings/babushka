@@ -13,6 +13,7 @@ babushka_components = %w[
   support/version_list
   support/colorizer
 
+  babushka/structs
   babushka/base
   babushka/shell
   babushka/system_spec
