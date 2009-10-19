@@ -69,7 +69,7 @@ dep 'ruby' do
     chosen_ruby = sticky_var(:ruby_type,
       :message => "Which ruby would you like to use",
       :choice_descriptions => rubies,
-      :default => 'pkg'
+      :default => (host.osx? ? 'system' : 'pkg')
     )
     requires "#{chosen_ruby} ruby"
   }
