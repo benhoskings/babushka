@@ -19,9 +19,7 @@
   MaxJoins = 10
 
 <%
-  var(:irc_channels).split(
-    /[^a-z0-9_#]+/i
-  ).map {|chan|
+  var(:irc_channels).words.map {|chan|
     chan.start_with '#'
   }.each do |channel_name|
 %>
