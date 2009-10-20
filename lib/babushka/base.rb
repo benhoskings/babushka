@@ -181,7 +181,7 @@ module Babushka
     end
 
     def printable_option option
-      option.is_a?(Verb) ? option.name : "#{[option.short, option.long].join(', ')}"
+      option.is_a?(Verb) ? option.name.to_s : "#{[option.short, option.long].join(', ')}"
     end
 
     def describe_option option
