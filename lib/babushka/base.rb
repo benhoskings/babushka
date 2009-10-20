@@ -72,7 +72,6 @@ module Babushka
       if (verb = args.shift).nil?
         fail_with handle_help
       else
-        verb = verb.dup.gsub /^-*/, ''
         if !verb.in?(abbrevs.keys)
           fail_with "#{program_name} meet '#{verb}'    # '#{verb}' isn't a command - maybe you meant this instead."
         else
@@ -238,12 +237,12 @@ module Babushka
     end
 
     def verb_for verb_name
-      Verbs.detect {|v| v.name.to_s == verb_name }
+      Verbs.detect {|v| verb_name.in? [v.name.to_s, v.short, v.long].compact }
     end
 
     require 'abbrev'
     def abbrevs
-      Verbs.map {|v| v.name.to_s }.abbrev
+      Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact.abbrev
     end
 
     def load_deps
