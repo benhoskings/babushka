@@ -18,6 +18,7 @@ module Babushka
     attr_reader :name, :opts, :vars, :definer, :runner
     attr_accessor :unmet_message
 
+    delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
     def initialize name, in_opts, block, definer_class, runner_class

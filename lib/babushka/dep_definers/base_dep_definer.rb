@@ -1,6 +1,7 @@
 module Babushka
   class BaseDepDefiner < DepDefiner
 
+    accepts_list_for :desc
     accepts_list_for :requires
     accepts_block_for :internal_setup
     accepts_block_for :setup
