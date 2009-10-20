@@ -6,7 +6,7 @@ module Babushka
     Verbs = [
       Verb.new(:version, nil, '--version', "Print the current version", [], []),
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
-        Arg.new(:verb, "Print verb-specific usage info", true)
+        Arg.new(:verb, "Print command-specific usage info", true)
       ]),
       Verb.new(:list, '-T', '--tasks', "List the available deps", [
         # Opt.new(:source, '-s', '--source', "Only list deps from a specific source", true, [
