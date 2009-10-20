@@ -113,6 +113,7 @@ module Babushka
       if verb.nil? || (help_arg = verb.args.first).nil?
         print_usage
         print_choices_for 'commands', Verbs
+        print_notes
       elsif (help_verb = verb_for(help_arg.value)).nil?
         log "#{help_arg.value.capitalize}? I have honestly never heard of that."
       else
@@ -203,6 +204,11 @@ module Babushka
       log "  # Meet the 'user setup' dep, printing lots of debugging (including realtime".colorize('grey')
       log "  # shell command output).".colorize('grey')
       log "  #{$0} 'user setup' --debug"
+    end
+
+    def print_notes
+      log "\nCommands can be abbrev'ed, as long as they remain unique."
+      log "e.g. '#{$0} l' is short for '#{$0} list'."
     end
 
     def printable_item item
