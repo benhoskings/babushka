@@ -4,34 +4,34 @@ module Babushka
   class Base
   class << self
     Verbs = [
-      Verb.new('version', "Print the current version", [], []),
-      Verb.new('help', "Print usage information", [], [
-        Arg.new('verb', "Print verb-specific usage info", true)
+      Verb.new(:version, "Print the current version", [], []),
+      Verb.new(:help, "Print usage information", [], [
+        Arg.new(:verb, "Print verb-specific usage info", true)
       ]),
-      Verb.new('sources', "Manage dep sources", [
-        Opt.new('add', '-a', '--add', "Add dep source", [
-          Arg.new('source_uri', "the URI of the source to add", false)
+      Verb.new(:sources, "Manage dep sources", [
+        Opt.new(:add, '-a', '--add', "Add dep source", false, [
+          Arg.new(:source_uri, "the URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
-        Opt.new('list', '-l', '--list', "List dep sources", []),
-        Opt.new('remove', '-r', '--remove', "Remove dep source", [
-          Arg.new('source_uri', "the URI of the soure to remove", false)
+        Opt.new(:list, '-l', '--list', "List dep sources", false, []),
+        Opt.new(:remove, '-r', '--remove', "Remove dep source", false, [
+          Arg.new(:source_uri, "the URI of the soure to remove", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
-        Opt.new('clear', '-c', '--clear', "Remove all dep sources", [])
+        Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
       ], []),
-      Verb.new('pull', "Update dep sources", [], [
-        Arg.new('source', "Pull just a specific source", true)
+      Verb.new(:pull, "Update dep sources", [], [
+        Arg.new(:source, "Pull just a specific source", true, false)
       ]),
-      Verb.new('push', "Push local dep updates to writable sources", [], [
-        Arg.new('source', "Push just a specific source", true)
+      Verb.new(:push, "Push local dep updates to writable sources", [], [
+        Arg.new(:source, "Push just a specific source", true, false)
       ]),
-      Verb.new('meet', "Process deps", [
-        Opt.new('quiet', '-q', '--quiet', "Run with minimal logging", []),
-        Opt.new('debug', '-d', '--debug', "Show more verbose logging, and realtime shell command output", []),
-        Opt.new('dry run', '-n', '--dry-run', "Discover the curent state without making any changes", []),
-        Opt.new('defaults', '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", []),
-        Opt.new('force', '-f', '--force', "Attempt to meet the dependency even if it's already met", [])
+      Verb.new(:meet, "Process deps", [
+        Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
+        Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
+        Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
+        Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
+        Opt.new(:force, '-f', '--force', "Attempt to meet the dependency even if it's already met", true, [])
       ], [
-        Arg.new('dep names', "The names of the deps that should be processed", false, true)
+        Arg.new(:dep_names, "The names of the deps that should be processed", false, true)
       ])
     ]
 
@@ -44,11 +44,11 @@ module Babushka
     end
 
     def run args
-      if (verb = extract_verb(args)).nil?
+      if (task.verb = extract_verb(args)).nil?
         fail_with "Not sure what you meant."
       else
-        parse_cmdline verb, args
-        send "handle_#{verb.def.name}", verb
+        parse_cmdline task.verb, args
+        send "handle_#{task.verb.def.name}", task.verb
       end
     end
 
@@ -73,7 +73,7 @@ module Babushka
     end
 
     def parse_cmdline verb, args
-      args.each {|arg| parse_cmdline_token verb, args }
+      args.dup.each {|arg| parse_cmdline_token verb, args }
       fail_with "Unrecognised option: #{args.first}" unless args.empty?
     end
 
@@ -86,7 +86,7 @@ module Babushka
     end
 
     def parse_cmdline_opt opt, opt_def, args
-      PassedOpt.new opt_def, parse_cmdline_args(opt, opt_def.args, args)
+      PassedOpt.new opt_def, parse_cmdline_args(opt_def, opt_def.args, args)
     end
 
     def parse_cmdline_args token, arg_defs, args
@@ -99,17 +99,16 @@ module Babushka
       end
     end
 
-    def handle_help args
+    def handle_help verb
       print_version :full => true
-      if (verb_name = args.first).nil?
+      if (help_arg = verb.args.first).nil?
         print_usage
-        print_usage_for 'verbs', Verbs
-      elsif (verb = verb_for(verb_name)).nil?
-        log "No help for that."
+        print_choices_for 'verbs', Verbs
+      elsif (help_verb = verb_for(help_arg.value)).nil?
+        log "#{help_arg.value.capitalize}? I have honestly never heard of that."
       else
-        print_usage
-        print_usage_for 'options', verb.opts
-        # print_examples_for verb
+        print_usage_for help_verb
+        print_choices_for 'options', help_verb.opts
       end
       log "\n"
     end
@@ -120,6 +119,7 @@ module Babushka
       if (tasks = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
       else
+        setup_noninteractive
         tasks.all? {|dep_name| task.process dep_name }
       end
     end
@@ -142,16 +142,28 @@ module Babushka
     end
 
     def print_usage
-      log "\nUsage:"
+      log "\nThe gist:"
       log "  babushka <verb> [options]"
       log "  babushka <dep name(s)>     # A shortcut for 'meet <dep name(s)>'"
     end
 
-    def print_usage_for title, list
+    def print_usage_for verb
+      log "\nExample usage:"
+      (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|opts|
+        opts.first.each {|opt|
+          log "  babushka #{verb.name} #{describe_option opt}"
+        }
+        unless opts.last.empty?
+          log "  babushka #{verb.name} #{opts.last.map {|o| describe_option o }.join(' ')}"
+        end
+      }
+    end
+
+    def print_choices_for title, list
       log "\n#{title.capitalize}:"
-      indent = list.map {|option| printable_option(option.name).length }.max + 4
+      indent = (list.map {|option| printable_option(option).length }.max || 0) + 4
       list.each {|option|
-        log "  #{printable_option(option.name).ljust(indent)}#{option.description}"
+        log "  #{printable_option(option).ljust(indent)}#{option.description}"
       }
     end
 
@@ -169,16 +181,24 @@ module Babushka
     end
 
     def printable_option option
-      [*option].join(', ')
+      option.is_a?(Verb) ? option.name : "#{[option.short, option.long].join(', ')}"
+    end
+
+    def describe_option option
+      opt_description = [
+        option.short || option.long,
+        option.args.map {|arg| "#{arg.optional ? '[' : '<'}#{arg.name}#{', ...' if arg.multi}#{arg.optional ? ']' : '>'}" }
+      ].squash.join(' ')
+      "#{'[' if option.optional}#{opt_description}#{']' if option.optional}"
     end
 
     def verb_for verb_name
-      Verbs.detect {|v| v.name == verb_name }
+      Verbs.detect {|v| v.name.to_s == verb_name }
     end
 
     require 'abbrev'
     def abbrevs
-      Verbs.map(&:name).abbrev
+      Verbs.map {|v| v.name.to_s }.abbrev
     end
 
     def load_deps

@@ -6,7 +6,7 @@ module Babushka
   class Task
 
     attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
-    attr_accessor :reportable
+    attr_accessor :verb, :reportable
 
     def initialize
       @vars = Hashish.hash
@@ -20,7 +20,7 @@ module Babushka
       returning(log_dep(dep_name) {
         returning Dep.process dep_name do |result|
           save_run_info_for dep_name, result
-          log "You can view #{debug? ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
+          log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
         end
       }) {
         BugReporter.report dep_name if reportable
@@ -31,18 +31,10 @@ module Babushka
       @base_opts.merge @run_opts
     end
 
-    def debug?
-      opts[:debug]
+    def opt name
+      verb.opts.detect {|opt| opt.def.name.to_s == name.to_s }
     end
-    def quiet?
-      opts[:quiet]
-    end
-    def dry_run?
-      opts[:dry_run]
-    end
-    def defaults?
-      opts[:defaults]
-    end
+
     def callstack
       opts[:callstack]
     end

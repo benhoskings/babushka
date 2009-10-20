@@ -42,7 +42,7 @@ module Babushka
 
       log message, :newline => false
 
-      if Base.task.defaults? && opts[:default]
+      if Base.task.opt(:defaults) && opts[:default]
         puts '.'
         opts[:default]
       else

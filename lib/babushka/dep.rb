@@ -97,7 +97,7 @@ module Babushka
     private
 
     def process_and_cache
-      log name, :closing_status => (task.dry_run? ? :dry_run : true) do
+      log name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
         if task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !host.matches?(opts[:for])
@@ -119,14 +119,14 @@ module Babushka
     end
 
     def process_deps
-      @definer.requires.send(task.dry_run? ? :each : :all?, &L{|dep_name|
+      @definer.requires.send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
         Dep.process dep_name
       })
     end
 
     def process_self
       process_met_task(:initial => true) {
-        if task.dry_run?
+        if task.opt(:dry_run)
           false # unmet
         else
           process_task(:before) and process_task(:meet) and process_task(:after)
@@ -184,7 +184,7 @@ module Babushka
 
     def cached_result
       returning cached_process do |result|
-        log_result "#{name} (cached)", :result => result, :as_bypass => task.dry_run?
+        log_result "#{name} (cached)", :result => result, :as_bypass => task.opt(:dry_run)
       end
     end
     def cached?
