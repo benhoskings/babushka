@@ -74,7 +74,7 @@ module Babushka
       else
         verb = verb.dup.gsub /^-*/, ''
         if !verb.in?(abbrevs.keys)
-          fail_with "#{$0} meet '#{verb}'    # '#{verb}' isn't a command - maybe you meant this instead."
+          fail_with "#{program_name} meet '#{verb}'    # '#{verb}' isn't a command - maybe you meant this instead."
         else
           PassedVerb.new verb_for(abbrevs[verb]), [], []
         end
@@ -135,7 +135,7 @@ module Babushka
       }.tap {|deps|
         indent = (deps.map {|dep| dep.name.length }.max || 0) + 3
         deps.each {|dep|
-          log "#{$0} #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
+          log "#{program_name} #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
         }
       }
     end
@@ -167,20 +167,20 @@ module Babushka
 
     def print_usage
       log "\nThe gist:"
-      log "  #{$0} <command> [options]"
+      log "  #{program_name} <command> [options]"
       log "\nAlso:"
-      log "  #{$0} help <command>  # #{verb_for('help').args.first.description}"
-      log "  #{$0} <dep name(s)>   # A shortcut for 'meet <dep name(s)>'"
+      log "  #{program_name} help <command>  # #{verb_for('help').args.first.description}"
+      log "  #{program_name} <dep name(s)>   # A shortcut for 'meet <dep name(s)>'"
     end
 
     def print_usage_for verb
       log "\nExample usage:"
       (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|items|
         items.first.each {|item| # mandatory
-          log "  #{$0} #{verb.name} #{describe_item item}"
+          log "  #{program_name} #{verb.name} #{describe_item item}"
         }
         unless items.last.empty? # optional
-          log "  #{$0} #{verb.name} #{items.last.map {|item| describe_item item }.join(' ')}"
+          log "  #{program_name} #{verb.name} #{items.last.map {|item| describe_item item }.join(' ')}"
         end
       }
     end
@@ -196,19 +196,19 @@ module Babushka
     def print_examples
       log "\nExamples:"
       log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
-      log "  #{$0} system --dry-run"
+      log "  #{program_name} system --dry-run"
       log "\n"
       log "  # Meet the 'fish' dep (i.e. install fish and all its dependencies).".colorize('grey')
-      log "  #{$0} fish"
+      log "  #{program_name} fish"
       log "\n"
       log "  # Meet the 'user setup' dep, printing lots of debugging (including realtime".colorize('grey')
       log "  # shell command output).".colorize('grey')
-      log "  #{$0} 'user setup' --debug"
+      log "  #{program_name} 'user setup' --debug"
     end
 
     def print_notes
       log "\nCommands can be abbrev'ed, as long as they remain unique."
-      log "e.g. '#{$0} l' is short for '#{$0} list'."
+      log "e.g. '#{program_name} l' is short for '#{program_name} list'."
     end
 
     def printable_item item
@@ -259,6 +259,10 @@ module Babushka
     def fail_with message
       log message if message.is_a? String
       exit 1
+    end
+
+    def program_name
+      @program_name ||= File.dirname($0).in?(ENV['PATH'].split(':')) ? File.basename($0) : $0
     end
   end
   end
