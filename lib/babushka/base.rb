@@ -103,12 +103,12 @@ module Babushka
       print_version :full => true
       if (help_arg = verb.args.first).nil?
         print_usage
-        print_choices_for 'verbs', Verbs
+        print_choices_for 'commands', Verbs
       elsif (help_verb = verb_for(help_arg.value)).nil?
         log "#{help_arg.value.capitalize}? I have honestly never heard of that."
       else
         print_usage_for help_verb
-        print_choices_for 'options', help_verb.opts
+        print_choices_for 'options', (help_verb.opts + help_verb.args)
       end
       log "\n"
     end
@@ -143,27 +143,29 @@ module Babushka
 
     def print_usage
       log "\nThe gist:"
-      log "  babushka <verb> [options]"
-      log "  babushka <dep name(s)>     # A shortcut for 'meet <dep name(s)>'"
+      log "  babushka <command> [options]"
+      log "\nAlso:"
+      log "  babushka help <command>  # #{verb_for('help').args.first.description}"
+      log "  babushka <dep name(s)>   # A shortcut for 'meet <dep name(s)>'"
     end
 
     def print_usage_for verb
       log "\nExample usage:"
-      (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|opts|
-        opts.first.each {|opt|
-          log "  babushka #{verb.name} #{describe_option opt}"
+      (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|items|
+        items.first.each {|item| # mandatory
+          log "  babushka #{verb.name} #{describe_item item}"
         }
-        unless opts.last.empty?
-          log "  babushka #{verb.name} #{opts.last.map {|o| describe_option o }.join(' ')}"
+        unless items.last.empty? # optional
+          log "  babushka #{verb.name} #{items.last.map {|item| describe_item item }.join(' ')}"
         end
       }
     end
 
     def print_choices_for title, list
       log "\n#{title.capitalize}:"
-      indent = (list.map {|option| printable_option(option).length }.max || 0) + 4
-      list.each {|option|
-        log "  #{printable_option(option).ljust(indent)}#{option.description}"
+      indent = (list.map {|item| printable_item(item).length }.max || 0) + 4
+      list.each {|item|
+        log "  #{printable_item(item).ljust(indent)}#{item.description}"
       }
     end
 
@@ -180,16 +182,30 @@ module Babushka
       log "  babushka 'user setup' --debug"
     end
 
-    def printable_option option
-      option.is_a?(Verb) ? option.name.to_s : "#{[option.short, option.long].join(', ')}"
+    def printable_item item
+      if item.is_a? Verb
+        item.name.to_s
+      elsif item.is_a? Opt
+        "#{[item.short, item.long].join(', ')}"
+      elsif item.is_a? Arg
+        describe_item item
+      end
+    end
+
+    def describe_item item
+      item.is_a?(Opt) ? describe_option(item) : describe_arg(item)
     end
 
     def describe_option option
       opt_description = [
         option.short || option.long,
-        option.args.map {|arg| "#{arg.optional ? '[' : '<'}#{arg.name}#{', ...' if arg.multi}#{arg.optional ? ']' : '>'}" }
+        option.args.map {|arg| describe_arg arg }
       ].squash.join(' ')
       "#{'[' if option.optional}#{opt_description}#{']' if option.optional}"
+    end
+
+    def describe_arg arg
+      "#{arg.optional ? '[' : '<'}#{arg.name.to_s.gsub('_', ' ')}#{', ...' if arg.multi}#{arg.optional ? ']' : '>'}"
     end
 
     def verb_for verb_name
