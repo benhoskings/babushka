@@ -74,7 +74,7 @@ module Babushka
       else
         verb = verb.dup.gsub /^-*/, ''
         if !verb.in?(abbrevs.keys)
-          fail_with "'#{verb}' isn't a valid verb. Maybe you meant '#{$0} meet #{verb}'?"
+          fail_with "#{$0} meet '#{verb}'    # '#{verb}' isn't a command - maybe you meant this instead."
         else
           PassedVerb.new verb_for(abbrevs[verb]), [], []
         end
