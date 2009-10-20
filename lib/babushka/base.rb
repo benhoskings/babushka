@@ -10,11 +10,11 @@ module Babushka
       ]),
       Verb.new(:sources, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
-          Arg.new(:source_uri, "the URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
+          Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
         Opt.new(:list, '-l', '--list', "List dep sources", false, []),
         Opt.new(:remove, '-r', '--remove', "Remove dep source", false, [
-          Arg.new(:source_uri, "the URI of the soure to remove", false, false, 'git://github.com/benhoskings/babushka_deps')
+          Arg.new(:uri, "The URI of the soure to remove", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
         Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
       ], []),
