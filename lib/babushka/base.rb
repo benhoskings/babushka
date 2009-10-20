@@ -70,7 +70,7 @@ module Babushka
 
     def extract_verb args
       if (verb = args.shift).nil?
-        fail_with handle_help args
+        fail_with handle_help
       else
         verb = verb.dup.gsub /^-*/, ''
         if !verb.in?(abbrevs.keys)
@@ -108,9 +108,9 @@ module Babushka
       end
     end
 
-    def handle_help verb
+    def handle_help verb = nil
       print_version :full => true
-      if (help_arg = verb.args.first).nil?
+      if verb.nil? || (help_arg = verb.args.first).nil?
         print_usage
         print_choices_for 'commands', Verbs
       elsif (help_verb = verb_for(help_arg.value)).nil?
