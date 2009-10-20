@@ -8,6 +8,13 @@ module Babushka
       Verb.new(:help, "Print usage information", [], [
         Arg.new(:verb, "Print verb-specific usage info", true)
       ]),
+      Verb.new(:list, "List the available deps", [
+        # Opt.new(:source, '-s', '--source', "Only list deps from a specific source", true, [
+        #   Arg.new(:name, "The name of the source", false, false, 'git://github.com/benhoskings/babushka_deps')
+        # ])
+      ], [
+        Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
+      ]),
 =begin
       Verb.new(:sources, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
@@ -116,6 +123,20 @@ module Babushka
     end
     def handle_version verb
       print_version
+    end
+    def handle_list verb
+      setup_noninteractive
+      filter_str = verb.args.first.value unless verb.args.first.nil?
+      Dep.deps.values.select {|dep|
+        filter_str.nil? || dep.name[filter_str]
+      }.sort_by {|dep|
+        dep.name
+      }.tap {|deps|
+        indent = (deps.map {|dep| dep.name.length }.max || 0) + 3
+        deps.each {|dep|
+          log "babushka #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
+        }
+      }
     end
     def handle_meet verb
       if (tasks = verb.args.map(&:value)).empty?
