@@ -8,6 +8,7 @@ module Babushka
       Verb.new(:help, "Print usage information", [], [
         Arg.new(:verb, "Print verb-specific usage info", true)
       ]),
+=begin
       Verb.new(:sources, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
           Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
@@ -24,6 +25,7 @@ module Babushka
       Verb.new(:push, "Push local dep updates to writable sources", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
+=end
       Verb.new(:meet, "Process deps", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
