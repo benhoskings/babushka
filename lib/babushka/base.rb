@@ -72,10 +72,10 @@ module Babushka
       if (verb = args.shift).nil?
         fail_with handle_help
       else
-        if !verb.in?(abbrevs.keys)
+        if !verb.in?(verb_abbrevs.keys)
           fail_with "#{program_name} meet '#{verb}'    # '#{verb}' isn't a command - maybe you meant this instead."
         else
-          PassedVerb.new verb_for(abbrevs[verb]), [], []
+          PassedVerb.new verb_for(verb_abbrevs[verb]), [], []
         end
       end
     end
@@ -241,8 +241,8 @@ module Babushka
     end
 
     require 'abbrev'
-    def abbrevs
-      @abbrevs ||= Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact.abbrev
+    def verb_abbrevs
+      @verb_abbrevs ||= Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact.abbrev
     end
 
     def load_deps
