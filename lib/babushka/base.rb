@@ -242,7 +242,7 @@ module Babushka
 
     require 'abbrev'
     def abbrevs
-      Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact.abbrev
+      @abbrevs ||= Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact.abbrev
     end
 
     def load_deps
