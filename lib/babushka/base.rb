@@ -74,7 +74,7 @@ module Babushka
       else
         verb = verb.dup.gsub /^-*/, ''
         if !verb.in?(abbrevs.keys)
-          fail_with "'#{verb}' isn't a valid verb. Maybe you meant 'meet #{verb}'?"
+          fail_with "'#{verb}' isn't a valid verb. Maybe you meant '#{$0} meet #{verb}'?"
         else
           PassedVerb.new verb_for(abbrevs[verb]), [], []
         end
@@ -134,7 +134,7 @@ module Babushka
       }.tap {|deps|
         indent = (deps.map {|dep| dep.name.length }.max || 0) + 3
         deps.each {|dep|
-          log "babushka #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
+          log "#{$0} #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
         }
       }
     end
@@ -166,20 +166,20 @@ module Babushka
 
     def print_usage
       log "\nThe gist:"
-      log "  babushka <command> [options]"
+      log "  #{$0} <command> [options]"
       log "\nAlso:"
-      log "  babushka help <command>  # #{verb_for('help').args.first.description}"
-      log "  babushka <dep name(s)>   # A shortcut for 'meet <dep name(s)>'"
+      log "  #{$0} help <command>  # #{verb_for('help').args.first.description}"
+      log "  #{$0} <dep name(s)>   # A shortcut for 'meet <dep name(s)>'"
     end
 
     def print_usage_for verb
       log "\nExample usage:"
       (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|items|
         items.first.each {|item| # mandatory
-          log "  babushka #{verb.name} #{describe_item item}"
+          log "  #{$0} #{verb.name} #{describe_item item}"
         }
         unless items.last.empty? # optional
-          log "  babushka #{verb.name} #{items.last.map {|item| describe_item item }.join(' ')}"
+          log "  #{$0} #{verb.name} #{items.last.map {|item| describe_item item }.join(' ')}"
         end
       }
     end
@@ -195,14 +195,14 @@ module Babushka
     def print_examples
       log "\nExamples:"
       log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
-      log "  babushka system --dry-run"
+      log "  #{$0} system --dry-run"
       log "\n"
       log "  # Meet the 'fish' dep (i.e. install fish and all its dependencies).".colorize('grey')
-      log "  babushka fish"
+      log "  #{$0} fish"
       log "\n"
       log "  # Meet the 'user setup' dep, printing lots of debugging (including realtime".colorize('grey')
       log "  # shell command output).".colorize('grey')
-      log "  babushka 'user setup' --debug"
+      log "  #{$0} 'user setup' --debug"
     end
 
     def printable_item item
