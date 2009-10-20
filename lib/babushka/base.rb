@@ -4,11 +4,11 @@ module Babushka
   class Base
   class << self
     Verbs = [
-      Verb.new(:version, "Print the current version", [], []),
-      Verb.new(:help, "Print usage information", [], [
+      Verb.new(:version, nil, '--version', "Print the current version", [], []),
+      Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print verb-specific usage info", true)
       ]),
-      Verb.new(:list, "List the available deps", [
+      Verb.new(:list, '-T', '--tasks', "List the available deps", [
         # Opt.new(:source, '-s', '--source', "Only list deps from a specific source", true, [
         #   Arg.new(:name, "The name of the source", false, false, 'git://github.com/benhoskings/babushka_deps')
         # ])
@@ -16,7 +16,7 @@ module Babushka
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
 =begin
-      Verb.new(:sources, "Manage dep sources", [
+      Verb.new(:sources, nil, nil, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
           Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
@@ -26,14 +26,14 @@ module Babushka
         ]),
         Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
       ], []),
-      Verb.new(:pull, "Update dep sources", [], [
+      Verb.new(:pull, nil, nil, "Update dep sources", [], [
         Arg.new(:source, "Pull just a specific source", true, false)
       ]),
-      Verb.new(:push, "Push local dep updates to writable sources", [], [
+      Verb.new(:push, nil, nil, "Push local dep updates to writable sources", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
 =end
-      Verb.new(:meet, "Process deps", [
+      Verb.new(:meet, nil, nil, "Process deps", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
         Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
