@@ -69,6 +69,10 @@ class Array
   def extract_options!
     last.is_a?(::Hash) ? pop : {}
   end
+
+  def similar_to string, threshold = 3
+    select {|i| i.similarity_to(string) < threshold }
+  end
 end
 
 class Module
