@@ -22,16 +22,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-begin
-  require "levenshtein/levenshtein_fast"	# If compiled by RubyGems.
-rescue LoadError
-  begin
-    require "levenshtein_fast"			# If compiled by the build script.
-  rescue LoadError
-    $stderr.puts "WARNING: Couldn't find the fast C implementation of Levenshtein.distance. Using the much slower Ruby version instead."
-  end
-end
-
 # The Levenshtein distance is a metric for measuring the amount
 # of difference between two sequences (i.e., the so called edit
 # distance). The Levenshtein distance between two sequences is
