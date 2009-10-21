@@ -240,9 +240,13 @@ module Babushka
       Verbs.detect {|v| verb_name.in? [v.name.to_s, v.short, v.long].compact }
     end
 
+    def all_verb_names
+      Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact
+    end
+
     require 'abbrev'
     def verb_abbrevs
-      @verb_abbrevs ||= Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact.abbrev
+      @verb_abbrevs ||= all_verb_names.abbrev
     end
 
     def load_deps
