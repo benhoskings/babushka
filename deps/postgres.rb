@@ -47,12 +47,10 @@ pkg 'postgres software' do
     via :brew, 'postgresql'
   }
   provides 'psql'
-  on :osx, after do
-    sudo "ln -s #{Babushka::MacportsHelper.prefix / "lib/postgresql83/bin/*"} #{Babushka::MacportsHelper.prefix / 'bin/'}"
-
-    sudo "mkdir -p /opt/local/var/db/postgresql83/defaultdb" and
-    sudo "chown postgres:postgres /opt/local/var/db/postgresql83/defaultdb" and
-    sudo "su postgres -c '/opt/local/lib/postgresql83/bin/initdb -D /opt/local/var/db/postgresql83/defaultdb'" and
-    sudo "launchctl load -w /Library/LaunchDaemons/org.macports.postgresql83-server.plist"
-  end
+  on :osx, after {
+    shell "mkdir -p #{pkg_manager.prefix / 'var/db/postgres/8.4/defaultdb'}" and
+    shell "ln -sf #{pkg_manager.prefix / 'var/db/postgres/8.4/defaultdb'} #{pkg_manager.prefix / 'var/postgres'}" and
+    shell "#{pkg_manager.bin_path / 'initdb'} -D #{pkg_manager.prefix / 'var/postgres'}" and
+    shell "launchctl load -w /usr/local/Cellar/postgresql/8.4.0/org.postgresql.postgres.plist"
+  }
 end
