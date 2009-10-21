@@ -98,3 +98,9 @@ n.b.
 ---
 
 Babushka is new, in flux, and only has partial test coverage. Also, many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
+
+
+license
+-------
+
+Babushka is licensed under the BSD license, which can be found in full in the LICENSE file.

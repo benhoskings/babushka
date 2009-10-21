@@ -260,6 +260,10 @@ class String
     self
   end
 
+  def similarity_to other, threshold = nil
+    Babushka::Levenshtein.distance self, other, threshold
+  end
+
 end
 
 unless :to_proc.respond_to? :to_proc
