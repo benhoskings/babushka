@@ -12,6 +12,7 @@ babushka_components = %w[
   support/version_of
   support/version_list
   support/colorizer
+  support/levenshtein
 
   babushka/base
   babushka/shell
