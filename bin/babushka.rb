@@ -7,6 +7,7 @@ babushka_components = %w[
   support/popen
   support/prompt_helpers
   support/shell_helpers
+  support/suggest_helpers
   support/lambda_chooser
   support/version_str
   support/version_of
