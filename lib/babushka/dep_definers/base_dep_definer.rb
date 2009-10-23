@@ -14,13 +14,22 @@ module Babushka
       BaseHelper
     end
 
-    def on platform, data = nil
-      method_name, lambda = *data
-      unless payload[method_name].nil?
-        raise "You can't pass the :on option to ##{method_name} when you're using it within #on." unless payload[method_name][:unassigned] == lambda
-        payload[method_name].delete(:unassigned)
+    def on platform, method_and_block = [], &block
+      unless block.nil?
+        on_applicable platform, &block
+      else
+        method_name, block_arg = *method_and_block
+
+        unless payload[method_name].nil?
+          unless payload[method_name][:unassigned] == block_arg
+            raise "You can't pass the :on option to ##{method_name} when you're using it within #on."
+          end
+          payload[method_name].delete(:unassigned)
+        end
+        block = block_arg
+
+        send method_name, {:on => platform}, &block
       end
-      store_block_for method_name, [{:on => platform}], lambda
     end
 
     private
