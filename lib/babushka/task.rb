@@ -11,7 +11,6 @@ module Babushka
     def initialize
       @vars = Hashish.hash
       @saved_vars = Hashish.hash
-      @base_opts = default_base_opts
       @run_opts = default_run_opts
     end
 
@@ -30,11 +29,15 @@ module Babushka
     end
 
     def opts
-      @base_opts.merge @run_opts
+      verb_opts.merge @run_opts
+    end
+
+    def verb_opts
+      verb.nil? ? {} : @verb.opts.inject({}) {|hsh,opt| hsh[opt.def.name] = true; hsh }
     end
 
     def opt name
-      verb.opts.detect {|opt| opt.def.name.to_s == name.to_s }
+      opts[name]
     end
 
     def callstack
@@ -88,10 +91,6 @@ module Babushka
 
 
     private
-
-    def default_base_opts
-      {}
-    end
 
     def default_run_opts
       {
