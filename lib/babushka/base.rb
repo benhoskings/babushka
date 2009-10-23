@@ -69,14 +69,25 @@ module Babushka
     private
 
     def extract_verb args
-      if (verb = args.shift).nil?
+      if args.empty?
         fail_with handle_help
-      else
-        if !verb.in?(verb_abbrevs.keys)
-          fail_with "#{program_name} meet '#{verb}'    # '#{verb}' isn't a command - maybe you meant this instead."
-        else
-          PassedVerb.new verb_for(verb_abbrevs[verb]), [], []
+      elsif (verb = validate_verb(args.first)).nil?
+        confirm %Q{That's not a verb - did you mean "meet '#{args.first}'"?}, :default => 'y' do
+          PassedVerb.new verb_for('meet'), [], []
         end
+      else
+        args.shift
+        PassedVerb.new verb_for(verb_abbrevs[verb]), [], []
+      end
+    end
+
+    include SuggestHelpers
+
+    def validate_verb verb
+      if verb.in? verb_abbrevs.keys
+        verb # it's a properly spelled verb
+      else
+        suggest_value_for(verb, all_verb_names)
       end
     end
 
