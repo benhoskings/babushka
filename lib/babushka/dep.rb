@@ -73,9 +73,14 @@ module Babushka
     def self.for name
       deps[name]
     end
+
+    extend SuggestHelpers
+
     def self.process dep_name
       if (dep = Dep(dep_name)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
+        suggestion = suggest_value_for(dep_name, Dep.names)
+        Dep.process suggestion unless suggestion.nil?
       else
         dep.process
       end
