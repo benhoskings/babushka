@@ -246,7 +246,13 @@ module Babushka
 
     require 'abbrev'
     def verb_abbrevs
-      @verb_abbrevs ||= all_verb_names.abbrev
+      # Accept abbreviated verb names, but only accept full short & long options
+      @verb_abbrevs ||= Verbs.map {|v|
+        [v.short, v.long]
+      }.inject(Verbs.map {|v| v.name.to_s }.abbrev) {|hsh,names|
+        names.compact.each {|name| hsh[name] = name }
+        hsh
+      }
     end
 
     def load_deps
