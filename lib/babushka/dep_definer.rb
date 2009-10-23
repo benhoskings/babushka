@@ -107,9 +107,18 @@ module Babushka
 
     private
 
+    def on_applicable platform, opts = {}, &block
+      if platform.in? [*chooser]
+        @current_platform = platform
+        returning block.call do
+          @current_platform = nil
+        end
+      end
+    end
+
     def store_block_for method_name, args, block
       payload[method_name] ||= {}
-      opts = {:on => :unassigned}.merge(args.first || {})
+      opts = {:on => (@current_platform || :unassigned)}.merge(args.first || {})
       store_block_for method_name, [{:on => :all}], payload[method_name].delete(:unassigned) unless payload[method_name][:unassigned].nil?
       [method_name, payload[method_name][opts[:on]] = block]
     end
