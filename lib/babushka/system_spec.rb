@@ -45,7 +45,7 @@ module Babushka
         spec == system ? nil : :system
       elsif spec.in? our_flavours
         spec == flavour ? nil : :flavour
-      elsif spec.in? our_flavor_names
+      elsif spec.in? our_flavour_names
         spec == name ? nil : :name
       else
         :system
@@ -80,7 +80,7 @@ module Babushka
     def our_flavours
       name_map[system].keys
     end
-    def our_flavor_names
+    def our_flavour_names
       name_map[system][flavour].values
     end
     def all_tokens
