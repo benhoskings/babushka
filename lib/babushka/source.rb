@@ -21,7 +21,7 @@ module Babushka
       }
     end
     def self.add! arg
-      new(arg.value).add!
+      new(arg.respond_to?(:value) ? arg.value : arg).add!
     end
     def self.list! arg
       sources.tap {|sources|
@@ -31,7 +31,7 @@ module Babushka
       }
     end
     def self.remove! arg
-      new(arg.value).remove!
+      new(arg.respond_to?(:value) ? arg.value : arg).remove!
     end
     def self.clear! arg
       sources.each {|source|
