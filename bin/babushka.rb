@@ -45,12 +45,22 @@ babushka_components = %w[
   babushka/dep_definers/ext_dep_definer
 ]
 
-def real_bin_babushka
-  File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+module Babushka
+  module Path
+    def self.binary
+      File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+    end
+    def self.bin
+      File.dirname binary
+    end
+    def self.path
+      File.dirname bin
+    end
+  end
 end
 
 babushka_components.each {|component|
-  require "#{File.dirname(real_bin_babushka)}/../lib/#{component}"
+  require File.join Babushka::Path.path, 'lib', component
 }
 
 include Babushka::LoggerHelpers
