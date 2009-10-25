@@ -179,6 +179,10 @@ def archive_basename filename
   File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext } || ''
 end
 
+def build_path_for uri
+  archive_basename(uri.respond_to?(:path) ? uri.path : uri)
+end
+
 def _by_babushka
   "by babushka-#{Babushka::VERSION} at #{Time.now}"
 end
