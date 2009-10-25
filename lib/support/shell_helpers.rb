@@ -36,7 +36,7 @@ def in_dir dir, opts = {}, &block
 end
 
 def in_build_dir path = '', &block
-  in_dir '~/.babushka/src' / path, :create => true, &block
+  in_dir Babushka::SrcPrefix / path, :create => true, &block
 end
 
 def cmd_dir cmd_name
