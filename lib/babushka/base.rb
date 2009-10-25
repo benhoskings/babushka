@@ -146,6 +146,7 @@ module Babushka
         dep.name
       }.tap {|deps|
         indent = (deps.map {|dep| dep.name.length }.max || 0) + 3
+        log ""
         deps.each {|dep|
           log "#{program_name} #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
         }
