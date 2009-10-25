@@ -284,11 +284,14 @@ module Babushka
     end
 
     def load_deps
-      %W[
-        ./babushka_deps
-        ~/.babushka/deps
-        #{File.dirname(File.dirname(real_bin_babushka)) / 'deps'}
-      ].all? {|dep_path|
+      [
+        './babushka_deps', # deps in the current directory
+        '~/.babushka/deps', # the user's custom deps
+      ].concat(
+        Source.paths # each dep source
+      ).push(
+        Path.path / 'deps' # the bundled deps
+      ).all? {|dep_path|
         DepDefiner.load_deps_from dep_path
       }
     end
