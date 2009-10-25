@@ -216,6 +216,10 @@ class Object
   def tapp
     tap { puts "#{File.basename caller[4]}: #{self.inspect}" }
   end
+  require 'pp'
+  def tappp
+    tap { pp self }
+  end
   def tap_log
     returning(self) { log_verbose self }
   end
