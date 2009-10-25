@@ -100,12 +100,15 @@ module Babushka
       if (detected_opt = verb.def.opts.detect {|o| args.first.in? [o.short, o.long] }).nil?
         verb.args = parse_cmdline_args(verb, verb.def.args, args)
       else
-        verb.opts << parse_cmdline_opt(args.shift, detected_opt, args)
+        args.shift
+        verb.opts << parse_cmdline_opt(detected_opt, args)
       end
     end
 
-    def parse_cmdline_opt opt, opt_def, args
-      PassedOpt.new opt_def, parse_cmdline_args(opt_def, opt_def.args, args)
+    def parse_cmdline_opt opt_def, args
+      returning PassedOpt.new opt_def, [] do |parsed_opt|
+        parsed_opt.args = parse_cmdline_args(parsed_opt, opt_def.args, args)
+      end
     end
 
     def parse_cmdline_args token, arg_defs, args
