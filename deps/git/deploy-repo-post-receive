@@ -1,4 +1,0 @@
-cd ..
-env -i git reset --hard
-mkdir -p tmp
-touch tmp/restart.txt
