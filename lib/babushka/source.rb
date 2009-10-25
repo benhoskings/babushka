@@ -81,7 +81,7 @@ module Babushka
       if !self.class.sources.include?(uri.to_s)
         log "No such source: #{uri}"
       else
-        log "Removing #{name}", :closing_status => :status_only do
+        log_block "Removing #{name}" do
           remove_repo and remove_source
         end
       end
