@@ -11,7 +11,7 @@ require 'spec'
 include Spec::DSL::Main
 
 def tmp_prefix
-  "#{'/private' if host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this"
+  "#{'/private' if host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
 end
 
 FileUtils.mkdir_p tmp_prefix unless File.exists? tmp_prefix
