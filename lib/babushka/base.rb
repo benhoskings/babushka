@@ -121,7 +121,7 @@ module Babushka
       end
     end
 
-    def handle_help verb = nil
+    def handle_help verb = nil, error_message = nil
       print_version :full => true
       if verb.nil? || (help_arg = verb.args.first).nil?
         print_usage
@@ -130,6 +130,7 @@ module Babushka
       elsif (help_verb = verb_for(help_arg.value)).nil?
         log "#{help_arg.value.capitalize}? I have honestly never heard of that."
       else
+        log_error error_message unless error_message.nil?
         print_usage_for help_verb
         print_choices_for 'options', (help_verb.opts + help_verb.args)
       end
@@ -168,6 +169,13 @@ module Babushka
     end
     def handle_push verb
       puts 'push lol'
+    end
+
+    def help_for verb, error_message = nil
+      help_verb = verb_for('help')
+      handle_help PassedVerb.new(help_verb, [], [
+        PassedArg.new(help_verb.args.detect {|arg| arg.name == :verb }, verb.name.to_s)
+      ]), error_message
     end
 
     def print_version opts = {}
