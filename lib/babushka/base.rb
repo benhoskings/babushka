@@ -15,7 +15,6 @@ module Babushka
       ], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
-=begin
       Verb.new(:sources, nil, nil, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
           Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
@@ -32,7 +31,6 @@ module Babushka
       Verb.new(:push, nil, nil, "Push local dep updates to writable sources", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
-=end
       Verb.new(:meet, nil, nil, "Process deps", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
@@ -162,10 +160,18 @@ module Babushka
       end
     end
     def handle_sources verb
-      puts 'sources lol'
+      if verb.opts.length != 1
+        fail_with help_for verb.def, "'sources' requires exactly one option."
+      else
+        Source.send "#{verb.opts.first.def.name}!", verb.opts.first.args.first
+      end
     end
     def handle_pull verb
-      puts 'pull lol'
+      if verb.args.empty?
+        Source.pull!
+      else
+        puts 'fail'
+      end
     end
     def handle_push verb
       puts 'push lol'
