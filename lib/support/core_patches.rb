@@ -124,6 +124,14 @@ class Hash
     self
   end
 
+  def selekt &block
+    hsh = {}
+    each_pair {|k,v|
+      hsh[k] = v if yield(k,v)
+    }
+    hsh
+  end
+
   def reject_r &block
     dup.reject_r! &block
   end
