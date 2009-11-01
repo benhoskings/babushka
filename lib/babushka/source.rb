@@ -33,7 +33,7 @@ module Babushka
     def self.remove! arg
       new(arg.respond_to?(:value) ? arg.value : arg).remove!
     end
-    def self.clear! arg
+    def self.clear! arg = nil
       sources.each {|source|
         new(source).remove!
       }
