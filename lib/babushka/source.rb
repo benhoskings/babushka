@@ -89,7 +89,7 @@ module Babushka
       if !self.class.sources.has_key?(name)
         log "No such source: #{uri}"
       else
-        log_block "Removing #{name}" do
+        log_block "Removing #{name} (#{uri})" do
           remove_repo and remove_source
         end
       end
