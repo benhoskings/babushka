@@ -176,7 +176,7 @@ module Babushka
       end
     end
     def handle_push verb
-      puts 'push lol'
+      fail_with "Push isn't implemented yet."
     end
 
     def help_for verb, error_message = nil
