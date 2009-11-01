@@ -19,7 +19,7 @@ dep 'dep source' do
   }
   met? {
     returning(!(source_count = Babushka::Source.count).zero?) do |result|
-      log_ok "There #{source_count == 1 ? 'is' : 'are'} already #{source_count} dep source#{'s' unless source_count == 1} set up." if result
+      log_ok "There #{source_count == 1 ? 'is' : 'are'} #{source_count} dep source#{'s' unless source_count == 1} set up." if result
     end
   }
   meet { Babushka::Source.add! var(:dep_source), "git://github.com/#{var(:dep_source)}/babushka-deps" }
