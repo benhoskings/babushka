@@ -4,11 +4,11 @@ require 'rubygems'
 require 'fakefs/safe'
 
 def dep_source name = 'test'
-  returning tmp_prefix / 'source_remotes' / name do |path|
-    unless File.exists? path / '.git'
+  returning :name => name, :uri => tmp_prefix / 'source_remotes' / name do |source|
+    unless File.exists? source[:uri] / '.git'
       shell %Q{
-        mkdir -p "#{path}" &&
-        cd "#{path}" &&
+        mkdir -p "#{source[:uri]}" &&
+        cd "#{source[:uri]}" &&
         git init &&
         echo 'dep "#{name}" do end' > '#{name}.rb' &&
         git add . &&

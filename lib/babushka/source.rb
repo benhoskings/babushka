@@ -16,30 +16,30 @@ module Babushka
     attr_reader :name, :uri
 
     def self.pull!
-      sources.all? {|(name, uri)|
-        Source.new(name, uri).pull!
+      sources.all? {|source|
+        new(source).pull!
       }
     end
     def self.add! name, uri
-      new(name, uri).add!
+      new(:name => name, :uri => uri).add!
     end
     def self.list!
       sources.tap {|sources|
         log "There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1}."
-      }.each_pair {|name, uri|
-        log Source.new(name, uri).description
+      }.each {|source|
+        log Source.new(source).description
       }
     end
     def self.remove! name_or_uri
-      sources.selekt {|name, uri|
-        [name, uri].include? name_or_uri
-      }.each_pair {|name, uri|
-        new(name, uri).remove!
+      sources.select {|source|
+        name_or_uri.in? [source, source[:name], source[:uri]]
+      }.each {|source|
+        Source.new(source).remove!
       }
     end
     def self.clear!
-      sources.each_pair {|name,uri|
-        new(name, uri).remove!
+      sources.each {|source|
+        Source.new(source).remove!
       }
     end
 
@@ -48,12 +48,12 @@ module Babushka
       File.exists?(sources_yml) &&
       (yaml = YAML.load_file(sources_yml)) &&
       yaml[:sources] ||
-      {}
+      []
     end
 
     def self.paths
-      sources.map {|name, uri|
-        Source.new(name, uri).path
+      sources.map {|source|
+        Source.new(source).path
       }
     end
 
@@ -62,9 +62,9 @@ module Babushka
     end
 
     require 'uri'
-    def initialize name, uri
-      @name = name
-      @uri = URI.parse uri.to_s
+    def initialize hsh
+      @name = hsh[:name]
+      @uri = URI.parse hsh[:uri].to_s
     end
 
     def path
@@ -86,7 +86,7 @@ module Babushka
       end
     end
     def remove!
-      if !self.class.sources.has_key?(name)
+      if !self.class.sources.detect {|s| s[:name] == name }
         log "No such source: #{uri}"
       else
         log_block "Removing #{name} (#{uri})" do
@@ -106,17 +106,21 @@ module Babushka
     private
 
     def add_source
-      write_sources self.class.sources.merge name => uri.to_s
+      write_sources self.class.sources.push(data_for_yaml).uniq
     end
 
     def remove_source
-      write_sources self.class.sources.reject {|k,v| [k, v] == [name, uri.to_s] }
+      write_sources self.class.sources - [data_for_yaml]
     end
 
     def write_sources sources
       File.open self.class.sources_yml, 'w' do |f|
         YAML.dump({:sources => sources}, f)
       end
+    end
+
+    def data_for_yaml
+      {:name => name, :uri => uri.to_s}
     end
 
     def remove_repo
