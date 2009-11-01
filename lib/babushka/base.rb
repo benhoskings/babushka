@@ -17,11 +17,12 @@ module Babushka
       ]),
       Verb.new(:sources, nil, nil, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
+          Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
           Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
         Opt.new(:list, '-l', '--list', "List dep sources", false, []),
         Opt.new(:remove, '-r', '--remove', "Remove dep source", false, [
-          Arg.new(:uri, "The URI of the soure to remove", false, false, 'git://github.com/benhoskings/babushka_deps')
+          Arg.new(:name_or_uri, "The name or URI of the source to remove", false, false, 'benhoskings')
         ]),
         Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
       ], []),
@@ -164,7 +165,7 @@ module Babushka
       if verb.opts.length != 1
         fail_with help_for verb.def, "'sources' requires exactly one option."
       else
-        Source.send "#{verb.opts.first.def.name}!", verb.opts.first.args.first
+        Source.send "#{verb.opts.first.def.name}!", *verb.opts.first.args.map(&:value)
       end
     end
     def handle_pull verb

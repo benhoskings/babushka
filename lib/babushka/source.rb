@@ -13,29 +13,33 @@ module Babushka
 
   class Source
 
-    attr_reader :uri
+    attr_reader :name, :uri
 
     def self.pull!
-      sources.all? {|source|
-        Source.new(source).pull!
+      sources.all? {|(name, uri)|
+        Source.new(name, uri).pull!
       }
     end
-    def self.add! arg
-      new(arg.respond_to?(:value) ? arg.value : arg).add!
+    def self.add! name, uri
+      new(name, uri).add!
     end
-    def self.list! arg
+    def self.list!
       sources.tap {|sources|
         log "There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1}."
-      }.each {|source|
-        log source
+      }.each_pair {|name, uri|
+        log Source.new(name, uri).description
       }
     end
-    def self.remove! arg
-      new(arg.respond_to?(:value) ? arg.value : arg).remove!
+    def self.remove! name_or_uri
+      sources.selekt {|name, uri|
+        [name, uri].include? name_or_uri
+      }.each_pair {|name, uri|
+        new(name, uri).remove!
+      }
     end
-    def self.clear! arg = nil
-      sources.each {|source|
-        new(source).remove!
+    def self.clear!
+      sources.each_pair {|name,uri|
+        new(name, uri).remove!
       }
     end
 
@@ -44,12 +48,12 @@ module Babushka
       File.exists?(sources_yml) &&
       (yaml = YAML.load_file(sources_yml)) &&
       yaml[:sources] ||
-      []
+      {}
     end
 
     def self.paths
-      sources.map {|uri|
-        Source.new(uri).path
+      sources.map {|name, uri|
+        Source.new(name, uri).path
       }
     end
 
@@ -58,27 +62,31 @@ module Babushka
     end
 
     require 'uri'
-    def initialize uri
+    def initialize name, uri
+      @name = name
       @uri = URI.parse uri.to_s
     end
 
     def path
       source_prefix / name
     end
-    def name
-      uri.path.gsub('/', '_').gsub(/\.+\//, '')
+    def updated_at
+      Time.now - File.mtime(path)
+    end
+    def description
+      "#{name} - #{uri} (updated #{updated_at.round.xsecs} ago)"
     end
     def cloned?
       File.directory? path / '.git'
     end
 
     def add!
-      log "#{cloned? ? 'Updating' : 'Adding'} #{name}", :closing_status => :status_only do
-        pull! and add_source
+      returning pull! && add_source do |result|
+        log_ok "Added #{name}." if result
       end
     end
     def remove!
-      if !self.class.sources.include?(uri.to_s)
+      if !self.class.sources.has_key?(name)
         log "No such source: #{uri}"
       else
         log_block "Removing #{name}" do
@@ -90,22 +98,24 @@ module Babushka
     include ShellHelpers
     include GitHelpers
     def pull!
-      git uri, :prefix => source_prefix, :dir => name
+      returning git uri, :prefix => source_prefix, :dir => name do
+        FileUtils.touch path
+      end
     end
 
     private
 
     def add_source
-      prev_sources = self.class.sources
-      File.open self.class.sources_yml, 'w' do |f|
-        YAML.dump({:sources => prev_sources.push(uri.to_s).uniq}, f)
-      end
+      write_sources self.class.sources.merge name => uri.to_s
     end
 
     def remove_source
-      prev_sources = self.class.sources
+      write_sources self.class.sources.reject {|k,v| [k, v] == [name, uri.to_s] }
+    end
+
+    def write_sources sources
       File.open self.class.sources_yml, 'w' do |f|
-        YAML.dump({:sources => (prev_sources - [uri.to_s])}, f)
+        YAML.dump({:sources => sources}, f)
       end
     end
 
