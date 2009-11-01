@@ -22,7 +22,7 @@ dep 'dep source' do
       log_ok "There #{source_count == 1 ? 'is' : 'are'} already #{source_count} dep source#{'s' unless source_count == 1} set up." if result
     end
   }
-  meet { Babushka::Source.add! "git://github.com/#{var(:dep_source)}/babushka-deps" }
+  meet { Babushka::Source.add! var(:dep_source), "git://github.com/#{var(:dep_source)}/babushka-deps" }
 end
 
 dep 'babushka installed' do
