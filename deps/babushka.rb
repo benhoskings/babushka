@@ -1,6 +1,6 @@
 
 dep 'babushka' do
-  requires 'babushka in path'
+  requires 'babushka in path', 'dep source'
   define_var :install_prefix, :default => '/usr/local', :message => "Where would you like babushka installed"
 end
 
@@ -10,6 +10,19 @@ dep 'babushka in path' do
   meet {
     log_shell "Linking babushka into #{var(:install_prefix) / 'bin'}", %Q{ln -sf "#{var(:install_prefix) / 'babushka/bin/babushka.rb'}" "#{var(:install_prefix) / 'bin/babushka'}"}
   }
+end
+
+dep 'dep source' do
+  requires 'babushka in path'
+  setup {
+    define_var :dep_source, :default => shell('git config github.user'), :message => "Whose deps would you like to install (you can add others' later)"
+  }
+  met? {
+    returning(!(source_count = Babushka::Source.count).zero?) do |result|
+      log_ok "There #{source_count == 1 ? 'is' : 'are'} #{source_count} dep source#{'s' unless source_count == 1} set up." if result
+    end
+  }
+  meet { Babushka::Source.add! var(:dep_source), "git://github.com/#{var(:dep_source)}/babushka-deps" }
 end
 
 dep 'babushka installed' do

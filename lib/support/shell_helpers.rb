@@ -36,7 +36,7 @@ def in_dir dir, opts = {}, &block
 end
 
 def in_build_dir path = '', &block
-  in_dir '~/.babushka/src' / path, :create => true, &block
+  in_dir Babushka::SrcPrefix / path, :create => true, &block
 end
 
 def cmd_dir cmd_name
@@ -179,6 +179,10 @@ def archive_basename filename
   File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext } || ''
 end
 
+def build_path_for uri
+  archive_basename(uri.respond_to?(:path) ? uri.path : uri)
+end
+
 def _by_babushka
   "by babushka-#{Babushka::VERSION} at #{Time.now}"
 end
@@ -215,7 +219,7 @@ def confirm message, opts = {}, &block
   prompter = respond_to?(:var) ? :var : :prompt_for_value
   answer = send(prompter, message,
     :message => message,
-    :default => 'n'
+    :default => (opts[:default] || 'n')
   ).starts_with?('y')
 
   if answer

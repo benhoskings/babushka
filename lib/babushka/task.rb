@@ -1,17 +1,17 @@
 module Babushka
   WorkingPrefix = '~/.babushka'
+  SrcPrefix = WorkingPrefix / 'src'
   LogPrefix = WorkingPrefix / 'logs'
   VarsPrefix = WorkingPrefix / 'vars'
 
   class Task
 
     attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
-    attr_accessor :reportable
+    attr_accessor :verb, :reportable
 
     def initialize
       @vars = Hashish.hash
       @saved_vars = Hashish.hash
-      @base_opts = default_base_opts
       @run_opts = default_run_opts
     end
 
@@ -19,8 +19,10 @@ module Babushka
       load_previous_run_info_for dep_name
       returning(log_dep(dep_name) {
         returning Dep.process dep_name do |result|
-          save_run_info_for dep_name, result
-          log "You can view #{debug? ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
+          if Dep dep_name
+            save_run_info_for dep_name, result
+            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
+          end
         end
       }) {
         BugReporter.report dep_name if reportable
@@ -28,21 +30,17 @@ module Babushka
     end
 
     def opts
-      @base_opts.merge @run_opts
+      verb_opts.merge @run_opts
     end
 
-    def debug?
-      opts[:debug]
+    def verb_opts
+      verb.nil? ? {} : @verb.opts.inject({}) {|hsh,opt| hsh[opt.def.name] = true; hsh }
     end
-    def quiet?
-      opts[:quiet]
+
+    def opt name
+      opts[name]
     end
-    def dry_run?
-      opts[:dry_run]
-    end
-    def defaults?
-      opts[:defaults]
-    end
+
     def callstack
       opts[:callstack]
     end
@@ -94,10 +92,6 @@ module Babushka
 
 
     private
-
-    def default_base_opts
-      {}
-    end
 
     def default_run_opts
       {

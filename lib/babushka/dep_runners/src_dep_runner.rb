@@ -40,6 +40,7 @@ module Babushka
     def handle_source uri
       send({
         'http' => :get_source,
+        'ftp' => :get_source,
         'git' => :git
       }[uri.scheme] || :unsupported_scheme, uri)
     end

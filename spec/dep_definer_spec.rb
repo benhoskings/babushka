@@ -66,6 +66,24 @@ describe "accepts_list_for behaviour" do
   end
 end
 
+describe "#on for scoping accepters" do
+  before {
+    @lambda = lambda = L{ 'hello from the lambda' }
+    @other_lambda = other_lambda = L{ 'hello from the other lambda' }
+    dep 'scoping' do
+      on :osx do
+        met?(&lambda)
+      end
+      on :linux do
+        met?(&other_lambda)
+      end
+    end
+  }
+  it "should only allow choices that match" do
+    Dep('scoping').send(:payload)[:met?].should == {:osx => @lambda}
+  end
+end
+
 describe "#on for filtering accepters" do
   before {
     @lambda = lambda = L{ 'hello from the lambda' }

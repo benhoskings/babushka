@@ -1,5 +1,6 @@
 module Babushka
   class BaseDepRunner < DepRunner
+    include GitHelpers
 
     delegate :pkg_manager, :to => :definer
 
@@ -22,7 +23,7 @@ module Babushka
       else
         returning missing.empty? do |result|
           if result
-            log cmd_location_str_for(ours.empty? ? other : ours)
+            log cmd_location_str_for(ours.empty? ? other : ours).end_with('.')
           else
             log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing."
           end
@@ -52,25 +53,6 @@ module Babushka
           in_build_dir output do |path|
             yield path
           end
-        end
-      }
-    end
-
-    def build_path_for uri
-      archive_basename(uri.respond_to?(:path) ? uri.path : uri)
-    end
-
-    def git uri, &block
-      repo = build_path_for uri
-      in_build_dir {
-        update_success = if File.directory? repo / '.git'
-          in_build_dir(repo) { log_shell "Updating from #{uri}", %Q{git pull origin master} }
-        else
-          log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "./#{repo}"}
-        end
-
-        if update_success
-          block.nil? || in_build_dir(repo) {|path| block.call path }
         end
       }
     end

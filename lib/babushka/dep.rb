@@ -18,6 +18,7 @@ module Babushka
     attr_reader :name, :opts, :vars, :definer, :runner
     attr_accessor :unmet_message
 
+    delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
     def initialize name, in_opts, block, definer_class, runner_class
@@ -72,9 +73,14 @@ module Babushka
     def self.for name
       deps[name]
     end
+
+    extend SuggestHelpers
+
     def self.process dep_name
       if (dep = Dep(dep_name)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
+        suggestion = suggest_value_for(dep_name, Dep.names)
+        Dep.process suggestion unless suggestion.nil?
       else
         dep.process
       end
@@ -97,7 +103,7 @@ module Babushka
     private
 
     def process_and_cache
-      log name, :closing_status => (task.dry_run? ? :dry_run : true) do
+      log name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
         if task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !host.matches?(opts[:for])
@@ -119,14 +125,14 @@ module Babushka
     end
 
     def process_deps
-      @definer.requires.send(task.dry_run? ? :each : :all?, &L{|dep_name|
+      @definer.requires.send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
         Dep.process dep_name
       })
     end
 
     def process_self
       process_met_task(:initial => true) {
-        if task.dry_run?
+        if task.opt(:dry_run)
           false # unmet
         else
           process_task(:before) and process_task(:meet) and process_task(:after)
@@ -153,7 +159,7 @@ module Babushka
       returning cache_process(call_task(:met?)) do |result|
         if :fail == result
           log_extra "I don't know how to fix that, so it's up to you. :)"
-        elsif !result && task_opts[:initial]
+        elsif !result && task_opts[:initial] && !Base.task.opt(:dry_run)
           log_extra "#{name} not already met#{unmet_message_for(result)}."
         elsif result && !task_opts[:initial]
           log "#{name} met.".colorize('green')
@@ -184,7 +190,7 @@ module Babushka
 
     def cached_result
       returning cached_process do |result|
-        log_result "#{name} (cached)", :result => result, :as_bypass => task.dry_run?
+        log_result "#{name} (cached)", :result => result, :as_bypass => task.opt(:dry_run)
       end
     end
     def cached?

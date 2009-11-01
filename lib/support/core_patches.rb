@@ -69,6 +69,10 @@ class Array
   def extract_options!
     last.is_a?(::Hash) ? pop : {}
   end
+
+  def similar_to string, threshold = 3
+    select {|i| i.similarity_to(string) < threshold }
+  end
 end
 
 class Module
@@ -118,6 +122,14 @@ class Hash
       self[k] = yield k, self[k]
     }
     self
+  end
+
+  def selekt &block
+    hsh = {}
+    each_pair {|k,v|
+      hsh[k] = v if yield(k,v)
+    }
+    hsh
   end
 
   def reject_r &block
@@ -212,6 +224,10 @@ class Object
   def tapp
     tap { puts "#{File.basename caller[4]}: #{self.inspect}" }
   end
+  require 'pp'
+  def tappp
+    tap { pp self }
+  end
   def tap_log
     returning(self) { log_verbose self }
   end
@@ -258,6 +274,10 @@ class String
   def decolorize!
     gsub! /\e\[\d+[;\d]*m/, ''
     self
+  end
+
+  def similarity_to other, threshold = nil
+    Babushka::Levenshtein.distance self, other, threshold
   end
 
 end

@@ -1,4 +1,3 @@
-
 dep 'homebrew' do
   requires 'homebrew installed'
   met? { which 'brew' }
@@ -10,18 +9,11 @@ dep 'homebrew' do
 end
 
 dep 'homebrew installed' do
-  define_var :homebrew_repo_user, :default => 'mxcl', :message => "Whose homebrew repo would you like to install from?"
+  define_var :homebrew_repo_user, :default => 'mxcl', :message => "Whose homebrew repo would you like to use?"
+  requires 'writable install location', 'homebrew git'
   setup {
-    if Babushka::BrewHelper.present?
-      # There's some homebrew install already - no extra git/brew checks needed.
-      set :install_prefix, Babushka::BrewHelper.prefix
-    elsif which 'git'
-      # We have git but not brew - prepare for initial brew install
-      definer.requires 'writable install location'
-    else
-      # We have neither git nor brew - install git via brew bootstrap
-      definer.requires 'homebrew git'
-    end
+    # Use the existing homebrew install if there is one
+    set :install_prefix, Babushka::BrewHelper.prefix if Babushka::BrewHelper.present?
   }
   met? { File.exists? var(:install_prefix) / '.git' }
   meet {
