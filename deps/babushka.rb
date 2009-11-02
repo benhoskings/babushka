@@ -40,7 +40,7 @@ dep 'writable install location' do
   requires 'install location exists', 'admins can sudo'
   met? {
     returning File.writable? var(:install_prefix) do |result|
-      log "#{var :install_prefix} isn't writable by #{shell 'whoami'}."
+      log "#{var :install_prefix} isn't writable by #{shell 'whoami'}." unless result
     end
   }
   meet {
