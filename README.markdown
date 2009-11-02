@@ -6,7 +6,7 @@ babushka
 Deploying a webapp or setting up a new user account or configuring automated backups aren't hard. They're made up of lots of simple little jobs that have to be done just right.
 
 
-if only it were this easy (hint: it is)
+if only it were this easy (it is)
 ---
 
     $ ruby bin/babushka.rb 'db backups'
@@ -52,7 +52,7 @@ Example: to get a rails app running..
       after { restart_webserver }
     end
 
-Any dep can depend on any number of other ones. A given dep can be required by multiple others and it all comes out in the wash. If you accidentally a loop, Babushka will let you know. So you don't have to think about the heirachy, just each little piece on its own.
+Any dep can depend on any number of other ones. A given dep can be required by multiple others and it all comes out in the wash. If you accidentally a loop, babushka will let you know. So you don't have to think about the hierarchy, just each little piece on its own.
 
 This isn't only about deploying webapps though. Deps like to do anything that you don't.
 
@@ -71,7 +71,7 @@ This isn't only about deploying webapps though. Deps like to do anything that yo
       }
     end
 
-Don't worry about the `your_ssh_public_key` var - Babushka will ask for it when it needs the value.
+Don't worry about the `your_ssh_public_key` var - babushka will ask for it when it needs the value.
 
 So in general:
 
@@ -91,7 +91,15 @@ what are there deps for?
 
 Pretty much whatever I've needed. That means that there are lots missing, and the ones there are may well not be right for you.
 
-But a dep is so easy to write or modify, you can do up a quick one for just about anything and pop it in `~/.babushka/deps`. Send me the good ones and I'll include 'em!
+Because of this, babushka itself only contains the deps that it needs to know how to install itself, and set up a bare minimum amount of software like ruby and git. Everything else is stored separately, in a dep source. By default, babushka installs my dep source, but you can add your own, or multiple other ones, or remove mine if you like, just like managing gem sources. All you have to do is
+
+    babushka sources -a git://github.com/someone else's/awesome deps.git
+
+And they're available straight away (`babushka list` to see what's there). To pull the latest updates for all sources, just run a
+
+    babushka pull
+
+You can drop deps you write in `~/.babushka/deps`, and babushka will load those too. 
 
 
 n.b.
@@ -103,4 +111,8 @@ Babushka is new, in flux, and only has partial test coverage. Also, many deps wi
 license
 -------
 
-Babushka is licensed under the BSD license, which can be found in full in the LICENSE file.
+Babushka is licensed under the BSD license, except for the following exception:
+
+lib/support/levenshtein.rb, which is licensed under the MIT license.
+
+The BSD license can be found in full in the LICENSE file, and the MIT license at the top of lib/support/levenshtein.rb.
