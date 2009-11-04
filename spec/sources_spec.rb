@@ -34,6 +34,23 @@ describe "adding sources" do
       Source.sources.should_not include @source1
       Source.sources.should include @source2
     end
+    describe "with local changes" do
+      before {
+        @source_def = dep_source 'changes_test'
+        @source = Source.new(@source_def)
+        @source.add!
+      }
+      it "shouldn't remove sources" do
+        File.open(@source.path / 'changes_test.rb', 'w') {|f| f << 'modification' }
+        L{ Source.remove!(@source_def) }.should change(Source, :count).by(0)
+        Source.sources.should include @source_def
+      end
+      it "shouldn't remove sources with untracked files" do
+        File.open(@source.path / 'changes_test_untracked.rb', 'w') {|f| f << 'modification' }
+        L{ Source.remove!(@source_def) }.should change(Source, :count).by(0)
+        Source.sources.should include @source_def
+      end
+    end
   end
   
   describe "clearing" do

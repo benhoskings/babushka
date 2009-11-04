@@ -88,6 +88,8 @@ module Babushka
     def remove!
       if !self.class.sources.detect {|s| s[:name] == name }
         log "No such source: #{uri}"
+      elsif !in_dir(path) { shell "git ls-files -mo" }.split("\n").empty?
+        log "Local changes found in #{path}, not removing."
       else
         log_block "Removing #{name} (#{uri})" do
           remove_repo and remove_source
