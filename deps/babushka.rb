@@ -18,11 +18,11 @@ dep 'dep source' do
     define_var :dep_source, :default => shell('git config github.user'), :message => "Whose deps would you like to install (you can add others' later)"
   }
   met? {
-    returning(!(source_count = Babushka::Source.count).zero?) do |result|
+    returning(!(source_count = shell('babushka sources -l').split("\n").reject {|l| l.starts_with? '#' }.count).zero?) do |result|
       log_ok "There #{source_count == 1 ? 'is' : 'are'} #{source_count} dep source#{'s' unless source_count == 1} set up." if result
     end
   }
-  meet { Babushka::Source.add! var(:dep_source), "git://github.com/#{var(:dep_source)}/babushka-deps" }
+  meet { shell "babushka sources -a '#{var :dep_source}' 'git://github.com/#{var(:dep_source)}/babushka-deps'", :log => true }
 end
 
 dep 'babushka installed' do
