@@ -25,7 +25,7 @@ module Babushka
     end
     def self.list!
       sources.tap {|sources|
-        log "There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1}."
+        log "# There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1}."
       }.each {|source|
         log Source.new(source).description
       }
