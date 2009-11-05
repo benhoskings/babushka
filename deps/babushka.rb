@@ -52,8 +52,8 @@ dep 'writable install location' do
 end
 
 dep 'install location exists' do
-  met? { File.directory? var(:install_prefix) / 'bin' }
-  meet { sudo "mkdir -p '#{var(:install_prefix) / 'bin'}'" }
+  met? { %w[bin etc lib share].all? {|path| File.directory? var(:install_prefix) / path } }
+  meet { %w[bin etc lib share].each {|path| sudo "mkdir -p '#{var(:install_prefix) / path}'" } }
 end
 
 ext 'install location in path' do
