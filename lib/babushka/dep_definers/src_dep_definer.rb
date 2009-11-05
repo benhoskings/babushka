@@ -29,7 +29,7 @@ module Babushka
         present, missing = provides.partition {|cmd_name| cmd_dir(cmd_name) }
 
         returning missing.empty? do
-          log_error "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing from your PATH." unless missing.empty?
+          log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing from your PATH." unless missing.empty?
         end
       }
       meet { do_it_live }
