@@ -1,4 +1,4 @@
-dep 'homebrew' do
+dep 'homebrew binary in place' do
   requires 'homebrew installed'
   met? { which 'brew' }
   meet {

@@ -13,14 +13,5 @@ ext 'apt' do
 end
 
 dep 'homebrew' do
-  requires 'git', 'build tools'
-  met? {
-    if Babushka::BrewHelper.prefix && File.directory?(Babushka::BrewHelper.prefix / 'Library')
-      log_ok "homebrew is installed at #{Babushka::BrewHelper.prefix}."
-    else
-      log_error "no brews."
-      :fail
-    end
-  }
-  meet { }
+  requires 'homebrew binary in place', 'build tools'
 end
