@@ -13,7 +13,7 @@ dep 'homebrew installed' do
   requires 'writable install location', 'homebrew git'
   setup {
     # Use the existing homebrew install if there is one
-    set :install_prefix, Babushka::BrewHelper.prefix if Babushka::BrewHelper.present?
+    !Babushka::BrewHelper.present? || set :install_prefix, Babushka::BrewHelper.prefix
   }
   met? { File.exists? var(:install_prefix) / '.git' }
   meet {
