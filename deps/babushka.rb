@@ -18,7 +18,7 @@ dep 'dep source' do
     define_var :dep_source, :default => shell('git config github.user'), :message => "Whose deps would you like to install (you can add others' later)"
   }
   met? {
-    returning(!(source_count = shell('babushka sources -l').split("\n").reject {|l| l.starts_with? '#' }.count).zero?) do |result|
+    returning(!(source_count = shell('babushka sources -l').split("\n").reject {|l| l.starts_with? '#' }.length).zero?) do |result|
       log_ok "There #{source_count == 1 ? 'is' : 'are'} #{source_count} dep source#{'s' unless source_count == 1} set up." if result
     end
   }
