@@ -31,7 +31,7 @@ pkg 'homebrew git' do
 end
 
 dep 'homebrew bootstrap' do
-  requires 'writable install location'
+  requires 'writable install location', 'build tools'
   met? { cmds_in_path? 'brew' }
   meet {
     source "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew", 'masterbrew.tgz' do |path|
