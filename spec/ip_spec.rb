@@ -51,4 +51,13 @@ describe "IPRange" do
     IPRange.new('10.0.x').bytes.should == [10, 0, 'x']
     IPRange.new('10.0.x.x').bytes.should == [10, 0, 'x']
   end
+  describe "#padded_bytes" do
+    it "should pad the ranges back out to 4 terms" do
+      IPRange.new('10.0.1.x').padded_bytes.should == [10, 0,   1,   'x']
+      IPRange.new('10.x').padded_bytes.should     == [10, 'x', 'x', 'x']
+      IPRange.new('10.x.x.x').padded_bytes.should == [10, 'x', 'x', 'x']
+      IPRange.new('10.0.x').padded_bytes.should   == [10, 0,   'x', 'x']
+      IPRange.new('10.0.x.x').padded_bytes.should == [10, 0,   'x', 'x']
+    end
+  end
 end

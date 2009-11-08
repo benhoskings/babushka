@@ -69,7 +69,11 @@ module Babushka
     def valid?
       !bytes.empty?
     end
-    
+
+    def padded_bytes
+      bytes.concat(['x'] * (4 - bytes.length))
+    end
+
     private
     def sanitize input
       if /^\d+(\.\d+)*(\.x)+$/ !~ input
