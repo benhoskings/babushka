@@ -86,6 +86,12 @@ module Babushka
       }.join('.')
     end
 
+    def subnet
+      padded_bytes.map {|byte|
+        byte == 'x' ? '0' : '255'
+      }.join('.')
+    end
+
     private
     def sanitize input
       if /^\d+(\.\d+)*(\.x)+$/ !~ input

@@ -70,4 +70,13 @@ describe "IPRange" do
       IPRange.new('10.x').ip_for('x.x.x.1').should == '10.0.0.1'
     end
   end
+  describe "#subnet" do
+    it "should return the subnet mask" do
+      IPRange.new('10.0.1.x').subnet.should == '255.255.255.0'
+      IPRange.new('10.x')    .subnet.should == '255.0.0.0'
+      IPRange.new('10.x.x.x').subnet.should == '255.0.0.0'
+      IPRange.new('10.0.x')  .subnet.should == '255.255.0.0'
+      IPRange.new('10.0.x.x').subnet.should == '255.255.0.0'
+    end
+  end
 end
