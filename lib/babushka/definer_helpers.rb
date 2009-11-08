@@ -4,7 +4,6 @@ module Babushka
     def result message, opts = {}
       returning opts[:result] do
         @dep.unmet_message = message
-        log message, :as => (:ok if opts[:result])
       end
     end
 
