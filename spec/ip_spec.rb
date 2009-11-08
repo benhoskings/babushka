@@ -1,13 +1,13 @@
 require 'spec/spec_support'
 
-describe "String#valid_ip?" do
+describe "IP" do
   it "should work for valid IPs" do
     [
       '10.0.1.1'      ,
       '192.168.0.1'   ,
       '174.129.110.43'
     ].each {|string|
-      string.should be_valid_ip
+      IP.new(string).should be_valid
     }
   end
   it "should work for invalid IPs" do
@@ -18,19 +18,19 @@ describe "String#valid_ip?" do
       '192.168.0.c'    ,
       '174.129.110.433'
     ].each {|string|
-      string.should_not be_valid_ip
+      IP.new(string).should_not be_valid
     }
   end
 end
 
-describe "String#valid_ip_range?" do
+describe "IPRange" do
   it "should work for valid IPs" do
     [
       '10.0.1.x'   ,
       '10.0.x'     ,
       '174.129.x.x'
     ].each {|string|
-      string.should be_valid_ip_range
+      IPRange.new(string).should be_valid
     }
   end
   it "should work for invalid IPs" do
@@ -41,7 +41,7 @@ describe "String#valid_ip_range?" do
       '174.129.110.',
       '174.129.x.43'
     ].each {|string|
-      string.should_not be_valid_ip_range
+      IPRange.new(string).should_not be_valid
     }
   end
 end
