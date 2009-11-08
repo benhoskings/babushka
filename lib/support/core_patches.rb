@@ -208,8 +208,8 @@ class Object
     obj
   end
 
-  def in? list
-    list.include? self
+  def in? first, *rest
+    (first.is_a?(Array) ? first : [first].concat(rest)).include? self
   end
 
   def metaclass
