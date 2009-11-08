@@ -60,4 +60,14 @@ describe "IPRange" do
       IPRange.new('10.0.x.x').padded_bytes.should == [10, 0,   'x', 'x']
     end
   end
+  describe "#ip_for" do
+    it "should combine network and address parts" do
+      IPRange.new('10.0.1.x').ip_for('x.x.x.1').should == '10.0.1.1'
+      IPRange.new('10.13.37.x').ip_for('x.x.x.1').should == '10.13.37.1'
+    end
+    it "should default uncovered sections to 0" do
+      IPRange.new('10.0.x').ip_for('x.x.x.1').should == '10.0.0.1'
+      IPRange.new('10.x').ip_for('x.x.x.1').should == '10.0.0.1'
+    end
+  end
 end

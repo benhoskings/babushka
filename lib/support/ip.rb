@@ -74,6 +74,18 @@ module Babushka
       bytes.concat(['x'] * (4 - bytes.length))
     end
 
+    def ip_for address_part
+      padded_bytes.zip(
+        IPRange.new(address_part.reverse).padded_bytes.reverse
+      ).map {|(network, address)|
+        if address == 'x'
+          network == 'x' ? '0' : network
+        else
+          address
+        end
+      }.join('.')
+    end
+
     private
     def sanitize input
       if /^\d+(\.\d+)*(\.x)+$/ !~ input
