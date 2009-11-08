@@ -76,7 +76,7 @@ module Babushka
 
     def ip_for address_part
       padded_bytes.zip(
-        IPRange.new(address_part.reverse).padded_bytes.reverse
+        IPTail.new(address_part).padded_bytes
       ).map {|(network, address)|
         if address == 'x'
           network == 'x' ? '0' : network
@@ -111,6 +111,16 @@ module Babushka
           end
         end
       end
+    end
+  end
+
+  class IPTail < IPRange
+    def padded_bytes
+      (['x'] * (4 - bytes.length)).concat bytes
+    end
+    private
+    def sanitize input
+      super(input.split('.').reverse.join('.')).reverse
     end
   end
 end
