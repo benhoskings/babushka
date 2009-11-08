@@ -5,7 +5,7 @@ def compare_with operator
   pairs.zip(results[operator]).each {|pair,expected|
     result = VersionStr.new(pair.first).send operator, VersionStr.new(pair.last)
     it "#{pair.first} #{operator} #{pair.last}: #{result}" do
-      expected.should == result
+      result.should == expected
     end
   }
 end
