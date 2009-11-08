@@ -44,4 +44,11 @@ describe "IPRange" do
       IPRange.new(string).should_not be_valid
     }
   end
+  it "should collapse multiple wildcards" do
+    IPRange.new('10.0.1.x').bytes.should == [10, 0, 1, 'x']
+    IPRange.new('10.x').bytes.should == [10, 'x']
+    IPRange.new('10.x.x.x').bytes.should == [10, 'x']
+    IPRange.new('10.0.x').bytes.should == [10, 0, 'x']
+    IPRange.new('10.0.x.x').bytes.should == [10, 0, 'x']
+  end
 end

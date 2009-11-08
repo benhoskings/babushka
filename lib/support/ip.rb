@@ -75,7 +75,7 @@ module Babushka
       if /^\d+(\.\d+)*(\.x)+$/ !~ input
         []
       else
-        parse_and_sanitize input do |str,val|
+        parse_and_sanitize input.gsub(/x(\.x)*$/, 'x') do |str,val|
           if ((1..255) === val) || (val == 0 && str == '0')
             val
           elsif str == 'x'
