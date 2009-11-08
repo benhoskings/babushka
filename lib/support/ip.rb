@@ -92,6 +92,12 @@ module Babushka
       }.join('.')
     end
 
+    def broadcast
+      padded_bytes.map {|byte|
+        byte == 'x' ? '255' : byte
+      }.join('.')
+    end
+
     private
     def sanitize input
       if /^\d+(\.\d+)*(\.x)+$/ !~ input

@@ -79,4 +79,13 @@ describe "IPRange" do
       IPRange.new('10.0.x.x').subnet.should == '255.255.0.0'
     end
   end
+  describe "#broadcast" do
+    it "should return the broadcast address" do
+      IPRange.new('10.0.1.x').broadcast.should == '10.0.1.255'
+      IPRange.new('10.x')    .broadcast.should == '10.255.255.255'
+      IPRange.new('10.x.x.x').broadcast.should == '10.255.255.255'
+      IPRange.new('10.0.x')  .broadcast.should == '10.0.255.255'
+      IPRange.new('10.0.x.x').broadcast.should == '10.0.255.255'
+    end
+  end
 end
