@@ -15,7 +15,7 @@ end
 dep 'dep source' do
   requires 'babushka in path'
   setup {
-    define_var :dep_source, :default => shell('git config github.user'), :message => "Whose deps would you like to install (you can add others' later)"
+    define_var :dep_source, :default => (shell('git config github.user') || 'benhoskings'), :message => "Whose deps would you like to install (you can add others' later)"
   }
   met? {
     returning(!(source_count = shell('babushka sources -l').split("\n").reject {|l| l.starts_with? '#' }.length).zero?) do |result|
