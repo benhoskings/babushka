@@ -19,6 +19,23 @@ module Babushka
       installs.all? {|pkg| pkg_manager.has? pkg }
     end
 
+    def internal_pkg_setup
+      add_cfg_deps and setup_for_install
+    end
+
+    def add_cfg_deps
+      cfg.all? {|target|
+        target_file = target.to_s
+        source_file = File.dirname(source_path) / name / "#{File.basename(target_file)}.erb"
+        requires(dep "#{target_file} for #{name}" do
+          met? { babushka_config? target_file }
+          before { shell "chmod o+rx #{File.dirname(target_file)}", :sudo => !File.writable?(File.dirname(target_file)) }
+          meet { render_erb source_file, :to => target_file, :sudo => !File.writable?(File.dirname(target_file)) }
+          on :linux, after { service_name.each {|s| sudo "/etc/init.d/#{s} restart" } }
+        end)
+      }
+    end
+
     def setup_for_install
       pkg_manager.setup_for_install_of the_dep, installs
     end
