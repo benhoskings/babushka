@@ -235,8 +235,9 @@ def yaml path
 end
 
 def render_erb erb, opts = {}
-  path = File.dirname(source_path) / erb
-  if !File.exists?(path) && !opts[:optional]
+  if (path = erb_path_for(erb)).nil?
+    log_error "If you use #render_erb within a dynamically defined dep, you have to give the full path to the erb template."
+  elsif !File.exists?(path) && !opts[:optional]
     log_error "Couldn't find erb to render at #{path}."
   elsif File.exists?(path)
     require 'erb'
@@ -252,6 +253,14 @@ def render_erb erb, opts = {}
         log_error "Couldn't render #{opts[:to]}."
       end
     end
+  end
+end
+
+def erb_path_for erb
+  if erb.starts_with? '/'
+    erb # absolute path
+  elsif source_path
+    File.dirname(source_path) / erb # directory this dep is in, plus relative path
   end
 end
 
