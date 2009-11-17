@@ -70,7 +70,7 @@ module Babushka
       value = nil
       10.times do
         value = read_from_prompt(opts[:prompt].end_with(' ')).chomp
-        value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].empty?)
+        value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].to_s.empty?)
 
         error_message = if opts[:choices] && !value.in?(opts[:choices])
           "That's not a valid choice"
