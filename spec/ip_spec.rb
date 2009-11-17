@@ -1,6 +1,11 @@
 require 'spec/spec_support'
 
 describe "IP" do
+  it "should accept IPs, arrays and strings" do
+    IP.new(IP.new('10.0.1.1')).to_s.should == '10.0.1.1'
+    IP.new([10, 0, 1, 1]).to_s.should == '10.0.1.1'
+    IP.new('10.0.1.1').to_s.should == '10.0.1.1'
+  end
   it "should work for valid IPs" do
     [
       '10.0.1.1'      ,
@@ -20,6 +25,15 @@ describe "IP" do
     ].each {|string|
       IP.new(string).should_not be_valid
     }
+  end
+  describe "equality" do
+    it "should be equal to equivalent IPs" do
+      IP.new('10.0.1.1').should == IP.new([10, 0, 1, 1])
+    end
+    it "should not be equal to different IPs" do
+      IP.new('10.0.1.1').should_not == IP.new('10.0.0.1')
+      IP.new('10.0.1.1').should_not == IP.new('10.0.1')
+    end
   end
 end
 

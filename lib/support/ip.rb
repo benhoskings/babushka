@@ -6,6 +6,14 @@ module Babushka
       @bytes = sanitize input
     end
 
+    def to_s
+      bytes.join '.'
+    end
+
+    def == other
+      bytes == other.bytes
+    end
+
     # Returns whether this IP should be considered a valid one for a client to be using.
     def valid?
       describe.in? :public, :private, :loopback
@@ -14,8 +22,14 @@ module Babushka
     private
 
     def sanitize input
-      parse_and_sanitize input do |str,val|
-        val if ((1..255) === val) || (val == 0 && str == '0')
+      if input.is_a? IP
+        input.bytes.dup
+      elsif input.is_a? Array
+        input.select {|i| (0..255).include? i }
+      else
+        parse_and_sanitize input do |str,val|
+          val if ((1..255) === val) || (val == 0 && str == '0')
+        end
       end
     end
 
