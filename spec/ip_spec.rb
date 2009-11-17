@@ -88,6 +88,18 @@ describe "IPRange" do
       IPRange.new('10.0.x.x').padded_bytes.should == [10, 0,   'x', 'x']
     end
   end
+  describe "#first" do
+    it "should return the first IP in the range" do
+      IPRange.new('10.0.x').first.should == IP.new('10.0.0.1')
+      IPRange.new('10.13.37.x').first.should == IP.new('10.13.37.1')
+    end
+  end
+  describe "#last" do
+    it "should return the last IP in the range" do
+      IPRange.new('10.0.x').last.should == IP.new('10.0.255.255')
+      IPRange.new('10.13.37.x').last.should == IP.new('10.13.37.255')
+    end
+  end
   describe "#ip_for" do
     it "should combine network and address parts" do
       IPRange.new('10.0.1.x').ip_for('x.x.x.1').should == IP.new('10.0.1.1')

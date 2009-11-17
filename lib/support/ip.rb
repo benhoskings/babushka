@@ -112,6 +112,14 @@ module Babushka
       }
     end
 
+    def first
+      ip_for 'x.0.0.1'
+    end
+
+    def last
+      ip_for 'x.255.255.255'
+    end
+
     def subnet
       padded_bytes.map {|byte|
         byte == 'x' ? '0' : '255'
