@@ -35,6 +35,20 @@ describe "IP" do
       IP.new('10.0.1.1').should_not == IP.new('10.0.1')
     end
   end
+  describe "#next" do
+    it "should return the next IP in the range" do
+      IP.new('10.0.1.1').next.to_s.should == '10.0.1.2'
+      IP.new('10.0.1.255').next.to_s.should == '10.0.2.0'
+      IP.new('10.13.37.1').next.to_s.should == '10.13.37.2'
+    end
+  end
+  describe "#prev" do
+    it "should return the previous IP in the range" do
+      IP.new('10.0.1.2').prev.to_s.should == '10.0.1.1'
+      IP.new('10.0.2.0').prev.to_s.should == '10.0.1.255'
+      IP.new('10.13.37.255').prev.to_s.should == '10.13.37.254'
+    end
+  end
 end
 
 describe "IPRange" do

@@ -19,6 +19,14 @@ module Babushka
       describe.in? :public, :private, :loopback
     end
 
+    def next
+      offset_by 1
+    end
+
+    def prev
+      offset_by -1
+    end
+
     private
 
     def sanitize input
@@ -40,6 +48,14 @@ module Babushka
       ).map {|(str,val)|
         yield str, val
       }.squash
+    end
+
+    def offset_by offset
+      IP.new bytes.reverse.inject([offset]) {|acc,byte|
+        carry, next_byte = (byte + acc.pop).divmod(256)
+        acc.push next_byte
+        acc.push carry
+      }[0...4].reverse.join('.')
     end
 
     # Returns a symbol describing the class of IP address +self+ represents, if any.
