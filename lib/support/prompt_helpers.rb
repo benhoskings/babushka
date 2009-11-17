@@ -1,5 +1,21 @@
 module Babushka
   module PromptHelpers
+    def prompt_for_ip message, opts = {}
+      prompt_for_value(message, opts.merge(
+        :retry => "That's not an IP, like '10.0.1.1'."
+      )) {|value|
+        IP.new(value).valid?
+      }
+    end
+
+    def prompt_for_ip_range message, opts = {}
+      prompt_for_value(message, opts.merge(
+        :retry => "That's not an IP range, like '10.0.1.x'."
+      )) {|value|
+        IPRange.new(value).valid?
+      }
+    end
+
     def prompt_for_path message, opts = {}
       prompt_for_value(message, opts.merge(
         :retry => "Doesn't exist, or not a directory."
