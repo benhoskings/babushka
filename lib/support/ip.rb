@@ -105,15 +105,11 @@ module Babushka
     end
 
     def ip_for address_part
-      padded_bytes.zip(
+      IP.new padded_bytes.zip(
         IPTail.new(address_part).padded_bytes
       ).map {|(network, address)|
-        if address == 'x'
-          network == 'x' ? '0' : network
-        else
-          address
-        end
-      }.join('.')
+        [network, address, 0].detect {|i| i != 'x' }
+      }
     end
 
     def subnet
