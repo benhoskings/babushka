@@ -48,7 +48,11 @@ module Babushka
     def var name, opts = {}
       define_var name, opts
       if vars[name.to_s].has_key? :value
-        vars[name.to_s][:value]
+        if vars[name.to_s][:value].respond_to? :call
+          vars[name.to_s][:value].call
+        else
+          vars[name.to_s][:value]
+        end
       elsif opts[:ask] != false
         ask_for_var name.to_s
       end
