@@ -5,7 +5,7 @@ module Babushka
     include PromptHelpers
 
     def report dep_name
-      confirm "I can file a bug report for that now, if you like.", :otherwise => "OK, you're on your own :)" do
+      confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
         post_report dep_name,
           (which('git') && shell('git config github.user')) || 'anonymous',
           read_file(Base.task.var_path_for(dep_name)),
