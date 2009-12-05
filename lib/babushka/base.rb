@@ -71,7 +71,7 @@ module Babushka
       if args.empty?
         fail_with handle_help
       elsif (verb = validate_verb(args.first)).nil?
-        confirm %Q{That's not a verb - did you mean "meet '#{args.first}'"?}, :default => 'y' do
+        confirm %Q{That's not a verb - did you mean "meet '#{args.first}'"?} do
           PassedVerb.new verb_for('meet'), [], []
         end
       else
