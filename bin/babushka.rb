@@ -18,6 +18,7 @@ babushka_components = %w[
   support/levenshtein
 
   babushka/structs
+  babushka/cmdline
   babushka/base
   babushka/shell
   babushka/system_spec
