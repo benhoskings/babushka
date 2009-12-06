@@ -71,7 +71,9 @@ include Babushka::DepHelpers
 include Babushka::VersionHelpers
 
 if $0 == __FILE__
+  # Running standalone - run the specified command and exit.
   exit Babushka::Base.run(ARGV) ? 0 : 1
 else
+  # Required - just init and load deps.
   Babushka::Base.setup_noninteractive
 end
