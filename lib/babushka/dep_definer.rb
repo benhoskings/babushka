@@ -57,7 +57,7 @@ module Babushka
 
     def self.load_deps_from path
       $stdout.flush
-      previous_length, previous_skipped = Dep.deps.length, Dep.skipped
+      previous_length, previous_skipped = Dep.pool.count, Dep.pool.skipped_count
       Dir.glob(pathify(path) / '**/*.rb').each {|f|
         @@current_load_path = f
         begin
@@ -70,7 +70,7 @@ module Babushka
           return nil
         end
       }
-      log_ok "Loaded #{Dep.deps.length - previous_length}#{" and skipped #{Dep.skipped - previous_skipped}" unless Dep.skipped == previous_skipped} deps from #{path}."
+      log_ok "Loaded #{Dep.pool.count - previous_length}#{" and skipped #{Dep.pool.skipped_count - previous_skipped}" unless Dep.pool.skipped_count == previous_skipped} deps from #{path}."
     end
 
     def self.accepts_block_for method_name, &default_block

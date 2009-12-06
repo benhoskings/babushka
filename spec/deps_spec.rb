@@ -13,13 +13,13 @@ describe "an already met dep tree" do
   }
   it "should met?-check each dep exactly once" do
     Dep('a').met?
-    Dep.names.each {|i| @yield_counts[i].should == @yield_counts_already_met }
+    Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_already_met }
   end
   it "should meet no deps" do
     Dep('a').meet
-    Dep.names.each {|i| @yield_counts[i].should == @yield_counts_already_met }
+    Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_already_met }
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end
 
 describe "an unmeetable dep tree" do
@@ -34,7 +34,7 @@ describe "an unmeetable dep tree" do
   }
   it "should met?-check each dep exactly once" do
     Dep('a').met?
-    Dep.names.each {|i| @yield_counts[i].should == @yield_counts_met_run }
+    Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_met_run }
   end
   it "should meet each dep exactly once" do
     Dep('a').meet
@@ -42,7 +42,7 @@ describe "an unmeetable dep tree" do
     %w[a b c].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
     %w[d e].each {|i| @yield_counts[i].should == @yield_counts_none }
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end
 
 describe "a meetable dep tree" do
@@ -57,13 +57,13 @@ describe "a meetable dep tree" do
   }
   it "should met?-check each dep exactly once" do
     Dep('a').met?
-    Dep.names.each {|i| @yield_counts[i].should == @yield_counts_met_run }
+    Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_met_run }
   end
   it "should meet each dep exactly once" do
     Dep('a').meet
-    Dep.names.each {|i| @yield_counts[i].should == @yield_counts_meet_run }
+    Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_meet_run }
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end
 
 describe "a partially meetable dep tree" do
@@ -78,7 +78,7 @@ describe "a partially meetable dep tree" do
   }
   it "should met?-check each dep exactly once" do
     Dep('a').met?
-    Dep.names.each {|i| @yield_counts[i].should == @yield_counts_met_run }
+    Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_met_run }
   end
   it "should meet each dep exactly once" do
     Dep('a').meet
@@ -86,5 +86,5 @@ describe "a partially meetable dep tree" do
     %w[e].each {|i| @yield_counts[i].should == @yield_counts_failed_meet_run }
     %w[a b d].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end

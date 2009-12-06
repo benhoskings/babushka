@@ -31,6 +31,7 @@ babushka_components = %w[
   babushka/pkg_helpers/macports_helper
   babushka/pkg_helpers/src_helper
   babushka/dep
+  babushka/dep_pool
   babushka/definer_helpers
   babushka/source
   babushka/task

@@ -14,7 +14,5 @@ describe "accepts_hash_for default values" do
     Dep('default installs').definer.installs.should == [ver('default installs')]
   end
 
-  after {
-    Dep.clear!
-  }
+  after { Dep.pool.clear! }
 end

@@ -7,9 +7,11 @@ module Babushka
     def task
       @task ||= Task.new
     end
-
     def host
       @host ||= Babushka::SystemSpec.for_system
+    end
+    def dep_pool
+      @pool ||= DepPool.new
     end
 
     def run args

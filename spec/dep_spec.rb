@@ -5,7 +5,7 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "blank"
-    }.should change(Dep, :count).by(1)
+    }.should change(Dep.pool, :count).by(1)
   end
   it "should work for filled in deps" do
     L{
@@ -16,17 +16,17 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Dep, :count).by(1)
+    }.should change(Dep.pool, :count).by(1)
   end
   it "should accept deps as dep names" do
     L{
       dep 'parent dep' do
         requires dep('nested dep')
       end
-    }.should change(Dep, :count).by(2)
+    }.should change(Dep.pool, :count).by(2)
     Dep('parent dep').definer.requires.should == [ver('nested dep')]
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end
 
 describe "calling met? on a single dep" do
@@ -45,7 +45,7 @@ describe "calling met? on a single dep" do
     ).met?.should == true
     @yield_counts['met for met'].should == @yield_counts_met_run
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end
 
 describe "calling meet on a single dep" do
@@ -82,5 +82,5 @@ describe "calling meet on a single dep" do
     ).meet.should == true
     @yield_counts['met'].should == @yield_counts_already_met
   end
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end

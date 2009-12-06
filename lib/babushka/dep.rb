@@ -6,11 +6,11 @@ module Babushka
 
     module HelperMethods
       def Dep name;                    Dep.for name.to_s                                        end
-      def dep name, opts = {}, &block; Dep.add name, opts, block, BaseDepDefiner, BaseDepRunner end
-      def pkg name, opts = {}, &block; Dep.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
-      def gem name, opts = {}, &block; Dep.add name, opts, block, GemDepDefiner , GemDepRunner  end
-      def src name, opts = {}, &block; Dep.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
-      def ext name, opts = {}, &block; Dep.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
+      def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
+      def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
+      def gem name, opts = {}, &block; Dep.pool.add name, opts, block, GemDepDefiner , GemDepRunner  end
+      def src name, opts = {}, &block; Dep.pool.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
+      def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
   end
 
@@ -31,47 +31,14 @@ module Babushka
       @definer = definer_class.new self, &block
       @definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      Dep.register self
+      Dep.pool.register self
     end
 
-    def self.add name, in_opts, block, definer_class, runner_class
-      if self.for name
-        @@skipped += 1
-        self.for name
-      else
-        new name, in_opts, block, definer_class, runner_class
-      end
-    end
-
-    def self.deps
-      @@deps ||= {}
-    end
-    def self.count
-      deps.length
-    end
-    @@skipped = 0
-    def self.skipped
-      @@skipped
-    end
-    def self.names
-      @@deps.keys
-    end
-    def self.all
-      @@deps.values
-    end
-    def self.clear!
-      @@deps = {}
-    end
-    def self.uncache
-      all.each {|dep| dep.send :uncache }
-    end
-
-    def self.register dep
-      raise "There is already a registered dep called '#{dep.name}'." unless deps[dep.name].nil?
-      deps[dep.name] = dep
+    def self.pool
+      Base.dep_pool
     end
     def self.for name
-      deps[name]
+      pool.for name
     end
 
     extend SuggestHelpers
@@ -97,7 +64,7 @@ module Babushka
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
       returning cached? ? cached_result : process_and_cache do
-        Dep.uncache if with_run_opts[:top_level]
+        Dep.pool.uncache! if with_run_opts[:top_level]
       end
     end
 
@@ -197,7 +164,7 @@ module Babushka
     def cached?
       !@_cached_process.nil?
     end
-    def uncache
+    def uncache!
       @_cached_process = nil
     end
     def cached_process

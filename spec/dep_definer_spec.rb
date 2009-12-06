@@ -4,11 +4,11 @@ require 'spec/dep_definer_support'
 describe "loading deps" do
   it "should load deps from a file" do
     DepDefiner.load_deps_from('spec/deps/good').should be_true
-    Dep.names.should include('test dep 1')
+    Dep.pool.names.should include('test dep 1')
   end
   it "should recover from load errors" do
     DepDefiner.load_deps_from('spec/deps/bad').should be_nil
-    Dep.names.should_not include('broken test dep 1')
+    Dep.pool.names.should_not include('broken test dep 1')
   end
 end
 
@@ -54,7 +54,7 @@ describe "accepts_block_for behaviour" do
     value_from_block.should == lambda
   end
 
-  after { Dep.clear! }
+  after { Dep.pool.clear! }
 end
 
 describe "accepts_list_for behaviour" do
