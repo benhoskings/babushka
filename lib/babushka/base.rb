@@ -8,11 +8,7 @@ module Babushka
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
-      Verb.new(:list, '-T', '--tasks', "List the available deps", [
-        # Opt.new(:source, '-s', '--source', "Only list deps from a specific source", true, [
-        #   Arg.new(:name, "The name of the source", false, false, 'git://github.com/benhoskings/babushka_deps')
-        # ])
-      ], [
+      Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
       Verb.new(:sources, nil, nil, "Manage dep sources", [
