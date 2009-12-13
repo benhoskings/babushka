@@ -60,7 +60,7 @@ module Babushka
     def handle_list verb
       setup_noninteractive
       filter_str = verb.args.first.value unless verb.args.first.nil?
-      Dep.deps.values.select {|dep|
+      Dep.pool.deps.select {|dep|
         filter_str.nil? || dep.name[filter_str]
       }.sort_by {|dep|
         dep.name
