@@ -107,6 +107,7 @@ module Babushka
     end
 
     def print_usage_for verb
+      log "\n#{verb.name} - #{verb.description}"
       log "\nExample usage:"
       (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|items|
         items.first.each {|item| # mandatory
