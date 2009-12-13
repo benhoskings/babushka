@@ -148,7 +148,7 @@ module Babushka
       if item.is_a? Verb
         item.name.to_s
       elsif item.is_a? Opt
-        "#{[item.short, item.long].join(', ')}"
+        "#{[item.short, item.long].compact.join(', ')}"
       elsif item.is_a? Arg
         describe_item item
       end
