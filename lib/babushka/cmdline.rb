@@ -28,6 +28,9 @@ module Babushka
       Verb.new(:push, nil, nil, "Push local dep updates to writable sources", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
+      Verb.new(:update, nil, nil, "Update babushka components", [
+        Opt.new(:system, nil, '--system', "Update babushka itself to the latest version", false, [])
+      ], []),
       Verb.new(:meet, nil, nil, "Process deps", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
@@ -96,6 +99,13 @@ module Babushka
     end
     def handle_push verb
       fail_with "Push isn't implemented yet."
+    end
+    def handle_update verb
+      if verb.opts.length != 1
+        fail_with help_for verb.def, "'update' requires exactly one option."
+      else
+        Babushka.updater.update!
+      end
     end
 
   end
