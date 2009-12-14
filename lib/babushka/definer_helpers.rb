@@ -10,5 +10,10 @@ module Babushka
     def   met message; result message, :result => true  end
     def unmet message; result message, :result => false end
 
+    def fail_because message
+      log message
+      :fail
+    end
+
   end
 end
