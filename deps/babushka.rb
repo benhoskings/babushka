@@ -28,7 +28,7 @@ end
 dep 'babushka installed' do
   requires 'ruby', 'git', 'writable install location', 'install location in path'
   set :babushka_source, "git://github.com/benhoskings/babushka.git"
-  met? { File.exists? var(:install_prefix) / 'babushka/bin/babushka.rb' }
+  met? { git_repo?(var(:install_prefix) / 'babushka') }
   meet {
     in_dir var :install_prefix do |path|
       log_shell "Installing babushka to #{var(:install_prefix) / 'babushka'}", %Q{git clone "#{var :babushka_source}" ./babushka}
