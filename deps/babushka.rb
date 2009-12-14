@@ -74,7 +74,7 @@ dep 'writable install location' do
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable?(var(:install_prefix) / path) }
     returning nonwritable.empty? do |result|
-      log "Within #{var :install_prefix}, #{nonwritable.to_list} #{nonwritable.length == 1 ? "isn't" : "aren't"} writable by #{shell 'whoami'}." unless result
+      log "Some directories within #{var :install_prefix} aren't writable by #{shell 'whoami'}." unless result
     end
   }
   meet {
