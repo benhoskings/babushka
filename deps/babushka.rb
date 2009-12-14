@@ -1,7 +1,34 @@
 
 dep 'babushka' do
-  requires 'babushka in path', 'dep source'
+  requires 'babushka in path', 'babushka up to date', 'dep source'
   define_var :install_prefix, :default => '/usr/local', :message => "Where would you like babushka installed"
+end
+
+dep 'babushka up to date' do
+  requires 'babushka repo clean', 'babushka update would fast forward'
+  setup { in_dir(var(:install_prefix) / 'babushka') { shell('git fetch') } }
+  met? { in_dir(var(:install_prefix) / 'babushka') { shell('git rev-list ..origin/stable').lines.to_a.empty? } }
+  meet { in_dir(var(:install_prefix) / 'babushka') { shell('git merge origin/stable', :log => true) } }
+end
+
+dep 'babushka update would fast forward' do
+  requires 'babushka installed'
+  met? {
+    in_dir(var(:install_prefix) / 'babushka') {
+      shell('git rev-list origin/stable..').lines.to_a.empty? or
+      fail_because("There are unpushed commits in #{var(:install_prefix) / 'babushka'}.")
+    }
+  }
+end
+
+dep 'babushka repo clean' do
+  requires 'babushka installed'
+  met? {
+    in_dir(var(:install_prefix) / 'babushka') {
+      shell('git ls-files -m').lines.to_a.empty? or
+      fail_because("There are local changes in #{var(:install_prefix) / 'babushka'}.")
+    }
+  }
 end
 
 dep 'babushka in path' do
