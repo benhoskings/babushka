@@ -215,6 +215,13 @@ def babushka_config? path
   end
 end
 
+def git_repo? path
+  real_path = pathify path
+  in_dir(real_path) {
+    !shell("git rev-parse --git-dir").blank?
+  } if File.exists?(real_path)
+end
+
 def confirm message, opts = {}, &block
   prompter = respond_to?(:var) ? :var : :prompt_for_value
   answer = send(prompter, message,
