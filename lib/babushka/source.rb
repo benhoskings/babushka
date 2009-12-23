@@ -108,11 +108,11 @@ module Babushka
     private
 
     def add_source
-      write_sources self.class.sources.push(data_for_yaml).uniq
+      write_sources self.class.sources.push(to_yaml).uniq
     end
 
     def remove_source
-      write_sources self.class.sources - [data_for_yaml]
+      write_sources self.class.sources - [to_yaml]
     end
 
     def write_sources sources
@@ -121,7 +121,7 @@ module Babushka
       end
     end
 
-    def data_for_yaml
+    def to_yaml
       {:name => name, :uri => uri.to_s}
     end
 
