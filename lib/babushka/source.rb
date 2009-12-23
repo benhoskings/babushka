@@ -30,16 +30,16 @@ module Babushka
         log Source.new(source).description
       }
     end
-    def self.remove! name_or_uri
+    def self.remove! name_or_uri, opts = {}
       sources.select {|source|
         name_or_uri.in? [source, source[:name], source[:uri]]
       }.each {|source|
-        Source.new(source).remove!
+        Source.new(source).remove! opts
       }
     end
-    def self.clear!
+    def self.clear! opts = {}
       sources.each {|source|
-        Source.new(source).remove!
+        Source.new(source).remove! opts
       }
     end
 
@@ -85,15 +85,21 @@ module Babushka
         log_ok "Added #{name}." if result
       end
     end
-    def remove!
+    def remove! opts = {}
+      if opts[:force] || removeable?
+        log_block "Removing #{name} (#{uri})" do
+          remove_source and remove_repo
+        end
+      end
+    end
+
+    def removeable?
       if !self.class.sources.detect {|s| s[:name] == name }
         log "No such source: #{uri}"
       elsif !in_dir(path) { shell "git ls-files -mo" }.split("\n").empty?
         log "Local changes found in #{path}, not removing."
       else
-        log_block "Removing #{name} (#{uri})" do
-          remove_repo and remove_source
-        end
+        true
       end
     end
 
