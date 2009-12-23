@@ -50,11 +50,19 @@ describe "adding sources" do
         L{ Source.remove!(@source_def) }.should change(Source, :count).by(0)
         Source.sources.should include @source_def
       end
+      after {
+        Source.clear! :force => true
+      }
     end
   end
   
   describe "clearing" do
+    before {
+      Source.new(dep_source('clear_test_1')).add!
+      Source.new(dep_source('clear_test_2')).add!
+    }
     it "should remove all sources" do
+      Source.count.should == 2
       Source.clear!
       Source.count.should == 0
     end
