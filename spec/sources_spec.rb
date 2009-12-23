@@ -40,7 +40,7 @@ describe "adding sources" do
         @source = Source.new(@source_def)
         @source.add!
       }
-      it "shouldn't remove sources" do
+      it "shouldn't remove sources with local changes" do
         File.open(@source.path / 'changes_test.rb', 'w') {|f| f << 'modification' }
         L{ Source.remove!(@source_def) }.should change(Source, :count).by(0)
         Source.sources.should include @source_def
