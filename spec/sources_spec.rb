@@ -50,6 +50,12 @@ describe "adding sources" do
         L{ Source.remove!(@source_def) }.should change(Source, :count).by(0)
         Source.sources.should include @source_def
       end
+      it "should remove dirty sources when :force is specified" do
+        File.open(@source.path / 'changes_test.rb', 'w') {|f| f << 'modification' }
+        File.open(@source.path / 'changes_test_untracked.rb', 'w') {|f| f << 'modification' }
+        L{ Source.remove!(@source_def, :force => true) }.should change(Source, :count).by(-1)
+        Source.sources.should_not include @source_def
+      end
       after {
         Source.clear! :force => true
       }
