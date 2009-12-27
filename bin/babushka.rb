@@ -8,6 +8,7 @@ babushka_components = %w[
   support/logger
   support/popen
   support/prompt_helpers
+  support/shell
   support/shell_helpers
   support/suggest_helpers
   support/git_helpers
@@ -22,7 +23,6 @@ babushka_components = %w[
   babushka/structs
   babushka/cmdline
   babushka/base
-  babushka/shell
   babushka/system_spec
   babushka/bug_reporter
   babushka/pkg_helper
