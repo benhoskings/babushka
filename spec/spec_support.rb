@@ -3,7 +3,7 @@ $:.concat %w[spec/babushka spec/fancypath]
 require 'bin/babushka'
 include Babushka
 
-include Babushka::LoggerHelpers
+include Babushka::Logger::Helpers
 include Babushka::Dep::Helpers
 include Babushka::Shell::Helpers
 

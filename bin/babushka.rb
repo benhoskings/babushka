@@ -67,7 +67,7 @@ babushka_components.each {|component|
   require File.join Babushka::Path.path, 'lib', component
 }
 
-include Babushka::LoggerHelpers
+include Babushka::Logger::Helpers
 include Babushka::Dep::Helpers
 include Babushka::VersionHelpers
 
