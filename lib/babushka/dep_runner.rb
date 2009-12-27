@@ -1,13 +1,4 @@
 module Babushka
-  module DepRunnerHelpers
-    def self.included base # :nodoc:
-      base.send :include, HelperMethods
-    end
-
-    module HelperMethods
-    end
-  end
-
   class DepRunner
     include Shell::Helpers
     include Prompt::Helpers
