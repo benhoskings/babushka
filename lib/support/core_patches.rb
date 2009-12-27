@@ -254,7 +254,7 @@ class String
     }.first || ''
   end
   def / other
-    empty? ? other.to_s : File.join(self, other.to_s)
+    (empty? ? other.p : (p / other))
   end
 
   def words

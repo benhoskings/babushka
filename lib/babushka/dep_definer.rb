@@ -58,7 +58,7 @@ module Babushka
     def self.load_deps_from path
       $stdout.flush
       previous_length, previous_skipped = Dep.pool.count, Dep.pool.skipped_count
-      Dir.glob(pathify(path) / '**/*.rb').each {|f|
+      path.p.glob('**/*.rb').each {|f|
         @@current_load_path = f
         begin
           require f

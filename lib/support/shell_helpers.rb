@@ -8,8 +8,8 @@ def in_dir dir, opts = {}, &block
   if dir.nil?
     yield Dir.pwd
   else
-    path = pathify dir
-    FileUtils.mkdir_p(path) if opts[:create] unless File.exists?(path)
+    path = dir.p
+    path.mkdir if opts[:create] unless path.exists?
     if Dir.pwd == path
       yield path
     else
@@ -216,7 +216,7 @@ end
 
 require 'yaml'
 def yaml path
-  YAML.load_file pathify path
+  YAML.load_file path.p
 end
 
 def render_erb erb, opts = {}

@@ -50,11 +50,11 @@ module Babushka
     end
 
     def var_path_for dep_name
-      pathify(VarsPrefix) / dep_name
+      VarsPrefix.p / dep_name
     end
 
     def sticky_var_path
-      pathify(WorkingPrefix) / 'sticky_vars'
+      WorkingPrefix.p / 'sticky_vars'
     end
 
     private
@@ -68,7 +68,7 @@ module Babushka
     end
 
     def log_prefix
-      pathify LogPrefix
+      LogPrefix.p
     end
 
     require 'yaml'

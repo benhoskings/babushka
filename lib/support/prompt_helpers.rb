@@ -21,7 +21,7 @@ module Babushka
         prompt_for_value(message, opts.merge(
           :retry => "Doesn't exist, or not a directory."
         )) {|value|
-          File.directory? pathify(value || '')
+          (value || '').p.dir?
         }
       end
 
