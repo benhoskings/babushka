@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'lib/fancypath/fancypath'
+require File.join File.dirname(File.dirname(__FILE__)), 'lib/fancypath/fancypath'
 
 babushka_components = %w[
   support/core_patches
