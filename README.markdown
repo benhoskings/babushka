@@ -130,7 +130,7 @@ You can drop deps you write in `~/.babushka/deps`, and babushka will load those 
 n.b.
 ---
 
-A dep run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is: a network of trust.
+A dep can run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is: a network of trust.
 
 Many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
 
