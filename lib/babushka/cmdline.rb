@@ -22,6 +22,8 @@ module Babushka
         ]),
         Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
       ], []),
+      Verb.new(:babushka, nil, nil, "Update babushka core", [], [
+      ]),
       Verb.new(:pull, nil, nil, "Update dep sources", [], [
         Arg.new(:source, "Pull just a specific source", true, false)
       ]),
@@ -89,6 +91,10 @@ module Babushka
       else
         Source.send "#{verb.opts.first.def.name}!", *verb.opts.first.args.map(&:value)
       end
+    end
+    def handle_babushka verb
+      load_deps_from core_dep_locations
+      task.process 'babushka'
     end
     def handle_pull verb
       if verb.args.empty?
