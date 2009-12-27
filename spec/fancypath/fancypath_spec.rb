@@ -18,6 +18,10 @@ describe Fancypath do
       Fancypath('test').should == 'test'
       Fancypath('test').should_not == 'test2'
     end
+    it "should compare in reverse with strings" do
+      'test'.should == Fancypath('test')
+      'test2'.should_not == Fancypath('test')
+    end
   end
 
   describe '#join', 'aliased to #/' do
