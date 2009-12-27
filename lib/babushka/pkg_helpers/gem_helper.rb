@@ -21,7 +21,7 @@ module Babushka
     end
 
     def gem_root
-      shell('gem env gemdir') / 'gems'
+      @_cached_gem_root ||= shell('gem env gemdir') / 'gems'
     end
 
 
