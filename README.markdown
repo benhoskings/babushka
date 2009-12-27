@@ -1,6 +1,9 @@
 babushka
 ===
 
+test-driven sysadmin.
+---
+
 > Deploy time! I'll just add a vhost. Oh, and a unix user, and copy the config from that other app. Or was it a different one? Oh well, that worked. Wait, why can't I log in from my testing box? I'm sure I added that SSH key. And where is that shell alias? Oh crap, I only added that on dev the other day. Ohh, I can log in if I chmod 700 my .ssh dir. Why the 500s? Oh lol, forgot to add a new DB user.
 
 Deploying a webapp or setting up a new user account or configuring automated backups aren't hard. They're made up of lots of simple little jobs that have to be done just right.
@@ -9,50 +12,72 @@ Deploying a webapp or setting up a new user account or configuring automated bac
 if only it were this easy (it is)
 ---
 
-    $ ruby bin/babushka.rb 'db backups'
-    db backups {
-      db software {
-        db in path {
-          not required on Linux.
-        } √ db in path
-        apt {
-        } √ apt
-        √ system has postgresql deb
-        √ system has postgresql-client deb
-        √ system has libpq-dev deb
-        √ 'psql' runs from /usr/bin.
-      } √ db software
-      db backups not already met.
-      offsite host for db backups? backups@slice.corkboard.cc
-      √ publickey login to backups@slice.corkboard.cc.
+    ⚡ babushka 'postgres backups'
+    postgres backups {
+      postgres software {
+        homebrew {
+          homebrew binary in place {
+            homebrew installed {
+              writable install location {
+                install location exists {
+                } √ install location exists
+                admins can sudo {
+                  admin group {
+                  } √ admin group
+                } √ admins can sudo
+              } √ writable install location
+              homebrew git {
+                homebrew bootstrap {
+                  √ writable install location (cached)
+                  build tools {
+                    llvm in path {
+                      xcode tools {
+                      } √ xcode tools
+                    } √ llvm in path
+                    build tools / met? not defined.
+                  } √ build tools
+                  'brew' runs from /usr/local/bin.
+                } √ homebrew bootstrap
+                √ system has git-1.6.5 brew
+                'git' runs from /usr/local/bin.
+              } √ homebrew git
+            } √ homebrew installed
+          } √ homebrew binary in place
+          √ build tools (cached)
+          homebrew / met? not defined.
+        } √ homebrew
+        √ system has postgresql-8.4.0 brew
+        'psql' runs from /usr/local/bin.
+      } √ postgres software
+      not already met.
+      offsite host for postgres backups [backups@napier.hoskings.net]? 
+      √ publickey login to backups@napier.hoskings.net.
       Rendered /usr/local/bin/postgres_offsite_backup.
-      db backups met.
-    } √ db backups
+    } √ postgres backups
+    ⚡
 
 
 how is dep formed?
 ---
 
-A dep (dependency) is something that you want to do, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
+A dep (dependency) is something that you want to automate, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
 
-Each dep is really small and simple. A little nugget of code that does one thing and does it right. They're deliberately as concise as possible, so you can quickly write one and then never do its job manually again.
+Each dep is really small and simple. A little nugget of code that does just one thing, and does it right.
 
-Example: to get a rails app running..
+Deps are defined using a DSL. It's very concise, so you can quickly write a dep and then never do its job manually again.
 
-    dep 'rails app' do
-      requires 'gems installed', 'vhost enabled', 'webserver running', 'migrated db'
-    end
-
-... there are four requirements (maybe more, for your app - just tack them on). Each one depends on a few other things, and so on. So `vhost enabled` from above:
+For example, to enable a virtual host, you symlink a file. Pretty trivial, and easy enough to do manually - but if you write a dep, you not only get it right every time, you can automate it as part of a more complex process.
 
     dep 'vhost enabled' do
       requires 'vhost configured'
-      met? { File.exists? "#{vhosts}/on/#{domain}.conf" }
-      meet { sudo "ln -sf '#{vhosts}/#{domain}.conf' '#{vhosts}/on/#{domain}.conf'" }
-      after { restart_webserver }
+      met? { "#{vhosts}/on/#{var :domain}.conf".p.exists? }
+      meet { sudo "ln -sf '#{vhosts}/#{var :domain}.conf' '#{vhosts}/on/#{var :domain}.conf'" }
+      after { restart_nginx }
     end
 
-Any dep can depend on any number of other ones. A given dep can be required by multiple others and it all comes out in the wash. If you accidentally a loop, babushka will let you know. So you don't have to think about the hierarchy, just each little piece on its own.
+The important bit here is that when you're writing a dep, you don't have to think about context at all, just the one little task it's doing in isolation. As long as your `requires` are correct, you can leave the overall structure to babushka and just write each little dep separately. When you run `babushka dep_name`, babushka works its way down through all the `requires` in your dep, and in those deps, and so on, checking and running each as needed.
+
+Any dep can depend on any number of other deps. A given dep can be required by multiple others and babushka will sort it all out. So, you don't have to think about the hierarchy, just each little piece on its own.
 
 This isn't only about deploying webapps though. Deps like to do anything that you don't.
 
@@ -63,15 +88,12 @@ This isn't only about deploying webapps though. Deps like to do anything that yo
     dep 'passwordless ssh logins' do
       requires 'user exists'
       met? { grep var(:your_ssh_public_key), '~/.ssh/authorized_keys' }
-      meet {
-        shell 'mkdir -p ~/.ssh'
-        append_to_file var(:your_ssh_public_key).end_with("\n"), "~/.ssh/authorized_keys"
-        shell 'chmod 700 ~/.ssh'
-        shell 'chmod 600 ~/.ssh/authorized_keys'
-      }
+      before { shell 'mkdir -p ~/.ssh; chmod 700 ~/.ssh' }
+      meet { append_to_file var(:your_ssh_public_key), "~/.ssh/authorized_keys" }
+      after { shell 'chmod 600 ~/.ssh/authorized_keys' }
     end
 
-Don't worry about the `your_ssh_public_key` var - babushka will ask for it when it needs the value.
+Don't worry about the `your_ssh_public_key` var - babushka will ask you for it when it needs the value.
 
 So in general:
 
@@ -85,13 +107,19 @@ So in general:
       }
     end
 
+The idea is to keep a clean separation between `met?` and `meet`: the code in `met?` should do nothing except just check whether the dep is met and return a boolean, and `meet` should unconditionally satisfy the dep without doing any checks.
+
+If you find you're checking for the presence of some condition in your `meet` block, that means you're trying to do too much in a single dep, and you should be splitting your dep up into smaller ones. Remember, deps are small, self-contained and context-free - the smaller and more focused, the better.
+
 
 what are there deps for?
 ---
 
 Pretty much whatever I've needed. That means that there are lots missing, and the ones there are may well not be right for you.
 
-Because of this, babushka itself only contains the deps that it needs to know how to install itself, and set up a bare minimum amount of software like ruby and git. Everything else is stored separately, in a dep source. By default, babushka installs my dep source, but you can add your own, or multiple other ones, or remove mine if you like, just like managing gem sources. All you have to do is
+Because of this, babushka only contains the deps that it needs to know how to install itself, and set up a bare minimum of software like `ruby` and `git`. Everything else is stored separately, in dep sources, which you can think of like gem sources (although they're a bit different - each dep source is a babushka-managed git repo).
+
+By default, babushka adds my dep source, but you can add your own, or multiple other ones, or remove mine if you like, just like managing gem sources. All you have to do is
 
     babushka sources -a git://github.com/someone else's/awesome deps.git
 
@@ -99,14 +127,21 @@ And they're available straight away (`babushka list` to see what's there). To pu
 
     babushka pull
 
-You can drop deps you write in `~/.babushka/deps`, and babushka will load those too. 
+You can drop deps you write in `~/.babushka/deps`, and babushka will load those too.
 
 
 n.b.
 ---
 
-Babushka is new, in flux, and only has partial test coverage. Also, many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
+A dep run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is---a network of trust.
 
+Many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
+
+
+acknowledgements
+----------------
+Babushka makes use of [Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
+Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of [@glenmaddern](http://twitter.com/glenmaddern), [@nathan_scott](http://twitter.com/nathan_scott), [@odaeus](http://twitter.com/odaeus), [@aussiegeek](http://twitter.com/aussiegeek), [@bjeanes](http://twitter.com/bjeanes), [@chendo](http://twitter.com/chendo), [@ryanbigg](http://twitter.com/ryanbigg) & [@drnic](http://twitter.com/drnic)
 
 license
 -------
