@@ -68,8 +68,7 @@ module Babushka
             end
           end
         else
-          message.rstrip!
-          message.gsub! "\n", "\n#{indentation}"
+          message = message.to_s.rstrip.gsub "\n", "\n#{indentation}"
           message = "#{TickChar.colorize('grey')} #{message}" if opts[:as] == :ok
           message = message.colorize 'red' if opts[:as] == :error
           message = message.colorize 'blue' if opts[:as] == :stderr
