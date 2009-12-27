@@ -4,7 +4,7 @@ require 'bin/babushka'
 include Babushka
 
 include Babushka::LoggerHelpers
-include Babushka::DepHelpers
+include Babushka::Dep::Helpers
 include Babushka::Shell::Helpers
 
 Dep.pool.clear!

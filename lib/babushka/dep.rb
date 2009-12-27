@@ -1,10 +1,6 @@
 module Babushka
-  module DepHelpers
-    def self.included base # :nodoc:
-      base.send :include, HelperMethods
-    end
-
-    module HelperMethods
+  class Dep
+    module Helpers
       def Dep name;                    Dep.for name.to_s                                        end
       def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
       def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
@@ -12,9 +8,7 @@ module Babushka
       def src name, opts = {}, &block; Dep.pool.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
       def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
-  end
 
-  class Dep
     attr_reader :name, :opts, :vars, :definer, :runner
     attr_accessor :unmet_message
 

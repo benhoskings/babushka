@@ -68,7 +68,7 @@ babushka_components.each {|component|
 }
 
 include Babushka::LoggerHelpers
-include Babushka::DepHelpers
+include Babushka::Dep::Helpers
 include Babushka::VersionHelpers
 
 if $0 == __FILE__
