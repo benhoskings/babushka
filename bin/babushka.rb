@@ -12,6 +12,7 @@ babushka_components = %w[
   support/shell_helpers
   support/suggest_helpers
   support/git_helpers
+  support/archive
   support/lambda_chooser
   support/ip
   support/version_str
