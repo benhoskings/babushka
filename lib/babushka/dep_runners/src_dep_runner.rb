@@ -25,7 +25,7 @@ module Babushka
 
     def process_sources
       @uris.all? {|uri|
-        in_build_dir(build_path_for(uri)) {
+        in_build_dir(Archive.new(uri).name) {|path|
           call_task(:preconfigure) and
           call_task(:configure) and
           call_task(:build) and

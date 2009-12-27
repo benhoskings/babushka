@@ -128,19 +128,23 @@ def append_to_file text, file, opts = {}
 end
 
 def get_source url, filename = nil
-  filename ||= File.basename url.to_s
-  archive_dir = archive_basename filename
+  filename ||= url.to_s.p.basename
   if filename.blank?
     log_error "Not a valid URL to download: #{url}"
-  elsif archive_dir.blank?
-    log_error "Unsupported archive: #{filename}"
-  elsif !download(url, filename)
-    log_error "Failed to download #{url}."
-  elsif !log_shell("Extracting #{filename}", "mkdir -p '#{archive_dir}' && cd '#{archive_dir}' && tar -zxf '../#{filename}' --strip-components 1")
-    log_error "Couldn't extract #{filename.p}."
-    log "(maybe the download was cancelled before it finished?)"
   else
-    archive_dir
+    archive = Babushka::Archive.new filename
+    if !archive.supported?
+      log_error "Unsupported archive: #{filename}"
+    elsif !download(url, filename)
+      log_error "Failed to download #{url}."
+    else
+      returning archive.extract do |result|
+        unless result
+          log_error "Couldn't extract #{filename.p}."
+          log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
+        end
+      end
+    end
   end
 end
 
@@ -150,14 +154,6 @@ def download url, filename = File.basename(url.to_s)
   else
     log_shell "Downloading #{filename}", %Q{curl -L -o "#{filename}" "#{url}"}
   end
-end
-
-def archive_basename filename
-  File.basename filename, %w[.tar.gz .tgz].detect {|ext| filename.ends_with? ext } || ''
-end
-
-def build_path_for uri
-  archive_basename(uri.respond_to?(:path) ? uri.path : uri)
 end
 
 def _by_babushka
