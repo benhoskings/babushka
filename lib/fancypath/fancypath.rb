@@ -1,26 +1,14 @@
 require 'pathname'
 
-class Pathname
-
-  def to_fancypath
-    Fancypath.new(self)
-  end
-
-  alias_method :to_path, :to_fancypath
-
-end
-
-class String
-
-  def to_fancypath
-    Fancypath.new(self)
-  end
-
-  alias_method :to_path, :to_fancypath
-
-end
-
 class Fancypath < Pathname
+  module Helpers
+    require 'etc'
+    def to_path
+      Fancypath.new sub(/^\~\/|^\~$/) {|_| Etc.getpwuid(Process.euid).dir.end_with('/') }
+    end
+    alias :p :to_path
+  end
+
   # methods are chainable and do what you think they do
 
   alias_method :dir, :dirname
@@ -148,4 +136,12 @@ class Fancypath < Pathname
 
 end
 
-def Fancypath(path); Fancypath.new(path) end
+def Fancypath path
+  Fancypath.new path
+end
+class Pathname
+  include Fancypath::Helpers
+end
+class String
+  include Fancypath::Helpers
+end
