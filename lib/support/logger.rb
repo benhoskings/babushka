@@ -49,12 +49,13 @@ module Babushka
     def log message, opts = {}, &block
       # now = Time.now
       # print "#{now.to_i}.#{now.usec}: ".ljust(20) unless opts[:debug]
-      print_log indentation, opts unless opts[:indentation] == false
+      printable = !opts[:debug] || Base.task.opt(:debug)
+      print_log indentation, printable unless opts[:indentation] == false
       if block_given?
-        print_log "#{message} {\n".colorize('grey'), opts
-        @@indentation_level += 1
+        print_log "#{message} {\n".colorize('grey'), printable
+        @@indentation_level += 1 if printable
         returning yield do |result|
-          @@indentation_level -= 1
+          @@indentation_level -= 1 if printable
           if opts[:closing_status] == :status_only
             log '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar}".colorize(result ? 'green' : 'red'), opts
           elsif opts[:closing_status] == :dry_run
@@ -72,7 +73,7 @@ module Babushka
         message = message.colorize 'red' if opts[:as] == :error
         message = message.colorize 'blue' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
-        print_log message, opts
+        print_log message, printable
         $stdout.flush
         nil
       end
@@ -81,8 +82,8 @@ module Babushka
 
     private
 
-    def print_log message, opts
-      print message if !opts[:debug] || Base.task.opt(:debug)
+    def print_log message, printable
+      print message if printable
       write_to_persistent_log message
     end
 
