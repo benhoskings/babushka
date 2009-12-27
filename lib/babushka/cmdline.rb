@@ -94,7 +94,7 @@ module Babushka
       if verb.args.empty?
         Source.pull!
       else
-        puts 'fail'
+        puts "'pull' doesn't accept any options."
       end
     end
     def handle_push verb
