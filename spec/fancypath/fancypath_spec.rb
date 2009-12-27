@@ -9,6 +9,17 @@ describe Fancypath do
   end
   after  { TMP_DIR.rmtree }
 
+  describe '#==' do
+    it "should compare properly with other fancypaths" do
+      Fancypath('test').should == Fancypath('test')
+      Fancypath('test').should_not == Fancypath('test2')
+    end
+    it "should compare properly with strings" do
+      Fancypath('test').should == 'test'
+      Fancypath('test').should_not == 'test2'
+    end
+  end
+
   describe '#join', 'aliased to #/' do
     it('returns a Fancypath') { (@dir/'somefile').class.should == Fancypath }
     it('joins paths') { (@dir/'somefile').to_s.should =~ /\/somefile$/ }

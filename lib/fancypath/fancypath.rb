@@ -23,6 +23,14 @@ class Fancypath < Pathname
   alias_method :exists?, :exist?
   alias_method :rename_to, :rename
 
+  def == other
+    if other.is_a? String
+      to_s == other
+    else
+      super
+    end
+  end
+
   def join(path)
     super(path.to_s).to_path
   end
