@@ -41,7 +41,7 @@ module Babushka
       end
     end
 
-    include SuggestHelpers
+    include Suggest::Helpers
 
     def validate_verb verb
       if verb.in? verb_abbrevs.keys

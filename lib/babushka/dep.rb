@@ -35,7 +35,7 @@ module Babushka
       pool.for name
     end
 
-    extend SuggestHelpers
+    extend Suggest::Helpers
 
     def self.process dep_name
       if (dep = Dep(dep_name)).nil?
