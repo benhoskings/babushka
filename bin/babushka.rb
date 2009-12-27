@@ -67,7 +67,7 @@ module Babushka
 end
 
 babushka_components.each {|component|
-  require File.join Babushka::Path.path, 'lib', component
+  require Babushka::Path.path / 'lib' / component
 }
 
 include Babushka::Logger::Helpers
