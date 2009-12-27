@@ -68,30 +68,29 @@ def check_file file_name, method_name
 end
 
 def grep pattern, file
-  if File.exists?(path = pathify(file))
+  if (path = file.p).exists?
     output = if pattern.is_a? String
-      IO.readlines(path).select {|l| l[pattern] }
+      path.readlines.select {|l| l[pattern] }
     elsif pattern.is_a? Regexp
-      IO.readlines(path).grep(pattern)
+      path.readlines.grep pattern
     end
     output unless output.empty?
   end
 end
 
 def change_line line, replacement, filename
-  path = pathify filename
+  path = filename.p
 
   log "Patching #{path}"
-  sudo "cat > #{path}", :as => File.owner(path), :input => IO.readlines(path).map {|l|
+  sudo "cat > #{path}", :as => File.owner(path), :input => path.readlines.map {|l|
     l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
   }
 end
 
 def insert_into_file insert_after, insert_before, filename, lines
   end_of_insertion = "# }\n"
-  path = pathify filename
   nlines = lines.split("\n").length
-  before, after = IO.readlines(path).cut {|l| l.strip == insert_before.strip }
+  before, after = filename.p.readlines.cut {|l| l.strip == insert_before.strip }
 
   log "Patching #{path}"
   if before.last == end_of_insertion
@@ -138,7 +137,7 @@ def get_source url, filename = nil
   elsif !download(url, filename)
     log_error "Failed to download #{url}."
   elsif !log_shell("Extracting #{filename}", "mkdir -p '#{archive_dir}' && cd '#{archive_dir}' && tar -zxf '../#{filename}' --strip-components 1")
-    log_error "Couldn't extract #{pathify filename}."
+    log_error "Couldn't extract #{filename.p}."
     log "(maybe the download was cancelled before it finished?)"
   else
     archive_dir
@@ -179,8 +178,7 @@ def added_by_babushka nlines
 end
 
 def read_file filename
-  path = pathify filename
-  File.read(path).chomp if File.exists? path
+  filename.p.read.chomp if File.exists? path
 end
 
 def babushka_config? path
@@ -194,7 +192,7 @@ def babushka_config? path
 end
 
 def git_repo? path
-  real_path = pathify path
+  real_path = path.p
   in_dir(real_path) {
     !shell("git rev-parse --git-dir").blank?
   } if File.exists?(real_path)
