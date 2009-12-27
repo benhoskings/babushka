@@ -1,4 +1,4 @@
-require 'spec/sources_support'
+require 'sources_support'
 
 describe "adding sources" do
   it "shouldn't add unreadable sources" do

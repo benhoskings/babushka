@@ -1,5 +1,5 @@
-require 'spec/spec_support'
-require 'spec/dep_definer_support'
+require 'spec_support'
+require 'dep_definer_support'
 
 describe "loading deps" do
   it "should load deps from a file" do

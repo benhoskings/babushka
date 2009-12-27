@@ -1,3 +1,5 @@
+$:.concat %w[spec/babushka spec/fancypath]
+
 require 'bin/babushka'
 include Babushka
 

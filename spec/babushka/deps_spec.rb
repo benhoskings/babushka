@@ -1,5 +1,5 @@
-require 'spec/spec_support'
-require 'spec/dep_support'
+require 'spec_support'
+require 'dep_support'
 
 describe "an already met dep tree" do
   before {

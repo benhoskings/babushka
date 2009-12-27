@@ -1,4 +1,4 @@
-require 'spec/spec_support'
+require 'spec_support'
 
 standard_vars = {
   "rails_root" => {:default => "~/current", :value => "~/projects/corkboard/current"},

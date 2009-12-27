@@ -1,5 +1,5 @@
-require 'spec/spec_support'
-require 'spec/version_list_support'
+require 'spec_support'
+require 'version_list_support'
 
 describe "invalid input" do
   it "should reject values and a block at once" do

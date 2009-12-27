@@ -1,4 +1,4 @@
-require 'spec/spec_support'
+require 'spec_support'
 
 SucceedingLs = 'ls /bin'
 FailingLs = 'ls /nonexistent'

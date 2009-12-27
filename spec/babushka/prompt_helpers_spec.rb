@@ -1,5 +1,5 @@
-require 'spec/spec_support'
-require 'spec/prompt_helpers_support'
+require 'spec_support'
+require 'prompt_helpers_support'
 
 describe "prompt_for_value" do
   it "should return the value" do

@@ -1,4 +1,4 @@
-require 'spec/spec_support'
+require 'spec_support'
 
 require 'rubygems'
 require 'fakefs/safe'

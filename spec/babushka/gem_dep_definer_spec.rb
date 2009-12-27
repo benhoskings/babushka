@@ -1,7 +1,7 @@
-require 'spec/spec_support'
-require 'spec/dep_definer_support'
-require 'spec/pkg_dep_definer_support'
-require 'spec/gem_dep_definer_support'
+require 'spec_support'
+require 'dep_definer_support'
+require 'pkg_dep_definer_support'
+require 'gem_dep_definer_support'
 
 describe "accepts_hash_for default values" do
   before {

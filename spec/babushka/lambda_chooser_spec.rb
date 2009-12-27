@@ -1,4 +1,4 @@
-require 'spec/spec_support'
+require 'spec_support'
 
 
 describe "lambda choosing" do

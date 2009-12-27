@@ -1,4 +1,4 @@
-require 'spec/spec_support'
+require 'spec_support'
 
 def stub_versions_of
   GemHelper.stub!(:versions_of).and_return([

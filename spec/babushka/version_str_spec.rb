@@ -1,5 +1,5 @@
-require 'spec/spec_support'
-require 'spec/version_str_support'
+require 'spec_support'
+require 'version_str_support'
 
 def compare_with operator
   pairs.zip(results[operator]).each {|pair,expected|
