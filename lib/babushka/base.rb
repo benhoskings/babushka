@@ -24,7 +24,7 @@ module Babushka
     end
 
     def setup_noninteractive
-      load_deps
+      load_deps_from all_dep_locations
     end
 
 
@@ -188,15 +188,20 @@ module Babushka
       }
     end
 
-    def load_deps
+    def core_dep_locations
+      [ Path.path / 'deps' ]
+    end
+
+    def all_dep_locations
       [
         './babushka_deps', # deps in the current directory
-        '~/.babushka/deps', # the user's custom deps
-      ].concat(
-        Source.paths # each dep source
-      ).push(
-        Path.path / 'deps' # the bundled deps
-      ).all? {|dep_path|
+        Source.paths, # each dep source
+        core_dep_locations # The bundled deps
+      ].flatten
+    end
+
+    def load_deps_from dep_locations
+      dep_locations.all? {|dep_path|
         DepDefiner.load_deps_from dep_path
       }
     end
