@@ -2,7 +2,7 @@ module Babushka
   class BugReporter
   class << self
     include Shell::Helpers
-    include PromptHelpers
+    include Prompt::Helpers
 
     def report dep_name
       confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do

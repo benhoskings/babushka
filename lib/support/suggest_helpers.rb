@@ -1,7 +1,7 @@
 module Babushka
   class Suggest
     module Helpers
-      include PromptHelpers
+      include Prompt::Helpers
 
       def suggest_value_for typo, choices
         if (possible_matches = choices.similar_to typo.to_s).empty?

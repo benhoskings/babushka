@@ -10,7 +10,7 @@ module Babushka
 
   class DepRunner
     include Shell::Helpers
-    include PromptHelpers
+    include Prompt::Helpers
     include DefinerHelpers
 
     delegate :source_path, :to => :definer
