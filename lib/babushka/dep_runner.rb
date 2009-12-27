@@ -9,7 +9,7 @@ module Babushka
   end
 
   class DepRunner
-    include ShellHelpers
+    include Shell::Helpers
     include PromptHelpers
     include DefinerHelpers
 

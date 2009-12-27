@@ -1,7 +1,7 @@
 module Babushka
   class SystemSpec
-    include ShellHelpers
-    extend ShellHelpers
+    include Shell::Helpers
+    extend Shell::Helpers
 
     attr_reader :version_info
 

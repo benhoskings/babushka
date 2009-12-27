@@ -5,7 +5,7 @@ include Babushka
 
 include Babushka::LoggerHelpers
 include Babushka::DepHelpers
-include Babushka::ShellHelpers
+include Babushka::Shell::Helpers
 
 Dep.pool.clear!
 

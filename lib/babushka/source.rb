@@ -103,7 +103,7 @@ module Babushka
       end
     end
 
-    include ShellHelpers
+    include Shell::Helpers
     include GitHelpers
     def pull!
       returning git uri, :prefix => source_prefix, :dir => name, :log => true do

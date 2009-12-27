@@ -1,7 +1,7 @@
 module Babushka
   class PkgHelper
   class << self
-    include ShellHelpers
+    include Shell::Helpers
 
     def pkg_binary; pkg_cmd end
 
