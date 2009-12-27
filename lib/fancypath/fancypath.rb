@@ -14,6 +14,8 @@ class Fancypath < Pathname
   alias_method :dir, :dirname
   alias_method :directory, :dirname
 
+  alias_method :dir?, :directory?
+
   alias_method :expand, :expand_path
   alias_method :abs, :expand_path
   alias_method :absolute, :expand_path
