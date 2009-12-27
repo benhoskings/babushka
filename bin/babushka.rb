@@ -69,7 +69,7 @@ babushka_components.each {|component|
 
 include Babushka::Logger::Helpers
 include Babushka::Dep::Helpers
-include Babushka::VersionHelpers
+include Babushka::VersionOf::Helpers
 
 if $0 == __FILE__
   # Running standalone - run the specified command and exit.

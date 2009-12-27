@@ -1,17 +1,10 @@
 module Babushka
-  module VersionHelpers
-    def self.included base # :nodoc:
-      base.send :include, HelperMethods
-    end
-
-    module HelperMethods
+  class VersionOf
+    module Helpers
       def ver name, version = nil
         VersionOf.new name, version
       end
     end
-  end
-
-  class VersionOf
 
     attr_accessor :name, :version
 
