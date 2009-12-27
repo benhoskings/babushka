@@ -33,9 +33,11 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      installed = shell("gem list --local #{pkg_name}").split("\n").detect {|l| /^#{pkg_name}\b/ =~ l }
-      versions = (installed || "#{pkg_name} ()").scan(/.*\(([0-9., ]*)\)/).flatten.first || ''
-      versions.split(/[^0-9.]+/).sort.map(&:to_version)
+      installed = gem_root.glob("#{pkg_name}-*").map {|i|
+        File.basename i
+      }.map {|i|
+        i.gsub(/^#{pkg_name}-/, '').to_version
+      }.sort
     end
     def should_sudo?
       super || !File.writable?(gem_root)
