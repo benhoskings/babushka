@@ -59,6 +59,16 @@ describe Fancypath do
     end
   end
 
+  describe '#glob' do
+    before {
+      @dir.create_dir
+      @file.touch
+    }
+    it "should glob" do
+      TMP_DIR.glob('**/*').to_a.should == ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
+    end
+  end
+
   describe '#write' do
     it('returns self') { @file.write('').should == @file }
     it('returns a Fancypath') { @file.write('').should be_instance_of(Fancypath) }

@@ -66,6 +66,10 @@ class Fancypath < Pathname
     self
   end
 
+  def glob expr, &block
+    Dir.glob self / expr, &block
+  end
+
   def write(contents, mode='wb')
     dirname.create
     open(mode) { |f| f.write contents }
