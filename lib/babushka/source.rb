@@ -1,18 +1,5 @@
 module Babushka
-  module SourceHelpers
-    def self.included base # :nodoc:
-      base.send :include, HelperMethods
-    end
-
-    module HelperMethods
-      def Source uri
-        Source.new(uri).path
-      end
-    end
-  end
-
   class Source
-
     attr_reader :name, :uri
 
     def self.pull!
