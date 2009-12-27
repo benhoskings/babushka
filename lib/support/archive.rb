@@ -15,7 +15,7 @@ module Babushka
     attr_reader :filename, :type, :name
 
     def initialize fn
-      @filename = fn.p.basename.to_s
+      @filename = fn.to_s.p.basename.to_s
       @type = ArchiveTypes.keys.detect {|k| filename.ends_with? k }
       @name = filename.gsub /#{type}$/, ''
     end
