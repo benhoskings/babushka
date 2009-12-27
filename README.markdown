@@ -1,4 +1,4 @@
-babushka--test-driven sysadmin.
+babushka: test-driven sysadmin.
 ===
 
 > Deploy time! I'll just add a vhost. Oh, and a unix user, and copy the config from that other app. Or was it a different one? Oh well, that worked. Wait, why can't I log in from my testing box? I'm sure I added that SSH key. And where is that shell alias? Oh crap, I only added that on dev the other day. Ohh, I can log in if I chmod 700 my .ssh dir. Why the 500s? Oh lol, forgot to add a new DB user.
@@ -130,7 +130,7 @@ You can drop deps you write in `~/.babushka/deps`, and babushka will load those 
 n.b.
 ---
 
-A dep run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is--a network of trust.
+A dep run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is: a network of trust.
 
 Many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
 
