@@ -64,8 +64,12 @@ class Fancypath < Pathname
     directory? ? rmtree : delete if exist?
     self
   end
-
   alias_method :rm, :remove
+
+  def readlink
+    symlink? ? super.to_path : self
+  end
+
   def write(contents, mode='wb')
     dirname.create
     open(mode) { |f| f.write contents }

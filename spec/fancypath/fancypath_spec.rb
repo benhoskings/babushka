@@ -38,6 +38,16 @@ describe Fancypath do
     it('removes directory') { @dir.create.remove.should_not exist }
   end
 
+  describe '#readlink' do
+    before {
+      @file.touch
+      Dir.chdir TMP_DIR do `ln -s #{@file.to_s} testlink` end
+      @link = TMP_DIR.to_path/'testlink'
+    }
+    it('returns self for non-symlinks') { @file.readlink.should == @file }
+    it('returns the target for symlinks') { @link.readlink.should == @file }
+  end
+
   describe '#write' do
     it('returns self') { @file.write('').should == @file }
     it('returns a Fancypath') { @file.write('').should be_instance_of(Fancypath) }
