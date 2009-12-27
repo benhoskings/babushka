@@ -4,7 +4,7 @@ class Fancypath < Pathname
   module Helpers
     require 'etc'
     def to_path
-      Fancypath.new sub(/^\~\/|^\~$/) {|_| Etc.getpwuid(Process.euid).dir.end_with('/') }
+      Fancypath.new File.expand_path sub(/^\~\/|^\~$/) {|_| Etc.getpwuid(Process.euid).dir.end_with('/') }
     end
     alias :p :to_path
   end
