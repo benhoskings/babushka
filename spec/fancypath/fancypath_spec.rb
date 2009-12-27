@@ -48,6 +48,17 @@ describe Fancypath do
     it('returns the target for symlinks') { @link.readlink.should == @file }
   end
 
+  describe '#mkdir' do
+    before {
+      @mkdir = Fancypath(TMP_DIR/'nested/mkdir')
+    }
+    it "should create directories" do
+      @mkdir.exists?.should == false
+      @mkdir.mkdir
+      @mkdir.exists?.should == true
+    end
+  end
+
   describe '#write' do
     it('returns self') { @file.write('').should == @file }
     it('returns a Fancypath') { @file.write('').should be_instance_of(Fancypath) }

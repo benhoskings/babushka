@@ -60,6 +60,12 @@ class Fancypath < Pathname
     symlink? ? super.to_path : self
   end
 
+  def mkdir
+    require 'fileutils'
+    FileUtils.mkdir_p self
+    self
+  end
+
   def write(contents, mode='wb')
     dirname.create
     open(mode) { |f| f.write contents }
