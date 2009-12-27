@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'lib/fancypath/fancypath'
+
 babushka_components = %w[
   support/core_patches
   support/utils
@@ -52,13 +54,13 @@ babushka_components = %w[
 module Babushka
   module Path
     def self.binary
-      File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__
+      __FILE__.to_path.readlink
     end
     def self.bin
-      File.dirname binary
+      binary.dir
     end
     def self.path
-      File.dirname bin
+      bin.dir
     end
   end
 end
