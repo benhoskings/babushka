@@ -24,7 +24,7 @@ class Fancypath < Pathname
   alias_method :rename_to, :rename
 
   def join(path)
-    super(path).to_path
+    super(path.to_s).to_path
   end
 
   alias_method :/, :join
