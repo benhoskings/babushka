@@ -81,7 +81,7 @@ class Fancypath < Pathname
   end
 
   def glob expr, &block
-    Dir.glob self / expr, &block
+    Dir.glob((self / expr).to_s, &block)
   end
 
   def write(contents, mode='wb')
