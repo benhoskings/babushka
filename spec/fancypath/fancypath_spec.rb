@@ -4,8 +4,8 @@ describe Fancypath do
   before do
     TMP_DIR.rmtree if TMP_DIR.exist?
     TMP_DIR.mkpath
-    @file = TMP_DIR.to_path/'testfile'
-    @dir = TMP_DIR.to_path/'testdir'
+    @file = TMP_DIR.to_fancypath/'testfile'
+    @dir = TMP_DIR.to_fancypath/'testdir'
   end
   after  { TMP_DIR.rmtree }
 
@@ -38,7 +38,7 @@ describe Fancypath do
   end
 
   describe '#parent' do
-    it('returns parent') { @file.parent.should == TMP_DIR.to_path }
+    it('returns parent') { @file.parent.should == TMP_DIR.to_fancypath }
     it('returns Fancypath') { @file.parent.should be_instance_of(Fancypath) }
   end
 
@@ -65,7 +65,7 @@ describe Fancypath do
     before {
       @file.touch
       Dir.chdir TMP_DIR do `ln -s #{@file.to_s} testlink` end
-      @link = TMP_DIR.to_path/'testlink'
+      @link = TMP_DIR.to_fancypath/'testlink'
     }
     it('returns self for non-symlinks') { @file.readlink.should == @file }
     it('returns the target for symlinks') { @link.readlink.should == @file }
@@ -186,10 +186,10 @@ describe Fancypath do
   end
 end #/Fancypath
 
-describe "String#to_path" do
-  it('returns a Fancypath') { 'test'.to_path.should be_instance_of(Fancypath) }
+describe "String#to_fancypath" do
+  it('returns a Fancypath') { 'test'.to_fancypath.should be_instance_of(Fancypath) }
 end
 
-describe "Pathname#to_path" do
-  it('returns a Fancypath') { Fancypath.new('/').to_path.should be_instance_of(Fancypath) }
+describe "Pathname#to_fancypath" do
+  it('returns a Fancypath') { Fancypath.new('/').to_fancypath.should be_instance_of(Fancypath) }
 end

@@ -60,7 +60,7 @@ require File.join(
 module Babushka
   module Path
     def self.binary
-      __FILE__.to_path.readlink
+      __FILE__.p.readlink
     end
     def self.bin
       binary.dir

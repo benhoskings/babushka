@@ -3,10 +3,10 @@ require 'pathname'
 class Fancypath < Pathname
   module Helpers
     require 'etc'
-    def to_path
+    def to_fancypath
       Fancypath.new File.expand_path sub(/^\~\/|^\~$/) {|_| Etc.getpwuid(Process.euid).dir.end_with('/') }
     end
-    alias :p :to_path
+    alias :p :to_fancypath
   end
 
   # methods are chainable and do what you think they do
@@ -36,7 +36,7 @@ class Fancypath < Pathname
   end
 
   def join(path)
-    super(path.to_s).to_path
+    super(path.to_s).p
   end
 
   alias_method :/, :join
@@ -69,7 +69,7 @@ class Fancypath < Pathname
   alias_method :rm, :remove
 
   def readlink
-    symlink? ? super.to_path : self
+    symlink? ? super.p : self
   end
 
   def mkdir
@@ -95,7 +95,7 @@ class Fancypath < Pathname
 
   def move(dest)
     self.rename(dest)
-    dest.to_path
+    dest.p
   end
 
   def tail(bytes)
@@ -109,13 +109,13 @@ class Fancypath < Pathname
   alias_method :mv, :move
 
   def set_extension(ext)
-    "#{without_extension}.#{ext}".to_path
+    "#{without_extension}.#{ext}".p
   end
 
   alias_method :change_extension, :set_extension
 
   def without_extension
-    to_s[/^ (.+?) (\. ([^\.]+))? $/x, 1].to_path
+    to_s[/^ (.+?) (\. ([^\.]+))? $/x, 1].p
   end
 
   def has_extension?(ext)
@@ -123,7 +123,7 @@ class Fancypath < Pathname
   end
 
   def parent
-    super.to_path
+    super.p
   end
 
   alias_method :all_children, :children
@@ -154,7 +154,7 @@ class Fancypath < Pathname
     super.sub('Pathname','Fancypath')
   end
 
-  def to_path
+  def to_fancypath
     self
   end
 
