@@ -11,6 +11,8 @@ class Fancypath < Pathname
 
   # methods are chainable and do what you think they do
 
+  alias_method :to_str, :to_s unless method_defined? :to_str
+
   alias_method :dir, :dirname
   alias_method :directory, :dirname
 
