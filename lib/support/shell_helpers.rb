@@ -129,7 +129,7 @@ end
 
 def get_source url, filename = nil
   filename ||= url.to_s.p.basename
-  if filename.blank?
+  if filename.to_s.blank?
     log_error "Not a valid URL to download: #{url}"
   else
     archive = Babushka::Archive.new filename
