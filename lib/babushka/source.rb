@@ -85,7 +85,7 @@ module Babushka
     end
 
     def removeable?
-      if !self.class.sources.detect {|s| s[:name] == name }
+      if !self.class.sources_raw.detect {|s| s[:name] == name }
         log "No such source: #{uri}"
       elsif !in_dir(path) { shell "git ls-files -mo" }.split("\n").empty?
         log "Local changes found in #{path}, not removing."
@@ -107,11 +107,11 @@ module Babushka
     private
 
     def add_source
-      write_sources self.class.sources.push(to_yaml).uniq
+      write_sources self.class.sources_raw.push(to_yaml).uniq
     end
 
     def remove_source
-      write_sources self.class.sources - [to_yaml]
+      write_sources self.class.sources_raw - [to_yaml]
     end
 
     def write_sources sources
