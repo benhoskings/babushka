@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-require File.join File.dirname(File.dirname(__FILE__)), 'lib/fancypath/fancypath'
-
 babushka_components = %w[
   support/core_patches
   support/utils
@@ -51,6 +49,13 @@ babushka_components = %w[
   babushka/dep_definers/src_dep_definer
   babushka/dep_definers/ext_dep_definer
 ]
+
+require File.join(
+  File.dirname(File.dirname(
+    File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__)
+  ),
+  'lib/fancypath/fancypath'
+)
 
 module Babushka
   module Path
