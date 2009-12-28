@@ -3,8 +3,8 @@ dep 'ruby' do
 end
 
 pkg 'apt ruby', :for => :linux do
-  installs { via :apt, %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby] }
-  provides %w[ruby irb ri rdoc]
+  installs { via :apt, %w[ruby irb rdoc ruby1.8-dev libopenssl-ruby] }
+  provides %w[ruby irb rdoc]
 end
 
 dep 'os x ruby', :for => :osx do
