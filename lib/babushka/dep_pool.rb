@@ -27,7 +27,11 @@ module Babushka
         @skipped += 1
         self.for name
       else
-        Dep.new name, in_opts, block, definer_class, runner_class
+        begin
+          Dep.make name, in_opts, block, definer_class, runner_class
+        rescue DepError => e
+          log_error e.message
+        end
       end
     end
 
