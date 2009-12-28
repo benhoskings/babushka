@@ -174,7 +174,8 @@ def added_by_babushka nlines
 end
 
 def read_file filename
-  filename.p.read.chomp if File.exists? path
+  path = filename.p
+  path.read.chomp if path.exists?
 end
 
 def babushka_config? path
