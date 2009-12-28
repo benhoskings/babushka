@@ -1,3 +1,4 @@
+require 'spec_support'
 require 'sources_support'
 
 describe "adding" do
