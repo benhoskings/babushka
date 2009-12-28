@@ -23,6 +23,27 @@ describe "adding" do
       Source.sources.should include @source
     end
   end
+  describe "external sources" do
+    before {
+      @source = dep_source('bob').merge(:external => true)
+      @nonexistent_source = {:name => 'larry', :uri => tmp_prefix / 'nonexistent', :external => true}
+    }
+    it "shouldn't clone nonexistent repos" do
+      File.exists?(Source.new(@nonexistent_source).path).should be_false
+      L{ Source.add_external!(@nonexistent_source[:name], :from => :github).should be_nil }.should_not change(Source, :count)
+      File.directory?(Source.new(@nonexistent_source).path).should be_false
+    end
+    it "should clone a git repo" do
+      File.exists?(Source.new(@source).path).should be_false
+      L{ Source.add_external!(@source[:name], :from => :github).should be_true }.should_not change(Source, :count)
+      File.directory?(Source.new(@source).path).should be_true
+    end
+    it "shouldn't add the url to sources.yml" do
+      Source.sources.should_not include 'bob'
+      L{ Source.add_external!('bob', :from => :github) }.should_not change(Source, :count)
+      Source.sources.should_not include 'bob'
+    end
+  end
 end
 
 describe "removing" do

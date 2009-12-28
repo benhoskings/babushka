@@ -10,6 +10,9 @@ module Babushka
     def self.add! name, uri
       new(:name => name, :uri => uri).add!
     end
+    def self.add_external! name, opts = {}
+      new(:name => name, :uri => external_url_for(name, opts[:from]), :external => true).add!
+    end
     def self.list!
       sources.tap {|sources|
         log "# There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1}."
@@ -28,6 +31,12 @@ module Babushka
       sources.each {|source|
         Source.new(source).remove! opts
       }
+    end
+
+    def self.external_url_for name, from
+      {
+        :github => "git://github.com/#{name}/babushka-deps"
+      }[from]
     end
 
     require 'yaml'
@@ -56,10 +65,14 @@ module Babushka
     def initialize hsh
       @name = hsh[:name]
       @uri = URI.parse hsh[:uri].to_s
+      @external = hsh[:external]
     end
 
+    def prefix
+      external? ? external_source_prefix : source_prefix
+    end
     def path
-      source_prefix / name
+      prefix / name
     end
     def updated_at
       Time.now - File.mtime(path)
@@ -69,6 +82,9 @@ module Babushka
     end
     def cloned?
       File.directory? path / '.git'
+    end
+    def external?
+      @external
     end
 
     def add!
@@ -99,7 +115,7 @@ module Babushka
     include Shell::Helpers
     include GitHelpers
     def pull!
-      returning git uri, :prefix => source_prefix, :dir => name, :log => true do
+      returning git uri, :prefix => prefix, :dir => name, :log => true do
         FileUtils.touch path
       end
     end
@@ -107,7 +123,11 @@ module Babushka
     private
 
     def add_source
-      write_sources self.class.sources_raw.push(to_yaml).uniq
+      if external?
+        true
+      else
+        write_sources self.class.sources_raw.push(to_yaml).uniq
+      end
     end
 
     def remove_source
@@ -133,6 +153,9 @@ module Babushka
     end
     def source_prefix
       Path.path / 'sources'
+    end
+    def external_source_prefix
+      WorkingPrefix / 'external_sources'
     end
 
   end
