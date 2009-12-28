@@ -31,11 +31,15 @@ module Babushka
     end
 
     require 'yaml'
-    def self.sources
+    def self.sources_raw
       File.exists?(sources_yml) &&
       (yaml = YAML.load_file(sources_yml)) &&
       yaml[:sources] ||
       []
+    end
+
+    def self.sources
+      sources_raw.each {|source| source[:uri] = source[:uri].p }
     end
 
     def self.paths
