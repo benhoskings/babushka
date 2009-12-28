@@ -34,8 +34,8 @@ babushka_components = %w[
   babushka/dep
   babushka/dep_pool
   babushka/definer_helpers
-  babushka/source
   babushka/task
+  babushka/source
   babushka/dep_runner
   babushka/dep_runners/base_dep_runner
   babushka/dep_runners/pkg_dep_runner
