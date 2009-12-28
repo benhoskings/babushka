@@ -31,6 +31,10 @@ class Fancypath < Pathname
     end
   end
 
+  def length
+    to_s.length
+  end
+
   def join(path)
     super(path.to_s).to_path
   end

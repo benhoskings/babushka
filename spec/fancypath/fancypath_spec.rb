@@ -24,6 +24,14 @@ describe Fancypath do
     end
   end
 
+  describe '#length' do
+    it "should calculate the length" do
+      @file.length.should == @file.to_s.length
+      @file.length.should == File.join(TMP_DIR, 'testfile').length
+      @dir.length.should == File.join(TMP_DIR, 'testdir').length
+    end
+  end
+
   describe '#join', 'aliased to #/' do
     it('returns a Fancypath') { (@dir/'somefile').class.should == Fancypath }
     it('joins paths') { (@dir/'somefile').to_s.should =~ /\/somefile$/ }
