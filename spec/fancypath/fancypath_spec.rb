@@ -7,7 +7,7 @@ describe Fancypath do
     @file = TMP_DIR.to_fancypath/'testfile'
     @dir = TMP_DIR.to_fancypath/'testdir'
   end
-  after  { TMP_DIR.rmtree }
+  after { TMP_DIR.rmtree }
 
   describe '#==' do
     it "should compare properly with other fancypaths" do
