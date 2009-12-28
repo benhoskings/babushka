@@ -35,21 +35,26 @@ describe "adding" do
     end
     it "should clone a git repo" do
       File.exists?(Source.new(@source).path).should be_false
-      L{ Source.add_external!(@source[:name], :from => :github).should be_true }.should_not change(Source, :count)
+      L{ Source.add_external!(@source[:name], :from => :github).should be_an_instance_of(Source) }.should_not change(Source, :count)
       File.directory?(Source.new(@source).path).should be_true
     end
     it "shouldn't add the url to sources.yml" do
-      Source.sources.should_not include 'bob'
-      L{ Source.add_external!('bob', :from => :github) }.should_not change(Source, :count)
-      Source.sources.should_not include 'bob'
+      Source.sources.should be_empty
+      L{ Source.add_external!(@source[:name], :from => :github) }.should_not change(Source, :count)
+      Source.sources.should be_empty
     end
+    after {
+      Source.clear! :force => true
+    }
   end
 end
 
 describe "removing" do
   before {
-    @source1 = dep_source 'clone_test'
-    @source2 = dep_source 'clone_test_yml'
+    @source1 = dep_source 'remove_test'
+    @source2 = dep_source 'remove_test_yml'
+    Source.new(@source1).add!
+    Source.new(@source2).add!
   }
   it "should remove just the specified source" do
     Source.sources.should include @source1

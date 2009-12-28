@@ -11,7 +11,8 @@ module Babushka
       new(:name => name, :uri => uri).add!
     end
     def self.add_external! name, opts = {}
-      new(:name => name, :uri => external_url_for(name, opts[:from]), :external => true).add!
+      source = new(:name => name, :uri => external_url_for(name, opts[:from]), :external => true)
+      source if source.add!
     end
     def self.list!
       sources.tap {|sources|
