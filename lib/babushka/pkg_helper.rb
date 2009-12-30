@@ -35,7 +35,7 @@ module Babushka
       true
     end
     def prefix
-      cmd_dir(pkg_binary).sub(/\/bin\/?$/, '')
+      cmd_dir(pkg_binary).p.dir
     end
     def bin_path
       prefix / 'bin'
