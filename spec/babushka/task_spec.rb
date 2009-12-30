@@ -1,4 +1,5 @@
 require 'spec_support'
+require 'sources_support'
 
 standard_vars = {
   "rails_root" => {:default => "~/current", :value => "~/projects/corkboard/current"},
@@ -7,6 +8,52 @@ standard_vars = {
   "versions" => {:value => {:nginx => "0.7.61", :upload_module => "2.0.9"}},
   "vhost_type" => {:default => "passenger", :value => "passenger"}
 }
+
+describe Task, "process" do
+  describe "with a dep name" do
+    before {
+      dep 'task spec'
+      Dep.should_receive(:process)
+    }
+    it "should run a dep when just the name is passed" do
+      Base.task.process 'task spec'
+    end
+  end
+  describe "with source/name" do
+    before {
+      @source = dep_source('task-spec-remote').merge(:external => true)
+    }
+    describe "cloning" do
+      before {
+        Source.should_receive(:add_external!).with('task-spec-remote', :from => :github)
+      }
+      it "should attempt to clone when a source/name is passed" do
+        Base.task.process 'task-spec-remote/task-spec-dep'
+      end
+    end
+    describe "loading" do
+      before {
+        Base.should_receive(:setup_noninteractive_for).with(tmp_prefix / 'external_sources/task-spec-remote')
+      }
+      it "should clone and attempt to load when a source/name is passed" do
+        File.exists?(Source.new(@source).path).should be_false
+        Base.task.process 'task-spec-remote/task-spec-dep'
+        File.directory?(Source.new(@source).path).should be_true
+      end
+    end
+    describe "running" do
+      before {
+        Dep.should_receive(:process).with('task-spec-dep')
+      }
+      it "should clone and load, and attempt to process when a source/name is passed" do
+        Base.task.process 'task-spec-remote/task-spec-dep'
+      end
+    end
+  end
+  after {
+    Base.task.saved_vars.clear
+  }
+end
 
 describe Task, "vars_for_save" do
   before {

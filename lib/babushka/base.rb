@@ -27,6 +27,9 @@ module Babushka
       load_deps_from all_dep_locations
     end
 
+    def setup_noninteractive_for dep_locations
+      load_deps_from core_dep_locations.concat [*dep_locations]
+    end
 
     private
 
