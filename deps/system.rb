@@ -8,11 +8,3 @@ dep 'admin group' do
   met? { grep /^admin\:/, '/etc/group' }
   meet { sudo 'groupadd admin' }
 end
-
-dep 'build tools' do
-  requires {
-    on :osx, 'xcode tools'
-    on :snow_leopard, 'llvm in path'
-    on :linux, 'build-essential', 'autoconf'
-  }
-end
