@@ -202,7 +202,7 @@ module Babushka
     end
 
     def load_deps_from dep_locations
-      dep_locations.all? {|dep_path|
+      [*dep_locations].all? {|dep_path|
         DepDefiner.load_deps_from dep_path
       }
     end
