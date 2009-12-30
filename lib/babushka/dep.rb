@@ -1,4 +1,6 @@
 module Babushka
+  class DepError < StandardError
+  end
   class Dep
     module Helpers
       def Dep name;                    Dep.for name.to_s                                        end
@@ -14,6 +16,16 @@ module Babushka
 
     delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
+
+    def self.make name, in_opts, block, definer_class, runner_class
+      if /\A[[:print:]]+\z/i !~ name
+        raise DepError, "The dep name '#{name}' contains nonprintable characters."
+      elsif /\// =~ name
+        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
+      else
+        new name, in_opts, block, definer_class, runner_class
+      end
+    end
 
     def initialize name, in_opts, block, definer_class, runner_class
       @name = name.to_s

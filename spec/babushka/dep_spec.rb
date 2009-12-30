@@ -1,6 +1,26 @@
 require 'spec_support'
 require 'dep_support'
 
+describe "Dep.make" do
+  it "should reject deps with nonprintable characters in their names" do
+    L{
+      Dep.make "carriage\rreturn", {}, nil, BaseDepDefiner, BaseDepRunner
+    }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
+    dep("carriage\rreturn").should be_nil
+  end
+  it "should reject deps slashes in their names" do
+    L{
+      Dep.make "slashes/invalidate names", {}, nil, BaseDepDefiner, BaseDepRunner
+    }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
+    dep("slashes/invalidate names").should be_nil
+  end
+  it "should create deps with valid names" do
+    L{
+      Dep.make("valid dep name", {}, nil, BaseDepDefiner, BaseDepRunner).should be_an_instance_of(Dep)
+    }.should change(Dep.pool, :count).by(1)
+  end
+end
+
 describe "dep creation" do
   it "should work for blank deps" do
     L{

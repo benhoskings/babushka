@@ -81,7 +81,6 @@ module Babushka
       if (tasks = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
       else
-        setup_noninteractive
         tasks.all? {|dep_name| task.process dep_name }
       end
     end
