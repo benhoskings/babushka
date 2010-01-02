@@ -108,8 +108,8 @@ module Babushka
     def handle_update verb
       if verb.opts.length != 1
         fail_with help_for verb.def, "'update' requires exactly one option."
-      else
-        Babushka.updater.update!
+      elsif verb.opts.first.def.name == :system
+        handle_babushka verb
       end
     end
 
