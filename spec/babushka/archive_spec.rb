@@ -14,6 +14,14 @@ describe Archive do
     Archive.new('archive.tar').name.should == 'archive'
     Archive.new('archive.tar.gz').name.should == 'archive'
   end
+  it "should include a prefix on the name when supplied" do
+    Archive.new('archive.tgz', :prefix => nil).name.should == 'archive'
+    Archive.new('archive.tgz', :prefix => '').name.should == 'archive'
+    Archive.new('archive.tgz', :prefix => 'prefix').name.should == 'prefix-archive'
+  end
+  it "should sanitise the prefix name" do
+    Archive.new('archive.tgz', :prefix => 'silly  "dep" name!').name.should == 'silly_dep_name_-archive'
+  end
   it "should fail to generate extract command for unknown files" do
     L{
       Archive.new('archive.tgzz').extract_command
@@ -21,9 +29,9 @@ describe Archive do
   end
   it "should generate the proper command to extract the archive" do
     {
-      'tar' => 'tar -xf archive.tar',
-      'tgz' => 'tar -zxf archive.tgz',
-      'tbz2' => 'tar -jxf archive.tbz2'
+      'tar' => 'tar --strip-components=1 -xf ../archive.tar',
+      'tgz' => 'tar --strip-components=1 -zxf ../archive.tgz',
+      'tbz2' => 'tar --strip-components=1 -jxf ../archive.tbz2'
     }.each_pair {|ext,command|
       Archive.new("archive.#{ext}").extract_command.should == command
     }

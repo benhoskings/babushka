@@ -14,10 +14,13 @@ module Babushka
     
     attr_reader :filename, :type, :name
 
-    def initialize fn
+    def initialize fn, opts = {}
       @filename = fn.to_s.p.basename.to_s
       @type = ArchiveTypes.keys.detect {|k| filename.ends_with? k }
-      @name = filename.gsub /#{type}$/, ''
+      @name = [
+        (opts[:prefix] || '').gsub(/[^a-z0-9\-_.]+/, '_'),
+        filename.gsub(/#{type}$/, '')
+      ].squash.join('-')
     end
 
     def supported?
@@ -25,12 +28,15 @@ module Babushka
     end
 
     def extract
-      log_shell "Extracting #{filename}", extract_command
+      log_block "Extracting #{filename}" do
+        shell("mkdir -p '#{name}'") and
+        in_dir(name) { shell extract_command }
+      end
     end
 
     def extract_command
       raise ArchiveError, "Don't know how to extract #{filename}." if type.nil?
-      "tar -#{ArchiveTypes[type]}xf #{filename}"
+      "tar --strip-components=1 -#{ArchiveTypes[type]}xf ../#{filename}"
     end
   end
 end
