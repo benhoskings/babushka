@@ -49,7 +49,7 @@ module Babushka
     end
 
     def self.sources
-      sources_raw.each {|source| source[:uri] = source[:uri].p }
+      sources_raw.each {|source| source[:uri] = source[:uri].to_fancypath }
     end
 
     def self.paths
