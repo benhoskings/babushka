@@ -8,6 +8,11 @@ module Babushka
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
+      Verb.new(:update, nil, nil, "Update babushka itself", [
+        Opt.new(:system, nil, '--system', "Update babushka itself to the latest version", false, [])
+      ], []),
+      Verb.new(:babushka, nil, nil, "An alias for 'update --system'", [], [
+      ]),
       Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
@@ -22,17 +27,12 @@ module Babushka
         ]),
         Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
       ], []),
-      Verb.new(:babushka, nil, nil, "Update babushka core", [], [
-      ]),
       Verb.new(:pull, nil, nil, "Update dep sources", [], [
         Arg.new(:source, "Pull just a specific source", true, false)
       ]),
       Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
-      Verb.new(:update, nil, nil, "Update babushka components", [
-        Opt.new(:system, nil, '--system', "Update babushka itself to the latest version", false, [])
-      ], []),
       Verb.new(:meet, nil, nil, "Process deps", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
