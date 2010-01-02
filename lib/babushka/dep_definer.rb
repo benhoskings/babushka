@@ -62,14 +62,13 @@ module Babushka
         @@current_load_path = f
         begin
           require f
-          @@current_load_path = nil
         rescue Exception => e
           log_error "#{e.backtrace.first}: #{e.message}"
           log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
           debug e.backtrace * "\n"
-          return nil
         end
       }
+      @@current_load_path = nil
       log_ok "Loaded #{Dep.pool.count - previous_length}#{" and skipped #{Dep.pool.skipped_count - previous_skipped}" unless Dep.pool.skipped_count == previous_skipped} deps from #{path}."
     end
 
