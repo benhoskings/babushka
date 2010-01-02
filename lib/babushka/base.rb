@@ -104,7 +104,7 @@ module Babushka
       log "  #{program_name} <command> [options]"
       log "\nAlso:"
       log "  #{program_name} help <command>  # #{verb_for('help').args.first.description}"
-      log "  #{program_name} <dep name(s)>   # A shortcut for 'meet <dep name(s)>'"
+      log "  #{program_name} <dep name>      # A shortcut for 'meet <dep name>'"
     end
 
     def print_usage_for verb
@@ -143,7 +143,7 @@ module Babushka
 
     def print_notes
       log "\nCommands can be abbrev'ed, as long as they remain unique."
-      log "e.g. '#{program_name} l' is short for '#{program_name} list'."
+      log "  e.g. '#{program_name} l' is short for '#{program_name} list'."
     end
 
     def printable_item item

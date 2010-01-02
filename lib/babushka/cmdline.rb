@@ -27,7 +27,7 @@ module Babushka
       Verb.new(:pull, nil, nil, "Update dep sources", [], [
         Arg.new(:source, "Pull just a specific source", true, false)
       ]),
-      Verb.new(:push, nil, nil, "Push local dep updates to writable sources", [], [
+      Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
       Verb.new(:update, nil, nil, "Update babushka components", [
