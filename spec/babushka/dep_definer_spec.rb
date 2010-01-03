@@ -7,7 +7,7 @@ describe "loading deps" do
     Dep.pool.names.should include('test dep 1')
   end
   it "should recover from load errors" do
-    DepDefiner.load_deps_from('spec/deps/bad').should be_nil
+    DepDefiner.load_deps_from('spec/deps/bad').should be_true
     Dep.pool.names.should_not include('broken test dep 1')
   end
 end
