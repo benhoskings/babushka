@@ -63,4 +63,35 @@ describe "declaration" do
       template_test('dep3').send(:call_task, :met?).should == 'this dep is met.'
     end
   end
+
+  describe "acceptors" do
+    before {
+      @meta = meta 'acceptor_test' do
+        accepts_list_for :list_test
+        accepts_block_for :block_test
+        template {
+          met? {
+            list_test == [ver('valid')]
+          }
+          meet {
+            block_test.call
+          }
+        }
+      end
+    }
+    it "should handle accepts_list_for" do
+      acceptor_test('unmet accepts_list_for') { list_test 'invalid' }.met?.should be_false
+      acceptor_test('met accepts_list_for') { list_test 'valid' }.met?.should be_true
+    end
+    it "should handle accepts_block_for" do
+      block_called = false
+      acceptor_test('accepts_block_for') {
+        list_test 'invalid'
+        block_test {
+          block_called = true
+        }
+      }.meet
+      block_called.should be_true
+    end
+  end
 end
