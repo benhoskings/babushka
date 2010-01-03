@@ -57,6 +57,19 @@ describe "accepts_block_for behaviour" do
   after { Dep.pool.clear! }
 end
 
+describe "helper" do
+  before {
+    dep 'helper test' do
+      helper :helper_test do
+        'hello from the helper!'
+      end
+    end
+  }
+  it "should respond to the helper" do
+    Dep('helper test').runner.helper_test.should == 'hello from the helper!'
+  end
+end
+
 describe "accepts_list_for behaviour" do
   before {
     make_test_deps

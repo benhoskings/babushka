@@ -87,6 +87,12 @@ module Babushka
       set_up_delegating_for method_name
     end
 
+    def helper name, &block
+      runner.class.send :define_method, name do
+        instance_eval &block
+      end
+    end
+
     def default_task task_name
       differentiator = host.differentiator_for payload[task_name].keys
       L{
