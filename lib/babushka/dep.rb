@@ -5,6 +5,7 @@ module Babushka
     module Helpers
       def Dep name;                    Dep.for name.to_s                                        end
       def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
+      def meta name, opts = {}, &block; MetaDepDefiner.new name, opts, &block end
       def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
       def gem name, opts = {}, &block; Dep.pool.add name, opts, block, GemDepDefiner , GemDepRunner  end
       def src name, opts = {}, &block; Dep.pool.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
