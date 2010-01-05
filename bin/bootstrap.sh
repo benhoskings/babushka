@@ -55,8 +55,9 @@ function install_ruby_if_required {
 }
 
 function remove_temporary_install {
-  cd
+  cd ~/.babushka # Running 'rm -rf' in ~ makes me nervous
   rm -rf "$to"
+  cd
 }
 
 function create_install_dir {
