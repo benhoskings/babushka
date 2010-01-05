@@ -98,7 +98,7 @@ function on_install_failure {
   echo "Something went wrong during the install."
   echo ""
   echo "If you fix the problem, you can re-run the install with:"
-  echo "  ruby ~/.babushka/temporary_bootstrap_install/bin/babushka.rb babushka"
+  echo "  ruby $to/bin/babushka.rb babushka"
   echo ""
   echo "There's a full log in ~/.babushka/logs/babushka. Would you mind"
   echo "emailing it to ben@hoskings.net to help improve the installation"
