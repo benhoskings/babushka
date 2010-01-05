@@ -1,7 +1,7 @@
 #!/bin/bash
 
 from="http://github.com/benhoskings/babushka/tarball/master"
-to="~/.babushka/temporary_bootstrap_install"
+to="$HOME/.babushka/temporary_bootstrap_install"
 
 function true_with { echo "$1"; true; }
 function false_with { echo "$1"; false; }
@@ -55,8 +55,8 @@ function install_ruby_if_required {
 }
 
 function clean_up_install_dir {
-  mkdir -p "~/.babushka" &&
-  cd "~/.babushka" &&
+  mkdir -p "$HOME/.babushka" &&
+  cd "$HOME/.babushka" &&
   rm -rf "temporary_bootstrap_install"
   cd
 }
