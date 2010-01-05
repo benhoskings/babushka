@@ -1,6 +1,6 @@
 #!/bin/bash
 
-from="http://github.com/benhoskings/babushka/tarball/stable"
+from="http://github.com/benhoskings/babushka/tarball/master"
 to="$HOME/.babushka/temporary_bootstrap_install"
 
 function true_with { echo "$1"; true; }
