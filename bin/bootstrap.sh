@@ -54,14 +54,15 @@ function install_ruby_if_required {
   fi
 }
 
-function remove_temporary_install {
-  cd ~/.babushka # Running 'rm -rf' in ~ makes me nervous
-  rm -rf "$to"
+function clean_up_install_dir {
+  mkdir -p "~/.babushka" &&
+  cd "~/.babushka" &&
+  rm -rf "temporary_bootstrap_install"
   cd
 }
 
 function create_install_dir {
-  remove_temporary_install &&
+  clean_up_install_dir &&
   mkdir -p "$to" &&
   cd "$to"
 }
@@ -81,7 +82,7 @@ function handle_install {
 }
 
 function on_install_success {
-  remove_temporary_install
+  clean_up_install_dir
 
   echo ""
   echo "All installed! If you're new, the basic idea is 'babushka <dep name>'."
