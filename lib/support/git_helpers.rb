@@ -15,7 +15,7 @@ module Babushka
             end
           }
         else
-          log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "./#{repo}"}
+          log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "#{'.' / repo}"}
         end
 
         if update_success
