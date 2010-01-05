@@ -4,10 +4,10 @@ dep 'babushka' do
   define_var :install_prefix, :default => '/usr/local', :message => "Where would you like babushka installed"
   define_var :babushka_branch,
     :message => "Which branch would you like to update from?",
-    :default => 'stable',
+    :default => 'master',
     :choice_descriptions => {
-      'stable' => 'Default',
-      'master' => 'The latest code, slight risk of explosions'
+      'master' => 'Standard-issue babushka',
+      'next' => 'The development head -- slight risk of explosions'
     }
 end
 
