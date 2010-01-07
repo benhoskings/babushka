@@ -21,9 +21,8 @@ module Babushka
     def process
       requires 'build tools'
       internal_setup {
-        returning(parse_uris) {
-          definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
-        }
+        parse_uris
+        definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
       }
       met? {
         present, missing = provides.partition {|cmd_name| cmd_dir(cmd_name) }

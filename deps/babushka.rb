@@ -11,13 +11,12 @@ dep 'babushka' do
     }
   setup {
     set :install_prefix, Babushka::Path.prefix if Babushka::Path.run_from_path?
-    true
   }
 end
 
 dep 'babushka up to date' do
   requires 'babushka repo clean', 'babushka update would fast forward'
-  setup { in_dir(var(:install_prefix) / 'babushka') { shell('git fetch') } }
+  before { in_dir(var(:install_prefix) / 'babushka') { shell('git fetch') } }
   met? { in_dir(var(:install_prefix) / 'babushka') { shell("git rev-list ..origin/#{var :babushka_branch}").lines.to_a.empty? } }
   meet { in_dir(var(:install_prefix) / 'babushka') { shell("git merge origin/#{var :babushka_branch}", :log => true) } }
 end
