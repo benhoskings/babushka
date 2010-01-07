@@ -71,6 +71,9 @@ module Babushka
     def self.path
       bin.dir
     end
+    def self.prefix
+      path.dir
+    end
   end
 end
 
