@@ -9,6 +9,9 @@ dep 'babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
+  setup {
+    set :install_prefix, Path.prefix if Path.run_from_path?
+  }
 end
 
 dep 'babushka up to date' do
