@@ -74,6 +74,9 @@ module Babushka
     def self.prefix
       path.dir
     end
+    def self.run_from_path?
+      'babushka' == $0
+    end
   end
 end
 
