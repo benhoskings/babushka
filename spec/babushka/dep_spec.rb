@@ -53,6 +53,12 @@ describe "calling met? on a single dep" do
   before {
     setup_yield_counts
   }
+  it "should run if setup returns nil or false" do
+    make_counter_dep(
+      :name => 'unmeetable for met', :setup => L{ false }, :met? => L{ false }
+    ).met?.should == false
+    @yield_counts['unmeetable for met'].should == @yield_counts_met_run
+  end
   it "should return false for unmet deps" do
     make_counter_dep(
       :name => 'unmeetable for met', :met? => L{ false }
