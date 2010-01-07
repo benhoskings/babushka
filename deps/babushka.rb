@@ -10,7 +10,7 @@ dep 'babushka' do
       'next' => 'The development head -- slight risk of explosions'
     }
   setup {
-    set :install_prefix, Path.prefix if Path.run_from_path?
+    set :install_prefix, Babushka::Path.prefix if Babushka::Path.run_from_path?
   }
 end
 
