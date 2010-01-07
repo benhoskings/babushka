@@ -109,12 +109,10 @@ def insert_into_file insert_after, insert_before, filename, lines
 end
 
 def change_with_sed keyword, from, to, file
-  if check_file file, :writable?
-    # Remove the incorrect setting if it's there
-    shell("#{sed} -ri 's/^#{keyword}\s+#{from}//' #{file}")
-    # Add the correct setting unless it's already there
-    grep(/^#{keyword}\s+#{to}/, file) or shell("echo '#{keyword} #{to}' >> #{file}")
-  end
+  # Remove the incorrect setting if it's there
+  shell("#{sed} -ri 's/^#{keyword}\s+#{from}//' #{file}", :sudo => !File.writable?(file))
+  # Add the correct setting unless it's already there
+  grep(/^#{keyword}\s+#{to}/, file) or shell("echo '#{keyword} #{to}' >> #{file}", :sudo => !File.writable?(file))
 end
 
 def sed
