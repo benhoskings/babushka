@@ -77,7 +77,7 @@ class Fancypath < Pathname
   alias_method :rm, :remove
 
   def readlink
-    symlink? ? super.p : self
+    symlink? ? dir / super : self
   end
 
   def mkdir

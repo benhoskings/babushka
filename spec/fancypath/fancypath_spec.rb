@@ -64,8 +64,9 @@ describe Fancypath do
   describe '#readlink' do
     before {
       @file.touch
-      Dir.chdir TMP_DIR do `ln -s #{@file.to_s} testlink` end
-      @link = TMP_DIR.to_fancypath/'testlink'
+      @dir.mkdir
+      Dir.chdir TMP_DIR/'testdir' do `ln -s ../testfile testlink` end
+      @link = TMP_DIR.to_fancypath/'testdir/testlink'
     }
     it('returns self for non-symlinks') { @file.readlink.should == @file }
     it('returns the target for symlinks') { @link.readlink.should == @file }
