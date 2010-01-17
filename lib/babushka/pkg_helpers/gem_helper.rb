@@ -20,6 +20,13 @@ module Babushka
       end
     end
 
+    def gem_bin_path
+      # The directory in which the actual gem binary is found. The gem-installed
+      # binaries will be in the same location. (/usr/local/bin/ruby, etc, are
+      # sometimes symlinks.)
+      @_cached_gem_bin_path ||= which('gem').p.readlink.dir
+    end
+
     def gem_root
       @_cached_gem_root ||= shell('gem env gemdir') / 'gems'
     end
