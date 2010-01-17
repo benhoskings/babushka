@@ -16,6 +16,7 @@ module Babushka
         shell
       end
       def sudo cmd, opts = {}, &block
+        cmd = cmd.to_s
         sudo_cmd = if opts[:su] || cmd[' |'] || cmd[' >']
           "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\""
         else
@@ -43,7 +44,7 @@ module Babushka
     end
 
     def initialize cmd
-      @cmd = cmd
+      @cmd = cmd.to_s
     end
 
     def ok?; result end
