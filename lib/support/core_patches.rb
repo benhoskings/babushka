@@ -250,7 +250,10 @@ class String
     split("\n").grep(
       key.is_a?(Regexp) ? key : /\b#{key}\b/
     ).map {|l|
-      l.sub(key.is_a?(Regexp) ? key : /\b#{key}\b[:=]?/, '').sub(/[;,]\s*$/, '').strip
+      l.sub(/^[^\w]*/, '').
+        sub(key.is_a?(Regexp) ? key : /\b#{key}\b[:=]?/, '').
+        sub(/[;,]\s*$/, '').
+        strip
     }.first || ''
   end
   def / other
