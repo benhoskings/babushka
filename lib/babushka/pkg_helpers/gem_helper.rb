@@ -40,7 +40,7 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      installed = gem_root.glob("#{pkg_name}-*").map {|i|
+      gem_root.glob("#{pkg_name}-*").map {|i|
         File.basename i
       }.map {|i|
         i.gsub(/^#{pkg_name}-/, '').to_version
