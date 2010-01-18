@@ -21,5 +21,6 @@ describe String, "val_for" do
   end
   it "trailing characters" do
     'key: value;'.val_for('key').should == 'value'
+    'key: value,'.val_for('key').should == 'value'
   end
 end
