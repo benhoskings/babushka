@@ -148,7 +148,7 @@ acknowledgements
 
 [Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under BSD.
 
-Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of [@glenmaddern](http://twitter.com/glenmaddern), [@nathan_scott](http://twitter.com/nathan_scott), [@odaeus](http://twitter.com/odaeus), [@aussiegeek](http://twitter.com/aussiegeek), [@bjeanes](http://twitter.com/bjeanes), [@chendo](http://twitter.com/chendo), [@ryanbigg](http://twitter.com/ryanbigg) & [@drnic](http://twitter.com/drnic)
+Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of [@glenmaddern](http://twitter.com/glenmaddern), [@nathan_scott](http://twitter.com/nathan_scott), [@odaeus](http://twitter.com/odaeus), [@aussiegeek](http://twitter.com/aussiegeek), [@bjeanes](http://twitter.com/bjeanes), [@chendo](http://twitter.com/chendo), [@ryanbigg](http://twitter.com/ryanbigg) & [@drnic](http://twitter.com/drnic).
 
 license
 -------
