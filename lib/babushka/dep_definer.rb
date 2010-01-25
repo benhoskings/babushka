@@ -96,7 +96,7 @@ module Babushka
     def default_task task_name
       differentiator = host.differentiator_for payload[task_name].keys
       L{
-        send({:met? => :log_extra, :meet => :log_extra}[task_name] || :debug, [
+        debug([
           "#{@dep.name} / #{task_name} not defined",
           "#{" for #{differentiator}" unless differentiator.nil?}",
           {
