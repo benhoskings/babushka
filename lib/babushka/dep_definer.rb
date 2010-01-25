@@ -100,7 +100,7 @@ module Babushka
           "#{@dep.name} / #{task_name} not defined",
           "#{" for #{differentiator}" unless differentiator.nil?}",
           {
-            :met => ", moving on",
+            :met? => ", moving on",
             :meet => " - nothing to do"
           }[task_name],
           "."
