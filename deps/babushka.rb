@@ -16,8 +16,12 @@ end
 
 dep 'babushka up to date' do
   requires 'babushka repo clean', 'babushka update would fast forward'
-  before { in_dir(var(:install_prefix) / 'babushka') { shell('git fetch') } }
-  met? { in_dir(var(:install_prefix) / 'babushka') { shell("git rev-list ..origin/#{var :babushka_branch}").lines.to_a.empty? } }
+  met? {
+    in_dir(var(:install_prefix) / 'babushka') {
+      shell('git fetch')
+      shell("git rev-list ..origin/#{var :babushka_branch}").lines.to_a.empty?
+    }
+  }
   meet { in_dir(var(:install_prefix) / 'babushka') { shell("git merge origin/#{var :babushka_branch}", :log => true) } }
 end
 
