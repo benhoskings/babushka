@@ -6,7 +6,7 @@ end
 require 'fileutils'
 def in_dir dir, opts = {}, &block
   if dir.nil?
-    yield Dir.pwd
+    yield Dir.pwd.p
   else
     path = dir.p
     path.mkdir if opts[:create] unless path.exists?

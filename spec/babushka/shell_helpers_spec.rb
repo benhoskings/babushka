@@ -129,9 +129,20 @@ describe "in_dir" do
     Dir.rmdir(@nonexistent_dir) if File.directory?(@nonexistent_dir)
   end
 
+  it "should yield if no dir is given" do
+    has_yielded = false
+    in_dir(nil) {|path|
+      path.should be_an_instance_of(Fancypath)
+      Dir.pwd.should == @original_pwd
+      has_yielded = true
+    }
+    has_yielded.should be_true
+  end
+
   it "should yield if no chdir is required" do
     has_yielded = false
-    in_dir(@original_pwd) {
+    in_dir(@original_pwd) {|path|
+      path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
     }
