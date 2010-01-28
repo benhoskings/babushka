@@ -58,7 +58,9 @@ module Babushka
     def self.load_deps_from path
       $stdout.flush
       previous_length, previous_skipped = Dep.pool.count, Dep.pool.skipped_count
-      path.p.glob('**/*.rb').each {|f|
+      path.p.glob('**/*.rb').partition {|f|
+        f.p.basename.in? ['templates.rb']
+      }.flatten.each {|f|
         @@current_load_path = f
         begin
           require f
