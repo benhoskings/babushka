@@ -4,8 +4,9 @@ describe String, "val_for" do
   it "space separation" do
     'key value'.val_for('key').should == 'value'
   end
-  it "colon separation" do
+  it "key/value separation" do
     'key: value'.val_for('key').should == 'value'
+    'key = value'.val_for('key').should == 'value'
   end
   it "whitespace" do
     '  key value '.val_for('key').should == 'value'
@@ -20,12 +21,21 @@ describe String, "val_for" do
     'key with spaces: space-separated value'.val_for('key with spaces').should == 'space-separated value'
   end
   it "non-word leading characters" do
-    '#=> key: value'.val_for('key').should == 'value'
+    '*key: value'.val_for('*key').should == 'value'
+    '-key: value'.val_for('-key').should == 'value'
+    '-key: value'.val_for('key').should == ''
+  end
+  it "non-word leading tokens" do
+    '* key: value'.val_for('key').should == 'value'
     '- key with spaces: value'.val_for('key with spaces').should == 'value'
     ' --  key with spaces: value'.val_for('key with spaces').should == 'value'
   end
   it "trailing characters" do
     'key: value;'.val_for('key').should == 'value'
     'key: value,'.val_for('key').should == 'value'
+  end
+  it "paths" do
+    "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for("/dev/disk1s2        	Apple_HFS").should == "/Volumes/TextMate 1.5.9"
+    "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
   end
 end

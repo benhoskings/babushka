@@ -248,10 +248,10 @@ class String
 
   def val_for key
     split("\n").grep(
-      key.is_a?(Regexp) ? key : /\b#{key}\b/
+      key.is_a?(Regexp) ? key : /(^|^[^\w]*\s+)#{Regexp.escape(key)}\b/
     ).map {|l|
-      l.sub(/^[^\w]*/, '').
-        sub(key.is_a?(Regexp) ? key : /\b#{key}\b[:=]?/, '').
+      l.sub(/^[^\w]*\s+/, '').
+        sub(key.is_a?(Regexp) ? key : /^#{Regexp.escape(key)}\b\s*[:=]?/, '').
         sub(/[;,]\s*$/, '').
         strip
     }.first || ''
