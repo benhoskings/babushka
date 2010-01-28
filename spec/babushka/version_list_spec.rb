@@ -85,6 +85,15 @@ describe "lambda and value input" do
   end
 end
 
+describe "defaults" do
+  it "should accept a default value" do
+    VersionListTest.new.records.should == []
+    VersionListTest.new.produces.should == ['a default response']
+    VersionListTest.new.valid_formats.should == %w[html xml js json]
+    # TODO VersionListTest.new.dynamic_value.should == "some dynamic value"
+  end
+end
+
 describe "nested lambdas" do
   it "should choose recursively" do
     l = L{
