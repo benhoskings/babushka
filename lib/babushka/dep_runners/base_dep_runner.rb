@@ -35,26 +35,48 @@ module Babushka
       "#{cmds.map {|i| "'#{i}'" }.to_list} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
     end
 
-    def dmg url, &block
-      download url
-      output = shell "hdiutil attach #{File.basename url}"
-      unless output.nil?
-        path = output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
-        returning yield path do
-          shell "hdiutil detach #{path}"
-        end
+    private
+
+    def setup_source_uris
+      parse_uris
+      definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
+    end
+
+    def parse_uris
+      @uris = source.map {|uri| URI.parse uri.to_s }
+    end
+
+    def process_sources &block
+      @uris.all? {|uri|
+        handle_source uri, &block
+      }
+    end
+
+
+    # single-URI methods
+
+    def handle_source uri, &block
+      ({
+        'http' => L{ Archive.get_source(uri, &block) },
+        'ftp' => L{ Archive.get_source(uri, &block) },
+        'git' => L{ git(uri, &block) }
+      }[uri.scheme] || L{ unsupported_scheme(uri) }).call
+    end
+
+    def default_configure_command
+      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join}"
+    end
+
+    def call_task task_name
+      if (task_block = send(task_name)).nil?
+        true
+      else
+        log_block(task_name) { instance_eval &task_block }
       end
     end
 
-    def source url, filename = nil, &block
-      in_build_dir {
-        output = get_source url, filename
-        unless output.nil?
-          in_build_dir output do |path|
-            yield path
-          end
-        end
-      }
+    def unsupported_scheme uri
+      log_error "Babushka can't handle #{uri.scheme}:// URLs yet. But it can if you write a patch! :)"
     end
 
   end

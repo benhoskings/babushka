@@ -21,8 +21,7 @@ module Babushka
     def process
       requires 'build tools'
       internal_setup {
-        parse_uris
-        definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
+        setup_source_uris
       }
       met? {
         present, missing = provides.partition {|cmd_name| cmd_dir(cmd_name) }
@@ -31,7 +30,14 @@ module Babushka
           log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing from your PATH." unless missing.empty?
         end
       }
-      meet { do_it_live }
+      meet {
+        process_sources {
+          call_task(:preconfigure) and
+          call_task(:configure) and
+          call_task(:build) and
+          call_task(:install)
+        }
+      }
     end
 
 
