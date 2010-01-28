@@ -125,35 +125,6 @@ def append_to_file text, file, opts = {}
   end
 end
 
-def get_source url, filename = nil
-  filename ||= url.to_s.p.basename
-  if filename.to_s.blank?
-    log_error "Not a valid URL to download: #{url}"
-  else
-    archive = Babushka::Archive.new filename
-    if !archive.supported?
-      log_error "Unsupported archive: #{filename}"
-    elsif !download(url, filename)
-      log_error "Failed to download #{url}."
-    else
-      returning archive.extract do |result|
-        unless result
-          log_error "Couldn't extract #{filename.p}."
-          log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
-        end
-      end
-    end
-  end
-end
-
-def download url, filename = File.basename(url.to_s)
-  if File.exists? filename
-    log_ok "Already downloaded #{filename}."
-  else
-    log_shell "Downloading #{filename}", %Q{curl -L -o "#{filename}" "#{url}"}
-  end
-end
-
 def _by_babushka
   "by babushka-#{Babushka::VERSION} at #{Time.now}"
 end
