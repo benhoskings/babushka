@@ -2,7 +2,7 @@ module Babushka
   module GitHelpers
 
     def git uri, opts = {}, &block
-      repo = opts[:dir] || Archive.for(uri).name
+      repo = opts[:dir] || File.basename(uri.to_s)
       in_dir opts[:prefix] || SrcPrefix, :create => true do
         update_success = if File.directory? repo / '.git'
           in_dir(repo) {
