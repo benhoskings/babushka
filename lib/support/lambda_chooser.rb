@@ -1,7 +1,7 @@
 module Babushka
   class LambdaChooser
 
-    def initialize *possible_choices, &block
+    def initialize owner, *possible_choices, &block
       @possible_choices = possible_choices
       @block = block
       @results = {}
