@@ -2,11 +2,24 @@ require 'spec_support'
 
 
 describe "lambda choosing" do
+  it "should return the value of the block when there are no choices" do
+    LambdaChooser.new(nil, :ours, :theirs) {
+      "block value"
+    }.choose(:ours, :on).should == "block value"
+  end
+
   it "should choose the specified call" do
     LambdaChooser.new(nil, :ours, :theirs) {
       on :ours, "this is ours"
       on :theirs, "this is theirs"
     }.choose(:ours, :on).should == ["this is ours"]
+    describe "with a block value" do
+      LambdaChooser.new(nil, :ours, :theirs) {
+        on :ours, "this is ours"
+        on :theirs, "this is theirs"
+        "block value"
+      }.choose(:ours, :on).should == ["this is ours"]
+    end
   end
 
   it "should pick the first choice from multiple choices" do
