@@ -2,6 +2,7 @@
 
 babushka_components = %w[
   support/core_patches
+  support/xml_string
   support/utils
   support/logger
   support/popen
