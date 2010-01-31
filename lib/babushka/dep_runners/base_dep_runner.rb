@@ -43,7 +43,9 @@ module Babushka
     end
 
     def parse_uris
-      @uris = source.map {|uri| URI.parse uri.to_s }
+      @uris = source.map {|uri|
+        URI.parse(uri.respond_to?(:call) ? uri.call : uri.to_s)
+      }
     end
 
     def process_sources &block
