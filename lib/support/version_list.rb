@@ -50,7 +50,7 @@ module Babushka
         elsif data.first.is_a? Hash
           versions_for data.first
         else
-          data.map {|name| ver name }
+          data.map {|name| name.is_a?(String) ? ver(name) : name }
         end
       end
 

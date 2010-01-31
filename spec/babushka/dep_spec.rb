@@ -44,7 +44,7 @@ describe "dep creation" do
         requires dep('nested dep')
       end
     }.should change(Dep.pool, :count).by(2)
-    Dep('parent dep').definer.requires.should == [ver('nested dep')]
+    Dep('parent dep').definer.requires.should == [Dep('nested dep')]
   end
   after { Dep.pool.clear! }
 end
