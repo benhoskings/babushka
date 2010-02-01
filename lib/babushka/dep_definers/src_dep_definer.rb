@@ -2,6 +2,7 @@ module Babushka
   class SrcDepDefiner < BaseDepDefiner
 
     accepts_list_for :source
+    accepts_list_for :extra_source
     accepts_list_for :provides, :default_name
     accepts_list_for :prefix, '/usr/local'
 
