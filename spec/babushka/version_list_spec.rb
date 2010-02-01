@@ -38,6 +38,11 @@ describe "returning" do
       @list.send(method_name, "hello").send(method_name).should == [ver("hello")]
     }
   end
+  it "should return the result of callable items" do
+    [:records, :produces, :valid_formats].each {|method_name|
+      @list.send(method_name, "hello", L{ "world" }).send(method_name).should == [ver("hello"), "world"]
+    }
+  end
   it "should append new values to existing ones" do
     @list.records "scores", "quips"
     @list.records "tall tales"

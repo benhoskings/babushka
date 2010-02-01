@@ -56,7 +56,7 @@ module Babushka
 
       def list_for method_name, default
         if payload.has_key? method_name
-          payload[method_name]
+          payload[method_name].map {|i| i.respond_to?(:call) ? i.call : i }
         else
           [*(default.is_a?(Symbol) ? send(default) : (default || []))]
         end
