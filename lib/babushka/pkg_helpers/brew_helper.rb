@@ -25,6 +25,10 @@ module Babushka
       end
     end
 
+    def should_sudo?
+      super || !File.writable?(installed_pkgs_path)
+    end
+
 
     private
 
@@ -79,10 +83,6 @@ module Babushka
     end
     def homebrew_lib_path
       prefix / 'Library/Homebrew'
-    end
-
-    def should_sudo?
-      super || !File.writable?(installed_pkgs_path)
     end
   end
   end

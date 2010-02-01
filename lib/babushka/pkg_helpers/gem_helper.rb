@@ -31,6 +31,10 @@ module Babushka
       @_cached_gem_root ||= shell('gem env gemdir') / 'gems'
     end
 
+    def should_sudo?
+      super || !File.writable?(gem_root)
+    end
+
 
     private
 
@@ -45,9 +49,6 @@ module Babushka
       }.map {|i|
         i.gsub(/^#{pkg_name}-/, '').to_version
       }.sort
-    end
-    def should_sudo?
-      super || !File.writable?(gem_root)
     end
   end
   end
