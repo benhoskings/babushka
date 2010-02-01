@@ -38,7 +38,7 @@ module Babushka
         end
       }
       meet {
-        process_sources { call_task(:process_source) }
+        process_sources { call_task(:process_source, :log => false) }
       }
     end
 
