@@ -14,6 +14,13 @@ module Babushka
     accepts_block_for(:build) { shell "make" }
     accepts_block_for(:install) { pkg_manager.install_src! 'make install' }
 
+    accepts_block_for(:process_source) {
+      call_task(:preconfigure) and
+      call_task(:configure) and
+      call_task(:build) and
+      call_task(:install)
+    }
+
     def pkg_manager
       SrcHelper
     end
@@ -31,12 +38,7 @@ module Babushka
         end
       }
       meet {
-        process_sources {
-          call_task(:preconfigure) and
-          call_task(:configure) and
-          call_task(:build) and
-          call_task(:install)
-        }
+        process_sources { call_task(:process_source) }
       }
     end
 
