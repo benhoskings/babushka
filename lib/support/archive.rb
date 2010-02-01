@@ -10,19 +10,14 @@ module Babushka
       if filename.to_s.blank?
         log_error "Not a valid URL to download: #{url}"
       else
-        archive = Archive.for filename
-        in_build_dir {
-          if !download(url, filename)
-            log_error "Failed to download #{url}."
-          else
-            returning archive.extract(&block) do |result|
-              unless result
-                log_error "Couldn't extract #{filename.p}."
-                log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
-              end
-            end
-          end
+        download_path = in_download_dir {|path|
+          path / filename if download(url, filename)
         }
+        if !download_path
+          log_error "Failed to download #{url}."
+        else
+          in_build_dir { Archive.for(download_path).extract(&block) }
+        end
       end
     end
 
@@ -34,83 +29,106 @@ module Babushka
       end
     end
 
-    attr_reader :filename, :type, :name
+    def self.type path
+      TYPES.keys.detect {|key|
+        shell("file '#{path}'")[TYPES[key][:file_match]]
+      }
+    end
 
-    def initialize fn, opts = {}
-      @filename = fn.to_s.p.basename.to_s
-      @type = types.keys.detect {|k| filename.ends_with? k }
+    TYPES = {
+      :tar => {:file_match => 'tar archive', :exts => %w[.tar]},
+      :gzip => {:file_match => 'gzip compressed data', :exts => %w[.tgz .tar.gz]},
+      :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[.tbz2 .tar.bz2]},
+      :zip => {:file_match => 'Zip archive data', :exts => %w[.zip]},
+      :dmg => {:file_match => 'VAX COFF executable not stripped', :exts => %w[.dmg]}
+    }
+
+    attr_reader :path, :name
+
+    def initialize path, opts = {}
+      @path = path.p
       @name = [
         (opts[:prefix] || '').gsub(/[^a-z0-9\-_.]+/, '_'),
-        filename.gsub(/#{type}$/, '')
+        TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/#{t}$/, '') }
       ].squash.join('-')
+    end
+
+    def filename
+      path.basename.to_s
+    end
+
+    def type
+      self.class.type path
     end
 
     def supported?
       !type.nil?
     end
 
-    def types
-      TYPES[self.class]
+    def extract &block
+      in_build_dir { process_extract &block }
+    end
+
+    def process_extract &block
+      shell("mkdir -p '#{name}'") and
+      in_dir(name) {
+        unless log_shell("Extracting #{filename}", extract_command)
+          log_error "Couldn't extract #{filename.p}."
+          log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
+        else
+          block.call(self)
+        end
+      }
     end
   end
 
   class TarArchive < Archive
-    def extract &block
-      shell("mkdir -p '#{name}'") and
-      in_dir(name) {
-        log_shell("Extracting #{filename}", extract_command) and
-        block.call(self)
-      }
-    end
     def extract_command
-      "tar --strip-components=1 -#{types[type]}xf '../#{filename}'"
+      "tar --strip-components=1 -#{extract_option(type)}xf '#{path}'"
+    end
+    def extract_option type
+      {
+        :tar => '',
+        :gzip => 'z',
+        :bzip2 => 'j'
+      }[type]
     end
   end
 
   class ZipArchive < Archive
-    def extract &block
-      log_shell("Extracting #{filename}", extract_command) and
-      in_dir(name) { block.call(self) }
-    end
     def extract_command
-      "unzip -o -d '#{name}' '#{filename}'"
+      "unzip -o '#{path}'"
     end
   end
 
   class DmgArchive < Archive
-    def extract &block
-      output = log_shell "Mounting #{filename}", "hdiutil attach '#{filename.p.basename}'"
+    def process_extract &block
+      output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
       unless output.nil?
         path = output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
         returning(in_dir(path) { block.call(self) }) do
-          log_shell "Unmounting #{filename}", "hdiutil detach '#{path}'"
+          log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
         end
       end
     end
   end
   
   class Archive
-    TYPES = {
-      TarArchive => {
-        '.tar' => '',
-        '.tar.gz' => 'z',
-        '.tgz' => 'z',
-        '.tar.bz2' => 'j',
-        '.tbz2' => 'j'
-      },
-      ZipArchive => {
-        '.zip' => ''
-      },
-      DmgArchive => {
-        '.dmg' => ''
-      }
+    CLASSES = {
+      :tar => TarArchive,
+      :gzip => TarArchive,
+      :bzip2 => TarArchive,
+      :zip => ZipArchive,
+      :dmg => DmgArchive
     }
 
-    def self.for fn, opts = {}
-      filename = fn.to_s.p.basename.to_s
-      klass = TYPES.keys.detect {|k| TYPES[k].keys.detect {|k| filename.ends_with? k } }
+    def self.for path, opts = {}
+      path = path.p
+      filename = path.basename.to_s
+      raise ArchiveError, "The archive #{filename} does not exist." unless path.exists?
+      klass = CLASSES[type(path)]
       raise ArchiveError, "Don't know how to extract #{filename}." if klass.nil?
-      klass.new(fn, opts)
+      klass.new(path, opts)
     end
   end
 end
