@@ -18,8 +18,8 @@ module Babushka
     def deps
       @dep_hash.values
     end
-    def for name
-      @dep_hash[name]
+    def for spec
+      spec.respond_to?(:name) ? @dep_hash[spec.name] : @dep_hash[spec]
     end
 
     def add name, in_opts, block, definer_class, runner_class

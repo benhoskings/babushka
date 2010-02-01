@@ -3,7 +3,7 @@ module Babushka
   end
   class Dep
     module Helpers
-      def Dep name;                    Dep.for name.to_s                                        end
+      def Dep spec;                    Dep.for spec end
       def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
       def meta name, opts = {}, &block; MetaDepWrapper.new name, opts, &block end
       def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
@@ -44,8 +44,8 @@ module Babushka
     def self.pool
       Base.dep_pool
     end
-    def self.for name
-      pool.for name
+    def self.for spec
+      pool.for spec
     end
 
     extend Suggest::Helpers
