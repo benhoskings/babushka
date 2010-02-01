@@ -23,7 +23,7 @@ module Babushka
       else
         returning missing.empty? do |result|
           if result
-            log cmd_location_str_for(ours.empty? ? other : ours).end_with('.')
+            log cmd_location_str_for(ours.empty? ? other : ours).end_with('.') unless other.empty? && ours.empty?
           else
             log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing."
           end
