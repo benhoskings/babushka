@@ -187,10 +187,6 @@ module Babushka
       @definer.payload
     end
 
-    def require_counts
-      (payload[:requires] || {}).map {|k,v| "#{k.inspect} => #{v.length}" }.join(', ')
-    end
-
     def task
       Base.task
     end
@@ -198,7 +194,7 @@ module Babushka
     public
 
     def inspect
-      "#<Dep:#{object_id} '#{name}'#{" #{'un' if cached_process}met" if cached?}, deps = { #{require_counts} }>"
+      "#<Dep:#{object_id} '#{name}'#{" (#{'un' if cached_process}met)" if cached?} <- [#{definer.requires.map(&:name).join(', ')}]>"
     end
   end
 end
