@@ -69,9 +69,11 @@ module Babushka
       "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join}"
     end
 
-    def call_task task_name
+    def call_task task_name, opts = {}
       if (task_block = send(task_name)).nil?
         true
+      elsif opts[:log] == false
+        instance_eval &task_block
       else
         log_block(task_name) { instance_eval &task_block }
       end
