@@ -26,6 +26,10 @@ def in_build_dir path = '', &block
   in_dir Babushka::SrcPrefix / path, :create => true, &block
 end
 
+def in_download_dir path = '', &block
+  in_dir Babushka::DownloadPrefix / path, :create => true, &block
+end
+
 def cmd_dir cmd_name
   which("#{cmd_name}") {|shell|
     File.dirname shell.stdout if shell.ok?

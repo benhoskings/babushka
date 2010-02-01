@@ -1,6 +1,7 @@
 module Babushka
   WorkingPrefix = '~/.babushka'
   SrcPrefix = WorkingPrefix / 'src'
+  DownloadPrefix = WorkingPrefix / 'downloads'
   LogPrefix = WorkingPrefix / 'logs'
   VarsPrefix = WorkingPrefix / 'vars'
 

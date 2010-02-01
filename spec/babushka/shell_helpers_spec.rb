@@ -196,6 +196,24 @@ describe "in_build_dir" do
   end
 end
 
+describe "in_download_dir" do
+  before {
+    @original_pwd = Dir.pwd
+  }
+  it "should change to the download dir with no args" do
+    in_download_dir {
+      Dir.pwd.should == "~/.babushka/downloads".p
+    }
+    Dir.pwd.should == @original_pwd
+  end
+  it "should append the supplied path when supplied" do
+    in_download_dir "tmp" do
+      Dir.pwd.should == "~/.babushka/downloads/tmp".p
+    end
+    Dir.pwd.should == @original_pwd
+  end
+end
+
 describe "cmd_dir" do
   it "should return the cmd_dir of an existing command" do
     cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
