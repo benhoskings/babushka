@@ -66,7 +66,7 @@ module Babushka
     end
 
     def default_configure_command
-      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join}"
+      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join(' ')}"
     end
 
     def call_task task_name, opts = {}
