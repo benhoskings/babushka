@@ -30,15 +30,16 @@ pkg 'homebrew git' do
   provides 'git'
 end
 
-dep 'homebrew bootstrap' do
+src 'homebrew bootstrap' do
   requires 'writable install location', 'build tools'
-  met? { cmds_in_path? 'brew' }
-  meet {
-    source "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew", 'masterbrew.tgz' do |path|
-      log "Installing temporary homebrew to #{var :install_prefix}."
-      FileUtils.cp_r 'bin/brew', (var(:install_prefix) / 'bin/brew').to_s
-      File.chmod 0755, (var(:install_prefix) / 'bin/brew').to_s
-      FileUtils.cp_r 'Library', var(:install_prefix)
-    end
+  source L{
+    "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew"
+  }
+  provides 'brew'
+  process_source {
+    log "Installing temporary homebrew to #{var :install_prefix}."
+    FileUtils.cp_r 'bin/brew', (var(:install_prefix) / 'bin/brew').to_s
+    File.chmod 0755, (var(:install_prefix) / 'bin/brew').to_s
+    FileUtils.cp_r 'Library', var(:install_prefix)
   }
 end
