@@ -10,10 +10,12 @@ end
 
 dep 'homebrew installed' do
   define_var :homebrew_repo_user, :default => 'mxcl', :message => "Whose homebrew repo would you like to use?"
-  requires 'writable install location', 'homebrew git'
   setup {
-    # Use the existing homebrew install if there is one
-    set :install_prefix, Babushka::BrewHelper.prefix if Babushka::BrewHelper.present?
+    if Babushka::BrewHelper.present?
+      set :install_prefix, Babushka::BrewHelper.prefix # Use the existing homebrew install if there is one
+    else
+      requires 'writable install location', 'homebrew git' # Add install-time deps
+    end
   }
   met? { File.exists? var(:install_prefix) / '.git' }
   meet {
