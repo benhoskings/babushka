@@ -104,7 +104,7 @@ module Babushka
     def removeable?
       if !self.class.sources_raw.detect {|s| s[:name] == name }
         log "No such source: #{uri}"
-      elsif !in_dir(path) { shell "git ls-files -mo" }.split("\n").empty?
+      elsif !in_dir(path) { shell "git ls-files -m -o" }.split("\n").empty?
         log "Local changes found in #{path}, not removing."
       elsif !in_dir(path) { shell('git rev-list origin/master..') }.lines.to_a.empty?
         log "There are unpushed commits in #{path}, not removing."
