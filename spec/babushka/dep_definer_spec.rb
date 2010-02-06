@@ -64,7 +64,12 @@ describe "helper" do
         'hello from the helper!'
       end
     end
+    dep 'another test'
   }
+  it "should only define the helper on the specified dep" do
+    Dep('helper test').runner.should respond_to(:helper_test)
+    Dep('another test').runner.should_not respond_to(:helper_test)
+  end
   it "should respond to the helper" do
     Dep('helper test').runner.helper_test.should == 'hello from the helper!'
   end

@@ -88,7 +88,7 @@ module Babushka
     end
 
     def helper name, &block
-      runner.class.send :define_method, name do
+      runner.metaclass.send :define_method, name do
         instance_eval &block
       end
     end
