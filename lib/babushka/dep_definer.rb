@@ -88,8 +88,12 @@ module Babushka
     end
 
     def helper name, &block
-      runner.metaclass.send :define_method, name do
-        instance_eval &block
+      runner.metaclass.send :define_method, name do |*args|
+        if block.arity == -1
+          instance_exec *args, &block
+        else
+          instance_exec *args[0...(block.arity)], &block
+        end
       end
     end
 

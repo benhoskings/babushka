@@ -75,6 +75,32 @@ describe "helper" do
   end
 end
 
+describe "helper with args" do
+  before {
+    dep 'helper args test' do
+      helper :helper_args_test do |message,punct|
+        "#{message} from the helper#{punct}"
+      end
+    end
+  }
+  it "should respond to the helper including the args" do
+    Dep('helper args test').runner.helper_args_test('salut', ' :)').should == 'salut from the helper :)'
+  end
+end
+
+describe "helper with splatted args" do
+  before {
+    dep 'helper splatted args test' do
+      helper :helper_splatted_args_test do |*args|
+        "#{args.join(', ')} from the helper!"
+      end
+    end
+  }
+  it "should respond to the helper including the args" do
+    Dep('helper splatted args test').runner.helper_splatted_args_test('salut', 'bonjour', "g'day").should == "salut, bonjour, g'day from the helper!"
+  end
+end
+
 describe "accepts_list_for behaviour" do
   before {
     make_test_deps
