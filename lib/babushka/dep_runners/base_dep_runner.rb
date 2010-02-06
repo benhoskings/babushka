@@ -75,10 +75,8 @@ module Babushka
     def call_task task_name, opts = {}
       if (task_block = send(task_name)).nil?
         true
-      elsif opts[:log] == false
-        instance_eval &task_block
       else
-        log_block(task_name) { instance_eval &task_block }
+        instance_eval &task_block
       end
     end
 
