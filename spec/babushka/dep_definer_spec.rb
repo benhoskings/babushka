@@ -86,6 +86,11 @@ describe "helper with args" do
   it "should respond to the helper including the args" do
     Dep('helper args test').runner.helper_args_test('salut', ' :)').should == 'salut from the helper :)'
   end
+  it "should fail with the wrong number of args" do
+    L{
+      Dep('helper args test').runner.helper_args_test('salut')
+    }.should raise_error(ArgumentError, "wrong number of args to helper_args_test (1 for 2)")
+  end
 end
 
 describe "helper with splatted args" do

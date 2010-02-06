@@ -91,6 +91,8 @@ module Babushka
       runner.metaclass.send :define_method, name do |*args|
         if block.arity == -1
           instance_exec *args, &block
+        elsif block.arity != args.length
+          raise ArgumentError, "wrong number of args to #{name} (#{args.length} for #{block.arity})"
         else
           instance_exec *args[0...(block.arity)], &block
         end
