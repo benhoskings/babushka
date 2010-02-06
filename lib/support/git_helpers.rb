@@ -24,5 +24,11 @@ module Babushka
       end
     end
 
+    def current_branch path = nil
+      in_dir path do
+        shell("git branch --no-color").lines.grep(/^\*/).first.scan(/\* (.*)/).flatten.first
+      end
+    end
+
   end
 end
