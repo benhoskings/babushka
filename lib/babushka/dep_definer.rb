@@ -59,7 +59,8 @@ module Babushka
       $stdout.flush
       previous_length, previous_skipped = Dep.pool.count, Dep.pool.skipped_count
       path.p.glob('**/*.rb').partition {|f|
-        f.p.basename.in? ['templates.rb']
+        f.p.basename == 'templates.rb' or
+        f.p.parent.basename == 'templates'
       }.flatten.each {|f|
         @@current_load_path = f
         begin
