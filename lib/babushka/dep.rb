@@ -101,8 +101,8 @@ module Babushka
       end
     end
 
-    def process_deps
-      @definer.requires.send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
+    def process_deps accessor = :requires
+      @definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
         Dep.process dep_name
       })
     end
