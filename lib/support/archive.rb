@@ -6,7 +6,7 @@ module Babushka
     extend Shell::Helpers
 
     def self.get_source url, &block
-      filename = url.to_s.p.basename
+      filename = URI.unescape(url.to_s).p.basename
       if filename.to_s.blank?
         log_error "Not a valid URL to download: #{url}"
       else
