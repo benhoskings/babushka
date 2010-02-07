@@ -111,6 +111,8 @@ module Babushka
       process_met_task(:initial => true) {
         if task.opt(:dry_run)
           false # unmet
+        elsif !process_deps(:requires_when_unmet)
+          false # install-time deps unmet
         else
           process_task(:before) and process_task(:meet) and process_task(:after)
           process_met_task

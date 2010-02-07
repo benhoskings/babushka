@@ -17,6 +17,7 @@ def make_counter_dep opts = {}
   }
   dep opts[:name] do
     requires opts[:requires] unless opts[:requires].nil?
+    requires_when_unmet opts[:requires_when_unmet] unless opts[:requires_when_unmet].nil?
     BaseDepDefiner.accepted_blocks.each {|dep_method|
       send dep_method do
         returning (opts[dep_method] || @dep.definer.default_task(dep_method)).call do
