@@ -139,9 +139,9 @@ module Babushka
     def run_met_task task_opts = {}
       returning cache_process(call_task(:met?)) do |result|
         if :fail == result
-          log_extra "I don't know how to fix that, so it's up to you. :)"
+          log "I don't know how to fix that, so it's up to you. :)"
         elsif !result && task_opts[:initial] && !Base.task.opt(:dry_run)
-          log_extra "not already met#{unmet_message_for(result)}."
+          log "not already met#{unmet_message_for(result)}."
         elsif result && !task_opts[:initial]
           log "#{name} met.".colorize('green')
         end
