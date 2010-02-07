@@ -8,7 +8,6 @@ module Babushka
       def meta name, opts = {}, &block; MetaDepWrapper.new name, opts, &block end
       def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
       def gem name, opts = {}, &block; Dep.pool.add name, opts, block, GemDepDefiner , GemDepRunner  end
-      def src name, opts = {}, &block; Dep.pool.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
       def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
 
