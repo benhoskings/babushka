@@ -73,7 +73,7 @@ module Babushka
       shell("mkdir -p '#{name}'") and
       in_dir(name) {
         unless log_shell("Extracting #{filename}", extract_command)
-          log_error "Couldn't extract #{filename.p}."
+          log_error "Couldn't extract #{path}."
           log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
         else
           block.nil? or block.call(self)
