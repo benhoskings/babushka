@@ -23,6 +23,6 @@ end
 
 class String
   def xml_val_for key
-    XMLString.new(self).val_for(key)
+    Babushka::XMLString.new(self).val_for(key)
   end
 end
