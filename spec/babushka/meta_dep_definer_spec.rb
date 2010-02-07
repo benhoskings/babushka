@@ -1,6 +1,11 @@
 require 'spec_support'
 require 'dep_definer_support'
 
+def remove_constants_for str
+  Babushka.send :remove_const, "#{str.camelize}DepDefiner"
+  Babushka.send :remove_const, "#{str.camelize}DepRunner"
+end
+
 describe "name checks" do
   it "should not allow blank names" do
     L{ meta(nil) }.should raise_error ArgumentError, "You can't define a meta dep with a blank name."
@@ -8,6 +13,13 @@ describe "name checks" do
   end
   it "should not allow reserved names" do
     L{ meta(:base) }.should raise_error ArgumentError, "You can't use 'base' for a meta dep name, because it's reserved."
+  end
+  describe "duplicate declaration" do
+    before { meta 'duplicate' }
+    it "should be prevented" do
+      L{ meta(:duplicate) }.should raise_error ArgumentError, "A meta dep called 'duplicate' has already been defined."
+    end
+    after { remove_constants_for 'duplicate' }
   end
 end
 
@@ -46,6 +58,7 @@ describe "declaration" do
         templateless_test('templateless dep').should be_an_instance_of Dep
       end
     end
+    after { remove_constants_for 'templateless_test' }
   end
 
   describe "with template" do
@@ -72,6 +85,7 @@ describe "declaration" do
     it "should correctly define the met? block" do
       template_test('dep3').send(:call_task, :met?).should == 'this dep is met.'
     end
+    after { remove_constants_for 'template_test' }
   end
 
   describe "acceptors" do
@@ -103,5 +117,8 @@ describe "declaration" do
       }.meet
       block_called.should be_true
     end
+    after { remove_constants_for 'acceptor_test' }
   end
+
+  after { remove_constants_for 'test' }
 end
