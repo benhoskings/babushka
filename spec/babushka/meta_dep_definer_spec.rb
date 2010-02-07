@@ -1,6 +1,16 @@
 require 'spec_support'
 require 'dep_definer_support'
 
+describe "name checks" do
+  it "should not allow blank names" do
+    L{ meta(nil) }.should raise_error ArgumentError, "You can't define a meta dep with a blank name."
+    L{ meta('') }.should raise_error ArgumentError, "You can't define a meta dep with a blank name."
+  end
+  it "should not allow reserved names" do
+    L{ meta(:base) }.should raise_error ArgumentError, "You can't use 'base' for a meta dep name, because it's reserved."
+  end
+end
+
 describe "declaration" do
   before {
     @meta = meta 'test'

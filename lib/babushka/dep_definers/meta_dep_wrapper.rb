@@ -1,8 +1,20 @@
 module Babushka
   class MetaDepWrapper
+    INVALID_NAMES = %w[base]
 
     def self.wrappers
       @wrappers ||= Hashish.hash
+    end
+
+    def self.for supplied_name, opts, &block
+      name = supplied_name.to_s.downcase
+      if name.to_s.blank?
+        raise ArgumentError, "You can't define a meta dep with a blank name."
+      elsif name.in? INVALID_NAMES
+        raise ArgumentError, "You can't use '#{name}' for a meta dep name, because it's reserved."
+      else
+        new name, opts, &block
+      end
     end
 
     attr_reader :name, :opts, :definer_class, :runner_class
