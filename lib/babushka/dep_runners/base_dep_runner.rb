@@ -51,12 +51,12 @@ module Babushka
     end
 
     def parse_uris
-      @uris = source.map &uri_parser
-      @extra_uris = extra_source.map &uri_parser
+      @uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
+      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
     end
 
-    def uri_parser
-      L{|uri| URI.parse(uri.respond_to?(:call) ? uri.call : uri.to_s) }
+    def uri_processor(method_name)
+      L{|uri| URI.send(method_name, uri.respond_to?(:call) ? uri.call : uri.to_s) }
     end
 
     def process_sources &block

@@ -6,7 +6,7 @@ module Babushka
     extend Shell::Helpers
 
     def self.get_source url, &block
-      filename = url.to_s.p.basename
+      filename = URI.unescape(url.to_s).p.basename
       if filename.to_s.blank?
         log_error "Not a valid URL to download: #{url}"
       else
@@ -73,12 +73,22 @@ module Babushka
       shell("mkdir -p '#{name}'") and
       in_dir(name) {
         unless log_shell("Extracting #{filename}", extract_command)
-          log_error "Couldn't extract #{filename.p}."
+          log_error "Couldn't extract #{path}."
           log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
         else
-          block.nil? or block.call(self)
+          in_dir(content_subdir) {
+            block.nil? or block.call(self)
+          }
         end
       }
+    end
+
+    def content_subdir
+      Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
+        dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
+      }.reject {|dir|
+        [/\.app$/].any? {|dont_descend| dir[dont_descend] }
+      }.first
     end
   end
 
