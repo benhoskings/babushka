@@ -3,6 +3,7 @@ module Babushka
 
     accepts_list_for :desc
     accepts_list_for :requires
+    accepts_list_for :requires_when_unmet
     accepts_block_for :internal_setup
     accepts_block_for :setup
     accepts_block_for :met?
