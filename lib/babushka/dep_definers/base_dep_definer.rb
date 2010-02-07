@@ -15,6 +15,8 @@ module Babushka
     accepts_block_for :meet
     accepts_block_for :after
 
+    delegate :version, :set_version, :to => :runner
+
     def pkg_manager
       BaseHelper
     end

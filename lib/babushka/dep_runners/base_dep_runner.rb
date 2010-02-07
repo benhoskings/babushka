@@ -6,6 +6,14 @@ module Babushka
 
     private
 
+    def version
+      var(:versions)[name]
+    end
+
+    def set_version version_str
+      merge :versions, name => version_str
+    end
+
     # This probably should be elsewhere, because it only works on DepRunners that
     # define #provides.
     def cmds_in_path? commands = provides, custom_cmd_dir = nil
