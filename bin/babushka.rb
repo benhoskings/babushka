@@ -42,7 +42,6 @@ babushka_components = %w[
   babushka/dep_runners/meta_dep_runner
   babushka/dep_runners/pkg_dep_runner
   babushka/dep_runners/gem_dep_runner
-  babushka/dep_runners/src_dep_runner
   babushka/dep_runners/ext_dep_runner
   babushka/dep_definer
   babushka/dep_definers/meta_dep_wrapper
@@ -50,7 +49,6 @@ babushka_components = %w[
   babushka/dep_definers/meta_dep_definer
   babushka/dep_definers/pkg_dep_definer
   babushka/dep_definers/gem_dep_definer
-  babushka/dep_definers/src_dep_definer
   babushka/dep_definers/ext_dep_definer
 ]
 
