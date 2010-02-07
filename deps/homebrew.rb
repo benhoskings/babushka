@@ -33,9 +33,7 @@ end
 
 src 'homebrew bootstrap' do
   requires 'writable install location', 'build tools'
-  source L{
-    "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew"
-  }
+  source L{ "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew" }
   provides 'brew'
   process_source {
     log "Installing temporary homebrew to #{var :install_prefix}."
