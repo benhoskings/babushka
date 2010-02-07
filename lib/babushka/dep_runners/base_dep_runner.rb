@@ -60,8 +60,8 @@ module Babushka
     end
 
     def process_sources &block
-      @extra_uris.each {|uri| handle_source uri }
-      @uris.all? {|uri| handle_source uri, &block }
+      @extra_uris.each {|uri| handle_source uri } unless @extra_uris.nil?
+      @uris.all? {|uri| handle_source uri, &block } unless @uris.nil?
     end
 
 
