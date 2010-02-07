@@ -47,7 +47,7 @@ module Babushka
 
     def setup_source_uris
       parse_uris
-      definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
+      definer.requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
     end
 
     def parse_uris
