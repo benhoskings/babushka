@@ -2,7 +2,7 @@ meta :app do
   accepts_list_for :source
   accepts_list_for :extra_source
   accepts_list_for :app_name, :name
-  accepts_block_for :current_version
+  accepts_block_for :current_version do |path| nil end
   accepts_block_for :latest_version
 
   template {
