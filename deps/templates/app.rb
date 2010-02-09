@@ -48,10 +48,13 @@ meta :app do
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
-          if archive.is_a? Babushka::DmgArchive
-            log_block("Found #{entry} in the DMG, copying to /Applications") { FileUtils.cp_r entry, '/Applications/' }
-          else
-            log_block("Found #{entry}, moving to /Applications") { FileUtils.mv entry, '/Applications/' }
+          target_path = '/Applications' / entry
+          if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
+            if archive.is_a? Babushka::DmgArchive
+              log_block("Found #{entry} in the DMG, copying to /Applications") { FileUtils.cp_r entry, '/Applications/' }
+            else
+              log_block("Found #{entry}, moving to /Applications") { FileUtils.mv entry, '/Applications/' }
+            end
           end
         }
       }
