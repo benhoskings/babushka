@@ -112,14 +112,16 @@ module Babushka
   end
 
   class DmgArchive < Archive
-    def process_extract &block
-      output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
-      unless output.nil?
-        path = output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
-        returning(in_dir(path) { block.call(self) }) do
-          log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
+    def extract &block
+      in_download_dir {
+        output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
+        unless output.nil?
+          path = output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
+          returning(in_dir(path) { block.call(self) }) do
+            log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
+          end
         end
-      end
+      }
     end
   end
   
