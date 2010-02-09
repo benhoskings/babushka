@@ -23,6 +23,7 @@ meta :src do
     call_task(:build) and
     call_task(:install)
   }
+
   template {
     requires 'build tools'
     internal_setup { setup_source_uris }
