@@ -84,11 +84,11 @@ describe "log_shell" do
     should_receive(:log).exactly(2).times
   }
   it "should log and run a command" do
-    should_receive(:shell).with('uptime', {})
+    should_receive(:shell).with('uptime', {:spinner => true})
     log_shell 'Getting uptime', 'uptime'
   end
   it "should log correctly for a failing command" do
-    should_receive(:shell).with('nonexistent', {})
+    should_receive(:shell).with('nonexistent', {:spinner => true})
     log_shell 'Nonexistent shell command', 'nonexistent'
   end
 end

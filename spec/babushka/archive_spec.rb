@@ -45,4 +45,14 @@ describe Archive do
       Archive.for(archive_path / "archive.#{ext}").extract_command.should == command
     }
   end
+  it "should yield in the extracted dir" do
+    Archive.for(archive_path / "archive.tar").extract {
+      Dir.pwd.should == '~/.babushka/src/archive'.p
+    }
+  end
+  it "should yield in the nested dir if there is one" do
+    Archive.for(archive_path / "nested_archive.tar").extract {
+      Dir.pwd.should == '~/.babushka/src/nested_archive/nested archive'.p
+    }
+  end
 end

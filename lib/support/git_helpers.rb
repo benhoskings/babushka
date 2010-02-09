@@ -7,11 +7,16 @@ module Babushka
         update_success = if File.directory? repo / '.git'
           in_dir(repo) {
             log uri do
-              shell 'git pull origin master' do |shell|
-                returning shell.ok? do |result|
-                  log result ? shell.stdout : shell.stderr
+              [
+                'git fetch origin',
+                "git reset --hard origin/#{current_branch}"
+              ].all? {|cmd|
+                shell cmd do |shell|
+                  returning shell.ok? do |result|
+                    log result ? shell.stdout : shell.stderr
+                  end
                 end
-              end
+              }
             end
           }
         else
@@ -21,6 +26,12 @@ module Babushka
         if update_success
           block.nil? || in_dir(repo) {|path| block.call path }
         end
+      end
+    end
+
+    def current_branch path = nil
+      in_dir path do
+        shell("git branch --no-color").lines.grep(/^\*/).first.scan(/\* (.*)/).flatten.first
       end
     end
 

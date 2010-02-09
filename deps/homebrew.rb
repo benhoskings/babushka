@@ -9,12 +9,11 @@ dep 'homebrew binary in place' do
 end
 
 dep 'homebrew installed' do
+  requires_when_unmet 'writable install location', 'homebrew git'
   define_var :homebrew_repo_user, :default => 'mxcl', :message => "Whose homebrew repo would you like to use?"
   setup {
     if Babushka::BrewHelper.present?
       set :install_prefix, Babushka::BrewHelper.prefix # Use the existing homebrew install if there is one
-    else
-      requires 'writable install location', 'homebrew git' # Add install-time deps
     end
   }
   met? { File.exists? var(:install_prefix) / '.git' }
@@ -34,9 +33,7 @@ end
 
 src 'homebrew bootstrap' do
   requires 'writable install location', 'build tools'
-  source L{
-    "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew"
-  }
+  source L{ "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/masterbrew" }
   provides 'brew'
   process_source {
     log "Installing temporary homebrew to #{var :install_prefix}."

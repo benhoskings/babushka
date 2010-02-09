@@ -4,7 +4,7 @@ module Babushka
     def pkg_type; :src end
 
     def install_src! cmd, opts = {}
-      shell cmd, :sudo => (opts[:sudo] || should_sudo?)
+      log_shell "install", cmd, :sudo => (opts[:sudo] || should_sudo?)
     end
 
     def prefix

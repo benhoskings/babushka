@@ -5,10 +5,9 @@ module Babushka
     module Helpers
       def Dep spec;                    Dep.for spec end
       def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
-      def meta name, opts = {}, &block; MetaDepWrapper.new name, opts, &block end
+      def meta name, opts = {}, &block; MetaDepWrapper.for name, opts, &block end
       def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
       def gem name, opts = {}, &block; Dep.pool.add name, opts, block, GemDepDefiner , GemDepRunner  end
-      def src name, opts = {}, &block; Dep.pool.add name, opts, block, SrcDepDefiner , SrcDepRunner  end
       def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
 
@@ -101,8 +100,8 @@ module Babushka
       end
     end
 
-    def process_deps
-      @definer.requires.send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
+    def process_deps accessor = :requires
+      @definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
         Dep.process dep_name
       })
     end
@@ -112,8 +111,13 @@ module Babushka
         if task.opt(:dry_run)
           false # unmet
         else
-          process_task(:before) and process_task(:meet) and process_task(:after)
-          process_met_task
+          process_task(:prepare)
+          if !process_deps(:requires_when_unmet)
+            false # install-time deps unmet
+          else
+            process_task(:before) and process_task(:meet) and process_task(:after)
+            process_met_task
+          end
         end
       }
     end
@@ -135,9 +139,9 @@ module Babushka
     def run_met_task task_opts = {}
       returning cache_process(call_task(:met?)) do |result|
         if :fail == result
-          log_extra "I don't know how to fix that, so it's up to you. :)"
+          log "I don't know how to fix that, so it's up to you. :)"
         elsif !result && task_opts[:initial] && !Base.task.opt(:dry_run)
-          log_extra "not already met#{unmet_message_for(result)}."
+          log "not already met#{unmet_message_for(result)}."
         elsif result && !task_opts[:initial]
           log "#{name} met.".colorize('green')
         end

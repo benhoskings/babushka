@@ -6,6 +6,14 @@ module Babushka
 
     private
 
+    def version
+      var(:versions)[name]
+    end
+
+    def set_version version_str
+      merge :versions, name => version_str
+    end
+
     # This probably should be elsewhere, because it only works on DepRunners that
     # define #provides.
     def cmds_in_path? commands = provides, custom_cmd_dir = nil
@@ -39,28 +47,28 @@ module Babushka
 
     def setup_source_uris
       parse_uris
-      definer.requires(@uris.map(&:scheme).uniq & %w[ git ])
+      definer.requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
     end
 
     def parse_uris
-      @uris = source.map &uri_parser
-      @extra_uris = extra_source.map &uri_parser
+      @uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
+      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
     end
 
-    def uri_parser
-      L{|uri| URI.parse(uri.respond_to?(:call) ? uri.call : uri.to_s) }
+    def uri_processor(method_name)
+      L{|uri| URI.send(method_name, uri.respond_to?(:call) ? uri.call : uri.to_s) }
     end
 
     def process_sources &block
-      @extra_uris.each {|uri| handle_source uri }
-      @uris.all? {|uri| handle_source uri, &block }
+      @extra_uris.each {|uri| handle_source uri } unless @extra_uris.nil?
+      @uris.all? {|uri| handle_source uri, &block } unless @uris.nil?
     end
 
 
     # single-URI methods
 
     def handle_source uri, &block
-      uri = uri_parser.call(uri) unless uri.is_a?(URI)
+      uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
       ({
         'http' => L{ Archive.get_source(uri, &block) },
         'ftp' => L{ Archive.get_source(uri, &block) },
@@ -68,17 +76,11 @@ module Babushka
       }[uri.scheme] || L{ unsupported_scheme(uri) }).call
     end
 
-    def default_configure_command
-      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join(' ')}"
-    end
-
     def call_task task_name, opts = {}
       if (task_block = send(task_name)).nil?
         true
-      elsif opts[:log] == false
-        instance_eval &task_block
       else
-        log_block(task_name) { instance_eval &task_block }
+        instance_eval &task_block
       end
     end
 

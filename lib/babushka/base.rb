@@ -197,10 +197,10 @@ module Babushka
 
     def all_dep_locations
       [
+        core_dep_locations, # The bundled deps
         './babushka_deps', # deps in the current directory
         '~/.babushka/deps', # the user's custom deps
-        Source.paths, # each dep source
-        core_dep_locations # The bundled deps
+        Source.paths # each dep source
       ].flatten
     end
 

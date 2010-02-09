@@ -39,3 +39,16 @@ describe String, "val_for" do
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
   end
 end
+
+describe String, "camelize" do
+  it "should convert underscored strings to CamelCase" do
+    {
+      "test" => "Test",
+      "testy_test" => "TestyTest",
+      "Test" => "Test",
+      "TestyTest" => "TestyTest"
+    }.each_pair {|k,v|
+      k.camelize.should == v
+    }
+  end
+end

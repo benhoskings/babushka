@@ -260,6 +260,11 @@ class String
     (empty? ? other.p : (p / other))
   end
 
+  def camelize
+    # From activesupport/lib/active_support/inflector.rb:178
+    gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+  end
+
   def words
     split(/[^a-z0-9_.-]+/i)
   end
