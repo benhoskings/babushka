@@ -11,17 +11,13 @@ meta :app do
     end
 
     helper :check_version do |path|
-      versions = [
-        (current_version.call(path)),# unless current_version.nil?),
-        (latest_version.call)# unless latest_version.nil?)
-      ]
-      set_version(versions.last) unless versions.last.nil?
-      if versions.first && versions.last
-        if versions.first == versions.last
-          log_ok "#{name} is up to date at #{versions.first}."
-        else
-          log "#{name} could be updated from #{versions.first} to #{versions.last}."
-        end
+      current = current_version.call(path)
+      if current.nil? || version.nil?
+        debug "Can't check versions without both current and latest."
+      elsif current == version
+        log_ok "#{name} is up to date at #{version}."
+      else
+        log "#{name} could be updated from #{current} to #{version}."
       end
     end
 
