@@ -68,7 +68,7 @@ module Babushka
     # single-URI methods
 
     def handle_source uri, &block
-      uri = uri_parser.call(uri) unless uri.is_a?(URI)
+      uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
       ({
         'http' => L{ Archive.get_source(uri, &block) },
         'ftp' => L{ Archive.get_source(uri, &block) },
