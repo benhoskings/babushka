@@ -14,6 +14,7 @@ meta :app do
       current = current_version.call(path)
       if current.nil? || version.nil?
         debug "Can't check versions without both current and latest."
+        true
       elsif current == version
         log_ok "#{name} is up to date at #{version}."
       else
