@@ -8,7 +8,11 @@ meta :tmbundle, :for => :osx do
     end
     met? { path.dir? }
     before { shell "mkdir -p #{path.parent}" }
-    meet { git source, :dir => name, :prefix => path.parent }
+    meet {
+      source.each {|uri|
+        git uri, :dir => name, :prefix => path.parent
+      }
+    }
     after { shell %Q{osascript -e 'tell app "TextMate" to reload bundles'} }
   }
 end
