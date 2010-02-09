@@ -21,11 +21,18 @@ meta :app do
       end
     end
 
+    helper :discover_latest_version do
+      latest_value = latest_version.call
+      # TODO this is just to detect the default block and ignore it. Yuck :)
+      set_version latest_value unless latest_value == true
+    end
+
     prepare {
       setup_source_uris
     }
 
     met? {
+      discover_latest_version
       installed = Dir.glob("/Applications/#{app_name_match}").select {|entry|
         (entry / 'Contents/MacOS').exists?
       }
