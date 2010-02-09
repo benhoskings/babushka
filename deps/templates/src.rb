@@ -15,7 +15,7 @@ meta :src do
   accepts_list_for :configure_args
 
   accepts_block_for(:build) { log_shell "build", "make" }
-  accepts_block_for(:install) { SrcHelper.install_src! 'make install' }
+  accepts_block_for(:install) { Babushka::SrcHelper.install_src! 'make install' }
 
   accepts_block_for(:process_source) {
     call_task(:preconfigure) and
