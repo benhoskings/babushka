@@ -76,10 +76,6 @@ module Babushka
       }[uri.scheme] || L{ unsupported_scheme(uri) }).call
     end
 
-    def default_configure_command
-      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join(' ')}"
-    end
-
     def call_task task_name, opts = {}
       if (task_block = send(task_name)).nil?
         true

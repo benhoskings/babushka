@@ -14,6 +14,10 @@ meta :src do
   accepts_list_for :configure_env
   accepts_list_for :configure_args
 
+  def default_configure_command
+    "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join(' ')}"
+  end
+
   accepts_block_for(:build) { log_shell "build", "make" }
   accepts_block_for(:install) { Babushka::SrcHelper.install_src! 'make install' }
 
