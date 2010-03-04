@@ -13,6 +13,9 @@ describe Array, "to_list" do
   it "three elements" do
     %w[a b c].to_list.should == 'a, b and c'
   end
+  it "oxford comma" do
+    %w[a b c].to_list(:oxford => true).should == 'a, b, and c'
+  end
   it "custom conjugation" do
     %w[a b c].to_list(:conj => 'or').should == 'a, b or c'
   end
