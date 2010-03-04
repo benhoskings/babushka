@@ -50,6 +50,14 @@ module Babushka
       end
     end
 
+    def app_dir app_name
+      %w[/Applications ~/Applications].detect {|app_path|
+        Dir.glob((app_path / app_name).to_s).select {|entry|
+          (entry / 'Contents/MacOS').exists?
+        }.any?
+      }
+    end
+
     def cmd_location_str_for cmds
       "#{cmds.map {|i| "'#{i}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
     end
