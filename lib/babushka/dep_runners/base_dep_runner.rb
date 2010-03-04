@@ -52,7 +52,7 @@ module Babushka
 
     def app_dir app_name
       %w[/Applications ~/Applications].detect {|app_path|
-        Dir.glob((app_path / app_name).to_s).select {|entry|
+        (app_path / app_name).glob.select {|entry|
           (entry / 'Contents/MacOS').exists?
         }.any?
       }
