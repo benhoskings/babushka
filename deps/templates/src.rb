@@ -31,7 +31,7 @@ meta :src do
 
     requires 'build tools'
     internal_setup { setup_source_uris }
-    met? { cmds_in_path? }
+    met? { provided? }
     meet { process_sources { call_task(:process_source, :log => false) } }
   }
 end

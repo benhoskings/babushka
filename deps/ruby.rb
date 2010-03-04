@@ -9,6 +9,6 @@ end
 
 dep 'os x ruby', :for => :osx do
   met? {
-    cmds_in_path? ['ruby', 'irb', 'ri', 'rdoc']
+    provided? ['ruby', 'irb', 'ri', 'rdoc']
   }
 end
