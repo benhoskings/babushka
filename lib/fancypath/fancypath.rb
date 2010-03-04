@@ -86,8 +86,8 @@ class Fancypath < Pathname
     self
   end
 
-  def glob expr, &block
-    Dir.glob((self / expr).to_s, &block)
+  def glob expr = nil, &block
+    Dir.glob((expr.nil? ? self : (self / expr)).to_s, &block)
   end
 
   def write(contents, mode='wb')

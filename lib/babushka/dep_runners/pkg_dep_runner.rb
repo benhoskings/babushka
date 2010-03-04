@@ -11,7 +11,7 @@ module Babushka
       if !applicable?
         log_ok "Not required on #{pkg_manager.manager_key}-based systems."
       else
-        packages_present? and cmds_in_path?
+        packages_present? and provided?
       end
     end
 
