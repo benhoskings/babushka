@@ -91,6 +91,9 @@ describe Fancypath do
     it "should glob" do
       TMP_DIR.glob('**/*').to_a.should == ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
     end
+    it "should glob with no args" do
+      (TMP_DIR / '**/*').glob.to_a.should == ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
+    end
   end
 
   describe '#write' do
