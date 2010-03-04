@@ -40,7 +40,7 @@ module Babushka
     end
 
     def cmd_location_str_for cmds
-      "#{cmds.map {|i| "'#{i}'" }.to_list} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
+      "#{cmds.map {|i| "'#{i}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
     end
 
     private
