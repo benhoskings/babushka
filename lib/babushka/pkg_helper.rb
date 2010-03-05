@@ -53,9 +53,27 @@ module Babushka
     def should_sudo?
       !File.writable?(bin_path)
     end
+
     def update_pkg_lists_if_required
-      true # not required by default
+      if pkg_update_timeout.nil?
+        true # not required
+      else
+        list_age = Time.now - pkg_list_dir.mtime
+        if list_age > pkg_update_timeout
+          log_shell "#{manager_dep.capitalize} package lists are #{list_age.round.xsecs} old. Updating", pkg_update_command, :sudo => should_sudo?
+        else
+          debug "#{manager_dep.capitalize} package lists are #{list_age.round.xsecs} old (up to date)."
+          true # up to date
+        end
+      end
     end
+    def pkg_update_timeout
+      nil # not required by default
+    end
+    def pkg_update_command
+      "#{pkg_cmd} update"
+    end
+
     def cmdline_spec_for pkg
       "#{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}"
     end
