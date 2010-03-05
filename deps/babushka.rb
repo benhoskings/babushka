@@ -18,7 +18,6 @@ dep 'babushka up to date' do
   requires 'babushka repo clean', 'babushka update would fast forward'
   met? {
     in_dir(var(:install_prefix) / 'babushka') {
-      shell('git fetch')
       shell("git rev-list ..origin/#{var :babushka_branch}").lines.to_a.empty?
     }
   }
@@ -29,8 +28,12 @@ dep 'babushka update would fast forward' do
   requires 'babushka installed'
   met? {
     in_dir(var(:install_prefix) / 'babushka') {
-      shell("git rev-list origin/#{var :babushka_branch}..").lines.to_a.empty? or
-      fail_because("There are unpushed commits in #{var(:install_prefix) / 'babushka'}.")
+      if !shell('git fetch')
+        fail_because("Couldn't pull the latest code - check your internet connection.")
+      else
+        shell("git rev-list origin/#{var :babushka_branch}..").lines.to_a.empty? or
+        fail_because("There are unpushed commits in #{var(:install_prefix) / 'babushka'}.")
+      end
     }
   }
 end
