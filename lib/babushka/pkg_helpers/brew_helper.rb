@@ -19,6 +19,12 @@ module Babushka
       }
     end
 
+    def update_pkg_lists_if_required
+      returning super do |result|
+        pkg_list_dir.touch if result
+      end
+    end
+
     def brew_path_for pkg_name
       if active_version = active_version_of(pkg_name)
         installed_pkgs_path / pkg_name / active_version
@@ -70,6 +76,13 @@ module Babushka
       ].map {|i|
         File.basename i.chomp '/'
       }.map(&:to_version)
+    end
+
+    def pkg_update_timeout
+      3600 # 1 hour
+    end
+    def pkg_list_dir
+      prefix
     end
 
     def installed_pkgs_path

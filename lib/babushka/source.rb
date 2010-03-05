@@ -116,9 +116,7 @@ module Babushka
     include Shell::Helpers
     include GitHelpers
     def pull!
-      returning git uri, :prefix => prefix, :dir => name, :log => true do
-        FileUtils.touch path
-      end
+      git uri, :prefix => prefix, :dir => name, :log => true
     end
 
     private
