@@ -15,7 +15,7 @@ module Babushka
     end
 
     def provided? provided_list = provides, custom_cmd_dir = nil
-      apps, commands = provided_list.partition {|i| i[/\.app\/?$/] }
+      apps, commands = provided_list.partition {|i| i.to_s[/\.app\/?$/] }
       apps_in_path?(apps) and cmds_in_path?(commands)
     end
 
