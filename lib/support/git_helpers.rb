@@ -23,7 +23,8 @@ module Babushka
           log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "#{'.' / repo}"}
         end
 
-        if update_success
+        returning update_success do
+          FileUtils.touch repo # so we can tell when it was last updated
           block.nil? || in_dir(repo) {|path| block.call path }
         end
       end
