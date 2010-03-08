@@ -71,7 +71,7 @@ end
 
 dep 'babushka installed' do
   requires 'ruby', 'git', 'writable install location', 'install location in path'
-  set :babushka_source, "git://github.com/benhoskings/babushka.git"
+  setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { git_repo?(var(:install_prefix) / 'babushka') }
   meet {
     in_dir var :install_prefix do |path|
