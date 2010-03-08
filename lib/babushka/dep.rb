@@ -154,6 +154,7 @@ module Babushka
 
     def call_task task_name
       # log "calling #{name} / #{task_name}"
+      track_block_for(task_name) if Base.task.opt(:track_blocks)
       runner.instance_eval &@definer.send(task_name)
     rescue StandardError => e
       log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
@@ -163,6 +164,15 @@ module Babushka
       debug e.backtrace * "\n"
       Base.task.reportable = true
       :fail
+    end
+
+    include Shell::Helpers
+    def track_block_for task_name
+      if definer.has_task?(task_name)
+        file, line = *definer.send(task_name).inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
+        shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
+        sleep 2
+      end
     end
 
     def unmet_message_for result
