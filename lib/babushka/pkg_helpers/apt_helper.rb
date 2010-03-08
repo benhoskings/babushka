@@ -19,13 +19,7 @@ module Babushka
       if !File.exists? '/var/lib/apt/lists/lock'
         log_shell "Looks like apt hasn't been used on this system yet. Updating", "apt-get update", :sudo => should_sudo?
       else
-        list_age = Time.now - File.mtime('/var/lib/apt/lists')
-        if list_age > (3600 * 24 * 7) # more than 1 week old
-          log_shell "Apt lists are #{list_age.round.xsecs} old. Updating", "apt-get update", :sudo => should_sudo?
-        else
-          debug "Apt lists are #{list_age.round.xsecs} old (up to date)."
-          true # up to date
-        end
+        super
       end
     end
 
@@ -33,6 +27,14 @@ module Babushka
     def _has? pkg_name
       failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status').split(' ').include?('installed')
     end
+
+    def pkg_update_timeout
+      3600 * 24 # 1 day
+    end
+    def pkg_list_dir
+      '/var/lib/apt/lists'
+    end
+
   end
   end
 end

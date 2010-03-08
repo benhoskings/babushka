@@ -34,11 +34,9 @@ meta :app do
 
     met? {
       discover_latest_version
-      installed = Dir.glob("/Applications/#{app_name_match}").select {|entry|
-        (entry / 'Contents/MacOS').exists?
-      }
-      returning installed.any? && check_version(installed.first) do |result|
-        log "Found at #{installed.first}." if result
+      installed = app_dir(app_name_match) / app_name.first
+      returning installed && check_version(installed) do |result|
+        log "Found at #{installed}." if result
       end
     }
 

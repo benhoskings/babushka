@@ -14,33 +14,52 @@ module Babushka
       merge :versions, name => version_str
     end
 
-    # This probably should be elsewhere, because it only works on DepRunners that
-    # define #provides.
-    def cmds_in_path? commands = provides, custom_cmd_dir = nil
-      present, missing = [*commands].partition {|cmd_name| cmd_dir(cmd_name) }
-      ours, other = if custom_cmd_dir
-        present.partition {|cmd_name| cmd_dir(cmd_name) == custom_cmd_dir }
-      else
-        present.partition {|cmd_name| pkg_manager.cmd_in_path? cmd_name }
-      end
+    def provided? provided_list = provides
+      apps, commands = provided_list.partition {|i| i.to_s[/\.app\/?$/] }
+      apps_in_path?(apps) and cmds_in_path?(commands)
+    end
 
-      if !ours.empty? and !other.empty?
-        log_error "The commands for #{name} run from more than one place."
-        log "#{cmd_location_str_for ours}, but #{cmd_location_str_for other}."
+    def apps_in_path? apps
+      present, missing = [*apps].partition {|app_name| app_dir(app_name) }
+
+      returning missing.empty? do |result|
+        if result
+          log "#{present.map {|i| "'#{i}'" }.to_list} #{present.length == 1 ? 'is' : 'are'} present." unless present.empty?
+        else
+          log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing."
+        end
+      end
+    end
+
+    def cmds_in_path? commands
+      dir_hash = [*commands].group_by {|cmd_name| cmd_dir(cmd_name) }
+
+      if dir_hash.keys.compact.length > 1
+        log_error "The commands for '#{name}' run from more than one place."
+        log dir_hash.values.map {|cmds| cmd_location_str_for cmds }.to_list(:oxford => true, :conj => 'but').end_with('.')
         :fail
       else
-        returning missing.empty? do |result|
+        cmds = dir_hash.values.first
+        returning dir_hash[nil].blank? do |result|
           if result
-            log cmd_location_str_for(ours.empty? ? other : ours).end_with('.') unless other.empty? && ours.empty?
+            log cmd_location_str_for(cmds).end_with('.') unless cmds.empty?
           else
-            log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing."
+            log "#{dir_hash[nil].map {|i| "'#{i}'" }.to_list} #{dir_hash[nil].length == 1 ? 'is' : 'are'} missing."
           end
         end
       end
     end
 
+    def app_dir app_name
+      %w[/Applications ~/Applications].detect {|app_path|
+        (app_path / app_name).glob.select {|entry|
+          (entry / 'Contents/MacOS').exists?
+        }.any?
+      }
+    end
+
     def cmd_location_str_for cmds
-      "#{cmds.map {|i| "'#{i}'" }.to_list} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
+      "#{cmds.map {|i| "'#{i}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
     end
 
     private
