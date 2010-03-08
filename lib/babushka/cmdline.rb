@@ -84,7 +84,7 @@ module Babushka
       if (tasks = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
       elsif Base.task.opt(:track_blocks) && !which('mate')
-        fail_with "The -c / --show-code option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings/textmate"
+        fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings/textmate"
       else
         tasks.all? {|dep_name| task.process dep_name }
       end
