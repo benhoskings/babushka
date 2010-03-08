@@ -36,6 +36,7 @@ module Babushka
       Verb.new(:meet, nil, nil, "Process deps", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
+        Opt.new(:track_blocks, nil, '--track-blocks', "Track deps' blocks in TextMate they're run", true, []),
         Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
         Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
         Opt.new(:force, '-f', '--force', "Attempt to meet the dependency even if it's already met", true, [])
@@ -77,9 +78,13 @@ module Babushka
         }
       }
     end
+
+    include Shell::Helpers
     def handle_meet verb
       if (tasks = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
+      elsif Base.task.opt(:track_blocks) && !which('mate')
+        fail_with "The -c / --show-code option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings/textmate"
       else
         tasks.all? {|dep_name| task.process dep_name }
       end
