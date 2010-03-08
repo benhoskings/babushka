@@ -11,7 +11,7 @@ module Babushka
     end
 
     def process
-      requires pkg_manager.manager_dep
+      requires_when_unmet pkg_manager.manager_dep
       internal_setup { internal_pkg_setup }
       met? { packages_met? }
       before { pkg_manager.update_pkg_lists_if_required }
