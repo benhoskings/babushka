@@ -18,7 +18,7 @@ installer 'installer git' do
   source "http://git-osx-installer.googlecode.com/files/git-1.7.0-intel-leopard.dmg"
   provides 'git'
   after {
-     in_dir '/usr/local/bin', :create => true do
+     in_dir '/usr/local/bin' do
        sudo "ln -sf /usr/local/git/bin/git* ." unless 'git'.p.exists?
      end
   }
