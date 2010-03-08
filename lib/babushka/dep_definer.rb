@@ -138,9 +138,12 @@ module Babushka
     end
 
     def block_for method_name
+      specific_block_for(method_name) or default_task(method_name)
+    end
+
+    def specific_block_for method_name
       payload[method_name][(host.match_list & payload[method_name].keys).push(:unassigned).first] ||
-      default_blocks[method_name] ||
-      default_task(method_name)
+      default_blocks[method_name]
     end
 
     def self.set_up_delegating_for method_name
