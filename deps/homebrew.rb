@@ -40,6 +40,6 @@ src 'homebrew bootstrap' do
     FileUtils.cp_r 'bin/brew', (var(:install_prefix) / 'bin/brew').to_s
     File.chmod 0755, (var(:install_prefix) / 'bin/brew').to_s
     FileUtils.cp_r 'Library', var(:install_prefix)
-    true # FileUtils.cp_r returns nil/false.
+    true # FileUtils.cp_r returns nil.
   }
 end
