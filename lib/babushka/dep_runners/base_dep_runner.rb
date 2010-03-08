@@ -42,7 +42,7 @@ module Babushka
         cmds = dir_hash.values.first
         returning dir_hash[nil].blank? do |result|
           if result
-            log cmd_location_str_for(cmds).end_with('.') unless cmds.empty?
+            log cmd_location_str_for(cmds).end_with('.') unless cmds.blank?
           else
             log "#{dir_hash[nil].map {|i| "'#{i}'" }.to_list} #{dir_hash[nil].length == 1 ? 'is' : 'are'} missing."
           end
