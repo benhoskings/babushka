@@ -6,6 +6,7 @@ module Babushka
     GemVersionOperators = %w[= == != > < >= <= ~>].freeze
 
     def <=> other
+      other = other.to_version if other.is_a? String
       pieces <=> other.pieces unless pieces.nil? || other.pieces.nil?
     end
     def initialize str

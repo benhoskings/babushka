@@ -16,6 +16,15 @@ end
   end
 end
 
+describe "comparing" do
+  it "should work with other VersionStrs" do
+    (VersionStr.new('0.3.1') > VersionStr.new('0.2.9')).should be_true
+  end
+  it "should work with strings" do
+    (VersionStr.new('0.3.1') > '0.2.9').should be_true
+  end
+end
+
 describe "parsing" do
   it "should parse the version number" do
     VersionStr.new('0.2').pieces.should == [0, 2]
