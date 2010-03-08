@@ -51,11 +51,12 @@ module Babushka
     end
 
     def app_dir app_name
-      %w[/Applications ~/Applications].detect {|app_path|
+      parent_dir = %w[/Applications ~/Applications].detect {|app_path|
         (app_path / app_name).glob.select {|entry|
           (entry / 'Contents/MacOS').exists?
         }.any?
-      } / app_name
+      }
+      parent_dir / app_name unless parent_dir.nil?
     end
 
     def cmd_location_str_for cmds
