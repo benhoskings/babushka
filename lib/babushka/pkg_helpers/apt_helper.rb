@@ -32,7 +32,7 @@ module Babushka
       3600 * 24 # 1 day
     end
     def pkg_list_dir
-      '/var/lib/apt/lists'
+      '/var/lib/apt/lists'.p
     end
 
   end
