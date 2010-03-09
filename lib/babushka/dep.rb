@@ -35,7 +35,7 @@ module Babushka
       @vars = {}
       @runner = runner_class.new self
       @definer = definer_class.new self, &block
-      @definer.define_and_process
+      definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       Dep.pool.register self
     end
@@ -101,7 +101,7 @@ module Babushka
     end
 
     def process_deps accessor = :requires
-      @definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
+      definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
         Dep.process dep_name
       })
     end
@@ -155,7 +155,7 @@ module Babushka
     def call_task task_name
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
-      runner.instance_eval &@definer.send(task_name)
+      runner.instance_eval &definer.send(task_name)
     rescue StandardError => e
       log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
       log "#{e.backtrace.first}: #{e.message}".colorize('red')
@@ -198,7 +198,7 @@ module Babushka
     end
 
     def payload
-      @definer.payload
+      definer.payload
     end
 
     def task
