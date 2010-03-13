@@ -6,6 +6,7 @@ describe "adding" do
     L{
       Source.add!('unreadable', tmp_prefix / "nonexistent.git")
     }.should_not change(Source, :count)
+    Source.new(:name => 'unreadable').path.exists?.should be_false
   end
   describe "cloning" do
     before { @source = dep_source 'clone_test' }

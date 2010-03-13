@@ -19,7 +19,7 @@ module Babushka
           git_update uri, repo
         end
 
-        returning update_success do
+        if update_success
           FileUtils.touch repo # so we can tell when it was last updated
           block.nil? || in_dir(repo) {|path| block.call path }
         end
