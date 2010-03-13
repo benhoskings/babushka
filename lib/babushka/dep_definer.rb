@@ -126,7 +126,7 @@ module Babushka
 
     private
 
-    def on_applicable platform, opts = {}, &block
+    def on platform, &block
       if platform.in? [*chooser]
         @current_platform = platform
         returning block.call do
