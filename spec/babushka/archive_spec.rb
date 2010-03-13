@@ -55,4 +55,10 @@ describe Archive do
       Dir.pwd.should == '~/.babushka/src/nested_archive/nested archive'.p
     }
   end
+  it "should find a standard content dir as a nested dir" do
+    Archive.for(archive_path / "test-0.3.1.tgz").extract {
+      Dir.pwd.should == '~/.babushka/src/test-0.3.1/test-0.3.1'.p
+      Dir.glob('*').should == ['content.txt']
+    }
+  end
 end
