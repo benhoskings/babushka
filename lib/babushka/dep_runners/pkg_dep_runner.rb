@@ -34,7 +34,9 @@ module Babushka
             shell "chmod o+rx #{File.dirname(target_file)}", :sudo => !File.writable?(File.dirname(target_file))
           }
           meet { render_erb source_file, :to => target_file, :sudo => !File.writable?(File.dirname(target_file)) }
-          on :linux, after { service_name.each {|s| sudo "/etc/init.d/#{s} restart" } }
+          on :linux do
+            after { service_name.each {|s| sudo "/etc/init.d/#{s} restart" } }
+          end
         })
       }
     end

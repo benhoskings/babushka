@@ -74,7 +74,7 @@ module Babushka
       path.dir
     end
     def self.run_from_path?
-      'babushka' == $0
+      ENV['PATH'].split(':').include? $0.p.dir
     end
   end
 end
