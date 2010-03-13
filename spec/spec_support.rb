@@ -37,7 +37,6 @@ module Babushka
   end
 end
 
-
 module Babushka
   class VersionOf
     # VersionOf#== should return false in testing unless other is also a VersionOf.
