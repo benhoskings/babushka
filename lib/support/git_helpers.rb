@@ -34,7 +34,7 @@ module Babushka
 
     def git_update uri, repo
       in_dir(repo) {
-        log "Updating #{uri}" do
+        log_block "Updating #{uri}" do
           [
             'git fetch origin',
             "git reset --hard origin/#{current_branch}"
