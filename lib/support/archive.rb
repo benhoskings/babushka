@@ -94,7 +94,7 @@ module Babushka
 
   class TarArchive < Archive
     def extract_command
-      "tar --strip-components=1 -#{extract_option(type)}xf '#{path}'"
+      "tar -#{extract_option(type)}xf '#{path}'"
     end
     def extract_option type
       {

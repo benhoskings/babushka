@@ -37,9 +37,9 @@ describe Archive do
   end
   it "should generate the proper command to extract the archive" do
     {
-      'tar' => "tar --strip-components=1 -xf '#{archive_path / 'archive.tar'}'",
-      'tgz' => "tar --strip-components=1 -zxf '#{archive_path / 'archive.tgz'}'",
-      'tbz2' => "tar --strip-components=1 -jxf '#{archive_path / 'archive.tbz2'}'",
+      'tar' => "tar -xf '#{archive_path / 'archive.tar'}'",
+      'tgz' => "tar -zxf '#{archive_path / 'archive.tgz'}'",
+      'tbz2' => "tar -jxf '#{archive_path / 'archive.tbz2'}'",
       'zip' => "unzip -o '#{archive_path / 'archive.zip'}'"
     }.each_pair {|ext,command|
       Archive.for(archive_path / "archive.#{ext}").extract_command.should == command
