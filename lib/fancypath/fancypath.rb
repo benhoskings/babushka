@@ -158,6 +158,14 @@ class Fancypath < Pathname
     directory? ? children.size == 0 : self.size == 0
   end
   
+  def owner
+    Etc.getpwuid(File.stat(to_s).uid).name
+  end
+
+  def group
+    Etc.getgrgid(File.stat(to_s).gid).name
+  end
+
   def inspect
     super.sub('Pathname','Fancypath')
   end
