@@ -95,6 +95,7 @@ describe Task, "vars_for_save" do
         "db_domain" => {:default => :domain},
         "db_name" => {:default => :username, :value => 'corkboard'},
         "db_user" => {:default => :db_name, :value => 'corkboard_user'},
+        "app_name" => {:default => :username},
         "rake_root" => {:default => :rails_root},
         "static_root" => {:default => :rails_root, :value => "~/projects/corkboard/current/static"}
       }))
@@ -115,6 +116,7 @@ describe Task, "vars_for_save" do
       @vars_for_save['db_domain'][:values].should == {}
       @vars_for_save['db_name'][:values].should == {nil => 'corkboard'}
       @vars_for_save['db_user'][:values].should == {'corkboard' => 'corkboard_user'}
+      @vars_for_save['app_name'][:values].should == {}
       @vars_for_save['rake_root'][:values].should == {}
       @vars_for_save['static_root'][:values].should == {'~/projects/corkboard/current' => '~/projects/corkboard/current/static'}
     end

@@ -126,7 +126,7 @@ module Babushka
 
     private
 
-    def on_applicable platform, opts = {}, &block
+    def on platform, &block
       if platform.in? [*chooser]
         @current_platform = platform
         returning block.call do
@@ -136,10 +136,11 @@ module Babushka
     end
 
     def store_block_for method_name, args, block
+      raise "#{method_name} only accepts args like :on => :linux (as well as a block arg)." unless args.empty? || args.first.is_a?(Hash)
+
       payload[method_name] ||= {}
-      opts = {:on => (@current_platform || :unassigned)}.merge(args.first || {})
-      store_block_for method_name, [{:on => :all}], payload[method_name].delete(:unassigned) unless payload[method_name][:unassigned].nil?
-      [method_name, payload[method_name][opts[:on]] = block]
+      chosen_on = (args.first || {})[:on] || @current_platform || :all
+      payload[method_name][chosen_on] = block
     end
 
     def block_for method_name
@@ -147,7 +148,7 @@ module Babushka
     end
 
     def specific_block_for method_name
-      payload[method_name][(host.match_list & payload[method_name].keys).push(:unassigned).first] ||
+      payload[method_name][(host.match_list & payload[method_name].keys).first] ||
       default_blocks[method_name]
     end
 

@@ -6,12 +6,12 @@ dep 'ruby' do
 end
 
 pkg 'apt ruby' do
-  installs { via :apt, %w[ruby irb rdoc ruby1.8-dev libopenssl-ruby] }
-  provides %w[ruby irb rdoc]
+  installs { via :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby] }
+  provides %w[ruby irb]
 end
 
 dep 'os x ruby' do
   met? {
-    provided? ['ruby', 'irb', 'ri', 'rdoc']
+    provided? %w[ruby irb]
   }
 end

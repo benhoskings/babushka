@@ -105,12 +105,6 @@ end
 
 require 'etc'
 
-class File
-  def self.owner filename
-    Etc.getpwuid(File.stat(filename).uid).name
-  end
-end
-
 class Hash
   def dragnet *keys
     dup.dragnet! *keys
