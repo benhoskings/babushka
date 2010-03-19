@@ -46,6 +46,8 @@ module Babushka
         end
       elsif opts[:ask] != false
         ask_for_var name.to_s
+      else
+        default_for name
       end
     end
 
