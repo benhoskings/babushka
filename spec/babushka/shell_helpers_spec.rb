@@ -61,8 +61,8 @@ describe "sudo" do
       }
       it "should use 'sudo su -'" do
         sudo("echo \\`whoami\\` > #{@tmp_path}")
-        File.read(@tmp_path).chomp.should == 'root'
-        File.owner(@tmp_path).should == 'root'
+        @tmp_path.read.chomp.should == 'root'
+        @tmp_path.owner.should == 'root'
       end
     end
     describe "pipes" do
@@ -72,8 +72,8 @@ describe "sudo" do
       }
       it "should use 'sudo su -'" do
         sudo("echo \\`whoami\\` | tee #{@tmp_path}")
-        File.read(@tmp_path).chomp.should == 'root'
-        File.owner(@tmp_path).should == 'root'
+        @tmp_path.read.chomp.should == 'root'
+        @tmp_path.owner.should == 'root'
       end
     end
   end
