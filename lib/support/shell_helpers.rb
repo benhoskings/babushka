@@ -175,7 +175,9 @@ def confirm message, opts = {}, &block
     :default => (opts[:default] || 'y')
   ).starts_with?('y')
 
-  if answer
+  if block.nil?
+    answer
+  elsif answer
     block.call
   elsif opts[:otherwise]
     log opts[:otherwise]
