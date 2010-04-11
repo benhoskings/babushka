@@ -22,7 +22,7 @@ module Babushka
     end
 
     def self.download url, filename = url.to_s.p.basename
-      if filename.p.exists?
+      if filename.p.exists? && !filename.p.empty?
         log_ok "Already downloaded #{filename}."
       else
         log_block "Downloading #{filename}" do
