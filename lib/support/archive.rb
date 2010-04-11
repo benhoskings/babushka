@@ -25,7 +25,10 @@ module Babushka
       if filename.p.exists?
         log_ok "Already downloaded #{filename}."
       else
-        log_shell "Downloading #{filename}", %Q{curl -L -o "#{filename}" "#{url}"}
+        log_block "Downloading #{filename}" do
+          shell %Q{curl -L -o "#{filename}.tmp" "#{url}"} and
+          shell %Q{mv -f "#{filename}.tmp" "#{filename}"}
+        end
       end
     end
 
