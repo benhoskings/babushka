@@ -15,7 +15,7 @@ pkg 'pkg git' do
 end
 
 installer 'installer git' do
-  requires 'writable install location'
+  requires_when_unmet 'writable install location'
   source "http://git-osx-installer.googlecode.com/files/git-1.7.0-intel-leopard.dmg"
   provides 'git'
   after {
