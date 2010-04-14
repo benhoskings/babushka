@@ -66,11 +66,16 @@ describe Fancypath do
     before {
       @file.touch
       @dir.mkdir
-      Dir.chdir TMP_DIR/'testdir' do `ln -s ../testfile testlink` end
-      @link = TMP_DIR.to_fancypath/'testdir/testlink'
+      Dir.chdir @dir do
+        `ln -s ../testfile testlink_relative`
+        `ln -s /bin/bash testlink_absolute`
+      end
+      @relative_link = @dir/'testlink_relative'
+      @absolute_link = @dir/'testlink_absolute'
     }
     it('returns self for non-symlinks') { @file.readlink.should == @file }
-    it('returns the target for symlinks') { @link.readlink.should == @file }
+    it('returns the target for relative symlinks') { @relative_link.readlink.should == @file }
+    it('returns the target for absolute symlinks') { @absolute_link.readlink.should == '/bin/bash' }
   end
 
   describe '#mkdir' do
