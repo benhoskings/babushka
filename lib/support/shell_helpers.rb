@@ -212,7 +212,7 @@ def render_erb erb, opts = {}
 end
 
 def erb_path_for erb
-  if erb.starts_with? '/'
+  if erb.to_s.starts_with? '/'
     erb # absolute path
   elsif source_path
     File.dirname(source_path) / erb # directory this dep is in, plus relative path
