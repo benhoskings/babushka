@@ -44,7 +44,8 @@ class Fancypath < Pathname
   end
 
   def join(path)
-    super(path.to_s).p
+    path_str = path.to_s
+    super(path_str[0..0] == '/' ? path_str[1..-1] : path_str).p
   end
 
   alias_method :/, :join

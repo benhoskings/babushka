@@ -35,6 +35,7 @@ describe Fancypath do
   describe '#join', 'aliased to #/' do
     it('returns a Fancypath') { (@dir/'somefile').class.should == Fancypath }
     it('joins paths') { (@dir/'somefile').to_s.should =~ /\/somefile$/ }
+    it('joins absolute paths') { (@dir/'/somefile').to_s.should == File.join(@dir, 'somefile') }
   end
 
   describe '#parent' do
