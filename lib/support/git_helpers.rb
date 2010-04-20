@@ -29,7 +29,7 @@ module Babushka
     private
 
     def git_clone uri, repo
-      log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "#{'.' / repo}"}
+      log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "#{repo}"}
     end
 
     def git_update uri, repo
