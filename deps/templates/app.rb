@@ -1,5 +1,6 @@
 meta :app do
   accepts_list_for :source
+  accepts_list_for :prefix, ['/Applications']
   accepts_list_for :extra_source
   accepts_list_for :app_name, :name
   accepts_block_for :current_version do |path| nil end
@@ -47,17 +48,20 @@ meta :app do
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
-          target_path = '/Applications' / entry
-          if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
-            if archive.is_a? Babushka::DmgArchive
-              log_block("Found #{entry} in the DMG, copying to /Applications") {
-                FileUtils.cp_r entry, '/Applications/'
-                true # FileUtils.cp_r returns nil.
-              }
-            else
-              log_block("Found #{entry}, moving to /Applications") { FileUtils.mv entry, '/Applications/' }
+          prefix.each {|pre|
+            pre = pre.to_s # TODO shouldn't be required once accepts_list_for is more generic
+            target_path = pre / entry
+            if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
+              if archive.is_a? Babushka::DmgArchive
+                log_block("Found #{entry} in the DMG, copying to #{pre}") {
+                  FileUtils.cp_r entry, pre.end_with('/')
+                  true # FileUtils.cp_r returns nil.
+                }
+              else
+                log_block("Found #{entry}, moving to #{pre}") { FileUtils.mv entry, pre.end_with('/') }
+              end
             end
-          end
+          }
         }
       }
     }
