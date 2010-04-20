@@ -51,8 +51,8 @@ module Babushka
     end
 
     def app_dir app_name
-      %w[/Applications ~/Applications].pick {|app_path|
-        (app_path / app_name).glob.select {|entry|
+      %w[~/Applications].concat(prefix).pick {|app_path|
+        (app_path.to_s / app_name).glob.select {|entry|
           (entry / 'Contents/MacOS').exists?
         }.first
       }
