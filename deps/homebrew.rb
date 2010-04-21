@@ -23,23 +23,3 @@ dep 'homebrew installed' do
     end
   }
 end
-
-pkg 'homebrew git' do
-  requires 'homebrew bootstrap'
-  setup { definer.payload[:requires].delete 'homebrew' }
-  installs { via :brew, 'git' }
-  provides 'git'
-end
-
-src 'homebrew bootstrap' do
-  requires 'writable install location', 'build tools'
-  source L{ "http://github.com/#{var :homebrew_repo_user}/homebrew/tarball/master" }
-  provides 'brew'
-  process_source {
-    log "Installing temporary homebrew to #{var :install_prefix}."
-    FileUtils.cp_r 'bin/brew', (var(:install_prefix) / 'bin/brew').to_s
-    File.chmod 0755, (var(:install_prefix) / 'bin/brew').to_s
-    FileUtils.cp_r 'Library', var(:install_prefix)
-    true # FileUtils.cp_r returns nil.
-  }
-end
