@@ -1,61 +1,87 @@
-babushka: test-driven sysadmin.
-===
+# babushka: test-driven sysadmin.
 
-> Deploy time! I'll just add a vhost. Oh, and a unix user, and copy the config from that other app. Or was it a different one? Oh well, that worked. Wait, why can't I log in from my testing box? I'm sure I added that SSH key. And where is that shell alias? Oh crap, I only added that on dev the other day. Ohh, I can log in if I chmod 700 my .ssh dir. Why the 500s? Oh lol, forgot to add a new DB user.
+When you spend time researching something new, it's pretty easy to forget what you found, and have to re-research it again next time.
 
-Deploying a webapp or setting up a new user account or configuring automated backups aren't hard. They're made up of lots of simple little jobs that have to be done just right.
+A lot of the tech jobs we do manually aren't challenging or fun, but they're finicky and have to be done just right. They're chores. Things that are important to do, but that are better automated than done manually by us people, right? After all, that's what is supposed to happen in the future. And the future is good, because in the future, we'll all have jetpants. So, onward.
+
+The idea is this: you take a job that you'd rather not do manually, and describe it to babushka using its DSL. These descriptions are structured so babushka not only knows how to accomplish each part of the job, it also knows how to check if each part is already done along the way. You're teaching babushka to achieve an end goal, not just to perform the task that would get you there from the very start.
 
 
-if only it were this easy (it is)
----
+# installing
 
-    ⚡ babushka 'postgres backups'
-    postgres backups {
-      postgres software {
-        homebrew {
-          homebrew binary in place {
-            homebrew installed {
-              writable install location {
-                install location exists {
-                } √ install location exists
-                admins can sudo {
-                  admin group {
-                  } √ admin group
-                } √ admins can sudo
-              } √ writable install location
-              homebrew git {
-                homebrew bootstrap {
-                  √ writable install location (cached)
-                  build tools {
-                    llvm in path {
-                      xcode tools {
-                      } √ xcode tools
-                    } √ llvm in path
-                    build tools / met? not defined.
-                  } √ build tools
-                  'brew' runs from /usr/local/bin.
-                } √ homebrew bootstrap
-                √ system has git-1.6.5 brew
-                'git' runs from /usr/local/bin.
-              } √ homebrew git
-            } √ homebrew installed
-          } √ homebrew binary in place
-          √ build tools (cached)
-          homebrew / met? not defined.
-        } √ homebrew
-        √ system has postgresql-8.4.0 brew
-        'psql' runs from /usr/local/bin.
-      } √ postgres software
+Installing is really easy on any system. All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
+
+If you have curl (OS X):
+
+    bash -c "`curl -L babushka.me/up`"
+
+If you have wget (Ubuntu):
+
+    bash -c "`wget -O - babushka.me/up`"
+
+
+# basic babushka-fu
+
+Then you're ready to start running deps. If you have a Mac, maybe a good example is to install homebrew.
+
+    babushka homebrew
+
+Or check that your rubygems install is looking good - latest version + gem sources. This demonstrates how babushka works: it's the goal (rubygems set up well) that's important. You can safely run this whether or not you have rubygems installed, and babushka will work out what tasks need to be done (i.e. which deps are already met, and which need to be met) in order to achieve the end goal.
+
+    babushka rubygems
+
+Things like rubygems and homebrew aren't hard to install on their own, but with babushka it's _really_ easy, and _fast_. But more importantly, you know the job is being done just right, every time.
+
+If rubygems or homebrew aren't working, you have a list of things that aren't the culprit: everything in the output with a green √ beside it. Conversely, if they stop working in the future, you can re-run babushka, and if something it can detect is broken, that step will have a red × instead. Test-driven sysadmin!
+
+Here's how it works. Babushka knows how to install TextMate bundles, given just the URL. This code is a dep written using the babushka DSL, and it handles the whole process.
+
+    tmbundle 'Cucumber.tmbundle' do
+      source 'git://github.com/bmabey/cucumber-tmbundle.git'
+    end
+
+Notice there's no imperative code there at all -- just declarations. That's what the DSL aims for. Instead of saying "do this, then do this, then do this", the code should say "here's a description of the problem, now you work it out."
+
+That means that babushka isn't just blindly running a bunch of code to make things happen. Each step of the way, it's checking what should be done, and only doing the bits that aren't done already. (In babushka parlance, it's only meeting dependencies that aren't already met.) If you have already have TextMate installed, babushka notices and just installs the bundle.
+
+    Cucumber.tmbundle {
+      TextMate.app {
+        Found at /Applications/TextMate.app.
+      } √ TextMate.app
       not already met.
-      offsite host for postgres backups [backups@napier.hoskings.net]? 
-      √ publickey login to backups@napier.hoskings.net.
-      Rendered /usr/local/bin/postgres_offsite_backup.
-    } √ postgres backups
-    ⚡
+      Cloning from git://github.com/bmabey/cucumber-tmbundle.git... done.
+      Cucumber.tmbundle met.
+    } √ Cucumber.tmbundle
+
+But if you don't, that's an unmet dependency, so it gets pulled in too.
+
+    Cucumber.tmbundle {
+      TextMate.app {
+        not already met.
+        Downloading http://download-b.macromates.com/TextMate_1.5.9.dmg... done.
+        Attaching TextMate_1.5.9.dmg... done.
+        Found TextMate.app in the DMG, copying to /Applications... done.
+        Detaching TextMate_1.5.9.dmg... done.
+        Found at /Applications/TextMate.app.
+        TextMate.app met.
+      } √ TextMate.app
+      not already met.
+      Cloning from git://github.com/bmabey/cucumber-tmbundle.git... done.
+      Cucumber.tmbundle met.
+    } √ Cucumber.tmbundle
+
+OK, something more complex now -- a full nginx/passenger stack.
+
+    babushka 'webserver configured'
+
+Then you can set up each virtualhost with
+
+    babushka 'vhost configured'
+
+That's how I set up all my production machines. Simple and fast, and you can be confident the configuration is being done to a tee every time.
 
 
-how is dep formed?
----
+## how is dep formed?
 
 A dep (dependency) is something that you want to automate, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
 
@@ -109,8 +135,7 @@ The idea is to keep a clean separation between `met?` and `meet`: the code in `m
 If you find you're checking for the presence of some condition in your `meet` block, that means you're trying to do too much in a single dep, and you should be splitting your dep up into smaller ones. Remember, deps are small, self-contained and context-free - the smaller and more focused, the better.
 
 
-what are there deps for?
----
+## what are there deps for?
 
 Pretty much whatever I've needed. That means that there are lots missing, and the ones there are may well not be right for you.
 
@@ -134,24 +159,23 @@ If you'd rather edit the live versions of those deps, you can find them in `/usr
 You can also put project-specific deps in `./babushka_deps`, and babushka will load those too whenever you run it from that directory.
 
 
-n.b.
----
+## n.b.
 
 A dep can run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is: a network of trust.
 
 Many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
 
 
-acknowledgements
-----------------
+## acknowledgements
+
 [Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
 
 [Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under BSD.
 
 Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of [@glenmaddern](http://twitter.com/glenmaddern), [@nathan_scott](http://twitter.com/nathan_scott), [@odaeus](http://twitter.com/odaeus), [@aussiegeek](http://twitter.com/aussiegeek), [@bjeanes](http://twitter.com/bjeanes), [@chendo](http://twitter.com/chendo), [@ryanbigg](http://twitter.com/ryanbigg) & [@drnic](http://twitter.com/drnic).
 
-license
--------
+
+## license
 
 Babushka is licensed under the BSD license, except for the following exception:
 
