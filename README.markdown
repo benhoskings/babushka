@@ -7,6 +7,19 @@ A lot of the tech jobs we do manually aren't challenging or fun, but they're fin
 The idea is this: you take a job that you'd rather not do manually, and describe it to babushka using its DSL. These descriptions are structured so babushka not only knows how to accomplish each part of the job, it also knows how to check if each part is already done along the way. You're teaching babushka to achieve an end goal, not just to perform the task that would get you there from the very start.
 
 
+# installing
+
+Installing is really easy on any system. All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
+
+If you have curl (OS X):
+
+    bash -c "`curl -L babushka.me/up`"
+
+If you have wget (Ubuntu):
+
+    bash -c "`wget -O - babushka.me/up`"
+
+
 ## if only it were this easy (it is)
 
     ⚡ babushka 'postgres backups'
