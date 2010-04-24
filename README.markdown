@@ -1,8 +1,10 @@
 # babushka: test-driven sysadmin.
 
-> Deploy time! I'll just add a vhost. Oh, and a unix user, and copy the config from that other app. Or was it a different one? Oh well, that worked. Wait, why can't I log in from my testing box? I'm sure I added that SSH key. And where is that shell alias? Oh crap, I only added that on dev the other day. Ohh, I can log in if I chmod 700 my .ssh dir. Why the 500s? Oh lol, forgot to add a new DB user.
+When you spend time researching something new, it's pretty easy to forget what you found, and have to re-research it again next time.
 
-Deploying a webapp or setting up a new user account or configuring automated backups aren't hard. They're made up of lots of simple little jobs that have to be done just right.
+A lot of the tech jobs we do manually aren't challenging or fun, but they're finicky and have to be done just right. They're chores. Things that are important to do, but that are better automated than done manually by us people, right? After all, that's what is supposed to happen in the future. And the future is good, because in the future, we'll all have jetpants. So, onward.
+
+The idea is this: you take a job that you'd rather not do manually, and describe it to babushka using its DSL. These descriptions are structured so babushka not only knows how to accomplish each part of the job, it also knows how to check if each part is already done along the way. You're teaching babushka to achieve an end goal, not just to perform the task that would get you there from the very start.
 
 
 ## if only it were this easy (it is)
