@@ -70,6 +70,16 @@ But if you don't, that's an unmet dependency, so it gets pulled in too.
       Cucumber.tmbundle met.
     } √ Cucumber.tmbundle
 
+OK, something more complex now -- a full nginx/passenger stack.
+
+    babushka 'webserver configured'
+
+Then you can set up each virtualhost with
+
+    babushka 'vhost configured'
+
+That's how I set up all my production machines. Simple and fast, and you can be confident the configuration is being done to a tee every time.
+
 
 ## how is dep formed?
 
