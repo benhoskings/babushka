@@ -20,6 +20,57 @@ If you have wget (Ubuntu):
     bash -c "`wget -O - babushka.me/up`"
 
 
+# basic babushka-fu
+
+Then you're ready to start running deps. If you have a Mac, maybe a good example is to install homebrew.
+
+    babushka homebrew
+
+Or check that your rubygems install is looking good - latest version + gem sources. This demonstrates how babushka works: it's the goal (rubygems set up well) that's important. You can safely run this whether or not you have rubygems installed, and babushka will work out what tasks need to be done (i.e. which deps are already met, and which need to be met) in order to achieve the end goal.
+
+    babushka rubygems
+
+Things like rubygems and homebrew aren't hard to install on their own, but with babushka it's _really_ easy, and _fast_. But more importantly, you know the job is being done just right, every time.
+
+If rubygems or homebrew aren't working, you have a list of things that aren't the culprit: everything in the output with a green √ beside it. Conversely, if they stop working in the future, you can re-run babushka, and if something it can detect is broken, that step will have a red × instead. Test-driven sysadmin!
+
+Here's how it works. Babushka knows how to install TextMate bundles, given just the URL. This code is a dep written using the babushka DSL, and it handles the whole process.
+
+    tmbundle 'Cucumber.tmbundle' do
+      source 'git://github.com/bmabey/cucumber-tmbundle.git'
+    end
+
+Notice there's no imperative code there at all -- just declarations. That's what the DSL aims for. Instead of saying "do this, then do this, then do this", the code should say "here's a description of the problem, now you work it out."
+
+That means that babushka isn't just blindly running a bunch of code to make things happen. Each step of the way, it's checking what should be done, and only doing the bits that aren't done already. (In babushka parlance, it's only meeting dependencies that aren't already met.) If you have already have TextMate installed, babushka notices and just installs the bundle.
+
+    Cucumber.tmbundle {
+      TextMate.app {
+        Found at /Applications/TextMate.app.
+      } √ TextMate.app
+      not already met.
+      Cloning from git://github.com/bmabey/cucumber-tmbundle.git... done.
+      Cucumber.tmbundle met.
+    } √ Cucumber.tmbundle
+
+But if you don't, that's an unmet dependency, so it gets pulled in too.
+
+    Cucumber.tmbundle {
+      TextMate.app {
+        not already met.
+        Downloading http://download-b.macromates.com/TextMate_1.5.9.dmg... done.
+        Attaching TextMate_1.5.9.dmg... done.
+        Found TextMate.app in the DMG, copying to /Applications... done.
+        Detaching TextMate_1.5.9.dmg... done.
+        Found at /Applications/TextMate.app.
+        TextMate.app met.
+      } √ TextMate.app
+      not already met.
+      Cloning from git://github.com/bmabey/cucumber-tmbundle.git... done.
+      Cucumber.tmbundle met.
+    } √ Cucumber.tmbundle
+
+
 ## how is dep formed?
 
 A dep (dependency) is something that you want to automate, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
