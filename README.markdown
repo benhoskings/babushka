@@ -1,13 +1,11 @@
-babushka: test-driven sysadmin.
-===
+# babushka: test-driven sysadmin.
 
 > Deploy time! I'll just add a vhost. Oh, and a unix user, and copy the config from that other app. Or was it a different one? Oh well, that worked. Wait, why can't I log in from my testing box? I'm sure I added that SSH key. And where is that shell alias? Oh crap, I only added that on dev the other day. Ohh, I can log in if I chmod 700 my .ssh dir. Why the 500s? Oh lol, forgot to add a new DB user.
 
 Deploying a webapp or setting up a new user account or configuring automated backups aren't hard. They're made up of lots of simple little jobs that have to be done just right.
 
 
-if only it were this easy (it is)
----
+## if only it were this easy (it is)
 
     ⚡ babushka 'postgres backups'
     postgres backups {
@@ -54,8 +52,7 @@ if only it were this easy (it is)
     ⚡
 
 
-how is dep formed?
----
+## how is dep formed?
 
 A dep (dependency) is something that you want to automate, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
 
@@ -109,8 +106,7 @@ The idea is to keep a clean separation between `met?` and `meet`: the code in `m
 If you find you're checking for the presence of some condition in your `meet` block, that means you're trying to do too much in a single dep, and you should be splitting your dep up into smaller ones. Remember, deps are small, self-contained and context-free - the smaller and more focused, the better.
 
 
-what are there deps for?
----
+## what are there deps for?
 
 Pretty much whatever I've needed. That means that there are lots missing, and the ones there are may well not be right for you.
 
@@ -134,24 +130,23 @@ If you'd rather edit the live versions of those deps, you can find them in `/usr
 You can also put project-specific deps in `./babushka_deps`, and babushka will load those too whenever you run it from that directory.
 
 
-n.b.
----
+## n.b.
 
 A dep can run any code. Run deps of unknown origin at your own risk, and when choosing dep sources to add, use the best security there is: a network of trust.
 
 Many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
 
 
-acknowledgements
-----------------
+## acknowledgements
+
 [Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
 
 [Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under BSD.
 
 Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of [@glenmaddern](http://twitter.com/glenmaddern), [@nathan_scott](http://twitter.com/nathan_scott), [@odaeus](http://twitter.com/odaeus), [@aussiegeek](http://twitter.com/aussiegeek), [@bjeanes](http://twitter.com/bjeanes), [@chendo](http://twitter.com/chendo), [@ryanbigg](http://twitter.com/ryanbigg) & [@drnic](http://twitter.com/drnic).
 
-license
--------
+
+## license
 
 Babushka is licensed under the BSD license, except for the following exception:
 
