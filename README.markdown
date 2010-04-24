@@ -20,53 +20,6 @@ If you have wget (Ubuntu):
     bash -c "`wget -O - babushka.me/up`"
 
 
-## if only it were this easy (it is)
-
-    ⚡ babushka 'postgres backups'
-    postgres backups {
-      postgres software {
-        homebrew {
-          homebrew binary in place {
-            homebrew installed {
-              writable install location {
-                install location exists {
-                } √ install location exists
-                admins can sudo {
-                  admin group {
-                  } √ admin group
-                } √ admins can sudo
-              } √ writable install location
-              homebrew git {
-                homebrew bootstrap {
-                  √ writable install location (cached)
-                  build tools {
-                    llvm in path {
-                      xcode tools {
-                      } √ xcode tools
-                    } √ llvm in path
-                    build tools / met? not defined.
-                  } √ build tools
-                  'brew' runs from /usr/local/bin.
-                } √ homebrew bootstrap
-                √ system has git-1.6.5 brew
-                'git' runs from /usr/local/bin.
-              } √ homebrew git
-            } √ homebrew installed
-          } √ homebrew binary in place
-          √ build tools (cached)
-          homebrew / met? not defined.
-        } √ homebrew
-        √ system has postgresql-8.4.0 brew
-        'psql' runs from /usr/local/bin.
-      } √ postgres software
-      not already met.
-      offsite host for postgres backups [backups@napier.hoskings.net]? 
-      √ publickey login to backups@napier.hoskings.net.
-      Rendered /usr/local/bin/postgres_offsite_backup.
-    } √ postgres backups
-    ⚡
-
-
 ## how is dep formed?
 
 A dep (dependency) is something that you want to automate, like add a user account, or build a webserver, or install a gem. Deps depend on other deps.
