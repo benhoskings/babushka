@@ -9,14 +9,20 @@ describe Archive do
     Archive.type(archive_path / 'archive.zip').should == :zip
     Archive.type(archive_path / 'archive.tgz').should == :gzip
   end
+  it "should first attempt to detect type using file extension" do
+    Archive.type(archive_path / 'really_a_gzip.zip').should == :zip
+  end
+  it "should attempt to detect type via when there is no extension" do
+    Archive.type(archive_path / 'zip_without_extension').should == :zip
+  end
   it "should detect supported archive types" do
     Archive.for(archive_path / 'archive.tgz').should be_supported
     Archive.for(archive_path / 'archive.tbz2').should be_supported
   end
   it "should raise an error on unsupported types" do
     L{
-      Archive.for(archive_path / 'invalid_archive.tgz')
-    }.should raise_error("Don't know how to extract invalid_archive.tgz.")
+      Archive.for(archive_path / 'invalid_archive')
+    }.should raise_error("Don't know how to extract invalid_archive.")
   end
   it "should set the name" do
     Archive.for(archive_path / 'archive.tar').name.should == 'archive'
@@ -32,8 +38,8 @@ describe Archive do
   end
   it "should fail to generate extract command for unknown files" do
     L{
-      Archive.for(archive_path / 'invalid_archive.tgz').extract_command
-    }.should raise_error ArchiveError, "Don't know how to extract invalid_archive.tgz."
+      Archive.for(archive_path / 'invalid_archive').extract_command
+    }.should raise_error ArchiveError, "Don't know how to extract invalid_archive."
   end
   it "should generate the proper command to extract the archive" do
     {
