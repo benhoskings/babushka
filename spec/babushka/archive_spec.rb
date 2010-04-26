@@ -36,11 +36,6 @@ describe Archive do
   it "should sanitise the prefix name" do
     Archive.for(archive_path / 'archive.tgz', :prefix => 'silly  "dep" name!').name.should == 'silly_dep_name_-archive'
   end
-  it "should fail to generate extract command for unknown files" do
-    L{
-      Archive.for(archive_path / 'invalid_archive').extract_command
-    }.should raise_error ArchiveError, "Don't know how to extract invalid_archive."
-  end
   it "should generate the proper command to extract the archive" do
     {
       'tar' => "tar -xf '#{archive_path / 'archive.tar'}'",
