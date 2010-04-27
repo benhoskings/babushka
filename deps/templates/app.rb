@@ -54,8 +54,7 @@ meta :app do
             if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
               if archive.is_a? Babushka::DmgArchive
                 log_block("Found #{entry} in the DMG, copying to #{pre}") {
-                  FileUtils.cp_r entry, pre.end_with('/')
-                  true # FileUtils.cp_r returns nil.
+                  shell "cp -a '#{entry}' '#{pre.end_with('/')}'"
                 }
               else
                 log_block("Found #{entry}, moving to #{pre}") { FileUtils.mv entry, pre.end_with('/') }
