@@ -47,7 +47,7 @@ module Babushka
     end
 
     def self.type path
-      detect_type_by_extension(path) || detect_type_by_contents(path)      
+      detect_type_by_extension(path) || detect_type_by_contents(path)
     end
 
     TYPES = {
