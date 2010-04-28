@@ -2,13 +2,13 @@ meta :app do
   accepts_list_for :source
   accepts_list_for :prefix, ['/Applications']
   accepts_list_for :extra_source
-  accepts_list_for :app_name, :name
+  accepts_list_for :provides, :name
   accepts_block_for :current_version do |path| nil end
   accepts_block_for :latest_version
 
   template {
     helper :app_name_match do
-      app_name.first.sub(/\.app$/, '*.app')
+      provides.first.sub(/\.app$/, '*.app')
     end
 
     helper :check_version do |path|
