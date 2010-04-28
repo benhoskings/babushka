@@ -16,7 +16,7 @@ end
 
 installer 'installer git' do
   requires_when_unmet 'writable install location'
-  source "http://git-osx-installer.googlecode.com/files/git-1.7.0-intel-leopard.dmg"
+  source "http://git-osx-installer.googlecode.com/files/git-1.7.0.6-intel-leopard.dmg"
   provides 'git'
   after {
      in_dir '/usr/local/bin' do
