@@ -25,25 +25,37 @@ module Babushka
       if filename.p.exists? && !filename.p.empty?
         log_ok "Already downloaded #{filename}."
       else
-        log_block "Downloading #{filename}" do
+        log_block "Downloading #{url}" do
           shell %Q{curl -L -o "#{filename}.tmp" "#{url}"} and
           shell %Q{mv -f "#{filename}.tmp" "#{filename}"}
         end
       end
     end
-
-    def self.type path
+    
+    def self.detect_type_by_extension path
+      TYPES.keys.detect {|key|
+        TYPES[key][:exts].any? {|extension|
+          path.has_extension? extension
+        }
+      }
+    end
+    
+    def self.detect_type_by_contents path
       TYPES.keys.detect {|key|
         shell("file '#{path}'")[TYPES[key][:file_match]]
       }
     end
 
+    def self.type path
+      detect_type_by_extension(path) || detect_type_by_contents(path)
+    end
+
     TYPES = {
-      :tar => {:file_match => 'tar archive', :exts => %w[.tar]},
-      :gzip => {:file_match => 'gzip compressed data', :exts => %w[.tgz .tar.gz]},
-      :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[.tbz2 .tar.bz2]},
-      :zip => {:file_match => 'Zip archive data', :exts => %w[.zip]},
-      :dmg => {:file_match => 'VAX COFF executable not stripped', :exts => %w[.dmg]}
+      :tar => {:file_match => 'tar archive', :exts => %w[tar]},
+      :gzip => {:file_match => 'gzip compressed data', :exts => %w[tgz tar.gz]},
+      :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[tbz2 tar.bz2]},
+      :zip => {:file_match => 'Zip archive data', :exts => %w[zip]},
+      :dmg => {:file_match => 'VAX COFF executable not stripped', :exts => %w[dmg]}
     }
 
     attr_reader :path, :name
@@ -52,7 +64,7 @@ module Babushka
       @path = path.p
       @name = [
         (opts[:prefix] || '').gsub(/[^a-z0-9\-_.]+/, '_'),
-        TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/#{t}$/, '') }
+        TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/\.#{t}$/, '') }
       ].squash.join('-')
     end
 

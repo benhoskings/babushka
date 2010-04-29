@@ -124,7 +124,7 @@ def sed
 end
 
 def append_to_file text, file, opts = {}
-  if failable_shell("grep '^#{text}' #{file}").stdout.empty?
+  if failable_shell("grep '^#{text}' '#{file}'").stdout.empty?
     shell %Q{echo "# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}, opts
   end
 end
@@ -212,7 +212,7 @@ def render_erb erb, opts = {}
 end
 
 def erb_path_for erb
-  if erb.starts_with? '/'
+  if erb.to_s.starts_with? '/'
     erb # absolute path
   elsif source_path
     File.dirname(source_path) / erb # directory this dep is in, plus relative path

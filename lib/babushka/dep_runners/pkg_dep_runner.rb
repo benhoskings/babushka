@@ -27,7 +27,7 @@ module Babushka
       cfg.all? {|target|
         target_file = target.to_s
         source_file = File.dirname(source_path) / name / "#{File.basename(target_file)}.erb"
-        requires(dep("#{target_file} for #{name}") {
+        requires(dep("#{File.basename(target_file)} for #{name}") {
           met? { babushka_config? target_file }
           before {
             shell "mkdir -p #{File.dirname(target_file)}", :sudo => !File.writable?(File.dirname(File.dirname(target_file)))

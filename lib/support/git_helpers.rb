@@ -20,7 +20,7 @@ module Babushka
         end
 
         if update_success
-          FileUtils.touch repo # so we can tell when it was last updated
+          repo.touch # so we can tell when it was last updated
           block.nil? || in_dir(repo) {|path| block.call path }
         end
       end
@@ -29,7 +29,7 @@ module Babushka
     private
 
     def git_clone uri, repo
-      log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "#{'.' / repo}"}
+      log_shell "Cloning from #{uri}", %Q{git clone "#{uri}" "#{repo}"}
     end
 
     def git_update uri, repo

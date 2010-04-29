@@ -44,7 +44,8 @@ class Fancypath < Pathname
   end
 
   def join(path)
-    super(path.to_s).p
+    path_str = path.to_s
+    super(path_str[0..0] == '/' ? path_str[1..-1] : path_str).p
   end
 
   alias_method :/, :join
@@ -77,7 +78,12 @@ class Fancypath < Pathname
   alias_method :rm, :remove
 
   def readlink
-    symlink? ? dir / super : self
+    if !symlink?
+      self
+    elsif
+      target = super
+      target.absolute? ? target : (dir / target)
+    end
   end
 
   def mkdir
