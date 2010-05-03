@@ -16,8 +16,8 @@ meta :app do
       if current.nil? || version.nil?
         debug "Can't check versions without both current and latest."
         true
-      elsif current == version
-        log_ok "#{name} is up to date at #{version}."
+      elsif current >= version
+        log_ok "#{name} is up to date at #{current}."
       else
         log "#{name} could be updated from #{current} to #{version}."
       end
