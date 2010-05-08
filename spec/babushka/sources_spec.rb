@@ -19,6 +19,14 @@ describe "loading deps" do
   end
 end
 
+describe "finding" do
+  it "should find the specified dep" do
+    source = Source.new('spec/deps/good')
+    source.load!.should be_true
+    source.find('test dep 1').should == source.deps.deps.first
+  end
+end
+
 describe "adding" do
   it "shouldn't add unreadable sources" do
     L{

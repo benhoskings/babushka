@@ -1,6 +1,38 @@
 module Babushka
   class Source
-    attr_reader :name, :uri
+    attr_reader :name, :uri, :deps
+
+    delegate :register, :count, :skipped_count, :to => :deps
+
+    def self.default_source
+      @default_source ||= Source.new(nil, :name => 'default')
+    end
+
+    def self.all_sources
+      [default_source].concat(core_sources).concat(cloned_sources)
+    end
+
+    def self.core_sources
+      [
+        new(Path.path / 'deps'),
+        new('./babushka_deps'),
+        new('~/.babushka/deps')
+      ]
+    end
+
+    def self.cloned_sources
+      sources.map {|source|
+        Source.new(source.delete(:uri), source)
+      }
+    end
+
+    def self.load_all! opts = {}
+      if opts[:first]
+        # load_deps_from core_dep_locations.concat([*dep_locations]).concat(Source.all_sources).uniq
+      else
+        all_sources.map &:load!
+      end
+    end
 
     def self.pull!
       sources.all? {|source|
@@ -71,6 +103,10 @@ module Babushka
       @name = opts[:name]
       @external = opts[:external]
       @deps = DepPool.new
+    end
+
+    def find dep_spec
+      deps.for dep_spec
     end
 
     def prefix
