@@ -19,7 +19,7 @@ describe Task, "process" do
       Base.task.process 'task spec'
     end
   end
-  describe "with source/name" do
+  describe "with source:name" do
     before {
       @source = dep_source('task-spec-remote').merge(:external => true)
     }
@@ -27,17 +27,17 @@ describe Task, "process" do
       before {
         Source.should_receive(:add_external!).with('task-spec-remote', :from => :github)
       }
-      it "should attempt to clone when a source/name is passed" do
-        Base.task.process 'task-spec-remote/task-spec-dep'
+      it "should attempt to clone when a source:name is passed" do
+        Base.task.process 'task-spec-remote:task-spec-dep'
       end
     end
     describe "loading" do
       before {
         Base.should_receive(:setup_noninteractive_for).with(tmp_prefix / 'external_sources/task-spec-remote')
       }
-      it "should clone and attempt to load when a source/name is passed" do
+      it "should clone and attempt to load when a source:name is passed" do
         File.exists?(Source.new(@source).path).should be_false
-        Base.task.process 'task-spec-remote/task-spec-dep'
+        Base.task.process 'task-spec-remote:task-spec-dep'
         File.directory?(Source.new(@source).path).should be_true
       end
     end
@@ -45,8 +45,8 @@ describe Task, "process" do
       before {
         Dep.should_receive(:process).with('task-spec-dep')
       }
-      it "should clone and load, and attempt to process when a source/name is passed" do
-        Base.task.process 'task-spec-remote/task-spec-dep'
+      it "should clone and load, and attempt to process when a source:name is passed" do
+        Base.task.process 'task-spec-remote:task-spec-dep'
       end
     end
   end

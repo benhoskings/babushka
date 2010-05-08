@@ -20,8 +20,8 @@ module Babushka
     def self.make name, in_opts, block, definer_class, runner_class
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
-      elsif /\// =~ name
-        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
+      elsif /:/ =~ name
+        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed."
       else
         new name, in_opts, block, definer_class, runner_class
       end

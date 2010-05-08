@@ -17,11 +17,11 @@ module Babushka
     end
 
     def process dep_spec
-      if dep_spec[/\//].nil?
+      if dep_spec[/:/].nil?
         Base.setup_noninteractive
         process_dep dep_spec
       else
-        source_name, dep_name = dep_spec.split('/', 2)
+        source_name, dep_name = dep_spec.split(':', 2)
         if source = Source.add_external!(source_name, :from => :github)
           if Base.setup_noninteractive_for source.path
             process_dep dep_name
