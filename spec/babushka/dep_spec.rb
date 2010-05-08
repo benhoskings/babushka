@@ -25,7 +25,8 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "blank"
-    }.should change(Dep.pool, :count).by(1)
+    }.should change(Source.default_source, :count).by(1)
+    Dep('blank').should be_an_instance_of(Dep)
   end
   it "should work for filled in deps" do
     L{
@@ -36,7 +37,8 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Dep.pool, :count).by(1)
+    }.should change(Source.default_source, :count).by(1)
+    Dep('standard').should be_an_instance_of(Dep)
   end
   it "should accept deps as dep names" do
     L{
