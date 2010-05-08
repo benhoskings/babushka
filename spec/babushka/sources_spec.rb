@@ -9,7 +9,7 @@ describe "adding" do
     (tmp_prefix / 'sources' / 'unreadable').exists?.should be_false
   end
   describe "cloning" do
-    before { @source = dep_source 'clone_test' }
+    before { @source = test_dep_source 'clone_test' }
     it "should clone a git repo" do
       File.exists?(Source.new(*@source.taph).path).should be_false
       L{ Source.add!(*@source) }.should change(Source, :count).by(1)
@@ -21,7 +21,7 @@ describe "adding" do
     end
   end
   describe "classification" do
-    before { @source = dep_source 'classification_test' }
+    before { @source = test_dep_source 'classification_test' }
     it "should treat file:// as public" do
       (source = Source.new(*@source)).add!
       source.send(:yaml_attributes).should == {:uri => @source.first, :name => 'classification_test', :type => 'public'}
@@ -36,7 +36,7 @@ describe "adding" do
     end
   end
   describe "adding to sources.yml" do
-    before { @source = dep_source 'clone_test_yml' }
+    before { @source = test_dep_source 'clone_test_yml' }
     it "should add the url to sources.yml" do
       Source.sources.should_not include @source
       L{ Source.add!(*@source) }.should change(Source, :count).by(1)
@@ -45,7 +45,7 @@ describe "adding" do
   end
   describe "external sources" do
     before {
-      @source = dep_source('bob').merge(:external => true)
+      @source = test_dep_source('bob').merge(:external => true)
       @nonexistent_source = {:name => 'larry', :uri => tmp_prefix / 'nonexistent', :external => true}
     }
     it "shouldn't clone nonexistent repos" do
@@ -71,8 +71,8 @@ end
 
 describe "removing" do
   before {
-    @source1 = dep_source 'remove_test'
-    @source2 = dep_source 'remove_test_yml'
+    @source1 = test_dep_source 'remove_test'
+    @source2 = test_dep_source 'remove_test_yml'
     Source.new(*@source1).add!
     Source.new(*@source2).add!
   }
@@ -83,7 +83,7 @@ describe "removing" do
   end
   describe "with local changes" do
     before {
-      @source_def = dep_source 'changes_test'
+      @source_def = test_dep_source 'changes_test'
       @source = Source.new(*@source_def)
       @source.add!
     }
@@ -117,8 +117,8 @@ end
 
 describe "clearing" do
   before {
-    Source.new(*dep_source('clear_test_1')).add!
-    Source.new(*dep_source('clear_test_2')).add!
+    Source.new(*test_dep_source('clear_test_1')).add!
+    Source.new(*test_dep_source('clear_test_2')).add!
   }
   it "should remove all sources" do
     Source.count.should == 2
