@@ -132,7 +132,6 @@ module Babushka
     include Shell::Helpers
     include GitHelpers
     def pull!
-      puts "cloning #{uri} to #{prefix} as #{name}"
       git uri, :prefix => prefix, :dir => name, :log => true
     end
 
