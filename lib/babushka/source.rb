@@ -123,8 +123,28 @@ module Babushka
     include Shell::Helpers
     include GitHelpers
     def pull!
+      puts "cloning #{uri} to #{prefix} as #{name}"
       git uri, :prefix => prefix, :dir => name, :log => true
     end
+
+    def load!
+      path.p.glob('**/*.rb').partition {|f|
+        f.p.basename == 'templates.rb' or
+        f.p.parent.basename == 'templates'
+      }.flatten.each {|f|
+        DepDefiner.load_context :source => self, :path => f do
+          begin
+            require f
+          rescue Exception => e
+            log_error "#{e.backtrace.first}: #{e.message}"
+            log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
+            debug e.backtrace * "\n"
+          end
+        end
+      }
+      log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}."
+    end
+
 
     private
 
@@ -132,12 +152,12 @@ module Babushka
       if external?
         true
       else
-        write_sources self.class.sources_raw.push(to_yaml).uniq
+        write_sources self.class.sources_raw.push(yaml_attributes).uniq
       end
     end
 
     def remove_source
-      write_sources self.class.sources_raw - [to_yaml]
+      write_sources self.class.sources_raw - [yaml_attributes]
     end
 
     def write_sources sources
@@ -146,7 +166,7 @@ module Babushka
       end
     end
 
-    def to_yaml
+    def yaml_attributes
       {:name => name, :uri => uri.to_s}
     end
 
