@@ -71,7 +71,7 @@ describe "calling met? on a single dep" do
     ).met?.should == true
     @yield_counts['met for met'].should == @yield_counts_met_run
   end
-  after { Dep.pool.clear! }
+  after { Source.default_source.deps.clear! }
 end
 
 describe "calling meet on a single dep" do
@@ -108,5 +108,5 @@ describe "calling meet on a single dep" do
     ).meet.should == true
     @yield_counts['met'].should == @yield_counts_already_met
   end
-  after { Dep.pool.clear! }
+  after { Source.default_source.deps.clear! }
 end
