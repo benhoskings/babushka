@@ -20,12 +20,27 @@ describe "adding" do
       Source.new(*@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
     end
   end
+  describe "classification" do
+    before { @source = dep_source 'classification_test' }
+    it "should treat file:// as public" do
+      (source = Source.new(*@source)).add!
+      source.send(:yaml_attributes).should == {:uri => @source.first, :name => 'classification_test', :public => true}
+    end
+    it "should treat local paths as private" do
+      (source = Source.new(@source.first.gsub(/^file:\//, ''), @source.last)).add!
+      source.send(:yaml_attributes).should == {:uri => @source.first.gsub(/^file:\//, ''), :name => 'classification_test', :public => false}
+    end
+    it "should be cloned into the source prefix" do
+      Source.add!(*@source)
+      Source.new(*@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+    end
+  end
   describe "adding to sources.yml" do
     before { @source = dep_source 'clone_test_yml' }
     it "should add the url to sources.yml" do
       Source.sources.should_not include @source
       L{ Source.add!(*@source) }.should change(Source, :count).by(1)
-      Source.sources.should include({:uri => @source.first, :name => 'clone_test_yml'})
+      Source.sources.should include({:uri => @source.first, :name => 'clone_test_yml', :public => true})
     end
   end
   describe "external sources" do
@@ -64,7 +79,7 @@ describe "removing" do
   it "should remove just the specified source" do
     L{ Source.remove!(*@source1) }.should change(Source, :count).by(-1)
     Source.sources.should_not include({:uri => @source1.first, :name => 'remove_test'})
-    Source.sources.should include({:uri => @source2.first, :name => 'remove_test_yml'})
+    Source.sources.should include({:uri => @source2.first, :name => 'remove_test_yml', :public => true})
   end
   describe "with local changes" do
     before {
@@ -75,24 +90,24 @@ describe "removing" do
     it "shouldn't remove sources with local changes" do
       File.open(@source.path / 'changes_test.rb', 'w') {|f| f << 'modification' }
       L{ Source.remove!(*@source_def) }.should change(Source, :count).by(0)
-      Source.sources.should include({:uri => @source_def.first, :name => 'changes_test'})
+      Source.sources.should include({:uri => @source_def.first, :name => 'changes_test', :public => true})
     end
     it "shouldn't remove sources with untracked files" do
       File.open(@source.path / 'changes_test_untracked.rb', 'w') {|f| f << 'modification' }
       L{ Source.remove!(*@source_def) }.should change(Source, :count).by(0)
-      Source.sources.should include({:uri => @source_def.first, :name => 'changes_test'})
+      Source.sources.should include({:uri => @source_def.first, :name => 'changes_test', :public => true})
     end
     it "shouldn't remove sources with unpushed commits" do
       File.open(@source.path / 'changes_test.rb', 'w') {|f| f << 'modification' }
       Dir.chdir(@source.path) { shell "git commit -a -m 'update from spec'" }
       L{ Source.remove!(*@source_def) }.should change(Source, :count).by(0)
-      Source.sources.should include({:uri => @source_def.first, :name => 'changes_test'})
+      Source.sources.should include({:uri => @source_def.first, :name => 'changes_test', :public => true})
     end
     it "should remove dirty sources when :force is specified" do
       File.open(@source.path / 'changes_test.rb', 'w') {|f| f << 'modification' }
       File.open(@source.path / 'changes_test_untracked.rb', 'w') {|f| f << 'modification' }
       L{ Source.remove!(@source_def.first, @source_def.last.merge(:force => true)) }.should change(Source, :count).by(-1)
-      Source.sources.should_not include({:uri => @source_def.first, :name => 'changes_test'})
+      Source.sources.should_not include({:uri => @source_def.first, :name => 'changes_test', :public => true})
     end
     after {
       Source.clear! :force => true

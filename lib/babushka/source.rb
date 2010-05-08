@@ -1,6 +1,6 @@
 module Babushka
   class Source
-    attr_reader :name, :uri, :is_public
+    attr_reader :name, :uri
 
     def self.pull!
       sources.all? {|source|
@@ -66,7 +66,7 @@ module Babushka
     def initialize path, opts = {}
       if path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
         @uri = URI.parse path.to_s
-        @is_public = !path.to_s[/^(git|http):\/\//].nil?
+        @is_public = path.to_s[/^(git|http|file):\/\//]
       else
         @uri = path.p
         @local = true
@@ -87,6 +87,9 @@ module Babushka
     end
     def description
       "#{name} - #{uri} (updated #{updated_at.round.xsecs} ago)"
+    end
+    def is_public
+      @is_public ? true : false # so nil is rendered as false
     end
     def cloned?
       File.directory? path / '.git'
