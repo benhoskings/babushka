@@ -7,8 +7,8 @@ module Babushka
         new(source).pull!
       }
     end
-    def self.add! name, uri
-      new(:name => name, :uri => uri).add!
+    def self.add! uri, opts
+      new(uri, opts).add!
     end
     def self.add_external! name, opts = {}
       source = new(:name => name, :uri => external_url_for(name, opts[:from]), :external => true)
@@ -25,12 +25,12 @@ module Babushka
       sources.select {|source|
         name_or_uri.in? [source, source[:name], source[:uri]]
       }.each {|source|
-        Source.new(source).remove! opts
+        Source.new(source.delete(:uri), source).remove! opts
       }
     end
     def self.clear! opts = {}
       sources.each {|source|
-        Source.new(source).remove! opts
+        Source.new(source.delete(:uri), source).remove! opts
       }
     end
 
@@ -63,17 +63,24 @@ module Babushka
     end
 
     require 'uri'
-    def initialize hsh
-      @name = hsh[:name]
-      @uri = URI.parse hsh[:uri].to_s
-      @external = hsh[:external]
+    def initialize path, opts = {}
+      if path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
+        @uri = URI.parse path.to_s
+        @is_public = true if path.to_s[/^(git|http):\/\//]
+      else
+        @uri = path.p
+        @local = true
+      end
+      @name = opts[:name]
+      @external = opts[:external]
+      @deps = DepPool.new
     end
 
     def prefix
       external? ? external_source_prefix : source_prefix
     end
     def path
-      prefix / name
+      @local ? @uri : prefix / name
     end
     def updated_at
       Time.now - File.mtime(path)
