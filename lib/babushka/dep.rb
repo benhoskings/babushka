@@ -11,7 +11,7 @@ module Babushka
       def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
 
-    attr_reader :name, :opts, :vars, :definer, :runner
+    attr_reader :name, :opts, :vars, :definer, :runner, :dep_source
     attr_accessor :unmet_message
 
     delegate :desc, :to => :definer
@@ -37,7 +37,8 @@ module Babushka
       @definer = definer_class.new self, &block
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      Dep.pool.register self
+      @dep_source = source
+      source.register self
     end
 
     def self.pool
