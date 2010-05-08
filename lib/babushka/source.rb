@@ -1,6 +1,6 @@
 module Babushka
   class Source
-    attr_reader :name, :uri
+    attr_reader :name, :uri, :is_public
 
     def self.pull!
       sources.all? {|source|
@@ -66,7 +66,7 @@ module Babushka
     def initialize path, opts = {}
       if path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
         @uri = URI.parse path.to_s
-        @is_public = true if path.to_s[/^(git|http):\/\//]
+        @is_public = !path.to_s[/^(git|http):\/\//].nil?
       else
         @uri = path.p
         @local = true
@@ -167,7 +167,7 @@ module Babushka
     end
 
     def yaml_attributes
-      {:name => name, :uri => uri.to_s}
+      {:name => name, :uri => uri.to_s, :public => is_public}
     end
 
     def remove_repo
