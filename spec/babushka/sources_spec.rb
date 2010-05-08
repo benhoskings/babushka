@@ -1,6 +1,24 @@
 require 'spec_support'
 require 'sources_support'
 
+describe "loading deps" do
+  it "should load deps from a file" do
+    source = Source.new('spec/deps/good')
+    source.load!.should be_true
+    source.deps.names.should include('test dep 1')
+  end
+  it "should recover from load errors" do
+    source = Source.new('spec/deps/bad')
+    source.load!.should be_true
+    source.deps.names.should_not include('broken test dep 1')
+  end
+  it "should store the source the dep was loaded from" do
+    source = Source.new('spec/deps/good')
+    source.load!
+    source.deps.deps.first.dep_source.should == source
+  end
+end
+
 describe "adding" do
   it "shouldn't add unreadable sources" do
     L{
