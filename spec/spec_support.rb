@@ -7,8 +7,6 @@ include Babushka::Logger::Helpers
 include Babushka::Dep::Helpers
 include Babushka::Shell::Helpers
 
-Dep.pool.clear!
-
 require 'spec'
 include Spec::DSL::Main
 
