@@ -36,7 +36,7 @@ module Babushka
 
     def self.external_url_for name, from
       {
-        :github => "git://github.com/#{name}/babushka-deps"
+        :github => "git://github.com/#{name}/babushka-deps.git"
       }[from]
     end
 
