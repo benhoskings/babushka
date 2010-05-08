@@ -15,6 +15,10 @@ describe "adding" do
       L{ Source.add!(@source[:name], @source[:uri]) }.should change(Source, :count).by(1)
       File.directory?(Source.new(@source).path / '.git').should be_true
     end
+    it "should be cloned into the source prefix" do
+      Source.add!(@source[:name], @source[:uri])
+      Source.new(@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+    end
   end
   describe "adding to sources.yml" do
     before { @source = dep_source 'clone_test_yml' }
