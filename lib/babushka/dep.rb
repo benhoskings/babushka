@@ -41,11 +41,18 @@ module Babushka
       source.register self
     end
 
-    def self.pool
-      Base.dep_pool
-    end
-    def self.for spec
-      pool.for spec
+    def self.for dep_spec
+      if dep_spec[/:/]
+        source_name, dep_name = dep_spec.split(':', 2)
+        Source.for(source_name).find(dep_name)
+      else
+        matches = Source.all_sources.map {|source| source.find(dep_spec) }.flatten.compact
+        if matches.length == 1
+          matches.first
+        else
+          log "More than one source (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
+        end
+      end
     end
 
     extend Suggest::Helpers
