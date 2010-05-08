@@ -20,7 +20,7 @@ installer 'installer git' do
   provides 'git'
   after {
     in_dir '/usr/local/bin' do
-      sudo "ln -sf /usr/local/git/bin/git* ." unless 'git'.p.exists?
+      sudo "ln -sf /usr/local/git/bin/git* ."
     end
   }
 end
