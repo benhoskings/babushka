@@ -64,12 +64,15 @@ module Babushka
 
     require 'uri'
     def initialize path, opts = {}
-      if path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
+      if path.nil?
+        @uri = nil
+        @type = 'implicit'
+      elsif path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
         @uri = URI.parse path.to_s
-        @is_public = path.to_s[/^(git|http|file):\/\//]
+        @type = path.to_s[/^(git|http|file):\/\//].nil? ? 'private' : 'public'
       else
         @uri = path.p
-        @local = true
+        @type = 'local'
       end
       @name = opts[:name]
       @external = opts[:external]
@@ -88,8 +91,8 @@ module Babushka
     def description
       "#{name} - #{uri} (updated #{updated_at.round.xsecs} ago)"
     end
-    def is_public
-      @is_public ? true : false # so nil is rendered as false
+    def type
+      @type
     end
     def cloned?
       File.directory? path / '.git'
@@ -170,7 +173,7 @@ module Babushka
     end
 
     def yaml_attributes
-      {:name => name, :uri => uri.to_s, :public => is_public}
+      {:name => name, :uri => uri.to_s, :type => type}
     end
 
     def remove_repo
