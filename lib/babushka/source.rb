@@ -142,7 +142,7 @@ module Babushka
       }.flatten.each {|f|
         DepDefiner.load_context :source => self, :path => f do
           begin
-            require f
+            load f
           rescue Exception => e
             log_error "#{e.backtrace.first}: #{e.message}"
             log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
