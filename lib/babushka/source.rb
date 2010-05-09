@@ -108,6 +108,10 @@ module Babushka
       @deps = DepPool.new
     end
 
+    def uri_matches? path
+      self.class.discover_uri_and_type(path).first == uri
+    end
+
     def find dep_spec
       deps.for dep_spec
     end
