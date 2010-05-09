@@ -89,17 +89,20 @@ module Babushka
     end
 
     require 'uri'
-    def initialize path, opts = {}
+    def self.discover_uri_and_type path
       if path.nil?
-        @uri = nil
-        @type = 'implicit'
-      elsif path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
-        @uri = URI.parse path.to_s
-        @type = path.to_s[/^(git|http|file):\/\//].nil? ? 'private' : 'public'
+        [nil, 'implicit']
+      elsif path.to_s[/^(git|http|file):\/\//]
+        [URI.parse(path.to_s), 'public']
+      elsif path.to_s[/^(\w+@)?[a-zA-Z0-9.\-]+:/]
+        [path, 'private']
       else
-        @uri = path.p
-        @type = 'local'
+        [path.p, 'local']
       end
+    end
+
+    def initialize path, opts = {}
+      @uri, @type = self.class.discover_uri_and_type(path)
       @name = opts[:name]
       @external = opts[:external]
       @deps = DepPool.new
