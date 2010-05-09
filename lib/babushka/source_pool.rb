@@ -1,16 +1,16 @@
 module Babushka
   class SourcePool
 
-    def current_sources
+    def current
       @sources
     end
 
-    def default_source
+    def default
       @default_source ||= source_for(nil, :name => 'default')
     end
 
     def source_for uri, opts = {}
-      if source = current_sources.detect {|source| source.uri_matches?(uri) }
+      if source = current.detect {|source| source.uri_matches?(uri) }
         source
       else
         returning Source.new(uri, opts) do |source|
@@ -19,11 +19,11 @@ module Babushka
       end
     end
 
-    def all_sources
-      [default_source].concat(core_sources) #.concat(cloned_sources)
+    def all
+      [default].concat(core) #.concat(cloned)
     end
 
-    def core_sources
+    def core
       [
         source_for(Path.path / 'deps'),
         source_for('./babushka_deps'),
@@ -31,17 +31,17 @@ module Babushka
       ]
     end
 
-    def cloned_sources
-      current_sources.map {|source|
+    def cloned
+      current.map {|source|
         source_for(source.delete(:uri), source)
       }
     end
 
     def load_all! opts = {}
       if opts[:first]
-        # load_deps_from core_dep_locations.concat([*dep_locations]).concat(Source.all_sources).uniq
+        # load_deps_from core_dep_locations.concat([*dep_locations]).concat(Source.all).uniq
       else
-        all_sources.map &:load!
+        all.map &:load!
       end
     end
 
