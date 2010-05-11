@@ -6,7 +6,7 @@ dep 'ruby' do
 end
 
 pkg 'apt ruby' do
-  installs { via :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby] }
+  installs { via :apt, %w[ruby1.8 irb1.8 ruby1.8-dev libopenssl-ruby] }
   provides %w[ruby irb]
 end
 
