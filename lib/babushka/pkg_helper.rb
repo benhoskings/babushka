@@ -60,15 +60,15 @@ module Babushka
       else
         list_age = Time.now - pkg_list_dir.mtime
         if list_age > pkg_update_timeout
-          update_pkg_lists
+          update_pkg_lists "#{manager_dep.capitalize} package lists are #{list_age.round.xsecs} old. Updating"
         else
           debug "#{manager_dep.capitalize} package lists are #{list_age.round.xsecs} old (up to date)."
           true # up to date
         end
       end
     end
-    def update_pkg_lists
-      log_shell "#{manager_dep.capitalize} package lists are #{list_age.round.xsecs} old. Updating", pkg_update_command, :sudo => should_sudo?
+    def update_pkg_lists message = "Updating #{manager_dep.capitalize} package lists"
+      log_shell message, pkg_update_command, :sudo => should_sudo?
     end
     def pkg_update_timeout
       nil # not required by default
