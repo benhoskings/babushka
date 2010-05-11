@@ -27,6 +27,7 @@ meta :apt_source do
         append_to_file "deb #{Babushka::AptHelper.source_for_system} #{Babushka::Base.host.name} #{name}", '/etc/apt/sources.list', :sudo => true
       }
     }
+    after { Babushka::AptHelper.update_pkg_lists }
   }
 end
 
