@@ -23,6 +23,12 @@ module Babushka
       end
     end
 
+    def source_for_system
+      {
+        :ubuntu => 'http://archive.ubuntu.com/ubuntu'
+      }[Base.host.flavour]
+    end
+
     private
     def _has? pkg_name
       failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status').split(' ').include?('installed')
