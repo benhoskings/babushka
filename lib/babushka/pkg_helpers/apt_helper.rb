@@ -25,6 +25,7 @@ module Babushka
 
     def source_for_system
       {
+        :debian => 'http://archive.debian.org/debian',
         :ubuntu => 'http://archive.ubuntu.com/ubuntu'
       }[Base.host.flavour]
     end
