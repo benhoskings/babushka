@@ -7,7 +7,10 @@ src 'macports' do
 end
 
 ext 'apt' do
-  requires 'main apt source', 'universe apt source'
+  requires {
+    on :ubuntu, 'main apt source', 'universe apt source'
+    on :debian, 'main apt source'
+  }
   if_missing 'apt-get' do
     log "Your system doesn't seem to have Apt installed. Is it Debian-based?"
   end
