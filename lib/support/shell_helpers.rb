@@ -91,16 +91,16 @@ def change_line line, replacement, filename
   }
 end
 
-def insert_into_file insert_after, insert_before, filename, lines
+def insert_into_file insert_after, insert_before, path, lines
   end_of_insertion = "# }\n"
   nlines = lines.split("\n").length
-  before, after = filename.p.readlines.cut {|l| l.strip == insert_before.strip }
+  before, after = path.p.readlines.cut {|l| l.strip == insert_before.strip }
 
   log "Patching #{path}"
   if before.last == end_of_insertion
-    log_extra "Already written to line #{before.length + 1 - 2 - nlines} of #{filename}."
+    log_extra "Already written to line #{before.length + 1 - 2 - nlines} of #{path}."
   elsif before.last.strip != insert_after.strip
-    log_error "Couldn't find the spot to write to in #{filename}."
+    log_error "Couldn't find the spot to write to in #{path}."
   else
     sudo "cat > #{path}", :as => File.owner(path), :input => [
       before,
