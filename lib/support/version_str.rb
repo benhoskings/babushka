@@ -27,6 +27,7 @@ module Babushka
       elsif !(@operator.nil? || GemVersionOperators.include?(@operator))
         raise "Bad operator: '#{@operator}'"
       else
+        @original_version = version
         @pieces = version.strip.split(/[\.\-]/).collect { |piece|
           piece[/^\d+$/] ? piece.to_i : piece
         }
@@ -36,7 +37,7 @@ module Babushka
     def to_s
       [
         operator_str,
-        pieces.join('.')
+        @original_version
       ].compact.join(' ')
     end
     def match_operator

@@ -85,7 +85,8 @@ describe 'rendering' do
   it "should keep string pieces" do
     VersionStr.new('3.0.0.beta').to_s.should == '3.0.0.beta'
   end
-  it "should change hyphens to periods" do
-    VersionStr.new('3.0.0-beta').to_s.should == '3.0.0.beta'
+  it "should preserve the original formatting" do
+    VersionStr.new('1.8.7-p174-src').to_s.should == '1.8.7-p174-src'
+    VersionStr.new('3.0.0-beta').to_s.should == '3.0.0-beta'
   end
 end
