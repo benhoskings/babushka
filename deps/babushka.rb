@@ -96,8 +96,10 @@ dep 'writable install location' do
   }
   meet {
     confirm "About to enable write access to #{var :install_prefix} for admin users - is that OK?" do
-      sudo %Q{chgrp -R admin '#{var :install_prefix}'}
-      sudo %Q{chmod -R g+w '#{var :install_prefix}'}
+      subpaths.each {|subpath|
+        sudo %Q{chgrp admin '#{var(:install_prefix) / subpath}'}
+        sudo %Q{chmod g+w '#{var(:install_prefix) / subpath}'}
+      }
     end
   }
 end
