@@ -89,7 +89,7 @@ end
 dep 'writable install location' do
   requires 'install location exists', 'admins can sudo'
   met? {
-    writable, nonwritable = subpaths.partition {|path| File.writable?(var(:install_prefix) / path) }
+    writable, nonwritable = subpaths.partition {|path| File.writable_real?(var(:install_prefix) / path) }
     returning nonwritable.empty? do |result|
       log "Some directories within #{var :install_prefix} aren't writable by #{shell 'whoami'}." unless result
     end
