@@ -28,6 +28,11 @@ module Babushka
       end
     end
 
+    def <=> other
+      raise ArgumentError, "You can't compare the versions of two different things." unless name == other.name
+      version <=> other.version
+    end
+
     def matches? other
       if other.is_a? VersionStr
         version.nil? || other.send(version.match_operator, version)

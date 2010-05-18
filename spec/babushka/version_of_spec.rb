@@ -34,7 +34,7 @@ describe "to_s" do
   end
 end
 
-describe "comparisons" do
+describe "equality" do
   it "should compare to versionless strings" do
     ver('ruby'       ).should     == ver('ruby')
     ver('ruby', '1.8').should_not == ver('ruby')
@@ -52,6 +52,20 @@ describe "comparisons" do
     ver('ruby'       ).should_not == ver('ruby', '1.8')
     ver('ruby', '1.8').should     == ver('ruby', '1.8')
     ver('ruby', '1.8').should_not == ver('ruby', '1.9')
+  end
+end
+
+describe "comparisons" do
+  it "should fail when the names don't match" do
+    L{
+      ver('ruby', '1.8') <=> ver('mongo', '1.4.2')
+    }.should raise_error(ArgumentError, "You can't compare the versions of two different things.")
+  end
+  it "should defer to VersionStr#<=>" do
+    (ver('ruby', '1.8') <=> ver('ruby', '1.9')).should == -1
+    (ver('ruby', '1.8') <=> ver('ruby', '1.8')).should == 0
+    (ver('ruby', '1.8.7') <=> ver('ruby', '1.8')).should == 1
+    (ver('ruby', '1.8.7') <=> ver('ruby', '1.9.1')).should == -1
   end
 end
 
