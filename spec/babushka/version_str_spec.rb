@@ -20,8 +20,19 @@ describe "comparing" do
   it "should work with other VersionStrs" do
     (VersionStr.new('0.3.1') > VersionStr.new('0.2.9')).should be_true
   end
+  
   it "should work with strings" do
     (VersionStr.new('0.3.1') > '0.2.9').should be_true
+  end
+  
+  it "should treat strings as less than no piece" do
+    (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta')).should be_true
+  end
+  
+  it "should allow for integers in strings and sort correctly" do
+    (
+      VersionStr.new('3.0.0.beta12') > VersionStr.new('3.0.0.beta2')
+    ).should be_true
   end
 end
 
@@ -29,6 +40,9 @@ describe "parsing" do
   it "should parse the version number" do
     VersionStr.new('0.2').pieces.should == [0, 2]
     VersionStr.new('0.3.10.2').pieces.should == [0, 3, 10, 2]
+    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1, 'p243']
+    VersionStr.new('3.0.0.beta').pieces.should == [3, 0, 0, 'beta']
+    VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta3']
   end
   it "should parse the operator if supplied" do
     v = VersionStr.new('>= 0.2')
@@ -47,9 +61,6 @@ describe "parsing" do
     v = VersionStr.new('== 0.2')
     v.pieces.should == [0, 2]
     v.operator.should == '=='
-  end
-  it "should ignore patchlevel suffixes" do
-    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1]
   end
   it "should reject invalid operators" do
     L{
@@ -70,5 +81,11 @@ describe 'rendering' do
     VersionStr.new('= 0.3.1').to_s.should == '= 0.3.1'
     VersionStr.new('== 0.3.1').to_s.should == '= 0.3.1'
     VersionStr.new('~> 0.3.1').to_s.should == '~> 0.3.1'
+  end
+  it "should keep string pieces" do
+    VersionStr.new('3.0.0.beta').to_s.should == '3.0.0.beta'
+  end
+  it "should change hyphens to periods" do
+    VersionStr.new('3.0.0-beta').to_s.should == '3.0.0.beta'
   end
 end
