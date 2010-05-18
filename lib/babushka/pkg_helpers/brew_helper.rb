@@ -66,7 +66,13 @@ module Babushka
     end
 
     def active_version_of pkg_name
-      (shell("brew version #{pkg_name}") || '').split(' ', 2).last
+      shell("brew info #{pkg_name}").split("\n\n", 2).first.split("\n").map {|i|
+        i.scan(/^#{Regexp.escape(installed_pkgs_path.to_s.end_with('/'))}([^\s]+)/)
+      }.flatten.select {|i|
+        i[/\d/] # For it to be a version, it has to have at least 1 digit.
+      }.map {|i|
+        Babushka::VersionOf.new *i.split('/', 2)
+      }.max.version
     end
 
     def versions_of pkg
