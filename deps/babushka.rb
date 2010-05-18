@@ -81,7 +81,7 @@ dep 'babushka installed' do
 end
 
 def subpaths
-  %w[bin etc include lib sbin share share/doc var].concat(
+  %w[. bin etc include lib sbin share share/doc var].concat(
     (1..9).map {|i| "share/man/man#{i}" }
   )
 end
