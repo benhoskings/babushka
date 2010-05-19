@@ -36,6 +36,28 @@ describe Array, "to_list" do
   end
 end
 
+describe Array, '#local_group_by' do
+  it "should work for empty lists" do
+    [].group_by(&:length).should == {}
+  end
+  it "should do what you expect" do
+    %w[cat badger narwahl pug].local_group_by(&:length).should == {
+      3 => %w[cat pug],
+      6 => %w[badger],
+      7 => %w[narwahl]
+    }
+  end
+  it "should work with nils and such" do
+    %w[cat badger narwahl pug].local_group_by {|i|
+      i[/a[rt]/]
+    }.should == {
+      nil => %w[badger pug],
+      'at' => %w[cat],
+      'ar' => %w[narwahl]
+    }
+  end
+end
+
 describe String, "val_for" do
   it "space separation" do
     'key value'.val_for('key').should == 'value'
