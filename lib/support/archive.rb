@@ -102,7 +102,7 @@ module Babushka
       Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
         dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
       }.reject {|dir|
-        [/\.app$/].any? {|dont_descend| dir[dont_descend] }
+        [/\.app$/, /\.pkg$/].any? {|dont_descend| dir[dont_descend] }
       }.first
     end
   end
