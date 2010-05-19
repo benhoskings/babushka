@@ -36,7 +36,7 @@ module Babushka
         returning Dep.process dep_name do |result|
           if Dep dep_name
             save_run_info_for dep_name, result
-            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
+            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{LogPrefix / dep_name}'." unless result
           end
         end
       }) {
