@@ -80,13 +80,17 @@ dep 'babushka installed' do
   }
 end
 
-def subpaths
-  %w[. bin etc include lib sbin share share/doc var].concat(
-    (1..9).map {|i| "share/man/man#{i}" }
-  )
+meta :install_path do
+  template {
+    helper :subpaths do
+      %w[. bin etc include lib sbin share share/doc var].concat(
+        (1..9).map {|i| "share/man/man#{i}" }
+      )
+    end
+  }
 end
 
-dep 'writable install location' do
+install_path 'writable install location' do
   requires 'install location exists', 'admins can sudo'
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable_real?(var(:install_prefix) / path) }
@@ -104,7 +108,7 @@ dep 'writable install location' do
   }
 end
 
-dep 'install location exists' do
+install_path 'install location exists' do
   met? { subpaths.all? {|path| File.directory?(var(:install_prefix) / path) } }
   meet { subpaths.each {|path| sudo "mkdir -p '#{var(:install_prefix) / path}'" } }
 end
