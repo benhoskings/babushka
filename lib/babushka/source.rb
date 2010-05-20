@@ -54,7 +54,7 @@ module Babushka
 
     def self.paths
       sources.map {|source|
-        Source.new(source).path
+        Source.new(source.delete(:uri), source).path
       }
     end
 
