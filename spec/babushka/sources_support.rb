@@ -1,11 +1,12 @@
 require 'spec_support'
 
 def dep_source name = 'test'
-  returning :name => name, :uri => tmp_prefix / 'source_remotes' / name do |source|
-    unless File.exists? source[:uri] / '.git'
+  returning ["file:/#{tmp_prefix / 'source_remotes' / name}", {:name => name}] do |source|
+    source_path = source.first.gsub(/^file:\//, '')
+    unless File.exists? source_path / '.git'
       shell %Q{
-        mkdir -p "#{source[:uri]}" &&
-        cd "#{source[:uri]}" &&
+        mkdir -p "#{source_path}" &&
+        cd "#{source_path}" &&
         git init &&
         echo 'dep "#{name}" do end' > '#{name}.rb' &&
         git add . &&
