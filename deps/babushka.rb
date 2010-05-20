@@ -81,7 +81,7 @@ dep 'babushka installed' do
 end
 
 def subpaths
-  %w[bin etc include lib sbin share share/doc var].concat(
+  %w[. bin etc include lib sbin share share/doc var].concat(
     (1..9).map {|i| "share/man/man#{i}" }
   )
 end
@@ -89,15 +89,17 @@ end
 dep 'writable install location' do
   requires 'install location exists', 'admins can sudo'
   met? {
-    writable, nonwritable = subpaths.partition {|path| File.writable?(var(:install_prefix) / path) }
+    writable, nonwritable = subpaths.partition {|path| File.writable_real?(var(:install_prefix) / path) }
     returning nonwritable.empty? do |result|
       log "Some directories within #{var :install_prefix} aren't writable by #{shell 'whoami'}." unless result
     end
   }
   meet {
     confirm "About to enable write access to #{var :install_prefix} for admin users - is that OK?" do
-      sudo %Q{chgrp -R admin '#{var :install_prefix}'}
-      sudo %Q{chmod -R g+w '#{var :install_prefix}'}
+      subpaths.each {|subpath|
+        sudo %Q{chgrp admin '#{var(:install_prefix) / subpath}'}
+        sudo %Q{chmod g+w '#{var(:install_prefix) / subpath}'}
+      }
     end
   }
 end
