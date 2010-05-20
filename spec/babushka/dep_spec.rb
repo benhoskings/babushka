@@ -8,11 +8,11 @@ describe "Dep.make" do
     }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
     dep("carriage\rreturn").should be_nil
   end
-  it "should reject deps slashes in their names" do
+  it "should reject deps with colons in their names" do
     L{
-      Dep.make "slashes/invalidate names", {}, nil, BaseDepDefiner, BaseDepRunner
-    }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
-    dep("slashes/invalidate names").should be_nil
+      Dep.make "colons:invalidate names", {}, nil, BaseDepDefiner, BaseDepRunner
+    }.should raise_error DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed."
+    dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
