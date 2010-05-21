@@ -27,7 +27,7 @@ module Babushka
     end
 
     def gem_root
-      @_cached_gem_root ||= shell('gem env gemdir') / 'gems'
+      env_info.val_for('INSTALLATION DIRECTORY') / 'gems'
     end
     
     def should_sudo?
