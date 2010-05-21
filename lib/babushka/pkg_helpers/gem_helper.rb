@@ -23,7 +23,7 @@ module Babushka
     def bin_path
       # The directory in which the binaries from gems are found. This is
       # sometimes different to where `gem` itself is running from.
-      @_cached_bin_path ||= shell('gem env').val_for('EXECUTABLE DIRECTORY')
+      env_info.val_for('EXECUTABLE DIRECTORY').p
     end
 
     def gem_root
@@ -48,6 +48,10 @@ module Babushka
       }.map {|i|
         i.gsub(/^#{pkg_name}-/, '').to_version
       }.sort
+    end
+
+    def env_info
+      @_cached_env_info ||= shell('gem env')
     end
   end
   end
