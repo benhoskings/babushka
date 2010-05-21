@@ -21,14 +21,17 @@ module Babushka
     end
 
     def bin_path
-      # The directory in which the actual gem binary is found. The gem-installed
-      # binaries will be in the same location. (/usr/local/bin/ruby, etc, are
-      # sometimes symlinks.)
-      @_cached_bin_path ||= which('gem').p.readlink.dir
+      # The directory in which the binaries from gems are found. This is
+      # sometimes different to where `gem` itself is running from.
+      env_info.val_for('EXECUTABLE DIRECTORY').p
     end
 
     def gem_root
-      @_cached_gem_root ||= shell('gem env gemdir') / 'gems'
+      env_info.val_for('INSTALLATION DIRECTORY') / 'gems'
+    end
+    
+    def ruby_path
+      env_info.val_for('RUBY EXECUTABLE').p
     end
 
     def should_sudo?
@@ -49,6 +52,10 @@ module Babushka
       }.map {|i|
         i.gsub(/^#{pkg_name}-/, '').to_version
       }.sort
+    end
+
+    def env_info
+      @_cached_env_info ||= shell('gem env')
     end
   end
   end
