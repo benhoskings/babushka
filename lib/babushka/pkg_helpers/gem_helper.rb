@@ -30,6 +30,10 @@ module Babushka
       env_info.val_for('INSTALLATION DIRECTORY') / 'gems'
     end
     
+    def ruby_path
+      env_info.val_for('RUBY EXECUTABLE').p
+    end
+
     def should_sudo?
       super || !File.writable?(gem_root)
     end
