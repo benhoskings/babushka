@@ -47,12 +47,12 @@ describe Babushka::GemHelper do
     before :each do
       Babushka::GemHelper.stub!(
         :gem_root => '/path/to/gems',
-        :bin_root => '/path/to/bins'
+        :bin_path => '/path/to/bins'
       )
     end
     
     it "should return true if the bin dir is not writeable" do
-      File.should_receive(:writable?).with('/path/to/gems').and_return(true)
+      # File.should_receive(:writable?).with('/path/to/gems').and_return(true)
       File.should_receive(:writable?).with('/path/to/bins').and_return(false)
       
       Babushka::GemHelper.should_sudo?.should be_true
@@ -60,7 +60,7 @@ describe Babushka::GemHelper do
     
     it "should return true if the gem dir is not writeable" do
       File.should_receive(:writable?).with('/path/to/gems').and_return(false)
-      # File.should_receive(:writable?).with('/path/to/bins').and_return(true)
+      File.should_receive(:writable?).with('/path/to/bins').and_return(true)
       
       Babushka::GemHelper.should_sudo?.should be_true
     end
