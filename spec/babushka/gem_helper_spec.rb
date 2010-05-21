@@ -41,3 +41,35 @@ describe "gem_path_for" do
     GemHelper.gem_path_for('hammock', '0.3.8').should be_nil
   end
 end
+
+describe Babushka::GemHelper do
+  describe '.should_sudo?' do
+    before :each do
+      Babushka::GemHelper.stub!(
+        :gem_root => '/path/to/gems',
+        :bin_root => '/path/to/bins'
+      )
+    end
+    
+    it "should return true if the bin dir is not writeable" do
+      File.should_receive(:writable?).with('/path/to/gems').and_return(true)
+      File.should_receive(:writable?).with('/path/to/bins').and_return(false)
+      
+      Babushka::GemHelper.should_sudo?.should be_true
+    end
+    
+    it "should return true if the gem dir is not writeable" do
+      File.should_receive(:writable?).with('/path/to/gems').and_return(false)
+      # File.should_receive(:writable?).with('/path/to/bins').and_return(true)
+      
+      Babushka::GemHelper.should_sudo?.should be_true
+    end
+    
+    it "should return false if both gem and bin dirs are writeable" do
+      File.should_receive(:writable?).with('/path/to/gems').and_return(true)
+      File.should_receive(:writable?).with('/path/to/bins').and_return(true)
+      
+      Babushka::GemHelper.should_sudo?.should be_false
+    end
+  end
+end
