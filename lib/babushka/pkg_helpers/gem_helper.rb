@@ -34,9 +34,7 @@ module Babushka
     # The directory where gem binaries are stored. Can't use bin_path, as that
     # is looking for the gem binary, not binaries *from* gems.
     def bin_root
-      @bin_root ||= shell('gem env').split(/\n/).detect { |line|
-        line[/EXECUTABLE DIRECTORY/]
-      }.gsub(/^.*EXECUTABLE DIRECTORY:\s+/, '')
+      @bin_root ||= shell('gem env').val_for('EXECUTABLE DIRECTORY')
     end
     
     def should_sudo?
