@@ -1,6 +1,50 @@
 require 'spec_support'
 require 'sources_support'
 
+describe Source, '.discover_uri_and_type' do
+  it "should label nil paths as implicit" do
+    Source.discover_uri_and_type(nil).should == [nil, 'implicit']
+  end
+  it "should work for public uris" do
+    [
+      'git://github.com/benhoskings/babushka-deps.git',
+      'http://github.com/benhoskings/babushka-deps.git',
+      'file://Users/ben/babushka/deps'
+    ].each {|uri|
+      Source.discover_uri_and_type(uri).should == [URI.parse(uri), 'public']
+    }
+  end
+  it "should work for private uris" do
+    [
+      'git@github.com:benhoskings/babushka-deps.git',
+      'benhoskin.gs:~ben/babushka-deps.git'
+    ].each {|uri|
+      Source.discover_uri_and_type(uri).should == [uri, 'private']
+    }
+  end
+  it "should work for local paths" do
+    Source.discover_uri_and_type('~/.babushka/deps').should == ['~/.babushka/deps'.p, 'local']
+    Source.discover_uri_and_type('/tmp/babushka_deps').should == ['/tmp/babushka_deps', 'local']
+  end
+end
+
+describe Source, '#uri_matches?' do
+  it "should match on equivalent URIs" do
+    Source.new(nil).uri_matches?(nil).should be_true
+    Source.new('~/.babushka/deps').uri_matches?('~/.babushka/deps').should be_true
+    Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps.git').should be_true
+    Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('git@github.com:benhoskings/babushka-deps.git').should be_true
+  end
+  it "should not match on differing URIs" do
+    Source.new(nil).uri_matches?('').should be_false
+    Source.new('~/.babushka/deps').uri_matches?('~/.babushka/babushka_deps').should be_false
+    Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('http://github.com/benhoskings/babushka-deps.git').should be_false
+    Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps').should be_false
+    Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('github.com:benhoskings/babushka-deps.git').should be_false
+    Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('git@github.com:benhoskings/babushka-deps').should be_false
+  end
+end
+
 describe "loading deps" do
   it "should load deps from a file" do
     source = Source.new('spec/deps/good')
