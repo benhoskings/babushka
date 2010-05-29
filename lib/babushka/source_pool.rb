@@ -5,6 +5,10 @@ module Babushka
       @sources
     end
 
+    def current_names
+      current.map {|source| source.deps.names }.flatten.uniq
+    end
+
     def default
       @default_source ||= source_for(nil, :name => 'default')
     end
