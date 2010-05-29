@@ -21,7 +21,7 @@ describe Task, "process" do
   end
   describe "with source/name" do
     before {
-      @source = dep_source('task-spec-remote').merge(:external => true)
+      @source = test_dep_source('task-spec-remote').merge(:external => true)
     }
     describe "cloning" do
       before {

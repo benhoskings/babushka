@@ -1,17 +1,6 @@
 require 'spec_support'
 require 'dep_definer_support'
 
-describe "loading deps" do
-  it "should load deps from a file" do
-    DepDefiner.load_deps_from('spec/deps/good').should be_true
-    Dep.pool.names.should include('test dep 1')
-  end
-  it "should recover from load errors" do
-    DepDefiner.load_deps_from('spec/deps/bad').should be_true
-    Dep.pool.names.should_not include('broken test dep 1')
-  end
-end
-
 describe "accepts_block_for behaviour" do
   before {
     setup_test_lambdas
@@ -54,7 +43,7 @@ describe "accepts_block_for behaviour" do
     value_from_block.should == lambda
   end
 
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end
 
 describe "helper" do

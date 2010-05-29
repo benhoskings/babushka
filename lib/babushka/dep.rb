@@ -4,30 +4,30 @@ module Babushka
   class Dep
     module Helpers
       def Dep spec;                    Dep.for spec end
-      def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
+      def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, BaseDepDefiner, BaseDepRunner end
       def meta name, opts = {}, &block; MetaDepWrapper.for name, opts, &block end
-      def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
-      def gem name, opts = {}, &block; Dep.pool.add name, opts, block, GemDepDefiner , GemDepRunner  end
-      def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
+      def pkg name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
+      def gem name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, GemDepDefiner , GemDepRunner  end
+      def ext name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
 
-    attr_reader :name, :opts, :vars, :definer, :runner
+    attr_reader :name, :opts, :vars, :definer, :runner, :dep_source
     attr_accessor :unmet_message
 
     delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
-    def self.make name, in_opts, block, definer_class, runner_class
+    def self.make name, source, in_opts, block, definer_class, runner_class
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        new name, in_opts, block, definer_class, runner_class
+        new name, source, in_opts, block, definer_class, runner_class
       end
     end
 
-    def initialize name, in_opts, block, definer_class, runner_class
+    def initialize name, source, in_opts, block, definer_class, runner_class
       @name = name.to_s
       @opts = {
         :for => :all
@@ -37,26 +37,38 @@ module Babushka
       @definer = definer_class.new self, &block
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      Dep.pool.register self
+      @dep_source = source
+      @load_path = DepDefiner.current_load_path
+      source.register self
     end
 
-    def self.pool
-      Base.dep_pool
-    end
-    def self.for spec
-      pool.for spec
+    def self.for dep_spec_input
+      dep_spec = dep_spec_input.respond_to?(:name) ? dep_spec_input.name : dep_spec_input
+      if dep_spec[/:/]
+        source_name, dep_name = dep_spec.split(':', 2)
+        Source.for(source_name).find(dep_name)
+      else
+        matches = Base.sources.all.map {|source| source.find(dep_spec) }.flatten.compact
+        if matches.empty?
+          nil
+        elsif matches.length > 1
+          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
+        else
+          matches.first
+        end
+      end
     end
 
     extend Suggest::Helpers
 
-    def self.process dep_name
+    def self.process dep_name, with_run_opts = {}
       if (dep = Dep(dep_name)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         log "You don't have any dep sources added, so there will be minimal deps available.\nCheck 'babushka help sources' and the 'dep source' dep." if Source.count.zero?
-        suggestion = suggest_value_for(dep_name, Dep.pool.names)
-        Dep.process suggestion unless suggestion.nil?
+        suggestion = suggest_value_for(dep_name, Base.sources.current_names)
+        Dep.process suggestion, with_run_opts unless suggestion.nil?
       else
-        dep.process
+        dep.process with_run_opts
       end
     end
 
@@ -70,7 +82,7 @@ module Babushka
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
       returning cached? ? cached_result : process_and_cache do
-        Dep.pool.uncache! if with_run_opts[:top_level]
+        Base.sources.uncache! if with_run_opts[:top_level]
       end
     end
 

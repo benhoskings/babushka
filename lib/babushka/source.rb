@@ -1,6 +1,8 @@
 module Babushka
   class Source
-    attr_reader :name, :uri
+    attr_reader :name, :uri, :deps
+
+    delegate :register, :count, :skipped_count, :uncache!, :to => :deps
 
     def self.pull!
       sources.all? {|source|
@@ -52,31 +54,36 @@ module Babushka
       sources_raw.each {|source| source[:uri] = source[:uri].to_fancypath }
     end
 
-    def self.paths
-      sources.map {|source|
-        Source.new(source.delete(:uri), source).path
-      }
-    end
-
     def self.count
       sources.length
     end
 
     require 'uri'
-    def initialize path, opts = {}
+    def self.discover_uri_and_type path
       if path.nil?
-        @uri = nil
-        @type = 'implicit'
-      elsif path.to_s[/^(git|http|file):\/\//] || path.to_s[/^\w+@[a-zA-Z0-9.\-]+:/]
-        @uri = URI.parse path.to_s
-        @type = path.to_s[/^(git|http|file):\/\//].nil? ? 'private' : 'public'
+        [nil, 'implicit']
+      elsif path.to_s[/^(git|http|file):\/\//]
+        [URI.parse(path.to_s), 'public']
+      elsif path.to_s[/^(\w+@)?[a-zA-Z0-9.\-]+:/]
+        [path, 'private']
       else
-        @uri = path.p
-        @type = 'local'
+        [path.p, 'local']
       end
+    end
+
+    def initialize path, opts = {}
+      @uri, @type = self.class.discover_uri_and_type(path)
       @name = opts[:name]
       @external = opts[:external]
-      @deps = DepPool.new
+      @deps = DepPool.new self
+    end
+
+    def uri_matches? path
+      self.class.discover_uri_and_type(path).first == uri
+    end
+
+    def find dep_spec
+      deps.for dep_spec
     end
 
     def prefix
@@ -132,7 +139,6 @@ module Babushka
     include Shell::Helpers
     include GitHelpers
     def pull!
-      puts "cloning #{uri} to #{prefix} as #{name}"
       git uri, :prefix => prefix, :dir => name, :log => true
     end
 
@@ -143,7 +149,7 @@ module Babushka
       }.flatten.each {|f|
         DepDefiner.load_context :source => self, :path => f do
           begin
-            require f
+            load f
           rescue Exception => e
             log_error "#{e.backtrace.first}: #{e.message}"
             log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."

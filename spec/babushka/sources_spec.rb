@@ -1,6 +1,76 @@
 require 'spec_support'
 require 'sources_support'
 
+describe Source, '.discover_uri_and_type' do
+  it "should label nil paths as implicit" do
+    Source.discover_uri_and_type(nil).should == [nil, 'implicit']
+  end
+  it "should work for public uris" do
+    [
+      'git://github.com/benhoskings/babushka-deps.git',
+      'http://github.com/benhoskings/babushka-deps.git',
+      'file://Users/ben/babushka/deps'
+    ].each {|uri|
+      Source.discover_uri_and_type(uri).should == [URI.parse(uri), 'public']
+    }
+  end
+  it "should work for private uris" do
+    [
+      'git@github.com:benhoskings/babushka-deps.git',
+      'benhoskin.gs:~ben/babushka-deps.git'
+    ].each {|uri|
+      Source.discover_uri_and_type(uri).should == [uri, 'private']
+    }
+  end
+  it "should work for local paths" do
+    Source.discover_uri_and_type('~/.babushka/deps').should == ['~/.babushka/deps'.p, 'local']
+    Source.discover_uri_and_type('/tmp/babushka_deps').should == ['/tmp/babushka_deps', 'local']
+  end
+end
+
+describe Source, '#uri_matches?' do
+  it "should match on equivalent URIs" do
+    Source.new(nil).uri_matches?(nil).should be_true
+    Source.new('~/.babushka/deps').uri_matches?('~/.babushka/deps').should be_true
+    Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps.git').should be_true
+    Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('git@github.com:benhoskings/babushka-deps.git').should be_true
+  end
+  it "should not match on differing URIs" do
+    Source.new(nil).uri_matches?('').should be_false
+    Source.new('~/.babushka/deps').uri_matches?('~/.babushka/babushka_deps').should be_false
+    Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('http://github.com/benhoskings/babushka-deps.git').should be_false
+    Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps').should be_false
+    Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('github.com:benhoskings/babushka-deps.git').should be_false
+    Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('git@github.com:benhoskings/babushka-deps').should be_false
+  end
+end
+
+describe "loading deps" do
+  it "should load deps from a file" do
+    source = Source.new('spec/deps/good')
+    source.load!.should be_true
+    source.deps.names.should include('test dep 1')
+  end
+  it "should recover from load errors" do
+    source = Source.new('spec/deps/bad')
+    source.load!.should be_true
+    source.deps.names.should_not include('broken test dep 1')
+  end
+  it "should store the source the dep was loaded from" do
+    source = Source.new('spec/deps/good')
+    source.load!
+    source.deps.deps.first.dep_source.should == source
+  end
+end
+
+describe "finding" do
+  it "should find the specified dep" do
+    source = Source.new('spec/deps/good')
+    source.load!.should be_true
+    source.find('test dep 1').should == source.deps.deps.first
+  end
+end
+
 describe "adding" do
   it "shouldn't add unreadable sources" do
     L{
@@ -9,7 +79,7 @@ describe "adding" do
     (tmp_prefix / 'sources' / 'unreadable').exists?.should be_false
   end
   describe "cloning" do
-    before { @source = dep_source 'clone_test' }
+    before { @source = test_dep_source 'clone_test' }
     it "should clone a git repo" do
       File.exists?(Source.new(*@source.taph).path).should be_false
       L{ Source.add!(*@source) }.should change(Source, :count).by(1)
@@ -21,7 +91,7 @@ describe "adding" do
     end
   end
   describe "classification" do
-    before { @source = dep_source 'classification_test' }
+    before { @source = test_dep_source 'classification_test' }
     it "should treat file:// as public" do
       (source = Source.new(*@source)).add!
       source.send(:yaml_attributes).should == {:uri => @source.first, :name => 'classification_test', :type => 'public'}
@@ -36,7 +106,7 @@ describe "adding" do
     end
   end
   describe "adding to sources.yml" do
-    before { @source = dep_source 'clone_test_yml' }
+    before { @source = test_dep_source 'clone_test_yml' }
     it "should add the url to sources.yml" do
       Source.sources.should_not include @source
       L{ Source.add!(*@source) }.should change(Source, :count).by(1)
@@ -45,7 +115,7 @@ describe "adding" do
   end
   describe "external sources" do
     before {
-      @source = dep_source('bob').merge(:external => true)
+      @source = test_dep_source('bob').merge(:external => true)
       @nonexistent_source = {:name => 'larry', :uri => tmp_prefix / 'nonexistent', :external => true}
     }
     it "shouldn't clone nonexistent repos" do
@@ -71,8 +141,8 @@ end
 
 describe "removing" do
   before {
-    @source1 = dep_source 'remove_test'
-    @source2 = dep_source 'remove_test_yml'
+    @source1 = test_dep_source 'remove_test'
+    @source2 = test_dep_source 'remove_test_yml'
     Source.new(*@source1).add!
     Source.new(*@source2).add!
   }
@@ -83,7 +153,7 @@ describe "removing" do
   end
   describe "with local changes" do
     before {
-      @source_def = dep_source 'changes_test'
+      @source_def = test_dep_source 'changes_test'
       @source = Source.new(*@source_def)
       @source.add!
     }
@@ -117,8 +187,8 @@ end
 
 describe "clearing" do
   before {
-    Source.new(*dep_source('clear_test_1')).add!
-    Source.new(*dep_source('clear_test_2')).add!
+    Source.new(*test_dep_source('clear_test_1')).add!
+    Source.new(*test_dep_source('clear_test_2')).add!
   }
   it "should remove all sources" do
     Source.count.should == 2

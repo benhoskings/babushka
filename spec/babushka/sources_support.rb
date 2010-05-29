@@ -1,6 +1,6 @@
 require 'spec_support'
 
-def dep_source name = 'test'
+def test_dep_source name = 'test'
   returning ["file:/#{tmp_prefix / 'source_remotes' / name}", {:name => name}] do |source|
     source_path = source.first.gsub(/^file:\//, '')
     unless File.exists? source_path / '.git'

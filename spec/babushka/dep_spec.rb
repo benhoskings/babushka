@@ -4,20 +4,20 @@ require 'dep_support'
 describe "Dep.make" do
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.make "carriage\rreturn", {}, nil, BaseDepDefiner, BaseDepRunner
+      Dep.make "carriage\rreturn", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner
     }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
     dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.make "slashes/invalidate names", {}, nil, BaseDepDefiner, BaseDepRunner
+      Dep.make "slashes/invalidate names", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner
     }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
     dep("slashes/invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", {}, nil, BaseDepDefiner, BaseDepRunner).should be_an_instance_of(Dep)
-    }.should change(Dep.pool, :count).by(1)
+      Dep.make("valid dep name", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner).should be_an_instance_of(Dep)
+    }.should change(Base.sources.default, :count).by(1)
   end
 end
 
@@ -25,7 +25,8 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "blank"
-    }.should change(Dep.pool, :count).by(1)
+    }.should change(Base.sources.default, :count).by(1)
+    Dep('blank').should be_an_instance_of(Dep)
   end
   it "should work for filled in deps" do
     L{
@@ -36,17 +37,18 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Dep.pool, :count).by(1)
+    }.should change(Base.sources.default, :count).by(1)
+    Dep('standard').should be_an_instance_of(Dep)
   end
   it "should accept deps as dep names" do
     L{
       dep 'parent dep' do
         requires dep('nested dep')
       end
-    }.should change(Dep.pool, :count).by(2)
+    }.should change(Base.sources.default, :count).by(2)
     Dep('parent dep').definer.requires.should == [Dep('nested dep')]
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end
 
 describe "calling met? on a single dep" do
@@ -71,7 +73,7 @@ describe "calling met? on a single dep" do
     ).met?.should == true
     @yield_counts['met for met'].should == @yield_counts_met_run
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end
 
 describe "calling meet on a single dep" do
@@ -108,5 +110,5 @@ describe "calling meet on a single dep" do
     ).meet.should == true
     @yield_counts['met'].should == @yield_counts_already_met
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end

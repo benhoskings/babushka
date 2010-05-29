@@ -23,6 +23,27 @@ module Babushka
       (@@default_blocks ||= Hashish.hash)[klass]
     end
 
+    def self.load_context opts, &block
+      @@current_load_source = opts[:source]
+      @@current_load_path = opts[:path]
+      yield
+    ensure
+      @@current_load_source = @@current_load_path = nil
+    end
+
+    def self.define_dep name, in_opts, block, definer_class, runner_class
+      if current_load_source.find name
+        current_load_source.deps.skipped_count += 1
+        current_load_source.find name
+      else
+        begin
+          Dep.make name, current_load_source, current_load_path, in_opts, block, definer_class, runner_class
+        rescue DepError => e
+          log_error e.message
+        end
+      end
+    end
+
     def initialize dep, &block
       @dep = dep
       @payload = {}
@@ -45,6 +66,11 @@ module Babushka
 
     def process
       true # overridden in subclassed definers
+    end
+
+    def self.current_load_source
+      @@current_load_source ||= nil
+      @@current_load_source || Base.sources.default
     end
 
     def self.current_load_path

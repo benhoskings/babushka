@@ -40,7 +40,7 @@ module Babushka
     end
 
     def define_dep name, opts, &block
-      Dep.pool.add name, opts, block, definer_class, runner_class
+      DepDefiner.current_load_source.deps.add name, opts, block, definer_class, runner_class
     end
 
     def define_dep_helper
