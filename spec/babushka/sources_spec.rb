@@ -81,7 +81,7 @@ describe "adding" do
   describe "cloning" do
     before { @source = test_dep_source 'clone_test' }
     it "should clone a git repo" do
-      File.exists?(Source.new(*@source.taph).path).should be_false
+      File.exists?(Source.new(*@source).path).should be_false
       L{ Source.add!(*@source) }.should change(Source, :count).by(1)
       File.directory?(Source.new(*@source).path / '.git').should be_true
     end
