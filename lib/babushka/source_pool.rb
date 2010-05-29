@@ -57,6 +57,10 @@ module Babushka
       @sources = []
     end
 
+    def uncache!
+      current.each {|source| source.send :uncache! }
+    end
+
     def count
       @sources.length
     end
