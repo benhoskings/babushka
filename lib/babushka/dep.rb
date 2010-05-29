@@ -82,7 +82,7 @@ module Babushka
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
       returning cached? ? cached_result : process_and_cache do
-        Dep.pool.uncache! if with_run_opts[:top_level]
+        Base.sources.uncache! if with_run_opts[:top_level]
       end
     end
 
