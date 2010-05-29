@@ -38,6 +38,7 @@ module Babushka
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       @dep_source = source
+      @load_path = DepDefiner.current_load_path
       source.register self
     end
 
