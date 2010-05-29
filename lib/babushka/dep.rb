@@ -41,7 +41,8 @@ module Babushka
       source.register self
     end
 
-    def self.for dep_spec
+    def self.for dep_spec_input
+      dep_spec = dep_spec_input.respond_to?(:name) ? dep_spec_input.name : dep_spec_input
       if dep_spec[/:/]
         source_name, dep_name = dep_spec.split(':', 2)
         Source.for(source_name).find(dep_name)
