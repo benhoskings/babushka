@@ -28,7 +28,7 @@ module Babushka
         self.for name
       else
         begin
-          Dep.make name, in_opts, block, definer_class, runner_class
+          Dep.make name, @source, in_opts, block, definer_class, runner_class
         rescue DepError => e
           log_error e.message
         end
