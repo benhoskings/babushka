@@ -25,7 +25,7 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "blank"
-    }.should change(Source.default_source, :count).by(1)
+    }.should change(Base.sources.default, :count).by(1)
     Dep('blank').should be_an_instance_of(Dep)
   end
   it "should work for filled in deps" do
@@ -37,7 +37,7 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Source.default_source, :count).by(1)
+    }.should change(Base.sources.default, :count).by(1)
     Dep('standard').should be_an_instance_of(Dep)
   end
   it "should accept deps as dep names" do
@@ -45,10 +45,10 @@ describe "dep creation" do
       dep 'parent dep' do
         requires dep('nested dep')
       end
-    }.should change(Dep.pool, :count).by(2)
+    }.should change(Base.sources.default, :count).by(2)
     Dep('parent dep').definer.requires.should == [Dep('nested dep')]
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end
 
 describe "calling met? on a single dep" do
@@ -73,7 +73,7 @@ describe "calling met? on a single dep" do
     ).met?.should == true
     @yield_counts['met for met'].should == @yield_counts_met_run
   end
-  after { Source.default_source.deps.clear! }
+  after { Base.sources.default.deps.clear! }
 end
 
 describe "calling meet on a single dep" do
@@ -110,5 +110,5 @@ describe "calling meet on a single dep" do
     ).meet.should == true
     @yield_counts['met'].should == @yield_counts_already_met
   end
-  after { Source.default_source.deps.clear! }
+  after { Base.sources.default.deps.clear! }
 end

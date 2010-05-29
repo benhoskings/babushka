@@ -43,7 +43,7 @@ describe "accepts_block_for behaviour" do
     value_from_block.should == lambda
   end
 
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end
 
 describe "helper" do
