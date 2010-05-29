@@ -75,7 +75,7 @@ module Babushka
       @uri, @type = self.class.discover_uri_and_type(path)
       @name = opts[:name]
       @external = opts[:external]
-      @deps = DepPool.new
+      @deps = DepPool.new self
     end
 
     def uri_matches? path

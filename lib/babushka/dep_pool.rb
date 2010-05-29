@@ -3,9 +3,10 @@ module Babushka
 
     attr_reader :skipped_count
 
-    def initialize
+    def initialize source
       clear!
       @skipped_count = 0
+      @source = source
     end
 
     def count
