@@ -68,6 +68,11 @@ module Babushka
       true # overridden in subclassed definers
     end
 
+    def self.current_load_source
+      @@current_load_source ||= nil
+      @@current_load_source || Base.sources.default
+    end
+
     def self.current_load_path
       @@current_load_path ||= nil
     end
