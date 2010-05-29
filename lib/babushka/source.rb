@@ -1,6 +1,6 @@
 module Babushka
   class Source
-    attr_reader :name, :uri, :deps
+    attr_reader :name, :uri, :type, :deps
 
     delegate :register, :count, :skipped_count, :uncache!, :to => :deps
 
@@ -109,6 +109,12 @@ module Babushka
     end
     def local?
       type == 'local'
+    end
+
+    def == other
+      name == other.name &&
+      uri == other.uri &&
+      type == other.type
     end
 
     def add!
