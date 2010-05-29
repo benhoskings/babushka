@@ -61,14 +61,14 @@ module Babushka
 
     extend Suggest::Helpers
 
-    def self.process dep_name
+    def self.process dep_name, with_run_opts = {}
       if (dep = Dep(dep_name)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         log "You don't have any dep sources added, so there will be minimal deps available.\nCheck 'babushka help sources' and the 'dep source' dep." if Source.count.zero?
         suggestion = suggest_value_for(dep_name, Base.sources.current_names)
-        Dep.process suggestion unless suggestion.nil?
+        Dep.process suggestion, with_run_opts unless suggestion.nil?
       else
-        dep.process
+        dep.process with_run_opts
       end
     end
 
@@ -82,7 +82,7 @@ module Babushka
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
       returning cached? ? cached_result : process_and_cache do
-        Dep.pool.uncache! if with_run_opts[:top_level]
+        Base.sources.uncache! if with_run_opts[:top_level]
       end
     end
 
