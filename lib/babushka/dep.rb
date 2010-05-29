@@ -46,11 +46,13 @@ module Babushka
         source_name, dep_name = dep_spec.split(':', 2)
         Source.for(source_name).find(dep_name)
       else
-        matches = Source.all_sources.map {|source| source.find(dep_spec) }.flatten.compact
-        if matches.length == 1
-          matches.first
+        matches = Base.sources.all.map {|source| source.find(dep_spec) }.flatten.compact
+        if matches.empty?
+          nil
+        elsif matches.length > 1
+          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
         else
-          log "More than one source (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
+          matches.first
         end
       end
     end
