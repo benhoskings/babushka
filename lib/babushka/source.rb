@@ -160,6 +160,9 @@ module Babushka
       log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}."
     end
 
+    def inspect
+      "#<Babushka::Source @name=#{name.inspect}, @type=#{type.inspect}, @uri=#{uri.inspect}, @deps.count=#{deps.count}>"
+    end
 
     private
 
