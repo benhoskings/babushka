@@ -27,6 +27,10 @@ module Babushka
       end
     end
 
+    def self.current_names
+      Base.sources.current.map {|source| source.deps.names }.flatten.uniq
+    end
+
     def initialize name, source, in_opts, block, definer_class, runner_class
       @name = name.to_s
       @opts = {
@@ -65,7 +69,7 @@ module Babushka
       if (dep = Dep(dep_name)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         log "You don't have any dep sources added, so there will be minimal deps available.\nCheck 'babushka help sources' and the 'dep source' dep." if Source.count.zero?
-        suggestion = suggest_value_for(dep_name, Dep.pool.names)
+        suggestion = suggest_value_for(dep_name, Dep.current_names)
         Dep.process suggestion unless suggestion.nil?
       else
         dep.process
