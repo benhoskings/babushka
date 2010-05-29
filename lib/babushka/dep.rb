@@ -4,11 +4,11 @@ module Babushka
   class Dep
     module Helpers
       def Dep spec;                    Dep.for spec end
-      def dep name, opts = {}, &block; Dep.pool.add name, opts, block, BaseDepDefiner, BaseDepRunner end
+      def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, BaseDepDefiner, BaseDepRunner end
       def meta name, opts = {}, &block; MetaDepWrapper.for name, opts, &block end
-      def pkg name, opts = {}, &block; Dep.pool.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
-      def gem name, opts = {}, &block; Dep.pool.add name, opts, block, GemDepDefiner , GemDepRunner  end
-      def ext name, opts = {}, &block; Dep.pool.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
+      def pkg name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
+      def gem name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, GemDepDefiner , GemDepRunner  end
+      def ext name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
     end
 
     attr_reader :name, :opts, :vars, :definer, :runner, :dep_source
@@ -17,17 +17,17 @@ module Babushka
     delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
-    def self.make name, in_opts, block, definer_class, runner_class
+    def self.make name, source, in_opts, block, definer_class, runner_class
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        new name, in_opts, block, definer_class, runner_class
+        new name, source, in_opts, block, definer_class, runner_class
       end
     end
 
-    def initialize name, in_opts, block, definer_class, runner_class
+    def initialize name, source, in_opts, block, definer_class, runner_class
       @name = name.to_s
       @opts = {
         :for => :all
@@ -38,10 +38,12 @@ module Babushka
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       @dep_source = source
+      @load_path = DepDefiner.current_load_path
       source.register self
     end
 
-    def self.for dep_spec
+    def self.for dep_spec_input
+      dep_spec = dep_spec_input.respond_to?(:name) ? dep_spec_input.name : dep_spec_input
       if dep_spec[/:/]
         source_name, dep_name = dep_spec.split(':', 2)
         Source.for(source_name).find(dep_name)

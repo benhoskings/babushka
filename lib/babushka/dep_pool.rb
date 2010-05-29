@@ -5,7 +5,7 @@ module Babushka
 
     def initialize
       clear!
-      @skipped = 0
+      @skipped_count = 0
     end
 
     def count
@@ -24,11 +24,11 @@ module Babushka
 
     def add name, in_opts, block, definer_class, runner_class
       if self.for name
-        @skipped += 1
+        @skipped_count += 1
         self.for name
       else
         begin
-          Dep.make name, in_opts, block, definer_class, runner_class
+          Dep.make name, @source, in_opts, block, definer_class, runner_class
         rescue DepError => e
           log_error e.message
         end
