@@ -30,11 +30,6 @@ module Babushka
         Source.new(source.delete(:uri), source).remove! opts
       }
     end
-    def self.clear! opts = {}
-      sources.each {|source|
-        Source.new(source.delete(:uri), source).remove! opts
-      }
-    end
 
     def self.external_url_for name, from
       {

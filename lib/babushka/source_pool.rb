@@ -53,7 +53,8 @@ module Babushka
       clear!
     end
 
-    def clear!
+    def clear! opts = {}
+      @sources.each {|s| s.remove! opts } unless @sources.nil?
       @sources = []
     end
 

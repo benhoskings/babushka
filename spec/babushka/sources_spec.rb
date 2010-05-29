@@ -150,7 +150,7 @@ describe "adding" do
       Source.sources.should be_empty
     end
     after {
-      Source.clear! :force => true
+      Base.sources.clear! :force => true
     }
   end
 end
@@ -196,7 +196,7 @@ describe "removing" do
       Source.sources.should_not include({:uri => @source_def.first, :name => 'changes_test', :type => 'public'})
     end
     after {
-      Source.clear! :force => true
+      Base.sources.clear! :force => true
     }
   end
 end
@@ -207,8 +207,8 @@ describe "clearing" do
     Source.new(*test_dep_source('clear_test_2')).add!
   }
   it "should remove all sources" do
-    Source.count.should == 2
-    Source.clear!
-    Source.count.should == 0
+    Base.sources.count.should == 2
+    Base.sources.clear!
+    Base.sources.count.should == 0
   end
 end
