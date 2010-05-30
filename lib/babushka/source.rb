@@ -159,6 +159,10 @@ module Babushka
     end
 
     def load!
+      load_deps! unless implicit? # implicit sources can't be loaded.
+    end
+
+    def load_deps!
       path.p.glob('**/*.rb').partition {|f|
         f.p.basename == 'templates.rb' or
         f.p.parent.basename == 'templates'
