@@ -48,7 +48,7 @@ module Babushka
         source_name, dep_name = dep_spec.split(':', 2)
         Source.for(source_name).find(dep_name)
       else
-        matches = Base.sources.all.map {|source| source.find(dep_spec) }.flatten.compact
+        matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
         if matches.empty?
           nil
         elsif matches.length > 1
