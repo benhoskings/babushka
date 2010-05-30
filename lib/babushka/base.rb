@@ -193,25 +193,6 @@ module Babushka
       }
     end
 
-    def core_dep_locations
-      [ Path.path / 'deps' ]
-    end
-
-    def all_dep_locations
-      [
-        core_dep_locations, # The bundled deps
-        './babushka_deps', # deps in the current directory
-        '~/.babushka/deps', # the user's custom deps
-        Source.paths # each dep source
-      ].flatten
-    end
-
-    def load_deps_from dep_locations
-      [*dep_locations].all? {|dep_path|
-        DepDefiner.load_deps_from dep_path
-      }
-    end
-
     def fail_with message
       log message if message.is_a? String
       exit 1

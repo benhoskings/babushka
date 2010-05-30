@@ -81,26 +81,6 @@ module Babushka
       default_blocks.keys
     end
 
-    def self.load_deps_from path
-      $stdout.flush
-      previous_length, previous_skipped = Dep.pool.count, Dep.pool.skipped_count
-      path.p.glob('**/*.rb').partition {|f|
-        f.p.basename == 'templates.rb' or
-        f.p.parent.basename == 'templates'
-      }.flatten.each {|f|
-        @@current_load_path = f
-        begin
-          require f
-        rescue Exception => e
-          log_error "#{e.backtrace.first}: #{e.message}"
-          log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
-          debug e.backtrace * "\n"
-        end
-      }
-      @@current_load_path = nil
-      log_ok "Loaded #{Dep.pool.count - previous_length}#{" and skipped #{Dep.pool.skipped_count - previous_skipped}" unless Dep.pool.skipped_count == previous_skipped} deps from #{path}."
-    end
-
     def self.accepts_block_for method_name, &default_block
       default_blocks_for(self)[method_name] = default_block
       class_eval %Q{
