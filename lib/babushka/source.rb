@@ -66,9 +66,17 @@ module Babushka
       end
     end
 
+    def self.default_name_for_uri uri
+      if uri.nil?
+        nil
+      else
+        File.basename(uri.to_s).chomp('.git')
+      end
+    end
+
     def initialize path, opts = {}
       @uri, @type = self.class.discover_uri_and_type(path)
-      @name = opts[:name]
+      @name = opts[:name] || self.class.default_name_for_uri(@uri)
       @external = opts[:external]
       @deps = DepPool.new self
     end
