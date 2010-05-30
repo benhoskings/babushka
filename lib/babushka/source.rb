@@ -114,7 +114,7 @@ module Babushka
     end
 
     def prefix
-      external? ? external_source_prefix : source_prefix
+      external? ? self.class.external_source_prefix : self.class.source_prefix
     end
     def path
       if implicit? || local?
@@ -242,10 +242,10 @@ module Babushka
     def self.sources_yml
       Path.path / 'sources.yml'
     end
-    def source_prefix
+    def self.source_prefix
       Path.path / 'sources'
     end
-    def external_source_prefix
+    def self.external_source_prefix
       WorkingPrefix / 'external_sources'
     end
 

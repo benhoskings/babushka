@@ -31,10 +31,10 @@ module Babushka
     def self.sources_yml
       tmp_prefix / 'sources.yml'
     end
-    def source_prefix
+    def self.source_prefix
       tmp_prefix / 'sources'
     end
-    def external_source_prefix
+    def self.external_source_prefix
       tmp_prefix / 'external_sources'
     end
   end
