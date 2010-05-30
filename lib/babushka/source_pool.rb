@@ -10,17 +10,7 @@ module Babushka
     end
 
     def default
-      @default_source ||= source_for(nil, :name => 'default')
-    end
-
-    def source_for uri, opts = {}
-      if source = current.detect {|source| source.uri_matches?(uri) }
-        source
-      else
-        returning Source.new(uri, opts) do |source|
-          @sources.push source
-        end
-      end
+      @default_source ||= Source.new(nil, :name => 'default')
     end
 
     def all
@@ -29,9 +19,9 @@ module Babushka
 
     def core
       [
-        source_for(Path.path / 'deps'),
-        source_for('./babushka_deps'),
-        source_for('~/.babushka/deps')
+        Source.new(Path.path / 'deps'),
+        Source.new('./babushka_deps'),
+        Source.new('~/.babushka/deps')
       ]
     end
 
