@@ -1,6 +1,14 @@
 require 'spec_support'
 require 'sources_support'
 
+describe Source, "arguments" do
+  it "should reject non-hash options" do
+    L{
+      Source.new 'a', 'b'
+    }.should raise_error ArgumentError, 'Source.new options must be passed as a hash, not as "b".'
+  end
+end
+
 describe Source, '.discover_uri_and_type' do
   it "should label nil paths as implicit" do
     Source.discover_uri_and_type(nil).should == [nil, :implicit]
