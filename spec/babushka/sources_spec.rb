@@ -244,6 +244,39 @@ describe "cloning" do
         @aliased.name.should == 'an_aliased_source'
       end
     end
+    context "duplication" do
+      before {
+        @remote = test_dep_source 'duplicate_test'
+        @dup_remote = test_dep_source 'duplicate_dup'
+        @source = Source.new @remote.first
+        @source.add!
+      }
+      context "with the same name and URL" do
+        before {
+          @dup_source = Source.new(@remote.first, :name => 'duplicate_test')
+        }
+        it "should work" do
+          L{ @dup_source.add! }.should_not raise_error
+          @dup_source.should == @source
+        end
+      end
+      context "with the same name and different URLs" do
+        it "should raise an exception and not add anything" do
+          @dup_source = Source.new(@dup_remote.first, :name => 'duplicate_test')
+          L{
+            @dup_source.add!
+          }.should raise_error("There is already a source called '#{@source.name}' (it contains #{@source.uri}).")
+        end
+      end
+      context "with the same URL and different names" do
+        it "should raise an exception and not add anything" do
+          @dup_source = Source.new(@remote.first, :name => 'duplicate_test_different_name')
+          L{
+            @dup_source.add!
+          }.should raise_error("The source #{@source.uri} is already present (as '#{@source.name}').")
+        end
+      end
+    end
   end
 end
 

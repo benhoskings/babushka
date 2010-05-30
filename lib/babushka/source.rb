@@ -157,11 +157,32 @@ module Babushka
       type == other.type
     end
 
-    def add!
-      returning pull! && add_source do |result|
-        log_ok "Added #{name}." if result
+    def raise_unless_addable!
+      uri_dup_source = Base.sources.current.detect {|s|
+        "#{s.uri}==#{uri}".taph
+        s.uri == uri
+      }.taph
+      name_dup_source = Base.sources.current.detect {|s|
+        "#{s.name}==#{name}".taph
+        s.name == name
+      }.taph
+      if uri_dup_source != name_dup_source
+        raise "There is already a source called '#{name_dup_source.name}' (it contains #{name_dup_source.uri})." unless name_dup_source.nil?
+        raise "The source #{uri_dup_source.uri} is already present (as '#{uri_dup_source.name}')." unless uri_dup_source.nil?
       end
     end
+
+    def add!
+      if !cloneable?
+        log "Nothing to add for #{name}."
+      else
+        raise_unless_addable!
+        log_block "Adding #{name}" do
+          pull!
+        end
+      end
+    end
+
     def remove! opts = {}
       if opts[:force] || removeable?
         log_block "Removing #{name} (#{uri})" do
