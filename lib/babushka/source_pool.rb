@@ -24,7 +24,7 @@ module Babushka
     end
 
     def all
-      [default].concat(core) #.concat(cloned)
+      [default].concat(core).concat(Source.present)
     end
 
     def core
@@ -33,12 +33,6 @@ module Babushka
         source_for('./babushka_deps'),
         source_for('~/.babushka/deps')
       ]
-    end
-
-    def cloned
-      current.map {|source|
-        source_for(source.delete(:uri), source)
-      }
     end
 
     def load_all! opts = {}
