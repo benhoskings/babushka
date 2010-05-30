@@ -108,6 +108,9 @@ module Babushka
     def type
       @type
     end
+    def cloneable?
+      [:public, :private].include? type
+    end
     def cloned?
       File.directory? path / '.git'
     end
