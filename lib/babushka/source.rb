@@ -151,6 +151,7 @@ module Babushka
     end
 
     def == other
+      [:name, :uri, :type].all? {|method_name| other.respond_to? method_name } &&
       name == other.name &&
       uri == other.uri &&
       type == other.type
