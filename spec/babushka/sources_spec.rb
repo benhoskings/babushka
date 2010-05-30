@@ -145,7 +145,7 @@ describe Source, ".for_path" do
       @source.path.should == Source.source_prefix / 'for_path_remote'
       @source.name.should == 'for_path_remote'
     end
-    after { @source.remove! }
+    after { @source.remove! :force => true }
   end
 end
 
