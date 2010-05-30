@@ -106,6 +106,30 @@ describe "equality" do
   end
 end
 
+describe Source, ".for_path" do
+  it "should raise when called on a file" do
+    `touch "#{tmp_prefix / 'sources/regular_file'}"`
+    L{
+      Source.for_path(Source.source_prefix / 'regular_file')
+    }.should raise_error(ArgumentError, "The path #{Source.source_prefix / 'regular_file'} isn't a directory.")
+  end
+  it "should work on a dir" do
+    `mkdir -p "#{tmp_prefix / 'ad_hoc_source'}"`
+    source = Source.for_path(tmp_prefix / 'ad_hoc_source')
+    source.should be_present
+    source.path.should == tmp_prefix / 'ad_hoc_source'
+    source.name.should == 'ad_hoc_source'
+  end
+  it "should work on a git repo" do
+    remote = test_dep_source 'for_path_remote'
+    Source.new(remote.first).pull!
+    source = Source.for_path(Source.source_prefix / 'for_path_remote')
+    source.should be_present
+    source.path.should == Source.source_prefix / 'for_path_remote'
+    source.name.should == 'for_path_remote'
+  end
+end
+
 describe "finding" do
   it "should find the specified dep" do
     source = Source.new('spec/deps/good')

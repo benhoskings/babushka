@@ -4,6 +4,20 @@ module Babushka
 
     delegate :register, :count, :skipped_count, :uncache!, :to => :deps
 
+    def self.for_path path
+      path = path.p
+      if !path.directory?
+        raise ArgumentError, "The path #{path} isn't a directory."
+      else
+        remote = in_dir(path) { shell "git config remote.origin.url" }
+        if remote.nil?
+          Source.new path # local source
+        else
+          Source.new remote, :path => path # remote source with custom path
+        end
+      end
+    end
+
     def self.pull!
       sources.all? {|source|
         new(source).pull!
