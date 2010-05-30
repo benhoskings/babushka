@@ -107,26 +107,37 @@ describe "equality" do
 end
 
 describe Source, ".for_path" do
-  it "should raise when called on a file" do
-    `touch "#{tmp_prefix / 'sources/regular_file'}"`
-    L{
-      Source.for_path(Source.source_prefix / 'regular_file')
-    }.should raise_error(ArgumentError, "The path #{Source.source_prefix / 'regular_file'} isn't a directory.")
+  context "on a file" do
+    before { `touch "#{tmp_prefix / 'sources/regular_file'}"` }
+    it "should raise when called on a file" do
+      L{
+        Source.for_path(Source.source_prefix / 'regular_file')
+      }.should raise_error(ArgumentError, "The path #{Source.source_prefix / 'regular_file'} isn't a directory.")
+    end
   end
-  it "should work on a dir" do
-    `mkdir -p "#{tmp_prefix / 'ad_hoc_source'}"`
-    source = Source.for_path(tmp_prefix / 'ad_hoc_source')
-    source.should be_present
-    source.path.should == tmp_prefix / 'ad_hoc_source'
-    source.name.should == 'ad_hoc_source'
+  context "on a dir" do
+    before {
+      `mkdir -p "#{tmp_prefix / 'ad_hoc_source'}"`
+      @source = Source.for_path(tmp_prefix / 'ad_hoc_source')
+    }
+    it "should work on a dir" do
+      @source.should be_present
+      @source.path.should == tmp_prefix / 'ad_hoc_source'
+      @source.name.should == 'ad_hoc_source'
+    end
   end
-  it "should work on a git repo" do
-    remote = test_dep_source 'for_path_remote'
-    Source.new(remote.first).pull!
-    source = Source.for_path(Source.source_prefix / 'for_path_remote')
-    source.should be_present
-    source.path.should == Source.source_prefix / 'for_path_remote'
-    source.name.should == 'for_path_remote'
+  context "on a git repo" do
+    before {
+      remote = test_dep_source 'for_path_remote'
+      Source.new(remote.first).pull!
+      @source = Source.for_path(Source.source_prefix / 'for_path_remote')
+    }
+    it "should work on a git repo" do
+      @source.should be_present
+      @source.path.should == Source.source_prefix / 'for_path_remote'
+      @source.name.should == 'for_path_remote'
+    end
+    after { @source.remove! }
   end
 end
 
