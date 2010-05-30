@@ -203,12 +203,6 @@ module Babushka
       end
     end
 
-    include Shell::Helpers
-    include GitHelpers
-    def pull!
-      git uri, :prefix => prefix, :dir => name, :log => true
-    end
-
     def load!
       load_deps! unless implicit? # implicit sources can't be loaded.
     end
@@ -236,6 +230,12 @@ module Babushka
     end
 
     private
+
+    include Shell::Helpers
+    include GitHelpers
+    def pull!
+      git uri, :prefix => prefix, :dir => name, :log => true
+    end
 
     def add_source
       if external?
