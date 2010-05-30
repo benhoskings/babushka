@@ -170,72 +170,131 @@ describe "finding" do
   end
 end
 
-describe "adding" do
-  it "shouldn't add unreadable sources" do
-    L{
-      Source.add!(tmp_prefix / "nonexistent.git", :name => 'unreadable')
-    }.should_not change(Source, :count)
-    (tmp_prefix / 'sources' / 'unreadable').exists?.should be_false
-  end
-  describe "cloning" do
-    before { @source = test_dep_source 'clone_test' }
-    it "should clone a git repo" do
-      File.exists?(Source.new(*@source).path).should be_false
-      L{ Source.add!(*@source) }.should change(Source, :count).by(1)
-      File.directory?(Source.new(*@source).path / '.git').should be_true
+describe Source, "#present?" do
+  context "for local repos" do
+    it "should be true for valid paths" do
+      Source.new('spec/deps/good').should be_present
     end
-    it "should be cloned into the source prefix" do
-      Source.add!(*@source)
-      Source.new(*@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+    it "should be false for invalid paths" do
+      Source.new('spec/deps/nonexistent').should_not be_present
     end
   end
-  describe "classification" do
-    before { @source = test_dep_source 'classification_test' }
-    it "should treat file:// as public" do
-      (source = Source.new(*@source)).add!
-      source.send(:yaml_attributes).should == {:uri => @source.first, :name => 'classification_test', :type => 'public'}
+  context "for remote repos" do
+    before { @present_source = test_dep_source 'present' }
+    it "should be false" do
+      Source.new(@present_source.first).should_not be_present
     end
-    it "should treat local paths as local" do
-      (source = Source.new(@source.first.gsub(/^file:\//, ''), @source.last)).add!
-      source.send(:yaml_attributes).should == {:uri => @source.first.gsub(/^file:\//, ''), :name => 'classification_test', :type => 'local'}
-    end
-    it "should be cloned into the source prefix" do
-      Source.add!(*@source)
-      Source.new(*@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+    context "after cloning" do
+      before { Source.new(@present_source.first).pull! }
+      it "should be true" do
+        Source.new(@present_source.first).should be_present
+      end
     end
   end
-  describe "adding to sources.yml" do
-    before { @source = test_dep_source 'clone_test_yml' }
-    it "should add the url to sources.yml" do
-      Source.sources.should_not include @source
-      L{ Source.add!(*@source) }.should change(Source, :count).by(1)
-      Source.sources.should include({:uri => @source.first, :name => 'clone_test_yml', :type => 'public'})
-    end
-  end
-  describe "external sources" do
+end
+
+describe "cloning" do
+  context "unreadable sources" do
     before {
-      @source = test_dep_source('bob').merge(:external => true)
-      @nonexistent_source = {:name => 'larry', :uri => tmp_prefix / 'nonexistent', :external => true}
+      @source = Source.new(tmp_prefix / "nonexistent.git", :name => 'unreadable')
+      @source.pull!
     }
-    it "shouldn't clone nonexistent repos" do
-      File.exists?(Source.new(@nonexistent_source).path).should be_false
-      L{ Source.add_external!(@nonexistent_source[:name], :from => :github).should be_nil }.should_not change(Source, :count)
-      File.directory?(Source.new(@nonexistent_source).path).should be_false
+    it "shouldn't work" do
+      @source.path.should_not be_exists
     end
-    it "should clone a git repo" do
-      File.exists?(Source.new(@source).path).should be_false
-      L{ Source.add_external!(@source[:name], :from => :github).should be_an_instance_of(Source) }.should_not change(Source, :count)
-      File.directory?(Source.new(@source).path).should be_true
-    end
-    it "shouldn't add the url to sources.yml" do
-      Source.sources.should be_empty
-      L{ Source.add_external!(@source[:name], :from => :github) }.should_not change(Source, :count)
-      Source.sources.should be_empty
-    end
-    after {
-      Base.sources.clear! :force => true
-    }
   end
+
+  context "readable sources" do
+    before {
+      @source = Source.new(*test_dep_source('clone_test'))
+    }
+    it "should clone a git repo" do
+      @source.path.should_not be_exists
+      @source.pull!
+      @source.path.should be_exists
+    end
+    it "should be available in Base.sources" do
+      Base.sources.current.taph.include?(@source).should be_true
+    end
+    it "should be cloned into the source prefix" do
+      @source.path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+    end
+
+    context "without a name" do
+      before {
+        @nameless = Source.new(test_dep_source('nameless').first)
+        @nameless.pull!
+      }
+      it "should use the basename as the name" do
+        File.directory?(tmp_prefix / 'sources/nameless').should be_true
+      end
+      it "should set the name in the source" do
+        @nameless.name.should == 'nameless'
+      end
+    end
+    context "with a name" do
+      before {
+        @aliased = Source.new(test_dep_source('aliased').first, :name => 'an_aliased_source')
+        @aliased.pull!
+      }
+      it "should override the name" do
+        File.directory?(tmp_prefix / 'sources/an_aliased_source').should be_true
+      end
+      it "should set the name in the source" do
+        @aliased.name.should == 'an_aliased_source'
+      end
+    end
+  end
+end
+
+describe "classification" do
+  before { @source = test_dep_source 'classification_test' }
+  it "should treat file:// as public" do
+    (source = Source.new(*@source)).add!
+    source.send(:yaml_attributes).should == {:uri => @source.first, :name => 'classification_test', :type => 'public'}
+  end
+  it "should treat local paths as local" do
+    (source = Source.new(@source.first.gsub(/^file:\//, ''), @source.last)).add!
+    source.send(:yaml_attributes).should == {:uri => @source.first.gsub(/^file:\//, ''), :name => 'classification_test', :type => 'local'}
+  end
+  it "should be cloned into the source prefix" do
+    Source.add!(*@source)
+    Source.new(*@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+  end
+end
+
+describe "adding to sources.yml" do
+  before { @source = test_dep_source 'clone_test_yml' }
+  it "should add the url to sources.yml" do
+    Source.sources.should_not include @source
+    L{ Source.add!(*@source) }.should change(Source, :count).by(1)
+    Source.sources.should include({:uri => @source.first, :name => 'clone_test_yml', :type => 'public'})
+  end
+end
+
+describe "external sources" do
+  before {
+    @source = test_dep_source('bob').merge(:external => true)
+    @nonexistent_source = {:name => 'larry', :uri => tmp_prefix / 'nonexistent', :external => true}
+  }
+  it "shouldn't clone nonexistent repos" do
+    File.exists?(Source.new(@nonexistent_source).path).should be_false
+    L{ Source.add_external!(@nonexistent_source[:name], :from => :github).should be_nil }.should_not change(Source, :count)
+    File.directory?(Source.new(@nonexistent_source).path).should be_false
+  end
+  it "should clone a git repo" do
+    File.exists?(Source.new(@source).path).should be_false
+    L{ Source.add_external!(@source[:name], :from => :github).should be_an_instance_of(Source) }.should_not change(Source, :count)
+    File.directory?(Source.new(@source).path).should be_true
+  end
+  it "shouldn't add the url to sources.yml" do
+    Source.sources.should be_empty
+    L{ Source.add_external!(@source[:name], :from => :github) }.should_not change(Source, :count)
+    Source.sources.should be_empty
+  end
+  after {
+    Base.sources.clear! :force => true
+  }
 end
 
 describe "removing" do
