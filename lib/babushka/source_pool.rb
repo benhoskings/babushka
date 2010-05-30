@@ -2,7 +2,7 @@ module Babushka
   class SourcePool
 
     def current
-      [default].concat(core).concat(Source.present)
+      [default].concat(core).concat(standard).concat(Source.present)
     end
 
     def current_names
@@ -15,7 +15,12 @@ module Babushka
 
     def core
       [
-        Source.new(Path.path / 'deps'),
+        Source.new(Path.path / 'deps')
+      ]
+    end
+
+    def standard
+      [
         Source.new('./babushka_deps'),
         Source.new('~/.babushka/deps')
       ]
@@ -27,6 +32,10 @@ module Babushka
       else
         current.map &:load!
       end
+    end
+
+    def load_core!
+      core.map &:load!
     end
 
     def initialize
