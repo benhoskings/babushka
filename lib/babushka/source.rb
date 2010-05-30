@@ -85,7 +85,11 @@ module Babushka
       external? ? external_source_prefix : source_prefix
     end
     def path
-      local? ? @uri : prefix / name
+      if implicit? || local?
+        @uri
+      else
+        prefix / name
+      end
     end
     def updated_at
       Time.now - File.mtime(path)

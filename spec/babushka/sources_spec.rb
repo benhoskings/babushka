@@ -45,6 +45,33 @@ describe Source, '#uri_matches?' do
   end
 end
 
+describe Source, '#path' do
+  it "should work for implicit sources" do
+    Source.new(nil).path.should == nil
+  end
+  it "should work for local sources" do
+    Source.new('~/.babushka/deps').path.should == '~/.babushka/deps'.p
+  end
+  context "cloneable repos" do
+    context "without names" do
+      it "should work for public sources" do
+        Source.new('git://github.com/benhoskings/babushka-deps.git').path.should == tmp_prefix / 'sources/babushka-deps'
+      end
+      it "should work for private sources" do
+        Source.new('git@github.com:benhoskings/babushka-deps.git').path.should == tmp_prefix / 'sources/babushka-deps'
+      end
+    end
+    context "with names" do
+      it "should work for public sources" do
+        Source.new('git://github.com/benhoskings/babushka-deps.git', :name => 'custom_public_deps').path.should == tmp_prefix / 'sources/custom_public_deps'
+      end
+      it "should work for private sources" do
+        Source.new('git@github.com:benhoskings/babushka-deps.git', :name => 'custom_private_deps').path.should == tmp_prefix / 'sources/custom_private_deps'
+      end
+    end
+  end
+end
+
 describe "loading deps" do
   it "should load deps from a file" do
     source = Source.new('spec/deps/good')
