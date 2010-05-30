@@ -97,7 +97,7 @@ module Babushka
       end
     end
     def handle_babushka verb
-      load_deps_from core_dep_locations
+      sources.load_core!
       task.process 'babushka'
     end
     def handle_pull verb
