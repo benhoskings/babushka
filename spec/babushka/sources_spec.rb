@@ -3,7 +3,7 @@ require 'sources_support'
 
 describe Source, '.discover_uri_and_type' do
   it "should label nil paths as implicit" do
-    Source.discover_uri_and_type(nil).should == [nil, 'implicit']
+    Source.discover_uri_and_type(nil).should == [nil, :implicit]
   end
   it "should work for public uris" do
     [
@@ -11,7 +11,7 @@ describe Source, '.discover_uri_and_type' do
       'http://github.com/benhoskings/babushka-deps.git',
       'file://Users/ben/babushka/deps'
     ].each {|uri|
-      Source.discover_uri_and_type(uri).should == [URI.parse(uri), 'public']
+      Source.discover_uri_and_type(uri).should == [URI.parse(uri), :public]
     }
   end
   it "should work for private uris" do
@@ -19,12 +19,12 @@ describe Source, '.discover_uri_and_type' do
       'git@github.com:benhoskings/babushka-deps.git',
       'benhoskin.gs:~ben/babushka-deps.git'
     ].each {|uri|
-      Source.discover_uri_and_type(uri).should == [uri, 'private']
+      Source.discover_uri_and_type(uri).should == [uri, :private]
     }
   end
   it "should work for local paths" do
-    Source.discover_uri_and_type('~/.babushka/deps').should == ['~/.babushka/deps'.p, 'local']
-    Source.discover_uri_and_type('/tmp/babushka_deps').should == ['/tmp/babushka_deps', 'local']
+    Source.discover_uri_and_type('~/.babushka/deps').should == ['~/.babushka/deps'.p, :local]
+    Source.discover_uri_and_type('/tmp/babushka_deps').should == ['/tmp/babushka_deps', :local]
   end
 end
 

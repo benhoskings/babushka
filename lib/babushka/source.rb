@@ -56,13 +56,13 @@ module Babushka
     require 'uri'
     def self.discover_uri_and_type path
       if path.nil?
-        [nil, 'implicit']
+        [nil, :implicit]
       elsif path.to_s[/^(git|http|file):\/\//]
-        [URI.parse(path.to_s), 'public']
+        [URI.parse(path.to_s), :public]
       elsif path.to_s[/^(\w+@)?[a-zA-Z0-9.\-]+:/]
-        [path, 'private']
+        [path, :private]
       else
-        [path.p, 'local']
+        [path.p, :local]
       end
     end
 
@@ -103,7 +103,7 @@ module Babushka
       @external
     end
     def local?
-      type == 'local'
+      type == :local
     end
 
     def == other
