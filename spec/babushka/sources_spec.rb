@@ -137,7 +137,7 @@ describe Source, ".for_path" do
   context "on a git repo" do
     before {
       remote = test_dep_source 'for_path_remote'
-      Source.new(remote.first).pull!
+      Source.new(remote.first).add!
       @source = Source.for_path(Source.source_prefix / 'for_path_remote')
     }
     it "should work on a git repo" do
@@ -152,9 +152,9 @@ end
 describe Source, '.present' do
   before {
     @source_1 = Source.new(*test_dep_source('present_remote_1'))
-    @source_1.pull!
+    @source_1.add!
     @source_2 = Source.new(*test_dep_source('present_remote_2'))
-    @source_2.pull!
+    @source_2.add!
     @source_3 = Source.new(*test_dep_source('present_remote_3'))
   }
   it "should return the sources that are present" do
@@ -185,7 +185,7 @@ describe Source, "#present?" do
       Source.new(@present_source.first).should_not be_present
     end
     context "after cloning" do
-      before { Source.new(@present_source.first).pull! }
+      before { Source.new(@present_source.first).add! }
       it "should be true" do
         Source.new(@present_source.first).should be_present
       end
@@ -197,7 +197,7 @@ describe "cloning" do
   context "unreadable sources" do
     before {
       @source = Source.new(tmp_prefix / "nonexistent.git", :name => 'unreadable')
-      @source.pull!
+      @source.add!
     }
     it "shouldn't work" do
       @source.path.should_not be_exists
@@ -210,7 +210,7 @@ describe "cloning" do
     }
     it "should clone a git repo" do
       @source.path.should_not be_exists
-      @source.pull!
+      @source.add!
       @source.path.should be_exists
     end
     it "should be available in Base.sources" do
@@ -223,7 +223,7 @@ describe "cloning" do
     context "without a name" do
       before {
         @nameless = Source.new(test_dep_source('nameless').first)
-        @nameless.pull!
+        @nameless.add!
       }
       it "should use the basename as the name" do
         File.directory?(tmp_prefix / 'sources/nameless').should be_true
@@ -235,7 +235,7 @@ describe "cloning" do
     context "with a name" do
       before {
         @aliased = Source.new(test_dep_source('aliased').first, :name => 'an_aliased_source')
-        @aliased.pull!
+        @aliased.add!
       }
       it "should override the name" do
         File.directory?(tmp_prefix / 'sources/an_aliased_source').should be_true
