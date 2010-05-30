@@ -130,6 +130,19 @@ describe Source, ".for_path" do
   end
 end
 
+describe Source, '.present' do
+  before {
+    @source_1 = Source.new(*test_dep_source('present_remote_1'))
+    @source_1.pull!
+    @source_2 = Source.new(*test_dep_source('present_remote_2'))
+    @source_2.pull!
+    @source_3 = Source.new(*test_dep_source('present_remote_3'))
+  }
+  it "should return the sources that are present" do
+    Source.present.should == [@source_1, @source_2]
+  end
+end
+
 describe "finding" do
   it "should find the specified dep" do
     source = Source.new('spec/deps/good')

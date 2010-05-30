@@ -4,6 +4,16 @@ module Babushka
 
     delegate :register, :count, :skipped_count, :uncache!, :to => :deps
 
+    def self.present
+      source_prefix.glob('*').map(&:p).select {|path|
+        path.directory?
+      }.map {|path|
+        Source.for_path path
+      }.select {|source|
+        source.present?
+      }
+    end
+
     def self.for_path path
       path = path.p
       if !path.directory?
