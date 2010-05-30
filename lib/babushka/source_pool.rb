@@ -2,7 +2,7 @@ module Babushka
   class SourcePool
 
     def current
-      @sources
+      [default].concat(core).concat(Source.present)
     end
 
     def current_names
@@ -11,10 +11,6 @@ module Babushka
 
     def default
       @default_source ||= Source.new(nil, :name => 'default')
-    end
-
-    def all
-      [default].concat(core).concat(Source.present)
     end
 
     def core
@@ -29,7 +25,7 @@ module Babushka
       if opts[:first]
         # load_deps_from core_dep_locations.concat([*dep_locations]).concat(Source.all).uniq
       else
-        all.map &:load!
+        current.map &:load!
       end
     end
 
