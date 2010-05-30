@@ -105,6 +105,9 @@ module Babushka
     def local?
       type == :local
     end
+    def implicit?
+      type == :implicit
+    end
 
     def == other
       name == other.name &&
