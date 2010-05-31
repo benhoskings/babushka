@@ -58,6 +58,31 @@ describe Array, '#local_group_by' do
   end
 end
 
+describe Array, '#local_lines' do
+  it "should work for empty strings" do
+    "".local_lines.should == []
+  end
+  it "should do what you expect" do
+    "uno\ndos\ntres".local_lines.should == %w[uno dos tres]
+  end
+  it "should work with empty lines and such" do
+    %Q{
+uno
+dos 
+
+  
+tres
+  
+
+    }.local_lines.should == [
+      'uno',
+      'dos ',
+      '  ',
+      'tres'
+    ]
+  end
+end
+
 describe String, "val_for" do
   it "space separation" do
     'key value'.val_for('key').should == 'value'
