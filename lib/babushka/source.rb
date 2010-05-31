@@ -115,6 +115,11 @@ module Babushka
       deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps): #{o.inspect}" }
     end
 
+    def load_and_find dep_spec
+      load!
+      find dep_spec
+    end
+
     def prefix
       external? ? self.class.external_source_prefix : self.class.source_prefix
     end
