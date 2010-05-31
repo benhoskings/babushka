@@ -1,6 +1,6 @@
 module Babushka
   WorkingPrefix = '~/.babushka'
-  SrcPrefix = WorkingPrefix / 'src'
+  BuildPrefix = WorkingPrefix / 'build'
   DownloadPrefix = WorkingPrefix / 'downloads'
   LogPrefix = WorkingPrefix / 'logs'
   VarsPrefix = WorkingPrefix / 'vars'
@@ -33,7 +33,7 @@ module Babushka
     def process_dep dep_name
       load_previous_run_info_for dep_name
       returning(log_dep(dep_name) {
-        returning Dep.process dep_name do |result|
+        returning Dep.process(dep_name, :top_level => true) do |result|
           if Dep dep_name
             save_run_info_for dep_name, result
             log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{LogPrefix / dep_name}'." unless result

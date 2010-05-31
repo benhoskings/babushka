@@ -81,7 +81,7 @@ module Babushka
     end
 
     def extract &block
-      in_build_dir { process_extract &block }
+      in_dir(archive_prefix, :create => true) { process_extract &block }
     end
 
     def process_extract &block
@@ -104,6 +104,10 @@ module Babushka
       }.reject {|dir|
         [/\.app$/, /\.pkg$/].any? {|dont_descend| dir[dont_descend] }
       }.first
+    end
+
+    def archive_prefix
+      BuildPrefix
     end
   end
 

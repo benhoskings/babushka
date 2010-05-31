@@ -48,17 +48,17 @@ describe Archive do
   end
   it "should yield in the extracted dir" do
     Archive.for(archive_path / "archive.tar").extract {
-      Dir.pwd.should == '~/.babushka/src/archive'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/archive')
     }
   end
   it "should yield in the nested dir if there is one" do
     Archive.for(archive_path / "nested_archive.tar").extract {
-      Dir.pwd.should == '~/.babushka/src/nested_archive/nested archive'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/nested_archive/nested archive')
     }
   end
   it "should find a standard content dir as a nested dir" do
     Archive.for(archive_path / "test-0.3.1.tgz").extract {
-      Dir.pwd.should == '~/.babushka/src/test-0.3.1/test-0.3.1'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/test-0.3.1/test-0.3.1')
       Dir.glob('*').should == ['content.txt']
     }
   end

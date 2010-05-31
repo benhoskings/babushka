@@ -18,6 +18,11 @@ FileUtils.rm_r tmp_prefix if File.exists? tmp_prefix
 FileUtils.mkdir_p tmp_prefix unless File.exists? tmp_prefix
 
 module Babushka
+  class Archive
+    def archive_prefix
+      tmp_prefix / 'archives'
+    end
+  end
   class Source
     def self.external_url_for name, from
       tmp_prefix / 'source_remotes' / name
@@ -26,10 +31,10 @@ module Babushka
     def self.sources_yml
       tmp_prefix / 'sources.yml'
     end
-    def source_prefix
+    def self.source_prefix
       tmp_prefix / 'sources'
     end
-    def external_source_prefix
+    def self.external_source_prefix
       tmp_prefix / 'external_sources'
     end
   end

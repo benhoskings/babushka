@@ -15,7 +15,7 @@ pkg 'pkg git' do
 end
 
 installer 'installer git' do
-  requires_when_unmet '/usr/local subpaths exist'
+  requires_when_unmet 'usr-local subpaths exist'
   source "http://git-osx-installer.googlecode.com/files/git-1.7.1-intel-leopard.dmg"
   provides 'git'
   after {

@@ -10,8 +10,8 @@ module Babushka
     def host
       @host ||= Babushka::SystemSpec.for_system
     end
-    def dep_pool
-      @pool ||= DepPool.new
+    def sources
+      @sources ||= SourcePool.new
     end
 
     def run args
@@ -26,11 +26,11 @@ module Babushka
     end
 
     def setup_noninteractive
-      load_deps_from all_dep_locations
+      sources.load_all!
     end
 
     def setup_noninteractive_for dep_locations
-      load_deps_from core_dep_locations.concat([*dep_locations]).concat(all_dep_locations).uniq
+      sources.load_all! :first => dep_locations
     end
 
     private
@@ -190,25 +190,6 @@ module Babushka
       }.inject(Verbs.map {|v| v.name.to_s }.abbrev) {|hsh,names|
         names.compact.each {|name| hsh[name] = name }
         hsh
-      }
-    end
-
-    def core_dep_locations
-      [ Path.path / 'deps' ]
-    end
-
-    def all_dep_locations
-      [
-        core_dep_locations, # The bundled deps
-        './babushka_deps', # deps in the current directory
-        '~/.babushka/deps', # the user's custom deps
-        Source.paths # each dep source
-      ].flatten
-    end
-
-    def load_deps_from dep_locations
-      [*dep_locations].all? {|dep_path|
-        DepDefiner.load_deps_from dep_path
       }
     end
 

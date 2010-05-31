@@ -37,6 +37,7 @@ babushka_components = %w[
   babushka/definer_helpers
   babushka/task
   babushka/source
+  babushka/source_pool
   babushka/dep_runner
   babushka/dep_runners/base_dep_runner
   babushka/dep_runners/meta_dep_runner

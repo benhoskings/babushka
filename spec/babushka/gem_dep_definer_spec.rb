@@ -15,5 +15,5 @@ describe "accepts_hash_for default values" do
     Dep('multiple gems with version').definer.installs.should == [ver('gem2', '0.1.4'), ver('gem3', '0.2.5.1')]
   end
 
-  after { Dep.pool.clear! }
+  after { Base.sources.default.deps.clear! }
 end

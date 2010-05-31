@@ -113,7 +113,7 @@ install_path 'install location exists' do
 end
 
 # TODO this won't be necessary once vars can be passed as args.
-install_path '/usr/local subpaths exist' do
+install_path 'usr-local subpaths exist' do
   met? { subpaths.all? {|path| File.directory?('/usr/local' / path) } }
   meet { subpaths.each {|path| sudo "mkdir -p '#{'/usr/local' / path}'" } }
 end
