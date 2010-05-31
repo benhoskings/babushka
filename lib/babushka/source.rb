@@ -38,13 +38,6 @@ module Babushka
         new(source).pull!
       }
     end
-    def self.add! uri, opts
-      new(uri, opts).add!
-    end
-    def self.add_external! name, opts = {}
-      source = new(:name => name, :uri => external_url_for(name, opts[:from]), :external => true)
-      source if source.add!
-    end
     def self.list!
       sources.tap {|sources|
         log "# There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1}."
