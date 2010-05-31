@@ -213,8 +213,8 @@ describe "cloning" do
       @source.add!
       @source.path.should be_exists
     end
-    it "should be available in Base.sources" do
-      Base.sources.current.taph.include?(@source).should be_true
+    it "should not be available in Base.sources" do
+      Base.sources.current.taph.include?(@source).should be_false
     end
     it "should be cloned into the source prefix" do
       @source.path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
