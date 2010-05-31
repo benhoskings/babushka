@@ -25,13 +25,6 @@ module Babushka
       end
     end
 
-    def setup_noninteractive
-      sources.load_all!
-    end
-
-    def setup_noninteractive_for dep_locations
-      sources.load_all! :first => dep_locations
-    end
 
     private
 
