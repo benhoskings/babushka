@@ -56,7 +56,7 @@ module Babushka
       }
     end
 
-    def self.external_url_for name, from
+    def self.default_remote_for name, from
       {
         :github => "git://github.com/#{name}/babushka-deps.git"
       }[from]
