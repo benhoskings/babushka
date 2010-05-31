@@ -29,6 +29,10 @@ module Babushka
       end
     end
 
+    def self.for_name name
+      present.detect {|source| source.name == name } || Source.new(default_remote_for(name, :github), :name => name)
+    end
+
     def self.pull!
       sources.all? {|source|
         new(source).pull!
@@ -56,7 +60,7 @@ module Babushka
       }
     end
 
-    def self.external_url_for name, from
+    def self.default_remote_for name, from
       {
         :github => "git://github.com/#{name}/babushka-deps.git"
       }[from]
@@ -112,7 +116,12 @@ module Babushka
     end
 
     def find dep_spec
-      deps.for dep_spec
+      deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps): #{o.inspect}" }
+    end
+
+    def load_and_find dep_spec
+      load!
+      find dep_spec
     end
 
     def prefix
@@ -139,6 +148,9 @@ module Babushka
     end
     def cloned?
       File.directory? path / '.git'
+    end
+    def present?
+      cloneable? ? cloned? : path.exists?
     end
     def external?
       @external
@@ -189,6 +201,7 @@ module Babushka
     end
 
     def load!
+      pull! if cloneable?
       load_deps! unless implicit? # implicit sources can't be loaded.
     end
 
