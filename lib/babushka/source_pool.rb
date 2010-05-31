@@ -10,6 +10,10 @@ module Babushka
       current.map {|source| source.deps.names }.flatten.uniq
     end
 
+    def all_present
+      current.concat(Source.present)
+    end
+
     def default
       @_cached_default ||= Source.new(nil, :name => 'default')
     end

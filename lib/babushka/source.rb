@@ -181,8 +181,9 @@ module Babushka
     end
 
     def raise_unless_addable!
-      uri_dup_source = Base.sources.current.detect {|s| s.uri == uri }
-      name_dup_source = Base.sources.current.detect {|s| s.name == name }
+      present_sources = Base.sources.all_present
+      uri_dup_source = present_sources.detect {|s| s.uri == uri }
+      name_dup_source = present_sources.detect {|s| s.name == name }
       if uri_dup_source != name_dup_source
         raise "There is already a source called '#{name_dup_source.name}' (it contains #{name_dup_source.uri})." unless name_dup_source.nil?
         raise "The source #{uri_dup_source.uri} is already present (as '#{uri_dup_source.name}')." unless uri_dup_source.nil?
