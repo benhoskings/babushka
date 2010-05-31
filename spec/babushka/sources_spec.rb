@@ -292,15 +292,6 @@ describe "classification" do
   end
 end
 
-describe "adding to sources.yml" do
-  before { @source = test_dep_source 'clone_test_yml' }
-  it "should add the url to sources.yml" do
-    Source.sources.should_not include @source
-    L{ Source.add!(*@source) }.should change(Source, :count).by(1)
-    Source.sources.should include({:uri => @source.first, :name => 'clone_test_yml', :type => 'public'})
-  end
-end
-
 describe "external sources" do
   before {
     @source = test_dep_source('bob').merge(:external => true)
