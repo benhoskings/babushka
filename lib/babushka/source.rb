@@ -191,7 +191,7 @@ module Babushka
     end
 
     def remove_repo
-      !File.exists?(path) || FileUtils.rm_r(path)
+      !cloneable? || !File.exists?(path) || FileUtils.rm_r(path)
     end
 
     def self.source_prefix
