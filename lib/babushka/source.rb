@@ -201,6 +201,7 @@ module Babushka
     end
 
     def load!
+      pull! if cloneable?
       load_deps! unless implicit? # implicit sources can't be loaded.
     end
 
