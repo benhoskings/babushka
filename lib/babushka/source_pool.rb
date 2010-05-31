@@ -3,7 +3,7 @@ module Babushka
     SOURCE_DEP_SEPARATOR = ':'
 
     def current
-      [default].concat(core).concat(standard).concat(Source.present)
+      @_cached_current ||= [default].concat(core).concat(standard)
     end
 
     def current_names
@@ -11,20 +11,20 @@ module Babushka
     end
 
     def default
-      @default_source ||= Source.new(nil, :name => 'default')
+      @_cached_default ||= Source.new(nil, :name => 'default')
     end
 
     def core
-      [
+      (@_cached_core ||= [
         Source.new(Path.path / 'deps')
-      ]
+      ]).dup
     end
 
     def standard
-      [
+      (@_cached_standard ||= [
         Source.new('./babushka_deps'),
         Source.new('~/.babushka/deps')
-      ]
+      ]).dup
     end
 
     def dep_for dep_spec, opts = {}
