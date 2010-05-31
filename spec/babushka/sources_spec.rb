@@ -301,31 +301,6 @@ describe "adding to sources.yml" do
   end
 end
 
-describe "external sources" do
-  before {
-    @source = test_dep_source('bob').merge(:external => true)
-    @nonexistent_source = {:name => 'larry', :uri => tmp_prefix / 'nonexistent', :external => true}
-  }
-  it "shouldn't clone nonexistent repos" do
-    File.exists?(Source.new(@nonexistent_source).path).should be_false
-    L{ Source.add_external!(@nonexistent_source[:name], :from => :github).should be_nil }.should_not change(Source, :count)
-    File.directory?(Source.new(@nonexistent_source).path).should be_false
-  end
-  it "should clone a git repo" do
-    File.exists?(Source.new(@source).path).should be_false
-    L{ Source.add_external!(@source[:name], :from => :github).should be_an_instance_of(Source) }.should_not change(Source, :count)
-    File.directory?(Source.new(@source).path).should be_true
-  end
-  it "shouldn't add the url to sources.yml" do
-    Source.sources.should be_empty
-    L{ Source.add_external!(@source[:name], :from => :github) }.should_not change(Source, :count)
-    Source.sources.should be_empty
-  end
-  after {
-    Base.sources.clear! :force => true
-  }
-end
-
 describe "removing" do
   before {
     @source1 = test_dep_source 'remove_test'
