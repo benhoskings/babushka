@@ -16,21 +16,7 @@ module Babushka
       @run_opts = default_run_opts
     end
 
-    def process dep_spec
-      if dep_spec[/\//].nil?
-        Base.setup_noninteractive
-        process_dep dep_spec
-      else
-        source_name, dep_name = dep_spec.split('/', 2)
-        if source = Source.add_external!(source_name, :from => :github)
-          if Base.setup_noninteractive_for source.path
-            process_dep dep_name
-          end
-        end
-      end
-    end
-
-    def process_dep dep_name
+    def process dep_name
       load_previous_run_info_for dep_name
       returning(log_dep(dep_name) {
         returning Dep.process(dep_name, :top_level => true) do |result|
