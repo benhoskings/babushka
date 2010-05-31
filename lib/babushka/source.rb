@@ -116,12 +116,8 @@ module Babushka
     end
 
     def find dep_spec
-      deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps): #{o.inspect}" }
-    end
-
-    def load_and_find dep_spec
       load!
-      find dep_spec
+      deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps): #{o.inspect}" }
     end
 
     def prefix
