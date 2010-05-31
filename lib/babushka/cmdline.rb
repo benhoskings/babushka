@@ -16,20 +16,6 @@ module Babushka
       Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
-      Verb.new(:sources, nil, nil, "Manage dep sources", [
-        Opt.new(:add, '-a', '--add', "Add dep source", false, [
-          Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
-          Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
-        ]),
-        Opt.new(:list, '-l', '--list', "List dep sources", false, []),
-        Opt.new(:remove, '-r', '--remove', "Remove dep source", false, [
-          Arg.new(:name_or_uri, "The name or URI of the source to remove", false, false, 'benhoskings')
-        ]),
-        Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
-      ], []),
-      Verb.new(:pull, nil, nil, "Update dep sources", [], [
-        Arg.new(:source, "Pull just a specific source", true, false)
-      ]),
       Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
@@ -89,23 +75,9 @@ module Babushka
         tasks.all? {|dep_name| task.process dep_name }
       end
     end
-    def handle_sources verb
-      if verb.opts.length != 1
-        fail_with help_for verb.def, "'sources' requires exactly one option."
-      else
-        Source.send "#{verb.opts.first.def.name}!", *verb.opts.first.args.map(&:value)
-      end
-    end
     def handle_babushka verb
       sources.load_core!
       task.process 'babushka'
-    end
-    def handle_pull verb
-      if verb.args.empty?
-        Source.pull!
-      else
-        puts "'pull' doesn't accept any options."
-      end
     end
     def handle_push verb
       fail_with "Push isn't implemented yet."
