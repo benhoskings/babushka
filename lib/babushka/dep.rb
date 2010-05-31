@@ -3,7 +3,7 @@ module Babushka
   end
   class Dep
     module Helpers
-      def Dep spec;                    Dep.for spec end
+      def Dep spec, opts = {};         Dep.for spec, opts end
       def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, BaseDepDefiner, BaseDepRunner end
       def meta name, opts = {}, &block; MetaDepWrapper.for name, opts, &block end
       def pkg name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
@@ -49,7 +49,7 @@ module Babushka
     extend Suggest::Helpers
 
     def self.process dep_name, with_run_opts = {}
-      if (dep = Dep(dep_name)).nil?
+      if (dep = Dep(dep_name, with_run_opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         log "You don't have any dep sources added, so there will be minimal deps available.\nCheck 'babushka help sources' and the 'dep source' dep." if Source.count.zero?
         suggestion = suggest_value_for(dep_name, Base.sources.current_names)
@@ -101,7 +101,7 @@ module Babushka
 
     def process_deps accessor = :requires
       definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
-        Dep.process dep_name
+        Dep.process dep_name, :parent_source => dep_source
       })
     end
 
