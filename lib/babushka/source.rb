@@ -33,14 +33,6 @@ module Babushka
       present.detect {|source| source.name == name } || Source.new(default_remote_for(name, :github), :name => name)
     end
 
-    def self.add! uri, opts
-      new(uri, opts).add!
-    end
-    def self.add_external! name, opts = {}
-      source = new(:name => name, :uri => external_url_for(name, opts[:from]), :external => true)
-      source if source.add!
-    end
-
     def self.default_remote_for name, from
       {
         :github => "git://github.com/#{name}/babushka-deps.git"
