@@ -292,15 +292,6 @@ describe "classification" do
   end
 end
 
-describe "adding to sources.yml" do
-  before { @source = test_dep_source 'clone_test_yml' }
-  it "should add the url to sources.yml" do
-    Source.sources.should_not include @source
-    L{ Source.add!(*@source) }.should change(Source, :count).by(1)
-    Source.sources.should include({:uri => @source.first, :name => 'clone_test_yml', :type => 'public'})
-  end
-end
-
 describe "external sources" do
   before {
     @source = test_dep_source('bob').merge(:external => true)
@@ -329,14 +320,14 @@ end
 describe "removing" do
   before {
     @source1 = test_dep_source 'remove_test'
-    @source2 = test_dep_source 'remove_test_yml'
+    @source2 = test_dep_source 'remove_test_keep'
     Source.new(*@source1).add!
     Source.new(*@source2).add!
   }
   it "should remove just the specified source" do
     L{ Source.remove!(*@source1) }.should change(Source, :count).by(-1)
     Source.sources.should_not include({:uri => @source1.first, :name => 'remove_test'})
-    Source.sources.should include({:uri => @source2.first, :name => 'remove_test_yml', :type => 'public'})
+    Source.sources.should include({:uri => @source2.first, :name => 'remove_test_keep', :type => 'public'})
   end
   describe "with local changes" do
     before {
