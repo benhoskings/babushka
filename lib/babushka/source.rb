@@ -140,6 +140,9 @@ module Babushka
     def cloned?
       File.directory? path / '.git'
     end
+    def present?
+      cloneable? ? cloned? : path.exists?
+    end
     def external?
       @external
     end
