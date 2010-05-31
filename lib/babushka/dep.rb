@@ -76,7 +76,7 @@ module Babushka
     private
 
     def process_and_cache
-      log name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
+      log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
         if task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !host.matches?(opts[:for])
@@ -178,6 +178,10 @@ module Babushka
       end
     end
 
+    def contextual_name
+      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
+    end
+
     def unmet_message_for result
       unmet_message.nil? || result ? '' : " - #{unmet_message}"
     end
@@ -211,7 +215,7 @@ module Babushka
     public
 
     def inspect
-      "#<Dep:#{object_id} '#{name}'#{" (#{'un' if cached_process}met)" if cached?} <- [#{definer.requires.map(&:name).join(', ')}]>"
+      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}'#{" (#{'un' unless cached_process}met)" if cached?} <- [#{definer.requires.map(&:name).join(', ')}]>"
     end
   end
 end
