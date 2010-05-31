@@ -284,11 +284,11 @@ describe "classification" do
   before { @source = test_dep_source 'classification_test' }
   it "should treat file:// as public" do
     (source = Source.new(*@source)).add!
-    [source.uri, source.name, source.type].should == [@source.first, 'classification_test', 'public']
+    [source.uri, source.name, source.type].should == [URI.parse(@source.first), 'classification_test', :public]
   end
   it "should treat local paths as local" do
     (source = Source.new(@source.first.gsub(/^file:\//, ''), @source.last)).add!
-    [source.uri, source.name, source.type].should == [@source.first.gsub(/^file:\//, ''), 'classification_test', 'local']
+    [source.uri, source.name, source.type].should == [@source.first.gsub(/^file:\//, ''), 'classification_test', :local]
   end
 end
 
