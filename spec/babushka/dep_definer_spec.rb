@@ -100,7 +100,7 @@ describe "accepts_list_for behaviour" do
     make_test_deps
   }
   it "should choose requires for the correct system" do
-    Dep('build tools').definer.requires.should == [ver('xcode tools')]
+    Dep('test build tools').definer.requires.should == [ver('xcode tools')]
   end
 end
 
