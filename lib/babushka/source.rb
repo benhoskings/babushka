@@ -73,12 +73,8 @@ module Babushka
     end
 
     def find dep_spec
-      deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps): #{o.inspect}" }
-    end
-
-    def load_and_find dep_spec
       load!
-      find dep_spec
+      deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps): #{o.inspect}" }
     end
 
     def prefix
@@ -151,21 +147,26 @@ module Babushka
     end
 
     def load_deps!
-      path.p.glob('**/*.rb').partition {|f|
-        f.p.basename == 'templates.rb' or
-        f.p.parent.basename == 'templates'
-      }.flatten.each {|f|
-        DepDefiner.load_context :source => self, :path => f do
-          begin
-            load f
-          rescue Exception => e
-            log_error "#{e.backtrace.first}: #{e.message}"
-            log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
-            debug e.backtrace * "\n"
+      if @loaded
+        debug "Not re-loading #{name} (#{uri})."
+      else
+        path.p.glob('**/*.rb').partition {|f|
+          f.p.basename == 'templates.rb' or
+          f.p.parent.basename == 'templates'
+        }.flatten.each {|f|
+          DepDefiner.load_context :source => self, :path => f do
+            begin
+              load f
+            rescue Exception => e
+              log_error "#{e.backtrace.first}: #{e.message}"
+              log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
+              debug e.backtrace * "\n"
+            end
           end
-        end
-      }
-      log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}."
+        }
+        log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}." unless deps.count.zero?
+        @loaded = true
+      end
     end
 
     def inspect

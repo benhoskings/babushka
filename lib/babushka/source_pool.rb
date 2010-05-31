@@ -34,7 +34,7 @@ module Babushka
     def dep_for dep_spec, opts = {}
       if dep_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
         source_name, dep_name = dep_spec.split(SOURCE_DEP_SEPARATOR, 2)
-        Source.for_name(source_name).load_and_find(dep_name)
+        Source.for_name(source_name).find(dep_name)
       elsif opts[:from]
         opts[:from].find(dep_spec) || dep_for(dep_spec)
       else # Otherwise, load from the current source (opts[:from]) or the standard set.

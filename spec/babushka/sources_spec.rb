@@ -90,6 +90,7 @@ describe "loading deps" do
     source = Source.new('spec/deps/bad')
     source.load!.should be_true
     source.deps.names.should_not include('broken test dep 1')
+    source.deps.names.should include('test dep 1')
   end
   it "should store the source the dep was loaded from" do
     source = Source.new('spec/deps/good')
