@@ -2,8 +2,6 @@
 dep 'babushka' do
   requires 'babushka in path', 'babushka up to date', 'dep source'
   define_var :install_prefix, :default => '/usr/local', :message => "Where would you like babushka installed"
-  set :install_prefix, Babushka::Path.prefix if Babushka::Path.run_from_path?
-
   define_var :babushka_branch,
     :message => "Which branch would you like to update from?",
     :default => 'master',
@@ -11,6 +9,9 @@ dep 'babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
+  setup {
+    set :install_prefix, Babushka::Path.prefix if Babushka::Path.run_from_path?
+  }
 end
 
 dep 'babushka up to date' do
