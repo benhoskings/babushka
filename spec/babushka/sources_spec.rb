@@ -116,7 +116,10 @@ end
 
 describe Source, ".for_path" do
   context "on a file" do
-    before { `touch "#{tmp_prefix / 'sources/regular_file'}"` }
+    before {
+      `mkdir -p "#{tmp_prefix / 'sources'}"`
+      `touch "#{tmp_prefix / 'sources/regular_file'}"`
+    }
     it "should raise when called on a file" do
       L{
         Source.for_path(Source.source_prefix / 'regular_file')
