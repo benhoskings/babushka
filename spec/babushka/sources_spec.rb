@@ -290,10 +290,6 @@ describe "classification" do
     (source = Source.new(@source.first.gsub(/^file:\//, ''), @source.last)).add!
     source.send(:yaml_attributes).should == {:uri => @source.first.gsub(/^file:\//, ''), :name => 'classification_test', :type => 'local'}
   end
-  it "should be cloned into the source prefix" do
-    Source.add!(*@source)
-    Source.new(*@source).path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
-  end
 end
 
 describe "adding to sources.yml" do
