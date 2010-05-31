@@ -164,8 +164,8 @@ module Babushka
             end
           end
         }
-        @loaded = true
         log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}." unless deps.count.zero?
+        @loaded = true
       end
     end
 
