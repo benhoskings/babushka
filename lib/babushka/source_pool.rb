@@ -1,5 +1,6 @@
 module Babushka
   class SourcePool
+    SOURCE_DEP_SEPARATOR = ':'
 
     def current
       [default].concat(core).concat(standard).concat(Source.present)
@@ -24,6 +25,22 @@ module Babushka
         Source.new('./babushka_deps'),
         Source.new('~/.babushka/deps')
       ]
+    end
+
+    def dep_for dep_spec, opts = {}
+      if dep_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
+        source_name, dep_name = dep_spec.split(SOURCE_DEP_SEPARATOR, 2)
+        Source.for_name(source_name).load_and_find(dep_name)
+      elsif opts[:from]
+        opts[:from].find(dep_spec) || dep_for(dep_spec)
+      else # Otherwise, load from the current source (opts[:from]) or the standard set.
+        matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
+        if matches.length > 1
+          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
+        else
+          matches.first
+        end
+      end
     end
 
     def load_all! opts = {}

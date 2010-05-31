@@ -42,21 +42,8 @@ module Babushka
       source.register self
     end
 
-    def self.for dep_spec_input
-      dep_spec = dep_spec_input.respond_to?(:name) ? dep_spec_input.name : dep_spec_input
-      if dep_spec[/:/]
-        source_name, dep_name = dep_spec.split(':', 2)
-        Source.for(source_name).find(dep_name)
-      else
-        matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
-        if matches.empty?
-          nil
-        elsif matches.length > 1
-          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
-        else
-          matches.first
-        end
-      end
+    def self.for dep_spec, opts = {}
+      Base.sources.dep_for dep_spec.to_s, :from => opts[:parent_source]
     end
 
     extend Suggest::Helpers
