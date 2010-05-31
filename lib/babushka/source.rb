@@ -138,9 +138,9 @@ module Babushka
     end
 
     def remove! opts = {}
-      if opts[:force] || removeable?
+      if opts[:force]
         log_block "Removing #{name} (#{uri})" do
-          remove_source and remove_repo
+          remove_repo
         end
       end
     end
