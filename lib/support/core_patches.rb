@@ -278,7 +278,7 @@ class String
   def local_lines
     strip.split(/\n+/)
   end
-  alias_method :lines, :local_lines unless [].respond_to?(:lines)
+  alias_method :lines, :local_lines unless "".respond_to?(:lines)
 
   def to_version
     Babushka::VersionStr.new self
