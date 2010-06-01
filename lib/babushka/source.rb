@@ -178,7 +178,12 @@ module Babushka
     include Shell::Helpers
     include GitHelpers
     def pull!
-      git uri, :prefix => prefix, :dir => name, :log => true
+      if @pulled
+        debug "Already pulled #{name} (#{uri}) this session."
+        true
+      else
+        @pulled = git uri, :prefix => prefix, :dir => name, :log => true
+      end
     end
 
     def raise_unless_addable!
