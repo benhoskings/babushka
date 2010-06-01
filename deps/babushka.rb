@@ -11,6 +11,7 @@ dep 'babushka' do
     }
   setup {
     set :install_prefix, Babushka::Path.prefix if Babushka::Path.run_from_path?
+    set :babushka_branch, 'master'
   }
 end
 
