@@ -3,9 +3,9 @@ module Babushka
     attr_reader :name, :uri
 
     def self.pull!
-      sources.all? {|source|
+      sources.map {|source|
         new(source).pull!
-      }
+      }.all?
     end
     def self.add! name, uri
       new(:name => name, :uri => uri).add!
