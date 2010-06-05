@@ -47,7 +47,8 @@ module Babushka
 
     def current_branch path = nil
       in_dir path do
-        shell("git branch --no-color").lines.grep(/^\*/).first.scan(/\* (.*)/).flatten.first
+        branch_line = shell("git branch --no-color").lines.grep(/^\*/).first
+        branch_line.scan(/\* (.*)/).flatten.first unless branch_line.nil?
       end
     end
 
