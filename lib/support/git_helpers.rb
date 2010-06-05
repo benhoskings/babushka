@@ -35,12 +35,11 @@ module Babushka
     def git_update uri, repo
       in_dir(repo) {
         log_block "Updating #{uri}" do
-          [
-            'git fetch origin',
-            "git reset --hard origin/#{current_branch}"
-          ].all? {|cmd|
-            shell cmd
-          }
+          if shell('git fetch origin').nil?
+            log_error "Couldn't fetch #{uri}."
+          elsif current_branch
+            shell "git reset --hard origin/#{current_branch}"
+          end
         end
       }
     end
