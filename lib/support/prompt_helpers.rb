@@ -79,6 +79,8 @@ module Babushka
             opts[:retry]
           elsif value.blank? && !(opts[:default] && opts[:default].empty?)
             "That was blank"
+          elsif !opts[:confirmation] && value == 'y' && !confirm("Wait, do you mean the literal value 'y'?", :default => 'n', :always_ask => true)
+            "Thought so :) Hit enter for the [default]"
           else
             break # success
             nil
