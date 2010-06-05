@@ -172,6 +172,7 @@ def confirm message, opts = {}, &block
   prompter = (!opts[:always_ask] && respond_to?(:var)) ? :var : :prompt_for_value
   answer = send(prompter, message,
     :message => message,
+    :confirmation => true,
     :default => (opts[:default] || 'y')
   ).starts_with?('y')
 
