@@ -80,3 +80,36 @@ describe "prompt_for_path" do
     end
   end
 end
+
+describe "'y' input" do
+  context "intentional" do
+    before { @values = ['y', 'y'] }
+    it "should return 'y'" do
+      prompt_for_value('value').should == 'y'
+    end
+  end
+  context "unintentional" do
+    before { @values = ['y', 'n', ''] }
+    it "should return nil" do
+      prompt_for_value('value').should == nil
+    end
+    context "with default" do
+      before { @values = ['y', 'n', ''] }
+      it "should return the value" do
+        prompt_for_value('value', :default => 'val').should == 'val'
+      end
+    end
+    context "repeated" do
+      before { @values = ['y', 'n', 'y', 'n', ''] }
+      it "should return nil" do
+        prompt_for_value('value').should == nil
+      end
+      context "with default" do
+        before { @values = ['y', 'n', 'y', 'n', ''] }
+        it "should return the value" do
+          prompt_for_value('value', :default => 'val').should == 'val'
+        end
+      end
+    end
+  end
+end
