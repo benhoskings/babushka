@@ -169,7 +169,7 @@ def git_repo? path
 end
 
 def confirm message, opts = {}, &block
-  prompter = respond_to?(:var) ? :var : :prompt_for_value
+  prompter = (!opts[:always_ask] && respond_to?(:var)) ? :var : :prompt_for_value
   answer = send(prompter, message,
     :message => message,
     :default => (opts[:default] || 'y')
