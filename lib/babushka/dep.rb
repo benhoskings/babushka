@@ -4,6 +4,7 @@ module Babushka
   class Dep
     VALID_NAME_CHARS = /[a-z][a-z0-9_]+/
     VALID_NAME = /^#{VALID_NAME_CHARS}$/
+    INCLUDES_TEMPLATE_SUFFIX = /\.(#{VALID_NAME_CHARS})$/
 
     module Helpers
       def Dep spec, opts = {};         Dep.for spec, opts end
@@ -26,7 +27,7 @@ module Babushka
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        new name, source, in_opts, block, definer_class, runner_class
+        new name, source, in_opts, block, (class_for(name, 'Definer') || definer_class), (class_for(name, 'Runner') || runner_class)
       end
     end
 
@@ -47,6 +48,13 @@ module Babushka
 
     def self.for dep_spec, opts = {}
       Base.sources.dep_for dep_spec.to_s, :from => opts[:parent_source]
+    end
+
+    def self.class_for name, type
+      template_name = name.scan(INCLUDES_TEMPLATE_SUFFIX).flatten.first
+      Babushka.const_get("#{template_name.camelize}Dep#{type}") unless template_name.nil?
+    rescue
+      raise DepError, "There is no template named '#{template_name}' to define '#{name}' against."
     end
 
     extend Suggest::Helpers
