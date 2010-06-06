@@ -2,6 +2,9 @@ module Babushka
   class DepError < StandardError
   end
   class Dep
+    VALID_NAME_CHARS = /[a-z][a-z0-9_]+/
+    VALID_NAME = /^#{VALID_NAME_CHARS}$/
+
     module Helpers
       def Dep spec, opts = {};         Dep.for spec, opts end
       def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, BaseDepDefiner, BaseDepRunner end
