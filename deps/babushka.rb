@@ -69,7 +69,7 @@ dep 'dep source' do
 end
 
 dep 'babushka installed' do
-  requires 'ruby', 'git', 'writable install location', 'install location in path'
+  requires 'ruby', 'git', 'writable.install_path', 'install location in path'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { git_repo?(var(:install_prefix) / 'babushka') }
   meet {
@@ -89,8 +89,8 @@ meta :install_path do
   }
 end
 
-install_path 'writable install location' do
-  requires 'install location exists', 'admins can sudo'
+dep 'writable.install_path' do
+  requires 'existing.install_path', 'admins can sudo'
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable_real?(var(:install_prefix) / path) }
     returning nonwritable.empty? do |result|
@@ -107,13 +107,13 @@ install_path 'writable install location' do
   }
 end
 
-install_path 'install location exists' do
+dep 'existing.install_path' do
   met? { subpaths.all? {|path| File.directory?(var(:install_prefix) / path) } }
   meet { subpaths.each {|path| sudo "mkdir -p '#{var(:install_prefix) / path}'" } }
 end
 
 # TODO this won't be necessary once vars can be passed as args.
-install_path 'usr-local subpaths exist' do
+dep 'usr-local exists.install_path' do
   met? { subpaths.all? {|path| File.directory?('/usr/local' / path) } }
   meet { subpaths.each {|path| sudo "mkdir -p '#{'/usr/local' / path}'" } }
 end
