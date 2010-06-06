@@ -32,10 +32,12 @@ describe "declaration" do
   end
   it "should define a dep definer" do
     @meta.definer_class.should be_an_instance_of Class
+    @meta.definer_class.name.should == 'Babushka::TestDepDefiner'
     @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner
   end
   it "should define a dep runner" do
     @meta.runner_class.should be_an_instance_of Class
+    @meta.runner_class.name.should == 'Babushka::TestDepRunner'
     @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
   end
   it "should define a dep helper" do
