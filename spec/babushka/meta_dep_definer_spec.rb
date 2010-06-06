@@ -85,6 +85,11 @@ describe "declaration" do
     it "should correctly define the met? block" do
       template_test('dep3').send(:call_task, :met?).should == 'this dep is met.'
     end
+    it "should override the template correctly" do
+      template_test('dep4') {
+        met? { 'overridden met? block.' }
+      }.send(:call_task, :met?).should == 'overridden met? block.'
+    end
     after { remove_constants_for 'template_test' }
   end
 
