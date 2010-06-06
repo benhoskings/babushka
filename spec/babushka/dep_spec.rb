@@ -19,6 +19,24 @@ describe "Dep.make" do
       Dep.make("valid dep name", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner).should be_an_instance_of(Dep)
     }.should change(Base.sources.default, :count).by(1)
   end
+  context "with suffix" do
+    it "should attempt to create suffixed deps against templates" do
+      L{
+        Dep.make("valid dep name.template", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner)
+      }.should raise_error DepError, "There is no template named 'template' to define 'valid dep name.template' against."
+    end
+    context "with meta dep" do
+      before {
+        meta('template')
+        @dep = Dep.make("valid dep name.template", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner)
+      }
+      it "should work" do
+        @dep.should be_an_instance_of Dep
+        @dep.definer.should be_an_instance_of TemplateDepDefiner
+        @dep.runner.should be_an_instance_of TemplateDepRunner
+      end
+    end
+  end
 end
 
 describe "dep creation" do
