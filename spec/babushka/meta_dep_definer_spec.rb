@@ -46,24 +46,26 @@ describe "declaration" do
     @meta.runner_class.name.should == 'Babushka::TestDepRunner'
     @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
   end
-  it "should define a dep helper" do
-    Object.new.should_not respond_to 'helper_test'
-    @meta = meta 'helper_test'
-    Object.new.should respond_to 'helper_test'
+  it "should not define a dep helper" do
+    Object.new.should_not respond_to 'test'
+  end
+  after { remove_constants_for 'test' }
+end
+
+describe "using" do
+  describe "invalid templates" do
+    it "should not define deps" do
+      dep('something.undefined').should be_nil
+    end
   end
 
   describe "without template" do
-    it "should define the helper" do
-      Object.new.respond_to?('templateless_test').should be_false
-      meta('templateless_test') {}
-      Object.new.respond_to?('templateless_test').should be_true
-    end
-    describe "the helper" do
+    describe "the new suffix" do
       before {
         meta('templateless_test') {}
       }
-      it "should be callable" do
-        templateless_test('templateless dep').should be_an_instance_of Dep
+      it "should be useable" do
+        dep('templateless dep.templateless_test').definer.should be_an_instance_of TemplatelessTestDepDefiner
       end
     end
     after { remove_constants_for 'templateless_test' }
@@ -85,13 +87,13 @@ describe "declaration" do
     it "should define the helper on the runner class" do
       @meta.runner_class.respond_to?(:a_helper).should be_false
       @meta.runner_class.new(nil).respond_to?(:a_helper).should be_false
-      template_test('dep1').runner.respond_to?(:a_helper).should be_true
+      dep('dep1.template_test').runner.respond_to?(:a_helper).should be_true
     end
     it "should correctly define the helper" do
-      template_test('dep2').runner.a_helper.should == 'hello from the helper!'
+      dep('dep2.template_test').runner.a_helper.should == 'hello from the helper!'
     end
     it "should correctly define the met? block" do
-      template_test('dep3').send(:call_task, :met?).should == 'this dep is met.'
+      dep('dep3.template_test').send(:call_task, :met?).should == 'this dep is met.'
     end
     after { remove_constants_for 'template_test' }
   end
@@ -112,12 +114,12 @@ describe "declaration" do
       end
     }
     it "should handle accepts_list_for" do
-      acceptor_test('unmet accepts_list_for') { list_test 'invalid' }.met?.should be_false
-      acceptor_test('met accepts_list_for') { list_test 'valid' }.met?.should be_true
+      dep('unmet accepts_list_for.acceptor_test') { list_test 'invalid' }.met?.should be_false
+      dep('met accepts_list_for.acceptor_test') { list_test 'valid' }.met?.should be_true
     end
     it "should handle accepts_block_for" do
       block_called = false
-      acceptor_test('accepts_block_for') {
+      dep('accepts_block_for.acceptor_test') {
         list_test 'invalid'
         block_test {
           block_called = true
@@ -127,6 +129,4 @@ describe "declaration" do
     end
     after { remove_constants_for 'acceptor_test' }
   end
-
-  after { remove_constants_for 'test' }
 end
