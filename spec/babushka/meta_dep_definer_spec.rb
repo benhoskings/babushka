@@ -14,6 +14,12 @@ describe "name checks" do
   it "should not allow reserved names" do
     L{ meta(:base) }.should raise_error ArgumentError, "You can't use 'base' for a meta dep name, because it's reserved."
   end
+  it "should not allow invalid characters" do
+    L{ meta('meta dep') }.should raise_error ArgumentError, "You can't use 'meta dep' for a meta dep name - it can only contain [a-z0-9_]."
+  end
+  it "should not allow names that don't start with a letter" do
+    L{ meta('3d_dep') }.should raise_error ArgumentError, "You can't use '3d_dep' for a meta dep name - it must start with a letter."
+  end
   describe "duplicate declaration" do
     before { meta 'duplicate' }
     it "should be prevented" do
