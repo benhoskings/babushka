@@ -31,7 +31,6 @@ module Babushka
       @block = block
       @definer_class = build_definer block
       @runner_class = build_runner
-      define_dep_helper
       self.class.wrappers[@name] = self
     end
 
@@ -46,16 +45,5 @@ module Babushka
     def define_dep name, opts, &block
       DepDefiner.current_load_source.deps.add name, opts, block, definer_class, runner_class
     end
-
-    def define_dep_helper
-      file, line = caller.first.split(':', 2)
-      line = line.to_i
-      Object.class_eval <<-EOS, file, line
-        def #{name} name, opts = {}, &block
-          MetaDepWrapper.wrappers[#{name.inspect}].define_dep name, opts, &block
-        end
-      EOS
-    end
-
   end
 end
