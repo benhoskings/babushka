@@ -76,7 +76,7 @@ dep 'babushka installed' do
   met? { git_repo?(var(:install_path)) }
   meet {
     in_dir var(:install_path).p.parent do |path|
-      log_shell "Installing babushka to #{var(:install_path)}", %Q{git clone "#{var :babushka_source}" ./babushka}
+      log_shell "Installing babushka to #{var(:install_path)}", %Q{git clone "#{var :babushka_source}" "#{var(:install_path).p.basename}"}
     end
   }
 end
