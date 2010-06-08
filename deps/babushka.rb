@@ -71,14 +71,9 @@ dep 'dep source' do
 end
 
 dep 'babushka installed' do
-  requires 'ruby', 'git'
+  requires 'ruby', 'git', 'writable install location'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { git_repo?(var(:install_path)) }
-  before {
-    sudo "mkdir -p #{var(:install_path)}"
-    sudo "chown admin #{var(:install_path)}"
-    sudo "chmod g+w #{var(:install_path)}"
-  }
   meet {
     in_dir var(:install_path).p.parent do |path|
       log_shell "Installing babushka to #{var(:install_path)}", %Q{git clone "#{var :babushka_source}" ./babushka}
