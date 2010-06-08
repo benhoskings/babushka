@@ -1,32 +1,39 @@
-def subpaths
-  %w[. bin etc include lib sbin share share/doc var].concat(
-    (1..9).map {|i| "share/man/man#{i}" }
-  )
+meta :install_path do
+  template {
+    helper :subpaths do
+      %w[. bin etc include lib sbin share share/doc var].concat(
+        (1..9).map {|i| "share/man/man#{i}" }
+      )
+    end
+    helper :install_prefix do
+      var(:install_path).p.parent
+    end
+  }
 end
 
-dep 'writable install location' do
+install_path 'writable install location' do
   requires 'install location exists', 'admins can sudo'
   met? {
-    writable, nonwritable = subpaths.partition {|path| File.writable_real?(var(:install_path).parent / path) }
+    writable, nonwritable = subpaths.partition {|path| File.writable_real?(install_prefix / path) }
     returning nonwritable.empty? do |result|
-      log "Some directories within #{var(:install_path).parent} aren't writable by #{shell 'whoami'}." unless result
+      log "Some directories within #{install_prefix} aren't writable by #{shell 'whoami'}." unless result
     end
   }
   meet {
-    confirm "About to enable write access to #{var(:install_path).parent} for admin users - is that OK?" do
+    confirm "About to enable write access to #{install_prefix} for admin users - is that OK?" do
       subpaths.each {|subpath|
-        sudo %Q{chgrp admin '#{var(:install_path).parent / subpath}'}
-        sudo %Q{chmod g+w '#{var(:install_path).parent / subpath}'}
+        sudo %Q{chgrp admin '#{install_prefix / subpath}'}
+        sudo %Q{chmod g+w '#{install_prefix / subpath}'}
       }
     end
   }
 end
 
-dep 'install location exists' do
-  met? { subpaths.all? {|path| File.directory?(var(:install_path).parent / path) } }
-  meet { subpaths.each {|path| sudo "mkdir -p '#{var(:install_path).parent / path}'" } }
+install_path 'install location exists' do
+  met? { subpaths.all? {|path| File.directory?(install_prefix / path) } }
+  meet { subpaths.each {|path| sudo "mkdir -p '#{install_prefix / path}'" } }
 end
 
 ext 'install location in path' do
-  met? { ENV['PATH'].split(':').include? var(:install_path).parent / 'bin' }
+  met? { ENV['PATH'].split(':').include? install_prefix / 'bin' }
 end
