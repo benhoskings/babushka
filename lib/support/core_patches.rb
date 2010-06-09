@@ -40,6 +40,16 @@ class Array
     value
   end
 
+  # This is defined separately, and then aliased into place if required, so we
+  # can run specs against it no matter which ruby we're running against.
+  def local_group_by &block
+    inject(Hash.new {|hsh,k| hsh[k] = [] }) {|hsh,i|
+      hsh[yield(i)].push i
+      hsh
+    }
+  end
+  alias_method :group_by, :local_group_by unless [].respond_to?(:group_by)
+
   def cut &block
     if (cut_at = index {|i| yield i }).nil?
       [self, nil]
@@ -265,6 +275,13 @@ class String
   def words
     split(/[^a-z0-9_.-]+/i)
   end
+
+  # This is defined separately, and then aliased into place if required, so we
+  # can run specs against it no matter which ruby we're running against.
+  def local_lines
+    strip.split(/\n+/)
+  end
+  alias_method :lines, :local_lines unless "".respond_to?(:lines)
 
   def to_version
     Babushka::VersionStr.new self

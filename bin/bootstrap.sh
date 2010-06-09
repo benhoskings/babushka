@@ -36,7 +36,7 @@ function welcome {
   fi
   echo ""
   read -p "Sound good? [y/N] " f
-  [[ "$f" == y* ]]
+  [[ "$f" == y* ]] || [[ "$f" == Y* ]]
 }
 
 function install_ruby_if_required {

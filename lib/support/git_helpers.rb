@@ -35,19 +35,19 @@ module Babushka
     def git_update uri, repo
       in_dir(repo) {
         log_block "Updating #{uri}" do
-          [
-            'git fetch origin',
-            "git reset --hard origin/#{current_branch}"
-          ].all? {|cmd|
-            shell cmd
-          }
+          if shell('git fetch origin').nil?
+            log_error "Couldn't fetch #{uri}."
+          elsif current_branch
+            shell "git reset --hard origin/#{current_branch}"
+          end
         end
       }
     end
 
     def current_branch path = nil
       in_dir path do
-        shell("git branch --no-color").lines.grep(/^\*/).first.scan(/\* (.*)/).flatten.first
+        branch_line = shell("git branch --no-color").lines.grep(/^\*/).first
+        branch_line.scan(/\* (.*)/).flatten.first unless branch_line.nil?
       end
     end
 

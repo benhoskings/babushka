@@ -13,7 +13,7 @@ Installing is really easy on supported systems (currently, OS X and Ubuntu). All
 
 If you have curl (OS X):
 
-    bash -c "`curl -L babushka.me/up`"
+    bash -c "`curl babushka.me/up`"
 
 If you have wget (Ubuntu):
 
