@@ -34,6 +34,12 @@ install_path 'install location exists' do
   meet { subpaths.each {|path| sudo "mkdir -p '#{install_prefix / path}'" } }
 end
 
+# TODO this won't be required once we can pass vars around
+install_path 'usr-local subpaths exist' do
+  met? { subpaths.all? {|path| File.directory?('/usr/local' / path) } }
+  meet { subpaths.each {|path| sudo "mkdir -p '#{'/usr/local' / path}'" } }
+end
+
 ext 'install location in path' do
   met? { ENV['PATH'].split(':').include? install_prefix / 'bin' }
 end
