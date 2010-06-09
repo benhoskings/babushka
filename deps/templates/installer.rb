@@ -22,8 +22,6 @@ meta :installer do
       process_sources {|archive|
         Dir.glob("**/*pkg").select {|entry|
           entry[/\.m?pkg$/] # Everything ending in .pkg or .mpkg
-        }.select {|entry|
-          (entry / 'Contents/Resources').exists? # that appears to be a package
         }.reject {|entry|
           entry[/\.m?pkg\//] # and isn't inside another package
         }.map {|entry|
