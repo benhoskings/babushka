@@ -130,7 +130,9 @@ module Babushka
     def extract &block
       in_download_dir {
         output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
-        unless output.nil?
+        if output.nil?
+          log_error "Couldn't mount #{filename.p}."
+        else
           path = output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
           returning(in_dir(path) { block.call(self) }) do
             log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
