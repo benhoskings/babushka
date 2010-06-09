@@ -132,6 +132,8 @@ module Babushka
         output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
         if output.nil?
           log_error "Couldn't mount #{filename.p}."
+        elsif (path = mountpoint_for(output)).nil?
+          raise "Couldn't find where `hdiutil` mounted #{filename.p}."
         else
           returning(in_dir(path) { block.call(self) }) do
             log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
