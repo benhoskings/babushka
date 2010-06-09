@@ -1,5 +1,5 @@
 include Prompt::Helpers
 
-def read_from_prompt prompt = '? '
+def read_from_prompt prompt = '? ', choices = nil
   (@values.shift || '').to_s
 end
