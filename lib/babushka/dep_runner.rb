@@ -45,7 +45,7 @@ module Babushka
           vars[name.to_s][:value]
         end
       elsif opts[:ask] != false
-        ask_for_var name.to_s
+        ask_for_var name.to_s, opts
       else
         default_for name
       end
@@ -61,10 +61,12 @@ module Babushka
       vars[name.to_s]
     end
 
-    def ask_for_var key
+    def ask_for_var key, opts
       set key, send("prompt_for_#{vars[key][:type] || 'value'}",
         message_for(key),
         vars[key].dragnet(:choices, :choice_descriptions).merge(
+          opts
+        ).merge(
           :default => default_for(key),
           :dynamic => vars[key][:default].respond_to?(:call)
         )
