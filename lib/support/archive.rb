@@ -141,7 +141,7 @@ module Babushka
     end
 
     def mountpoint_for output
-      output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
+      output.scan(/\s+(\/Volumes\/[^\n]+)/).flatten.first
     end
   end
   
