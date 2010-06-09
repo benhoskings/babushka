@@ -8,8 +8,8 @@ meta :installer do
     prepare { setup_source_uris }
     met? { provided? }
 
-    # At the moment, we just try to install every .pkg in the archive. If that's not
-    # what you want, specify the name of the .pkg to choose from the archive using
+    # At the moment, we just try to install every .[m]pkg in the archive. If that's not
+    # what you want, specify the name of the pkg to choose from the archive using
     # the +pkg_name+ method when you define your dep:
     #
     # installer 'blah' do
@@ -20,7 +20,13 @@ meta :installer do
     #
     meet {
       process_sources {|archive|
-        Dir.glob("**/*.pkg").map {|entry|
+        Dir.glob("**/*pkg").select {|entry|
+          entry[/\.m?pkg$/] # Everything ending in .pkg or .mpkg
+        }.select {|entry|
+          (entry / 'Contents/Resources').exists? # that appears to be a package
+        }.reject {|entry|
+          entry[/\.m?pkg\//] # and isn't inside another package
+        }.map {|entry|
           log_shell "Installing #{entry}", "installer -target / -pkg '#{entry}'", :sudo => true
         }
       }
