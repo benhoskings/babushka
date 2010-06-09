@@ -133,12 +133,15 @@ module Babushka
         if output.nil?
           log_error "Couldn't mount #{filename.p}."
         else
-          path = output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
           returning(in_dir(path) { block.call(self) }) do
             log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
           end
         end
       }
+    end
+
+    def mountpoint_for output
+      output.val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)
     end
   end
   
