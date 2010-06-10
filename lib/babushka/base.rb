@@ -107,6 +107,7 @@ module Babushka
       log "\nAlso:"
       log "  #{program_name} help <command>  # #{verb_for('help').args.first.description}"
       log "  #{program_name} <dep name>      # A shortcut for 'babushka meet <dep name>'"
+      log "  #{program_name} babushka        # Update babushka itself (what babushka.me/up does)"
     end
 
     def print_usage_for verb
