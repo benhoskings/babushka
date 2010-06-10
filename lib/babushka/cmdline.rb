@@ -33,7 +33,7 @@ module Babushka
       Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ]),
-      Verb.new(:meet, nil, nil, "Process deps", [
+      Verb.new(:meet, nil, nil, "The main one: run a dep and all its dependencies.", [
         Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
         Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
         Opt.new(:track_blocks, nil, '--track-blocks', "Track deps' blocks in TextMate they're run", true, []),
@@ -41,7 +41,7 @@ module Babushka
         Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
         Opt.new(:force, '-f', '--force', "Attempt to meet the dependency even if it's already met", true, [])
       ], [
-        Arg.new(:dep_names, "The names of the deps that should be processed", false, true)
+        Arg.new(:dep_names, "The name of the dep to run", false, true)
       ])
     ]
 
