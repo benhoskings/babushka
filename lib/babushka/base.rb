@@ -49,11 +49,7 @@ module Babushka
     include Suggest::Helpers
 
     def validate_verb verb
-      if verb.in? verb_abbrevs.keys
-        verb # it's a properly spelled verb
-      else
-        suggest_value_for(verb, all_verb_names)
-      end
+      verb if verb.in? verb_abbrevs.keys
     end
 
     def parse_cmdline verb, args
