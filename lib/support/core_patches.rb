@@ -90,11 +90,11 @@ class Array
     last.is_a?(::Hash) ? pop : {}
   end
 
-  def similar_to string, threshold = 3
+  def similar_to string
     map {|term|
       [term, term.similarity_to(string)]
     }.select {|(i, similarity)|
-      similarity <= threshold
+      similarity <= [i.length - 1, (i.length / 5) + 2].min
     }.sort_by {|(i, similarity)|
       similarity
     }.map {|(i, similarity)|
