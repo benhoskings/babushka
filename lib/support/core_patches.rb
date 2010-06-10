@@ -91,7 +91,15 @@ class Array
   end
 
   def similar_to string, threshold = 3
-    select {|i| i.similarity_to(string) <= threshold }
+    map {|term|
+      [term, term.similarity_to(string)]
+    }.select {|(i, similarity)|
+      similarity <= threshold
+    }.sort_by {|(i, similarity)|
+      similarity
+    }.map {|(i, similarity)|
+      i
+    }
   end
 end
 
