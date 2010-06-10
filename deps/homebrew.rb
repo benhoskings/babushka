@@ -10,7 +10,7 @@ end
 
 dep 'homebrew installed' do
   requires_when_unmet 'writable install location', 'git'
-  define_var :homebrew_prefix, :default => :install_prefix, :message => "Where would you like homebrew installed"
+  define_var :homebrew_prefix, :default => '/usr/local', :message => "Where would you like homebrew installed"
   define_var :homebrew_repo_user, :default => 'mxcl', :message => "Whose homebrew repo would you like to use?"
   setup {
     if Babushka::BrewHelper.present?
