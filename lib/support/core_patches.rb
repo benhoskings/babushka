@@ -90,7 +90,7 @@ class Array
     last.is_a?(::Hash) ? pop : {}
   end
 
-  def similar_to string, threshold = 2
+  def similar_to string, threshold = 3
     select {|i| i.similarity_to(string) <= threshold }
   end
 end
