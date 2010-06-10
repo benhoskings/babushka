@@ -34,10 +34,7 @@ module Babushka
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
-      Verb.new(:version, nil, '--version', "Print the current version", [], []),
-      Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
-        Arg.new(:source, "Push just a specific source", true, false)
-      ])
+      Verb.new(:version, nil, '--version', "Print the current version", [], [])
     ]
 
     def handle_help verb = nil, error_message = nil
@@ -97,9 +94,6 @@ module Babushka
       else
         puts "'pull' doesn't accept any options."
       end
-    end
-    def handle_push verb
-      fail_with "Push isn't implemented yet."
     end
 
   end
