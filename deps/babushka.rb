@@ -1,4 +1,3 @@
-
 dep 'babushka' do
   requires 'babushka in path', 'babushka up to date', 'dep source'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
