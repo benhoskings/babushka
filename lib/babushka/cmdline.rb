@@ -14,10 +14,6 @@ module Babushka
       ], [
         Arg.new(:dep_names, "The name of the dep to run", false, true)
       ]),
-      Verb.new(:version, nil, '--version', "Print the current version", [], []),
-      Verb.new(:help, '-h', '--help', "Print usage information", [], [
-        Arg.new(:verb, "Print command-specific usage info", true)
-      ]),
       Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
@@ -35,6 +31,10 @@ module Babushka
       Verb.new(:pull, nil, nil, "Update dep sources", [], [
         Arg.new(:source, "Pull just a specific source", true, false)
       ]),
+      Verb.new(:help, '-h', '--help', "Print usage information", [], [
+        Arg.new(:verb, "Print command-specific usage info", true)
+      ]),
+      Verb.new(:version, nil, '--version', "Print the current version", [], []),
       Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
         Arg.new(:source, "Push just a specific source", true, false)
       ])
