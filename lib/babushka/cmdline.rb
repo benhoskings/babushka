@@ -8,11 +8,6 @@ module Babushka
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
-      Verb.new(:update, nil, nil, "Update babushka itself", [
-        Opt.new(:system, nil, '--system', "Update babushka itself to the latest version", false, [])
-      ], []),
-      Verb.new(:babushka, nil, nil, "An alias for 'update --system'", [], [
-      ]),
       Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
@@ -96,10 +91,6 @@ module Babushka
         Source.send "#{verb.opts.first.def.name}!", *verb.opts.first.args.map(&:value)
       end
     end
-    def handle_babushka verb
-      load_deps_from core_dep_locations
-      task.process 'babushka'
-    end
     def handle_pull verb
       if verb.args.empty?
         Source.pull!
@@ -109,13 +100,6 @@ module Babushka
     end
     def handle_push verb
       fail_with "Push isn't implemented yet."
-    end
-    def handle_update verb
-      if verb.opts.length != 1
-        fail_with help_for verb.def, "'update' requires exactly one option."
-      elsif verb.opts.first.def.name == :system
-        handle_babushka verb
-      end
     end
 
   end
