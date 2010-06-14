@@ -151,6 +151,19 @@ describe Source, ".for_path" do
     end
     after { @source.remove! }
   end
+  context "on a git repo with a custom name" do
+    before {
+      remote = test_dep_source 'custom_path_remote_test'
+      Source.new(remote.first, :name => 'custom_name_test').add!
+      @source = Source.for_path(Source.source_prefix / 'custom_name_test')
+    }
+    it "should work on a git repo" do
+      @source.should be_present
+      @source.path.should == Source.source_prefix / 'custom_name_test'
+      @source.name.should == 'custom_name_test'
+    end
+    after { @source.remove! }
+  end
 end
 
 describe Source, '.present' do
