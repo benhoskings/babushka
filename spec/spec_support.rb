@@ -24,18 +24,12 @@ module Babushka
     end
   end
   class Source
-    def self.external_url_for name, from
-      tmp_prefix / 'source_remotes' / name
-    end
     private
     def self.sources_yml
       tmp_prefix / 'sources.yml'
     end
     def self.source_prefix
       tmp_prefix / 'sources'
-    end
-    def self.external_source_prefix
-      tmp_prefix / 'external_sources'
     end
   end
 end

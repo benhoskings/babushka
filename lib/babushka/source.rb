@@ -64,7 +64,6 @@ module Babushka
       raise ArgumentError, "Source.new options must be passed as a hash, not as #{opts.inspect}." unless opts.is_a?(Hash)
       @uri, @type = self.class.discover_uri_and_type(path)
       @name = opts[:name] || self.class.default_name_for_uri(@uri)
-      @external = opts[:external]
       @deps = DepPool.new self
     end
 
@@ -78,7 +77,7 @@ module Babushka
     end
 
     def prefix
-      external? ? self.class.external_source_prefix : self.class.source_prefix
+      self.class.source_prefix
     end
     def path
       if implicit? || local?
@@ -104,9 +103,6 @@ module Babushka
     end
     def present?
       cloneable? ? cloned? : path.exists?
-    end
-    def external?
-      @external
     end
     def local?
       type == :local
@@ -203,9 +199,5 @@ module Babushka
     def self.source_prefix
       SourcePrefix
     end
-    def self.external_source_prefix
-      WorkingPrefix / 'external_sources'
-    end
-
   end
 end
