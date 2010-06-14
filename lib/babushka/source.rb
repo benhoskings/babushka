@@ -91,8 +91,13 @@ module Babushka
     def updated_at
       Time.now - File.mtime(path)
     end
-    def description
-      "#{name} - #{uri} (updated #{updated_at.round.xsecs} ago)"
+    def description_pieces
+      [
+        name,
+        uri.to_s,
+        type,
+        ("#{updated_at.round.xsecs} ago" if cloneable?)
+      ]
     end
     def type
       @type
