@@ -24,6 +24,9 @@ module Babushka
     end
   end
   class Source
+    def remove!
+      !cloneable? || !File.exists?(path) || FileUtils.rm_r(path)
+    end
     private
     def self.sources_yml
       tmp_prefix / 'sources.yml'

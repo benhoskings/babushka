@@ -129,14 +129,6 @@ module Babushka
       end
     end
 
-    def remove! opts = {}
-      if opts[:force]
-        log_block "Removing #{name} (#{uri})" do
-          remove_repo
-        end
-      end
-    end
-
     def load!
       pull! if cloneable?
       load_deps! unless implicit? # implicit sources can't be loaded.
@@ -190,10 +182,6 @@ module Babushka
         raise "There is already a source called '#{name_dup_source.name}' (it contains #{name_dup_source.uri})." unless name_dup_source.nil?
         raise "The source #{uri_dup_source.uri} is already present (as '#{uri_dup_source.name}')." unless uri_dup_source.nil?
       end
-    end
-
-    def remove_repo
-      !cloneable? || !File.exists?(path) || FileUtils.rm_r(path)
     end
 
     def self.source_prefix
