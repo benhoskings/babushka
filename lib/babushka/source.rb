@@ -65,7 +65,7 @@ module Babushka
     def initialize path, opts = {}
       raise ArgumentError, "Source.new options must be passed as a hash, not as #{opts.inspect}." unless opts.is_a?(Hash)
       @uri, @type = self.class.discover_uri_and_type(path)
-      @name = opts[:name] || self.class.default_name_for_uri(@uri)
+      @name = (opts[:name] || self.class.default_name_for_uri(@uri)).to_s
       @deps = DepPool.new self
     end
 

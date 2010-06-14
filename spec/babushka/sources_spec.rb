@@ -251,7 +251,8 @@ describe "cloning" do
     end
     context "with a name" do
       before {
-        @aliased = Source.new(test_dep_source('aliased').first, :name => 'aliased_source_test')
+        @fancypath_name = 'aliased_source_test'.p.basename
+        @aliased = Source.new(test_dep_source('aliased').first, :name => @fancypath_name)
         @aliased.add!
       }
       it "should override the name" do
@@ -259,6 +260,10 @@ describe "cloning" do
       end
       it "should set the name in the source" do
         @aliased.name.should == 'aliased_source_test'
+      end
+      it "should stringify the name" do
+        @fancypath_name.should be_an_instance_of(Fancypath)
+        @aliased.name.should be_an_instance_of(String)
       end
     end
     context "duplication" do
