@@ -59,21 +59,8 @@ module Babushka
       core.map &:load!
     end
 
-    def initialize
-      clear!
-    end
-
-    def clear! opts = {}
-      @sources.each {|s| s.remove! opts } unless @sources.nil?
-      @sources = []
-    end
-
     def uncache!
       current.each {|source| source.send :uncache! }
-    end
-
-    def count
-      @sources.length
     end
   end
 end
