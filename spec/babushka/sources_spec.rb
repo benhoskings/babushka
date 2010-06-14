@@ -140,14 +140,14 @@ describe Source, ".for_path" do
   end
   context "on a git repo" do
     before {
-      remote = test_dep_source 'for_path_remote'
+      remote = test_dep_source 'path_remote_test'
       Source.new(remote.first).add!
-      @source = Source.for_path(Source.source_prefix / 'for_path_remote')
+      @source = Source.for_path(Source.source_prefix / 'path_remote_test')
     }
     it "should work on a git repo" do
       @source.should be_present
-      @source.path.should == Source.source_prefix / 'for_path_remote'
-      @source.name.should == 'for_path_remote'
+      @source.path.should == Source.source_prefix / 'path_remote_test'
+      @source.name.should == 'path_remote_test'
     end
     after { @source.remove! }
   end
@@ -155,11 +155,11 @@ end
 
 describe Source, '.present' do
   before {
-    @source_1 = Source.new(*test_dep_source('present_remote_1'))
+    @source_1 = Source.new(*test_dep_source('present_remote_1_test'))
     @source_1.add!
-    @source_2 = Source.new(*test_dep_source('present_remote_2'))
+    @source_2 = Source.new(*test_dep_source('present_remote_2_test'))
     @source_2.add!
-    @source_3 = Source.new(*test_dep_source('present_remote_3'))
+    @source_3 = Source.new(*test_dep_source('present_remote_3_test'))
   }
   it "should return the sources that are present" do
     Source.present.should == [@source_1, @source_2]
@@ -184,7 +184,7 @@ describe Source, "#present?" do
     end
   end
   context "for remote repos" do
-    before { @present_source = test_dep_source 'present' }
+    before { @present_source = test_dep_source 'present_test' }
     it "should be false" do
       Source.new(@present_source.first).should_not be_present
     end
@@ -226,26 +226,26 @@ describe "cloning" do
 
     context "without a name" do
       before {
-        @nameless = Source.new(test_dep_source('nameless').first)
+        @nameless = Source.new(test_dep_source('nameless_test').first)
         @nameless.add!
       }
       it "should use the basename as the name" do
-        File.directory?(tmp_prefix / 'sources/nameless').should be_true
+        File.directory?(tmp_prefix / 'sources/nameless_test').should be_true
       end
       it "should set the name in the source" do
-        @nameless.name.should == 'nameless'
+        @nameless.name.should == 'nameless_test'
       end
     end
     context "with a name" do
       before {
-        @aliased = Source.new(test_dep_source('aliased').first, :name => 'an_aliased_source')
+        @aliased = Source.new(test_dep_source('aliased').first, :name => 'aliased_source_test')
         @aliased.add!
       }
       it "should override the name" do
-        File.directory?(tmp_prefix / 'sources/an_aliased_source').should be_true
+        File.directory?(tmp_prefix / 'sources/aliased_source_test').should be_true
       end
       it "should set the name in the source" do
-        @aliased.name.should == 'an_aliased_source'
+        @aliased.name.should == 'aliased_source_test'
       end
     end
     context "duplication" do
