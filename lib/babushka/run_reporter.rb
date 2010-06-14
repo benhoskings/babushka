@@ -13,7 +13,7 @@ module Babushka
       require 'uri'
 
       returning(Net::HTTP.post_form(
-        URI.parse('http://next.babushka.me/runs.json'),
+        URI.parse('http://babushka.me/runs.json'),
         {
           "dep_name" => dep_name,
           "source_url" => source_url,
