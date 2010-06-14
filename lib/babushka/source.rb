@@ -26,7 +26,7 @@ module Babushka
         if remote.nil?
           Source.new path # local source
         else
-          Source.new remote, :path => path # remote source with custom path
+          Source.new remote, :name => path.basename # remote source with custom path
         end
       end
     end
