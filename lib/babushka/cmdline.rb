@@ -28,7 +28,14 @@ module Babushka
         Opt.new(:force, '-f', '--force', "Attempt to meet the dependency even if it's already met", true, [])
       ], [
         Arg.new(:dep_names, "The names of the deps that should be processed", false, true)
-      ])
+      ]),
+      Verb.new(:sources, nil, nil, "Manage dep sources", [
+        Opt.new(:add, '-a', '--add', "Add dep source", false, [
+          Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
+          Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
+        ]),
+        Opt.new(:list, '-l', '--list', "List dep sources", false, [])
+      ], []),
     ]
 
     def handle_help verb = nil, error_message = nil
@@ -89,6 +96,20 @@ module Babushka
       end
     end
 
+    def handle_sources verb
+      if verb.opts.length != 1
+        fail_with help_for verb.def, "'sources' requires exactly one option."
+      elsif verb.opts.first.def.name == :add
+        args = verb.opts.first.args.map(&:value)
+        begin
+          Source.new(args.last, :name => args.first).add!
+        rescue SourceError => ex
+          log_error ex.message
+        end
+      elsif verb.opts.first.def.name == :list
+        Base.sources.list!
+      end
+    end
   end
   end
 end
