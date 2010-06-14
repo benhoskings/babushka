@@ -201,7 +201,7 @@ module Babushka
     end
 
     def self.source_prefix
-      Path.path / 'sources'
+      SourcePrefix
     end
     def self.external_source_prefix
       WorkingPrefix / 'external_sources'
