@@ -1,4 +1,6 @@
 module Babushka
+  class SourceError < StandardError
+  end
   class Source
     attr_reader :name, :uri, :type, :deps
 
@@ -178,8 +180,8 @@ module Babushka
       present_sources = Base.sources.all_present
       uri_dup_source = present_sources.detect {|s| s.uri == uri && s.name != name }
       name_dup_source = present_sources.detect {|s| s.name == name && s.uri != uri }
-      raise "There is already a source called '#{name_dup_source.name}' (it contains #{name_dup_source.uri})." unless name_dup_source.nil?
-      raise "The source #{uri_dup_source.uri} is already present (as '#{uri_dup_source.name}')." unless uri_dup_source.nil?
+      raise SourceError, "There is already a source called '#{name_dup_source.name}' (it contains #{name_dup_source.uri})." unless name_dup_source.nil?
+      raise SourceError, "The source #{uri_dup_source.uri} is already present (as '#{uri_dup_source.name}')." unless uri_dup_source.nil?
     end
 
     def self.source_prefix

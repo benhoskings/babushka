@@ -269,7 +269,7 @@ describe "cloning" do
           @dup_source = Source.new(@dup_remote.first, :name => 'duplicate_test')
           L{
             @dup_source.add!
-          }.should raise_error("There is already a source called '#{@source.name}' (it contains #{@source.uri}).")
+          }.should raise_error(SourceError, "There is already a source called '#{@source.name}' (it contains #{@source.uri}).")
         end
       end
       context "with the same URL and different names" do
@@ -277,7 +277,7 @@ describe "cloning" do
           @dup_source = Source.new(@remote.first, :name => 'duplicate_test_different_name')
           L{
             @dup_source.add!
-          }.should raise_error("The source #{@source.uri} is already present (as '#{@source.name}').")
+          }.should raise_error(SourceError, "The source #{@source.uri} is already present (as '#{@source.name}').")
         end
       end
     end
