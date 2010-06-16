@@ -2,7 +2,7 @@ module Babushka
   class AptHelper < PkgHelper
   class << self
     def pkg_type; :deb end
-    def pkg_cmd; "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' #{pkg_binary} -qyu" end
+    def pkg_cmd; "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' #{pkg_binary} -qy" end
     def pkg_binary
       @_cached_pkg_binary ||= which('aptitude') ? 'aptitude' : 'apt-get'
     end
