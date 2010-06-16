@@ -4,14 +4,15 @@ module Babushka
 
     # Check structs.rb for the definitions of Verb, Opt and Arg.
     Verbs = [
-      Verb.new(:version, nil, '--version', "Print the current version", [], []),
-      Verb.new(:help, '-h', '--help', "Print usage information", [], [
-        Arg.new(:verb, "Print command-specific usage info", true)
-      ]),
-      Verb.new(:update, nil, nil, "Update babushka itself", [
-        Opt.new(:system, nil, '--system', "Update babushka itself to the latest version", false, [])
-      ], []),
-      Verb.new(:babushka, nil, nil, "An alias for 'update --system'", [], [
+      Verb.new(:meet, nil, nil, "The main one: run a dep and all its dependencies.", [
+        Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
+        Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
+        Opt.new(:track_blocks, nil, '--track-blocks', "Track deps' blocks in TextMate as they're run", true, []),
+        Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
+        Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
+        Opt.new(:force, '-f', '--force', "Attempt to meet the dependency even if it's already met", true, [])
+      ], [
+        Arg.new(:dep_names, "The name of the dep to run", false, true)
       ]),
       Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
@@ -30,19 +31,10 @@ module Babushka
       Verb.new(:pull, nil, nil, "Update dep sources", [], [
         Arg.new(:source, "Pull just a specific source", true, false)
       ]),
-      Verb.new(:push, nil, nil, "Push dep updates you've made", [], [
-        Arg.new(:source, "Push just a specific source", true, false)
+      Verb.new(:help, '-h', '--help', "Print usage information", [], [
+        Arg.new(:verb, "Print command-specific usage info", true)
       ]),
-      Verb.new(:meet, nil, nil, "Process deps", [
-        Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
-        Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
-        Opt.new(:track_blocks, nil, '--track-blocks', "Track deps' blocks in TextMate they're run", true, []),
-        Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
-        Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
-        Opt.new(:force, '-f', '--force', "Attempt to meet the dependency even if it's already met", true, [])
-      ], [
-        Arg.new(:dep_names, "The names of the deps that should be processed", false, true)
-      ])
+      Verb.new(:version, nil, '--version', "Print the current version", [], [])
     ]
 
     def handle_help verb = nil, error_message = nil
@@ -96,25 +88,11 @@ module Babushka
         Source.send "#{verb.opts.first.def.name}!", *verb.opts.first.args.map(&:value)
       end
     end
-    def handle_babushka verb
-      load_deps_from core_dep_locations
-      task.process 'babushka'
-    end
     def handle_pull verb
       if verb.args.empty?
         Source.pull!
       else
         puts "'pull' doesn't accept any options."
-      end
-    end
-    def handle_push verb
-      fail_with "Push isn't implemented yet."
-    end
-    def handle_update verb
-      if verb.opts.length != 1
-        fail_with help_for verb.def, "'update' requires exactly one option."
-      elsif verb.opts.first.def.name == :system
-        handle_babushka verb
       end
     end
 

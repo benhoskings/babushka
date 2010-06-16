@@ -1,4 +1,3 @@
-
 dep 'babushka' do
   requires 'babushka in path', 'babushka up to date', 'dep source'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
@@ -71,7 +70,8 @@ dep 'dep source' do
 end
 
 dep 'babushka installed' do
-  requires 'ruby', 'git', 'writable install location'
+  requires 'ruby', 'git'
+  requires_when_unmet 'writable install location'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { git_repo?(var(:install_path)) }
   meet {
