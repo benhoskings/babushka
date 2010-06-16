@@ -2,17 +2,13 @@ module Babushka
   class AptHelper < PkgHelper
   class << self
     def pkg_type; :deb end
-    def pkg_cmd; "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' #{pkg_binary} -qyu" end
+    def pkg_cmd; "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' #{pkg_binary} -y" end
     def pkg_binary
       @_cached_pkg_binary ||= which('aptitude') ? 'aptitude' : 'apt-get'
     end
     def manager_key; :apt end
 
     def _install! pkgs, opts
-      package_count = shell("#{pkg_cmd} -s install #{pkgs.join(' ')}", :sudo => should_sudo?).split.grep(/^Inst\b/).length
-      dep_count = package_count - pkgs.length
-
-      log "Installing #{pkgs.join(', ')} and #{dep_count} dep#{'s' unless dep_count == 1} via #{manager_key}"
       log_shell "Downloading", "#{pkg_cmd} -d install #{pkgs.join(' ')}", :sudo => should_sudo?
       log_shell "Installing", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
     end
