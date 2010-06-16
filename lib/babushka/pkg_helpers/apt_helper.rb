@@ -12,7 +12,7 @@ module Babushka
 
       log "Installing #{pkgs.join(', ')} and #{dep_count} dep#{'s' unless dep_count == 1} via #{manager_key}"
       log_shell "Downloading", "#{pkg_cmd} -d install #{pkgs.join(' ')}", :sudo => should_sudo?
-      log_shell "Installing", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
+      super
     end
 
     def update_pkg_lists_if_required
