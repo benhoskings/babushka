@@ -17,7 +17,7 @@ module Babushka
 
     def update_pkg_lists_if_required
       if !File.exists? '/var/lib/apt/lists/lock'
-        log_shell "Looks like apt hasn't been used on this system yet. Updating", "apt-get update", :sudo => should_sudo?
+        update_pkg_lists "Looks like apt hasn't been used on this system yet. Updating"
       else
         super
       end
