@@ -12,7 +12,7 @@ module Babushka
 
     def process
       requires pkg_manager.manager_dep
-      internal_setup { internal_pkg_setup }
+      internal_setup { add_cfg_deps }
       met? { packages_met? }
       before { pkg_manager.update_pkg_lists_if_required }
       meet { install_packages! }

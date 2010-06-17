@@ -19,10 +19,6 @@ module Babushka
       installs.all? {|pkg| pkg_manager.has? pkg }
     end
 
-    def internal_pkg_setup
-      add_cfg_deps and setup_for_install
-    end
-
     def add_cfg_deps
       cfg.all? {|target|
         target_file = target.to_s
@@ -39,10 +35,6 @@ module Babushka
           end
         })
       }
-    end
-
-    def setup_for_install
-      pkg_manager.setup_for_install_of the_dep, installs
     end
 
     def install_packages!

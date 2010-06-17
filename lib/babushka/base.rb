@@ -42,11 +42,7 @@ module Babushka
     include Suggest::Helpers
 
     def validate_verb verb
-      if verb.in? verb_abbrevs.keys
-        verb # it's a properly spelled verb
-      else
-        suggest_value_for(verb, all_verb_names)
-      end
+      verb if verb.in? verb_abbrevs.keys
     end
 
     def parse_cmdline verb, args
@@ -99,7 +95,8 @@ module Babushka
       log "  #{program_name} <command> [options]"
       log "\nAlso:"
       log "  #{program_name} help <command>  # #{verb_for('help').args.first.description}"
-      log "  #{program_name} <dep name>      # A shortcut for 'meet <dep name>'"
+      log "  #{program_name} <dep name>      # A shortcut for 'babushka meet <dep name>'"
+      log "  #{program_name} babushka        # Update babushka itself (what babushka.me/up does)"
     end
 
     def print_usage_for verb
