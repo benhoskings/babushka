@@ -9,7 +9,7 @@ module Babushka
     module Helpers
       def Dep spec, opts = {};         Dep.for spec, opts end
       def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, BaseDepDefiner, BaseDepRunner end
-      def meta name, opts = {}, &block; MetaDepWrapper.for name, opts, &block end
+      def meta name, opts = {}, &block; DepDefiner.current_load_source.templates.add name, opts, block end
       def pkg name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
       def gem name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, GemDepDefiner , GemDepRunner  end
       def ext name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
@@ -43,7 +43,7 @@ module Babushka
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       @dep_source = source
       @load_path = DepDefiner.current_load_path
-      source.register self
+      source.deps.register self
     end
 
     def self.for dep_spec, opts = {}

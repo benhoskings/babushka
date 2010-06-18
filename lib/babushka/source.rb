@@ -1,8 +1,8 @@
 module Babushka
   class Source
-    attr_reader :name, :uri, :type, :deps
+    attr_reader :name, :uri, :type, :deps, :templates
 
-    delegate :register, :count, :skipped_count, :uncache!, :to => :deps
+    delegate :count, :skipped_count, :uncache!, :to => :deps
 
     def self.present
       source_prefix.glob('*').map(&:p).select {|path|
@@ -66,6 +66,7 @@ module Babushka
       @name = opts[:name] || self.class.default_name_for_uri(@uri)
       @external = opts[:external]
       @deps = DepPool.new self
+      @templates = MetaDepPool.new self
     end
 
     def uri_matches? path
