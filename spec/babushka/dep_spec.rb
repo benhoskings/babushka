@@ -4,36 +4,54 @@ require 'dep_support'
 describe "Dep.make" do
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.make "carriage\rreturn", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner
+      Dep.make "carriage\rreturn", Base.sources.default, {}, nil, Dep::BaseTemplate
     }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
     dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.make "slashes/invalidate names", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner
+      Dep.make "slashes/invalidate names", Base.sources.default, {}, nil, Dep::BaseTemplate
     }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
     dep("slashes/invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner).should be_an_instance_of(Dep)
+      Dep.make("valid dep name", Base.sources.default, {}, nil, Dep::BaseTemplate).should be_an_instance_of(Dep)
     }.should change(Base.sources.default, :count).by(1)
   end
-  context "with suffix" do
-    it "should attempt to create suffixed deps against templates" do
-      L{
-        Dep.make("valid dep name.template", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner)
-      }.should raise_error DepError, "There is no template named 'template' to define 'valid dep name.template' against."
+  context "without template" do
+    before {
+      @dep = Dep.make("valid base dep", Base.sources.default, {}, nil, Dep::BaseTemplate)
+    }
+    it "should work" do
+      @dep.should be_an_instance_of Dep
+      @dep.template.should == Dep::BaseTemplate
     end
-    context "with meta dep" do
+  end
+  context "with template" do
+    it "should fail to create optioned deps against a missing template" do
+      L{
+        Dep.make("valid dep name", Base.sources.default, {:template => 'template'}, nil, Dep::BaseTemplate)
+      }.should raise_error DepError, "There is no template named 'template' to define 'valid dep name' against."
+    end
+    context "with template from options" do
       before {
-        meta('template')
-        @dep = Dep.make("valid dep name.template", Base.sources.default, {}, nil, BaseDepDefiner, BaseDepRunner)
+        @meta = meta('option template')
+        @dep = Dep.make("valid option dep", Base.sources.default, {:template => 'option template'}, nil, Dep::BaseTemplate)
       }
       it "should work" do
         @dep.should be_an_instance_of Dep
-        @dep.definer.should be_an_instance_of TemplateDepDefiner
-        @dep.runner.should be_an_instance_of TemplateDepRunner
+        @dep.template.should == @meta
+      end
+    end
+    context "with template from suffix" do
+      before {
+        @meta = meta('.suffix_template')
+        @dep = Dep.make("valid dep name.suffix_template", Base.sources.default, {}, nil, Dep::BaseTemplate)
+      }
+      it "should work" do
+        @dep.should be_an_instance_of Dep
+        @dep.template.should == @meta
       end
     end
   end
@@ -67,6 +85,31 @@ describe "dep creation" do
     Dep('parent dep').definer.requires.should == [Dep('nested dep')]
   end
   after { Base.sources.default.deps.clear! }
+
+  context "without template" do
+    before { dep 'without template' }
+    it "should use the base template" do
+      Dep('without template').template.should == Dep::BaseTemplate
+    end
+  end
+  context "with option template" do
+    before {
+      @template = meta 'option template'
+      dep 'with option template', :template => 'option template'
+    }
+    it "should use the specified template" do
+      Dep('option template').template.should == @template
+    end
+  end
+  context "with suffix template" do
+    before {
+      @template = meta '.suffix_template'
+      dep 'with suffix template', :template => 'suffix template'
+    }
+    it "should use the specified template" do
+      Dep('suffix template').template.should == @template
+    end
+  end
 end
 
 describe "calling met? on a single dep" do

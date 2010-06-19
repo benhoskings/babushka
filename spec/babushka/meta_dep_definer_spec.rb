@@ -12,8 +12,8 @@ describe "name checks" do
   it "should not allow invalid characters" do
     L{ meta('meta dep') }.should raise_error ArgumentError, "You can't use 'meta dep' for a meta dep name - it can only contain [a-z0-9_]."
   end
-  it "should not allow names that don't start with a letter" do
-    L{ meta('3d_dep') }.should raise_error ArgumentError, "You can't use '3d_dep' for a meta dep name - it must start with a letter."
+  it "should not allow names that don't start with a letter or dot" do
+    L{ meta('3d_dep') }.should raise_error ArgumentError, "You can't use '3d_dep' for a meta dep name - it must start with a letter (or dot)."
   end
   describe "duplicate declaration" do
     before { meta 'duplicate' }
@@ -31,7 +31,7 @@ shared_examples_for 'defined meta dep' do
     }.should change(Base.sources.default.templates, :count).by(1)
   end
   it "should set the name" do
-    @meta.name.should == :test
+    @meta.name.should == 'test'
   end
   it "should define a dep definer" do
     @meta.definer_class.should be_an_instance_of Class
@@ -78,8 +78,13 @@ end
 
 describe "using" do
   describe "invalid templates" do
-    it "should not define deps" do
-      dep('something.undefined').should be_nil
+    it "should not define deps as options" do
+      L{
+        dep('something undefined', :template => 'undefined').should be_nil
+      }.should raise_error DepError, "Can't find the 'undefined' template to define 'something undefined' against."
+    end
+    it "should define deps as options" do
+      dep('something.undefined').should be_an_instance_of(Dep)
     end
   end
 
