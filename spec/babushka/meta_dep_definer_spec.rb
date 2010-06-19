@@ -1,11 +1,6 @@
 require 'spec_support'
 require 'dep_definer_support'
 
-def remove_constants_for str
-  Babushka.send :remove_const, "#{str.camelize}DepDefiner"
-  Babushka.send :remove_const, "#{str.camelize}DepRunner"
-end
-
 describe "name checks" do
   it "should not allow blank names" do
     L{ meta(nil) }.should raise_error ArgumentError, "You can't define a meta dep with a blank name."
@@ -25,7 +20,7 @@ describe "name checks" do
     it "should be prevented" do
       L{ meta(:duplicate) }.should raise_error ArgumentError, "A meta dep called 'duplicate' has already been defined."
     end
-    after { remove_constants_for 'duplicate' }
+    after { Base.sources.default.templates.clear! }
   end
 end
 
@@ -40,13 +35,13 @@ shared_examples_for 'defined meta dep' do
   end
   it "should define a dep definer" do
     @meta.definer_class.should be_an_instance_of Class
-    @meta.definer_class.name.should == 'Babushka::TestDepDefiner'
     @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner
+    @meta.runner_class.should_not == Babushka::BaseDepDefiner
   end
   it "should define a dep runner" do
     @meta.runner_class.should be_an_instance_of Class
-    @meta.runner_class.name.should == 'Babushka::TestDepRunner'
     @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
+    @meta.runner_class.should_not == Babushka::BaseDepRunner
   end
   it "should not define a dep helper" do
     Object.new.should_not respond_to 'test'
@@ -61,10 +56,7 @@ describe "declaration" do
   it "should not be marked as suffixed" do
     @meta.opts[:suffix].should be_false
   end
-  after {
-    Base.sources.default.templates.clear!
-    remove_constants_for 'test'
-  }
+  after { Base.sources.default.templates.clear! }
 end
 
 describe "declaration with dot" do
@@ -81,10 +73,7 @@ describe "declaration with dot" do
       L{ meta '.collision_test' }.should raise_error ArgumentError, "A meta dep called 'collision_test' has already been defined."
     end
   end
-  after {
-    Base.sources.default.templates.clear!
-    remove_constants_for 'test'
-  }
+  after { Base.sources.default.templates.clear! }
 end
 
 describe "using" do
@@ -103,7 +92,7 @@ describe "using" do
         dep('templateless dep.templateless_test').definer.should be_an_instance_of TemplatelessTestDepDefiner
       end
     end
-    after { remove_constants_for 'templateless_test' }
+    after { Base.sources.default.templates.clear! }
   end
 
   describe "with template" do
@@ -130,7 +119,7 @@ describe "using" do
     it "should correctly define the met? block" do
       dep('dep3.template_test').send(:call_task, :met?).should == 'this dep is met.'
     end
-    after { remove_constants_for 'template_test' }
+    after { Base.sources.default.templates.clear! }
   end
 
   describe "acceptors" do
@@ -162,6 +151,6 @@ describe "using" do
       }.meet
       block_called.should be_true
     end
-    after { remove_constants_for 'acceptor_test' }
+    after { Base.sources.default.templates.clear! }
   end
 end
