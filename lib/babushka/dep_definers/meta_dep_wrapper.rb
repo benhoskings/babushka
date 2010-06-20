@@ -36,7 +36,7 @@ module Babushka
     attr_reader :name, :opts, :definer_class, :runner_class
 
     def initialize name, source, opts, &block
-      @name = name.to_sym
+      @name = name
       @opts = opts
       @block = block
       @definer_class = build_definer block
