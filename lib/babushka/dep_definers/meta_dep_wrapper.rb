@@ -37,9 +37,5 @@ module Babushka
     def build_runner
       Class.new(MetaDepRunner)
     end
-
-    def define_dep name, opts, &block
-      DepDefiner.current_load_source.deps.add name, opts, block, definer_class, runner_class
-    end
   end
 end
