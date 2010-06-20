@@ -2,9 +2,6 @@ module Babushka
   class DepError < StandardError
   end
   class Dep
-    VALID_NAME_CHARS = /[a-z][a-z0-9_]+/
-    VALID_NAME = /^#{VALID_NAME_CHARS}$/
-    INCLUDES_TEMPLATE_SUFFIX = /\.(#{VALID_NAME_CHARS})$/
     class BaseTemplate
       def self.definer; BaseDepDefiner end
       def self.runner; BaseDepRunner end
