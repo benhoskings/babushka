@@ -44,6 +44,10 @@ module Babushka
       source.templates.register self
     end
 
+    def suffixed?
+      opts[:suffix]
+    end
+
     def build_definer block
       Class.new(MetaDepDefiner, &block)
     end
