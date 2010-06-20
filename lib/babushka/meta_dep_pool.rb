@@ -11,6 +11,9 @@ module Babushka
     def templates
       @template_hash.values
     end
+    def for spec
+      spec.respond_to?(:name) ? @template_hash[spec.name] : @template_hash[spec]
+    end
 
     def add name, in_opts, block
       MetaDepWrapper.for name, @source, in_opts, &block
