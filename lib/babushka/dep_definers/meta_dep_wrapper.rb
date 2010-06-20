@@ -31,11 +31,11 @@ module Babushka
     end
 
     def build_definer block
-      Babushka.const_set "#{name.to_s.camelize}DepDefiner", Class.new(MetaDepDefiner, &block)
+      Class.new(MetaDepDefiner, &block)
     end
 
     def build_runner
-      Babushka.const_set "#{name.to_s.camelize}DepRunner", Class.new(MetaDepRunner)
+      Class.new(MetaDepRunner)
     end
 
     def define_dep name, opts, &block
