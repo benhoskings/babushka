@@ -1,12 +1,12 @@
 def make_test_pkgs pkg_type
-  send pkg_type, "default #{pkg_type}"
-  send pkg_type, "default provides" do
+  dep "default #{pkg_type}", :template => pkg_type
+  dep "default provides", :template => pkg_type do
     installs "something else"
   end
-  send pkg_type, "default installs" do
+  dep "default installs", :template => pkg_type do
     provides "something_else"
   end
-  send pkg_type, "empty provides" do
+  dep "empty provides", :template => pkg_type do
     provides []
   end
 end
