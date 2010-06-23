@@ -4,24 +4,24 @@ require 'dep_support'
 describe "Dep.make" do
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.make "carriage\rreturn", Base.sources.default, {}, nil, Dep::BaseTemplate
+      Dep.make "carriage\rreturn", Base.sources.default, {}, nil
     }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
     dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.make "slashes/invalidate names", Base.sources.default, {}, nil, Dep::BaseTemplate
+      Dep.make "slashes/invalidate names", Base.sources.default, {}, nil
     }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
     dep("slashes/invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", Base.sources.default, {}, nil, Dep::BaseTemplate).should be_an_instance_of(Dep)
+      Dep.make("valid dep name", Base.sources.default, {}, nil).should be_an_instance_of(Dep)
     }.should change(Base.sources.default, :count).by(1)
   end
   context "without template" do
     before {
-      @dep = Dep.make("valid base dep", Base.sources.default, {}, nil, Dep::BaseTemplate)
+      @dep = Dep.make("valid base dep", Base.sources.default, {}, nil)
     }
     it "should work" do
       @dep.should be_an_instance_of Dep
@@ -31,13 +31,13 @@ describe "Dep.make" do
   context "with template" do
     it "should fail to create optioned deps against a missing template" do
       L{
-        Dep.make("valid dep name", Base.sources.default, {:template => 'template'}, nil, Dep::BaseTemplate)
+        Dep.make("valid dep name", Base.sources.default, {:template => 'template'}, nil)
       }.should raise_error DepError, "There is no template named 'template' to define 'valid dep name' against."
     end
     context "with template from options" do
       before {
         @meta = meta('option template')
-        @dep = Dep.make("valid option dep", Base.sources.default, {:template => 'option template'}, nil, Dep::BaseTemplate)
+        @dep = Dep.make("valid option dep", Base.sources.default, {:template => 'option template'}, nil)
       }
       it "should work" do
         @dep.should be_an_instance_of Dep
@@ -47,7 +47,7 @@ describe "Dep.make" do
     context "with template from suffix" do
       before {
         @meta = meta('.suffix_template')
-        @dep = Dep.make("valid dep name.suffix_template", Base.sources.default, {}, nil, Dep::BaseTemplate)
+        @dep = Dep.make("valid dep name.suffix_template", Base.sources.default, {}, nil)
       }
       it "should work" do
         @dep.should be_an_instance_of Dep
