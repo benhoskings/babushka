@@ -49,7 +49,12 @@ module Babushka
     end
 
     def build_definer block
-      Class.new(MetaDepDefiner, &block)
+      returning Class.new(MetaDepDefiner, &block) do |definer|
+        shadow = self
+        definer.metaclass.send :define_method, :source_template do
+          shadow
+        end
+      end
     end
 
     def build_runner

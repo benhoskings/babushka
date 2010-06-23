@@ -60,6 +60,9 @@ shared_examples_for 'defined meta dep' do
     @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner
     @meta.runner_class.should_not == Babushka::BaseDepDefiner
   end
+  it "should define template on the definer" do
+    @meta.definer_class.source_template.should == @meta
+  end
   it "should define a dep runner" do
     @meta.runner_class.should be_an_instance_of Class
     @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
