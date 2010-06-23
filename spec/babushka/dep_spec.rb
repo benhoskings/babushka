@@ -54,6 +54,7 @@ describe "Dep.make" do
         @dep.template.should == @meta
       end
     end
+    after { Base.sources.default.templates.clear! }
   end
 end
 
@@ -110,6 +111,7 @@ describe "dep creation" do
       Dep('suffix template').template.should == @template
     end
   end
+  after { Base.sources.default.templates.clear! }
 end
 
 describe "calling met? on a single dep" do
