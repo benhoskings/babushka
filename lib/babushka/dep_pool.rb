@@ -28,11 +28,7 @@ module Babushka
         @skipped_count += 1
         self.for name
       else
-        begin
-          Dep.make name, @source, in_opts, block
-        rescue DepError => e
-          log_error e.message
-        end
+        Dep.make name, @source, in_opts, block
       end
     end
 
