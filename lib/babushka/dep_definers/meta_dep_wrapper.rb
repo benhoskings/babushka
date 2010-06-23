@@ -9,6 +9,8 @@ module Babushka
     VALID_NAME = /\A#{VALID_NAME_CHARS}\z/m
     VALID_SUFFIX = /\A#{VALID_SUFFIX_CHARS}\z/m
 
+    TEMPLATE_SUFFIX = /\A.+\.(#{VALID_SUFFIX_CHARS})\z/m
+
     def self.for supplied_name, source, opts, &block
       name = supplied_name.to_s.downcase
       if name.starts_with? '.'
