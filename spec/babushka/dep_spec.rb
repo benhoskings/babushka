@@ -6,18 +6,19 @@ describe "Dep.make" do
     L{
       Dep.make "carriage\rreturn", Base.sources.default, {}, nil
     }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
-    dep("carriage\rreturn").should be_nil
+    Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
       Dep.make "slashes/invalidate names", Base.sources.default, {}, nil
     }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
-    dep("slashes/invalidate names").should be_nil
+    Dep("slashes/invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
       Dep.make("valid dep name", Base.sources.default, {}, nil).should be_an_instance_of(Dep)
     }.should change(Base.sources.default, :count).by(1)
+    Dep("valid dep name").should be_an_instance_of Dep
   end
   context "without template" do
     before {
