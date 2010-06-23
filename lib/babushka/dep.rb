@@ -19,7 +19,7 @@ module Babushka
     delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
-    def self.make name, source, opts, block, in_template
+    def self.make name, source, opts, block
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
@@ -32,7 +32,7 @@ module Babushka
         else
           DepDefiner.current_load_source.templates.for_dep(name)
         end
-        new name, source, opts, block, (in_template || template || BaseTemplate)
+        new name, source, opts, block, (template || BaseTemplate)
       end
     end
 
