@@ -30,7 +30,7 @@ module Babushka
             raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
           end
         else
-          DepDefiner.current_load_source.templates.for(name)
+          DepDefiner.current_load_source.templates.for_dep(name)
         end
         new name, source, opts, block, (in_template || template || BaseTemplate)
       end
