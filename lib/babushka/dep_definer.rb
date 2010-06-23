@@ -146,11 +146,11 @@ module Babushka
     end
 
     def self.set_up_delegating_for method_name
-      runner_class.send :delegate, method_name, :to => :definer
+      source_template.runner_class.send :delegate, method_name, :to => :definer
     end
 
-    def self.runner_class
-      Object.recursive_const_get name.to_s.sub('Definer', 'Runner')
+    def self.source_template
+      Dep::BaseTemplate
     end
 
   end

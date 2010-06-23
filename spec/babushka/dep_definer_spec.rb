@@ -46,6 +46,12 @@ describe "accepts_block_for behaviour" do
   after { Base.sources.default.deps.clear! }
 end
 
+describe "source_template" do
+  it "should return BaseTemplate" do
+    DepDefiner.source_template.should == Dep::BaseTemplate
+  end
+end
+
 describe "helper" do
   before {
     dep 'helper test' do
