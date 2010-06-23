@@ -97,19 +97,32 @@ describe "dep creation" do
   context "with option template" do
     before {
       @template = meta 'option template'
-      dep 'with option template', :template => 'option template'
     }
-    it "should use the specified template" do
-      Dep('option template').template.should == @template
+    it "should use the specified template as an option" do
+      dep('with option template', :template => 'option template').template.should == @template
+    end
+    it "should not recognise the template as a suffix" do
+      dep('with option template.option template').template.should == Dep::BaseTemplate
     end
   end
   context "with suffix template" do
     before {
       @template = meta '.suffix_template'
-      dep 'with suffix template', :template => 'suffix template'
     }
-    it "should use the specified template" do
-      Dep('suffix template').template.should == @template
+    it "should use the specified template as an option" do
+      dep('with suffix template', :template => 'suffix_template').template.should == @template
+    end
+    it "should use the specified template as a suffix" do
+      dep('with suffix template.suffix_template').template.should == @template
+    end
+  end
+  context "with both templates" do
+    before {
+      meta '.suffix_template'
+      @template = meta 'option template'
+    }
+    it "should use the option template" do
+      dep('with both templates.suffix_template', :template => 'option template').template.should == @template
     end
   end
   after { Base.sources.default.templates.clear! }
