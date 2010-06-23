@@ -73,13 +73,11 @@ describe "using" do
   end
 
   describe "without template" do
-    describe "the new suffix" do
-      before {
-        meta('templateless_test') {}
-      }
-      it "should be useable" do
-        dep('templateless dep.templateless_test').definer.should be_an_instance_of TemplatelessTestDepDefiner
-      end
+    before {
+      @meta = meta('.templateless_test') {}
+    }
+    it "should define deps based on the template" do
+      dep('templateless dep.templateless_test').template.should == @meta
     end
     after { Base.sources.default.templates.clear! }
   end
