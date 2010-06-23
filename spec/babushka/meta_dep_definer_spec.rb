@@ -47,11 +47,6 @@ describe "classification" do
 end
 
 shared_examples_for 'defined meta dep' do
-  it "should work" do
-    L{
-      meta 'count_test'
-    }.should change(Base.sources.default.templates, :count).by(1)
-  end
   it "should set the name" do
     @meta.name.should == 'test'
   end
@@ -77,6 +72,9 @@ describe "declaration" do
   before {
     @meta = meta 'test'
   }
+  it "should work" do
+    L{ meta 'count_test' }.should change(Base.sources.default.templates, :count).by(1)
+  end
   it_should_behave_like 'defined meta dep'
   it "should not be marked as suffixed" do
     @meta.opts[:suffix].should be_false
@@ -88,6 +86,9 @@ describe "declaration with dot" do
   before {
     @meta = meta '.test'
   }
+  it "should work" do
+    L{ meta '.suffix_count_test' }.should change(Base.sources.default.templates, :count).by(1)
+  end
   it_should_behave_like 'defined meta dep'
   it "should be marked as suffixed" do
     @meta.opts[:suffix].should be_true
