@@ -50,6 +50,9 @@ shared_examples_for 'defined meta dep' do
   it "should set the name" do
     @meta.name.should == 'test'
   end
+  it "should set the source" do
+    @meta.source.should == Base.sources.default
+  end
   it "should define a dep definer" do
     @meta.definer_class.should be_an_instance_of Class
     @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner

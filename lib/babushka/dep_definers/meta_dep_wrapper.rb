@@ -33,12 +33,10 @@ module Babushka
       end
     end
 
-    attr_reader :name, :opts, :definer_class, :runner_class
+    attr_reader :name, :source, :opts, :definer_class, :runner_class
 
     def initialize name, source, opts, &block
-      @name = name
-      @opts = opts
-      @block = block
+      @name, @source, @opts, @block = name, source, opts, block
       @definer_class = build_definer block
       @runner_class = build_runner
       source.templates.register self
