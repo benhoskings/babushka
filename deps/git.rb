@@ -1,6 +1,6 @@
 dep 'git' do
   requires {
-    on :osx, 'installer git'
+    on :osx, 'git.installer'
     on :linux, 'pkg git'
   }
 end
@@ -14,7 +14,7 @@ pkg 'pkg git' do
   provides 'git'
 end
 
-installer 'installer git' do
+dep 'git.installer' do
   requires_when_unmet 'usr-local subpaths exist'
   source "http://git-osx-installer.googlecode.com/files/git-1.7.1-intel-leopard.dmg"
   provides 'git'

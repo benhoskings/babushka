@@ -2,44 +2,54 @@ module Babushka
   class DepError < StandardError
   end
   class Dep
-    module Helpers
-      def Dep spec, opts = {};         Dep.for spec, opts end
-      def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, BaseDepDefiner, BaseDepRunner end
-      def meta name, opts = {}, &block; MetaDepWrapper.for name, opts, &block end
-      def pkg name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, PkgDepDefiner , PkgDepRunner  end
-      def gem name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, GemDepDefiner , GemDepRunner  end
-      def ext name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block, ExtDepDefiner , ExtDepRunner  end
+    class BaseTemplate
+      def self.definer_class; BaseDepDefiner end
+      def self.runner_class; BaseDepRunner end
     end
 
-    attr_reader :name, :opts, :vars, :definer, :runner, :dep_source
+    module Helpers
+      def Dep spec, opts = {};         Dep.for spec, opts end
+      def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block end
+      def meta name, opts = {}, &block; DepDefiner.current_load_source.templates.add name, opts, block end
+    end
+
+    attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source
     attr_accessor :unmet_message
 
     delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
-    def self.make name, source, in_opts, block, definer_class, runner_class
+    def self.make name, source, opts, block
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        new name, source, in_opts, block, definer_class, runner_class
+        template = if opts[:template]
+          returning DepDefiner.current_load_source.templates.for(opts[:template]) do |t|
+            raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+          end
+        else
+          DepDefiner.current_load_source.templates.for_dep(name)
+        end
+        new name, source, opts, block, (template || BaseTemplate)
       end
     end
 
-    def initialize name, source, in_opts, block, definer_class, runner_class
+    def initialize name, source, in_opts, block, template
       @name = name.to_s
       @opts = {
         :for => :all
       }.merge in_opts
       @vars = {}
-      @runner = runner_class.new self
-      @definer = definer_class.new self, &block
+      @dep_source = source
+      @template = template
+      @runner = template.runner_class.new self
+      @definer = template.definer_class.new self, &block
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      @dep_source = source
       @load_path = DepDefiner.current_load_path
-      source.register self
+      source.deps.register self
     end
 
     def self.for dep_spec, opts = {}

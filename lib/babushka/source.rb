@@ -2,9 +2,9 @@ module Babushka
   class SourceError < StandardError
   end
   class Source
-    attr_reader :name, :uri, :type, :deps
+    attr_reader :name, :uri, :type, :deps, :templates
 
-    delegate :register, :count, :skipped_count, :uncache!, :to => :deps
+    delegate :count, :skipped_count, :uncache!, :to => :deps
 
     def self.present
       source_prefix.glob('*').map(&:p).select {|path|
@@ -67,6 +67,7 @@ module Babushka
       @uri, @type = self.class.discover_uri_and_type(path)
       @name = (opts[:name] || self.class.default_name_for_uri(@uri)).to_s
       @deps = DepPool.new self
+      @templates = MetaDepPool.new self
     end
 
     def uri_matches? path

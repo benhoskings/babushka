@@ -1,4 +1,4 @@
-src 'macports' do
+dep 'macports.src' do
   requires 'build tools'
   provides 'port'
   prefix '/opt/local'
@@ -34,11 +34,11 @@ meta :apt_source do
   }
 end
 
-apt_source 'main apt source' do
+dep 'main.apt_source' do
   source_name 'main'
 end
 
-apt_source 'universe apt source' do
+dep 'universe.apt_source' do
   source_name 'universe'
 end
 

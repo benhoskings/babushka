@@ -23,16 +23,12 @@ module Babushka
       spec.respond_to?(:name) ? @dep_hash[spec.name] : @dep_hash[spec]
     end
 
-    def add name, in_opts, block, definer_class, runner_class
+    def add name, in_opts, block
       if self.for name
         @skipped_count += 1
         self.for name
       else
-        begin
-          Dep.make name, @source, in_opts, block, definer_class, runner_class
-        rescue DepError => e
-          log_error e.message
-        end
+        Dep.make name, @source, in_opts, block
       end
     end
 

@@ -31,19 +31,6 @@ module Babushka
       @@current_load_source = @@current_load_path = nil
     end
 
-    def self.define_dep name, in_opts, block, definer_class, runner_class
-      if current_load_source.find name
-        current_load_source.deps.skipped_count += 1
-        current_load_source.find name
-      else
-        begin
-          Dep.make name, current_load_source, current_load_path, in_opts, block, definer_class, runner_class
-        rescue DepError => e
-          log_error e.message
-        end
-      end
-    end
-
     def initialize dep, &block
       @dep = dep
       @payload = {}
@@ -159,11 +146,11 @@ module Babushka
     end
 
     def self.set_up_delegating_for method_name
-      runner_class.send :delegate, method_name, :to => :definer
+      source_template.runner_class.send :delegate, method_name, :to => :definer
     end
 
-    def self.runner_class
-      Object.recursive_const_get name.to_s.sub('Definer', 'Runner')
+    def self.source_template
+      Dep::BaseTemplate
     end
 
   end
