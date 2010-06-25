@@ -3,6 +3,7 @@ module Babushka
   end
   class Dep
     class BaseTemplate
+      def self.suffixed?; false end
       def self.definer_class; BaseDepDefiner end
       def self.runner_class; BaseDepRunner end
     end
