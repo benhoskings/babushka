@@ -128,6 +128,38 @@ describe "dep creation" do
   after { Base.sources.default.templates.clear! }
 end
 
+describe Dep, '#basename' do
+  context "for base deps" do
+    it "should be the same as the dep's name" do
+      dep('basename test').basename.should == 'basename test'
+    end
+    context "with a suffix" do
+      it "should be the same as the dep's name" do
+        dep('basename test.basename_test').basename.should == 'basename test.basename_test'
+      end
+    end
+  end
+  context "for option-templated deps" do
+    before { meta 'basename template' }
+    it "should be the same as the dep's name" do
+      dep('basename test', :template => 'basename template').basename.should == 'basename test'
+    end
+    context "with a suffix" do
+      it "should be the same as the dep's name" do
+        dep('basename test.basename template', :template => 'basename template').basename.should == 'basename test.basename template'
+      end
+    end
+    after { Base.sources.default.templates.clear! }
+  end
+  context "for suffix-templated deps" do
+    before { meta '.basename_template' }
+    it "should remove the suffix name" do
+      dep('basename test.basename_template').basename.should == 'basename test'
+    end
+    after { Base.sources.default.templates.clear! }
+  end
+end
+
 describe "calling met? on a single dep" do
   before {
     setup_yield_counts

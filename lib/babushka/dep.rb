@@ -69,6 +69,10 @@ module Babushka
       end
     end
 
+    def basename
+      template.suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
+    end
+
     def met?
       process :dry_run => true, :top_level => true
     end
