@@ -1,11 +1,11 @@
 dep 'git' do
   requires {
     on :osx, 'git.installer'
-    on :linux, 'pkg git'
+    on :linux, 'git.managed'
   }
 end
 
-pkg 'pkg git' do
+dep 'git.managed' do
   installs {
     via :apt, 'git-core'
     via :brew, 'git'

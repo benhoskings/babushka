@@ -1,11 +1,11 @@
 dep 'ruby' do
   requires {
     on :osx, 'os x ruby'
-    on :ubuntu, 'apt ruby'
+    on :ubuntu, 'ruby.managed'
   }
 end
 
-pkg 'apt ruby' do
+dep 'ruby.managed' do
   installs { via :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby] }
   provides %w[ruby irb]
 end
