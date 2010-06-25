@@ -42,12 +42,10 @@ babushka_components = %w[
   babushka/dep_runner
   babushka/dep_runners/base_dep_runner
   babushka/dep_runners/meta_dep_runner
-  babushka/dep_runners/ext_dep_runner
   babushka/dep_definer
   babushka/dep_definers/meta_dep_wrapper
   babushka/dep_definers/base_dep_definer
   babushka/dep_definers/meta_dep_definer
-  babushka/dep_definers/ext_dep_definer
 ]
 
 require File.join(
