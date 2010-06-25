@@ -92,8 +92,8 @@ class Fancypath < Pathname
     self
   end
 
-  def glob expr = nil, &block
-    Dir.glob((expr.nil? ? self : (self / expr)).to_s, &block)
+  def glob expr = nil, flags = File::FNM_CASEFOLD, &block
+    Dir.glob((expr.nil? ? self : (self / expr)).to_s, flags, &block)
   end
 
   def write(contents, mode='wb')
