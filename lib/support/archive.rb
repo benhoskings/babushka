@@ -99,9 +99,7 @@ module Babushka
     end
 
     def content_subdir
-      Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
-        dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
-      }.reject {|dir|
+      identity_dirs.reject {|dir|
         [
           /\.app$/,
           /\.pkg$/,
@@ -112,6 +110,12 @@ module Babushka
         }
       }.first
     end
+  end
+
+  def identity_dirs
+    Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
+      dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
+    }
   end
 
   class TarArchive < Archive
