@@ -100,12 +100,9 @@ module Babushka
 
     def content_subdir
       identity_dirs.reject {|dir|
-        [
-          /\.app$/,
-          /\.pkg$/,
-          /\.bundle$/,
-          /\.tmbundle$/
-        ].any? {|dont_descend|
+        %w[app pkg bundle tmbundle].map {|i|
+          /\.#{i}$/
+        }.any? {|dont_descend|
           dir[dont_descend]
         }
       }.first
