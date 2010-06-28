@@ -107,12 +107,12 @@ module Babushka
         }
       }.first
     end
-  end
 
-  def identity_dirs
-    Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
-      dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
-    }
+    def identity_dirs
+      Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
+        dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
+      }
+    end
   end
 
   class TarArchive < Archive
