@@ -1,3 +1,7 @@
+meta 'test meta 1' do
+  
+end
+
 dep 'test dep 1' do
   
 end

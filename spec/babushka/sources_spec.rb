@@ -185,6 +185,11 @@ describe "finding" do
     source.load!.should be_true
     source.find('test dep 1').should == source.deps.deps.first
   end
+  it "should find the specified template" do
+    source = Source.new('spec/deps/good')
+    source.load!.should be_true
+    source.find_template('test meta 1').should == source.templates.templates.first
+  end
 end
 
 describe Source, "#present?" do
