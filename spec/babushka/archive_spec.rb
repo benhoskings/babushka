@@ -64,7 +64,7 @@ describe Archive do
   end
   it "shouldn't descend into some dirs" do
     Archive.for(archive_path / "Blah.app.zip").extract {
-      Dir.pwd.should == '~/.babushka/src/Blah.app'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/Blah.app')
       Dir.glob('**/*').should == ['Blah.app', 'Blah.app/content.txt']
     }
   end
