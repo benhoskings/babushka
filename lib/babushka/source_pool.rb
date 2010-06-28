@@ -47,6 +47,22 @@ module Babushka
       end
     end
 
+    def template_for template_spec, opts = {}
+      if template_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
+        source_name, template_name = template_spec.split(SOURCE_DEP_SEPARATOR, 2)
+        Source.for_name(source_name).find_template(template_name)
+      elsif opts[:from]
+        opts[:from].find_template(template_spec) || template_for(template_spec)
+      else # Otherwise, load from the current source (opts[:from]) or the standard set.
+        matches = Base.sources.current.map {|source| source.find_template(template_spec) }.flatten.compact
+        if matches.length > 1
+          log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_name}'."
+        else
+          matches.first
+        end
+      end
+    end
+
     def load_all! opts = {}
       if opts[:first]
         # load_deps_from core_dep_locations.concat([*dep_locations]).concat(Source.all).uniq
