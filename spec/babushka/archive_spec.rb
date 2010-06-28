@@ -62,4 +62,29 @@ describe Archive do
       Dir.glob('*').should == ['content.txt']
     }
   end
+  it "shouldn't descend into some dirs" do
+    Archive.for(archive_path / "Blah.app.zip").extract {
+      Dir.pwd.should == '~/.babushka/src/Blah.app'.p
+      Dir.glob('**/*').should == ['Blah.app', 'Blah.app/content.txt']
+    }
+  end
+end
+
+describe Archive, '#content_subdir' do
+  before {
+    @archive = Archive.new('test.zip')
+    @archive.stub!(:identity_dirs).and_return(
+      %w[
+        Blah.app
+        Some.pkg
+        Test.bundle
+        Lolcode.tmbundle
+        something.else
+        and_a_random.file
+      ]
+    )
+  }
+  it "should reject dirs that shouldn't be descended" do
+    @archive.content_subdir.should == 'something.else'
+  end
 end

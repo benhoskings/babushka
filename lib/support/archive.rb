@@ -99,11 +99,19 @@ module Babushka
     end
 
     def content_subdir
+      identity_dirs.reject {|dir|
+        %w[app pkg bundle tmbundle].map {|i|
+          /\.#{i}$/
+        }.any? {|dont_descend|
+          dir[dont_descend]
+        }
+      }.first
+    end
+
+    def identity_dirs
       Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
         dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
-      }.reject {|dir|
-        [/\.app$/, /\.pkg$/].any? {|dont_descend| dir[dont_descend] }
-      }.first
+      }
     end
 
     def archive_prefix
