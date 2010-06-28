@@ -69,3 +69,22 @@ describe Archive do
     }
   end
 end
+
+describe Archive, '#content_subdir' do
+  before {
+    @archive = Archive.new('test.zip')
+    @archive.stub!(:identity_dirs).and_return(
+      %w[
+        Blah.app
+        Some.pkg
+        Test.bundle
+        Lolcode.tmbundle
+        something.else
+        and_a_random.file
+      ]
+    )
+  }
+  it "should reject dirs that shouldn't be descended" do
+    @archive.content_subdir.should == 'something.else'
+  end
+end
