@@ -43,14 +43,14 @@ module Babushka
       end
     end
 
-    def initialize cmd
-      @cmd = cmd.to_s
+    def initialize first, *rest
+      @cmd = first.is_a?(Array) ? first : [first].concat(rest)
     end
 
     def ok?; result end
 
     def run opts = {}, &block
-      debug "$ #{@cmd}".colorize('grey')
+      debug "$ #{[*@cmd].join(' ')}".colorize('grey')
       @stdout, @stderr = '', ''
 
       @result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|

@@ -40,6 +40,25 @@ describe "failable_shell" do
   end
 end
 
+describe 'argument behaviour' do
+  context "with a single string" do
+    it "should support compound commands" do
+      shell("echo trousers | tr a-z A-Z").should == 'TROUSERS'
+    end
+    it "should fail with unclosed quotes" do
+      shell('echo blah"').should be_nil
+    end
+  end
+  context "with an array" do
+    it "should treat as a command and args" do
+      shell(%w[echo trousers | tr a-z A-Z]).should == 'trousers | tr a-z A-Z'
+    end
+    it "should escape unclosed quotes" do
+      shell(['echo', 'blah"']).should == 'blah"'
+    end
+  end
+end
+
 describe "sudo" do
   before {
     @current_user = `whoami`.chomp

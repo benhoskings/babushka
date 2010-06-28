@@ -79,6 +79,7 @@ describe Archive, '#content_subdir' do
         Some.pkg
         Test.bundle
         Lolcode.tmbundle
+        OMGSettings.prefPane
         something.else
         and_a_random.file
       ]
