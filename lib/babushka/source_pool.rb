@@ -7,7 +7,7 @@ module Babushka
     end
 
     def default
-      [anonymous].concat(core)
+      [anonymous, core].dup
     end
 
     def current_names
@@ -23,9 +23,7 @@ module Babushka
     end
 
     def core
-      (@_cached_core ||= [
-        Source.new(Path.path / 'deps')
-      ]).dup
+      @_cached_core ||= Source.new(Path.path / 'deps')
     end
 
     def standard
