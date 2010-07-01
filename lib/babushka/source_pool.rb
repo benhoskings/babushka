@@ -73,10 +73,6 @@ module Babushka
       end
     end
 
-    def load_core!
-      core.map &:load!
-    end
-
     def list!
       descriptions = Source.present.tap {|sources|
         log "There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1} in #{Source.source_prefix}:"
