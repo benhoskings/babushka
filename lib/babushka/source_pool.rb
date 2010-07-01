@@ -54,9 +54,9 @@ module Babushka
         source_name, template_name = template_spec.split(SOURCE_DEP_SEPARATOR, 2)
         Source.for_name(source_name).find_template(template_name)
       elsif opts[:from]
-        opts[:from].find_template(template_spec) || template_for(template_spec)
-      else # Otherwise, load from the current source (opts[:from]) or the standard set.
-        matches = Base.sources.current.map {|source| source.find_template(template_spec) }.flatten.compact
+        opts[:from].find_template(template_spec)
+      else
+        matches = Base.sources.default.map {|source| source.find_template(template_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_name}'."
         else
