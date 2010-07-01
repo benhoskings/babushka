@@ -3,7 +3,11 @@ module Babushka
     SOURCE_DEP_SEPARATOR = ':'
 
     def current
-      @_cached_current ||= [anonymous].concat(core).concat(standard)
+      @_cached_current ||= default.concat(standard)
+    end
+
+    def default
+      [anonymous].concat(core)
     end
 
     def current_names
