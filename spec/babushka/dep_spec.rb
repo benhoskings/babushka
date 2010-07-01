@@ -4,25 +4,25 @@ require 'dep_support'
 describe "Dep.make" do
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.make "carriage\rreturn", Base.sources.default, {}, nil
+      Dep.make "carriage\rreturn", Base.sources.anonymous, {}, nil
     }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.make "slashes/invalidate names", Base.sources.default, {}, nil
+      Dep.make "slashes/invalidate names", Base.sources.anonymous, {}, nil
     }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
     Dep("slashes/invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", Base.sources.default, {}, nil).should be_an_instance_of(Dep)
-    }.should change(Base.sources.default, :count).by(1)
+      Dep.make("valid dep name", Base.sources.anonymous, {}, nil).should be_an_instance_of(Dep)
+    }.should change(Base.sources.anonymous, :count).by(1)
     Dep("valid dep name").should be_an_instance_of Dep
   end
   context "without template" do
     before {
-      @dep = Dep.make("valid base dep", Base.sources.default, {}, nil)
+      @dep = Dep.make("valid base dep", Base.sources.anonymous, {}, nil)
     }
     it "should work" do
       @dep.should be_an_instance_of Dep
@@ -32,13 +32,13 @@ describe "Dep.make" do
   context "with template" do
     it "should fail to create optioned deps against a missing template" do
       L{
-        Dep.make("valid dep name", Base.sources.default, {:template => 'template'}, nil)
+        Dep.make("valid dep name", Base.sources.anonymous, {:template => 'template'}, nil)
       }.should raise_error DepError, "There is no template named 'template' to define 'valid dep name' against."
     end
     context "with template from options" do
       before {
         @meta = meta('option template')
-        @dep = Dep.make("valid option dep", Base.sources.default, {:template => 'option template'}, nil)
+        @dep = Dep.make("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
       }
       it "should work" do
         @dep.should be_an_instance_of Dep
@@ -48,14 +48,14 @@ describe "Dep.make" do
     context "with template from suffix" do
       before {
         @meta = meta('.suffix_template')
-        @dep = Dep.make("valid dep name.suffix_template", Base.sources.default, {}, nil)
+        @dep = Dep.make("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
       }
       it "should work" do
         @dep.should be_an_instance_of Dep
         @dep.template.should == @meta
       end
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
 end
 
@@ -63,7 +63,7 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "blank"
-    }.should change(Base.sources.default, :count).by(1)
+    }.should change(Base.sources.anonymous, :count).by(1)
     Dep('blank').should be_an_instance_of(Dep)
   end
   it "should work for filled in deps" do
@@ -75,7 +75,7 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Base.sources.default, :count).by(1)
+    }.should change(Base.sources.anonymous, :count).by(1)
     Dep('standard').should be_an_instance_of(Dep)
   end
   it "should accept deps as dep names" do
@@ -83,10 +83,10 @@ describe "dep creation" do
       dep 'parent dep' do
         requires dep('nested dep')
       end
-    }.should change(Base.sources.default, :count).by(2)
+    }.should change(Base.sources.anonymous, :count).by(2)
     Dep('parent dep').definer.requires.should == [Dep('nested dep')]
   end
-  after { Base.sources.default.deps.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 
   context "without template" do
     before { dep 'without template' }
@@ -125,7 +125,7 @@ describe "dep creation" do
       dep('with both templates.suffix_template', :template => 'option template').template.should == @template
     end
   end
-  after { Base.sources.default.templates.clear! }
+  after { Base.sources.anonymous.templates.clear! }
 end
 
 describe Dep, '#basename' do
@@ -149,14 +149,14 @@ describe Dep, '#basename' do
         dep('basename test.basename template', :template => 'basename template').basename.should == 'basename test.basename template'
       end
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
   context "for suffix-templated deps" do
     before { meta '.basename_template' }
     it "should remove the suffix name" do
       dep('basename test.basename_template').basename.should == 'basename test'
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
 end
 
@@ -182,7 +182,7 @@ describe "calling met? on a single dep" do
     ).met?.should == true
     @yield_counts['met for met'].should == @yield_counts_met_run
   end
-  after { Base.sources.default.deps.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end
 
 describe "calling meet on a single dep" do
@@ -219,5 +219,5 @@ describe "calling meet on a single dep" do
     ).meet.should == true
     @yield_counts['met'].should == @yield_counts_already_met
   end
-  after { Base.sources.default.deps.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end

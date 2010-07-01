@@ -43,7 +43,7 @@ describe "accepts_block_for behaviour" do
     value_from_block.should == lambda
   end
 
-  after { Base.sources.default.deps.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end
 
 describe "source_template" do

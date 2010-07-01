@@ -3,7 +3,7 @@ module Babushka
     SOURCE_DEP_SEPARATOR = ':'
 
     def current
-      @_cached_current ||= [default].concat(core).concat(standard)
+      @_cached_current ||= [anonymous].concat(core).concat(standard)
     end
 
     def current_names
@@ -14,8 +14,8 @@ module Babushka
       current.concat(Source.present)
     end
 
-    def default
-      @_cached_default ||= Source.new(nil, :name => 'default')
+    def anonymous
+      @_cached_anonymous ||= Source.new(nil, :name => 'anonymous')
     end
 
     def core
