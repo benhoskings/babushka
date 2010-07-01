@@ -23,13 +23,13 @@ module Babushka
     end
 
     def core
-      @_cached_core ||= Source.new(Path.path / 'deps')
+      @_cached_core ||= Source.new(Path.path / 'deps', :name => 'core')
     end
 
     def standard
       (@_cached_standard ||= [
-        Source.new('./babushka_deps'),
-        Source.new('~/.babushka/deps')
+        Source.new('./babushka_deps', :name => 'current dir'),
+        Source.new('~/.babushka/deps', :name => 'personal')
       ]).dup
     end
 
