@@ -118,14 +118,19 @@ end
 describe "defining deps" do
   before {
     @source = Source.new('spec/deps/good')
+    @source.load!
   }
   context "after loading" do
-    it "should not have defined the deps" do
-      dep = @source.deps.for('test dep 1')
-      dep.dep_defined?.should be_false
-      dep.template.should be_an_instance_of(BaseTemplate)
-      dep.definer.should be_an_instance_of(BaseDepDefiner)
-      dep.runner.should be_an_instance_of(BaseDepRunner)
+    before {
+      @dep = @source.deps.for('test dep 1')
+    }
+    it "should have defined the deps" do
+      @dep.dep_defined?.should be_true
+    end
+    it "should have the right template, definer and runner" do
+      @dep.template.should == Dep::BaseTemplate
+      @dep.definer.should be_an_instance_of(BaseDepDefiner)
+      @dep.runner.should be_an_instance_of(BaseDepRunner)
     end
   end
 end
