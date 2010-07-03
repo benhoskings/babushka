@@ -81,21 +81,55 @@ describe Source, '#path' do
 end
 
 describe "loading deps" do
-  it "should load deps from a file" do
-    source = Source.new('spec/deps/good')
-    source.load!.should be_true
-    source.deps.names.should include('test dep 1')
+  context "with a good source" do
+    before {
+      @source = Source.new('spec/deps/good')
+      @source.stub!(:define_deps)
+      @source.load!
+    }
+    it "should load deps from a file" do
+      @source.deps.names.should include('test dep 1')
+      @source.deps.names.should include('test dep 2')
+    end
+    it "should not have defined the deps" do
+      dep = @source.deps.for('test dep 1')
+      dep.dep_defined?.should be_false
+      dep.template.should be_nil
+      dep.definer.should be_nil
+      dep.runner.should be_nil
+    end
+    it "should store the source the dep was loaded from" do
+      @source.deps.for('test dep 1').dep_source.should == @source
+    end
   end
-  it "should recover from load errors" do
-    source = Source.new('spec/deps/bad')
-    source.load!.should be_true
-    source.deps.names.should_not include('broken test dep 1')
-    source.deps.names.should include('test dep 1')
+  context "with a source with errors" do
+    before {
+      @source = Source.new('spec/deps/bad')
+      @source.stub!(:define_deps)
+      @source.load!
+    }
+    it "should recover from load errors" do
+      @source.deps.names.should_not include('broken test dep 1')
+      @source.deps.names.should include('test dep 1')
+    end
   end
-  it "should store the source the dep was loaded from" do
-    source = Source.new('spec/deps/good')
-    source.load!
-    source.deps.deps.first.dep_source.should == source
+end
+
+describe "defining deps" do
+  before {
+    @source = Source.new('spec/deps/good')
+  }
+  it "should succeed" do
+    @source.load!.should be_true
+  end
+  context "after loading" do
+    it "should not have defined the deps" do
+      dep = @source.deps.for('test dep 1')
+      dep.dep_defined?.should be_false
+      dep.template.should be_an_instance_of(BaseTemplate)
+      dep.definer.should be_an_instance_of(BaseDepDefiner)
+      dep.runner.should be_an_instance_of(BaseDepRunner)
+    end
   end
 end
 
