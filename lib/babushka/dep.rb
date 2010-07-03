@@ -47,10 +47,14 @@ module Babushka
       @template = template
       @runner = template.runner_class.new self
       @definer = template.definer_class.new self, &block
+      @load_path = DepDefiner.current_load_path
+      define!
+    end
+
+    def define!
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      @load_path = DepDefiner.current_load_path
-      source.deps.register self
+      @dep_source.deps.register self
     end
 
     def self.for dep_spec, opts = {}
