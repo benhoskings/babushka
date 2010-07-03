@@ -56,6 +56,11 @@ module Babushka
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       @dep_source.deps.register self
+      @dep_defined = true
+    end
+
+    def dep_defined?
+      @dep_defined
     end
 
     def self.for dep_spec, opts = {}
