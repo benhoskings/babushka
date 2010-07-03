@@ -42,16 +42,17 @@ module Babushka
       @opts = {
         :for => :all
       }.merge in_opts
+      @block = block
       @vars = {}
       @dep_source = source
       @template = template
-      @runner = template.runner_class.new self
-      @definer = template.definer_class.new self, &block
       @load_path = DepDefiner.current_load_path
       define!
     end
 
     def define!
+      @runner = template.runner_class.new self
+      @definer = template.definer_class.new self, &@block
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       @dep_source.deps.register self
