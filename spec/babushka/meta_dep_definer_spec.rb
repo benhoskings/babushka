@@ -6,7 +6,7 @@ shared_examples_for 'defined meta dep' do
     @meta.name.should == 'test'
   end
   it "should set the source" do
-    @meta.source.should == Base.sources.default
+    @meta.source.should == Base.sources.anonymous
   end
   it "should define a dep definer" do
     @meta.definer_class.should be_an_instance_of Class
@@ -31,13 +31,13 @@ describe "declaration" do
     @meta = meta 'test'
   }
   it "should work" do
-    L{ meta 'count_test' }.should change(Base.sources.default.templates, :count).by(1)
+    L{ meta 'count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
   end
   it_should_behave_like 'defined meta dep'
   it "should not be marked as suffixed" do
     @meta.opts[:suffix].should be_false
   end
-  after { Base.sources.default.templates.clear! }
+  after { Base.sources.anonymous.templates.clear! }
 end
 
 describe "declaration with dot" do
@@ -45,7 +45,7 @@ describe "declaration with dot" do
     @meta = meta '.test'
   }
   it "should work" do
-    L{ meta '.suffix_count_test' }.should change(Base.sources.default.templates, :count).by(1)
+    L{ meta '.suffix_count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
   end
   it_should_behave_like 'defined meta dep'
   it "should be marked as suffixed" do
@@ -57,7 +57,7 @@ describe "declaration with dot" do
       L{ meta '.collision_test' }.should raise_error ArgumentError, "A template called 'collision_test' has already been defined."
     end
   end
-  after { Base.sources.default.templates.clear! }
+  after { Base.sources.anonymous.templates.clear! }
 end
 
 describe "using" do
@@ -79,7 +79,7 @@ describe "using" do
     it "should define deps based on the template" do
       dep('templateless dep.templateless_test').template.should == @meta
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
 
   describe "with template" do
@@ -111,7 +111,7 @@ describe "using" do
         met? { 'overridden met? block.' }
       }.send(:call_task, :met?).should == 'overridden met? block.'
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
 
   describe "acceptors" do
@@ -143,6 +143,6 @@ describe "using" do
       }.meet
       block_called.should be_true
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
 end

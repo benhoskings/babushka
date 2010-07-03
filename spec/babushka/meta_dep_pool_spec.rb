@@ -6,7 +6,7 @@ describe MetaDepPool, '#for_dep' do
     dep 'meta_dep_pool_dep 1'
     dep 'meta_dep_pool_dep 2.meta_dep_pool_other'
     dep 'meta_dep_pool_dep 3.meta_dep_pool_test'
-    @pool = Base.sources.default.templates
+    @pool = Base.sources.anonymous.templates
   }
   it "should return nil for nonexistent deps" do
     @pool.for_dep('meta_dep_pool_dep 0').should be_nil
@@ -21,7 +21,7 @@ describe MetaDepPool, '#for_dep' do
     @pool.for_dep('meta_dep_pool_dep 3.meta_dep_pool_test').should be_an_instance_of MetaDepWrapper
   end
   after {
-    Base.sources.default.deps.clear!
-    Base.sources.default.templates.clear!
+    Base.sources.anonymous.deps.clear!
+    Base.sources.anonymous.templates.clear!
   }
 end

@@ -3,7 +3,11 @@ module Babushka
     SOURCE_DEP_SEPARATOR = ':'
 
     def current
-      @_cached_current ||= [default].concat(core).concat(standard)
+      @_cached_current ||= default.concat(standard)
+    end
+
+    def default
+      [anonymous, core].dup
     end
 
     def current_names
@@ -14,20 +18,18 @@ module Babushka
       current.concat(Source.present)
     end
 
-    def default
-      @_cached_default ||= Source.new(nil, :name => 'default')
+    def anonymous
+      @_cached_anonymous ||= Source.new(nil, :name => 'anonymous')
     end
 
     def core
-      (@_cached_core ||= [
-        Source.new(Path.path / 'deps')
-      ]).dup
+      @_cached_core ||= Source.new(Path.path / 'deps', :name => 'core')
     end
 
     def standard
       (@_cached_standard ||= [
-        Source.new('./babushka_deps'),
-        Source.new('~/.babushka/deps')
+        Source.new('./babushka_deps', :name => 'current dir'),
+        Source.new('~/.babushka/deps', :name => 'personal')
       ]).dup
     end
 
@@ -52,9 +54,9 @@ module Babushka
         source_name, template_name = template_spec.split(SOURCE_DEP_SEPARATOR, 2)
         Source.for_name(source_name).find_template(template_name)
       elsif opts[:from]
-        opts[:from].find_template(template_spec) || template_for(template_spec)
-      else # Otherwise, load from the current source (opts[:from]) or the standard set.
-        matches = Base.sources.current.map {|source| source.find_template(template_spec) }.flatten.compact
+        opts[:from].find_template(template_spec)
+      else
+        matches = Base.sources.default.map {|source| source.find_template(template_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_name}'."
         else
@@ -69,10 +71,6 @@ module Babushka
       else
         current.map &:load!
       end
-    end
-
-    def load_core!
-      core.map &:load!
     end
 
     def list!

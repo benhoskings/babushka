@@ -32,7 +32,7 @@ describe "name checks" do
     it "should be prevented" do
       L{ meta(:duplicate) }.should raise_error ArgumentError, "A template called 'duplicate' has already been defined."
     end
-    after { Base.sources.default.templates.clear! }
+    after { Base.sources.anonymous.templates.clear! }
   end
 end
 

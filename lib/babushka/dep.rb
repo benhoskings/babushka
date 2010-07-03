@@ -27,7 +27,7 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
         template = if opts[:template]
-          returning DepDefiner.current_load_source.templates.for(opts[:template]) do |t|
+          returning Base.sources.template_for(opts[:template], :from => DepDefiner.current_load_source) do |t|
             raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
           end
         else
