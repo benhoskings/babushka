@@ -151,10 +151,7 @@ module Babushka
       if @loaded
         debug "Not re-loading #{name} (#{uri})."
       else
-        path.p.glob('**/*.rb').partition {|f|
-          f.p.basename == 'templates.rb' or
-          f.p.parent.basename == 'templates'
-        }.flatten.each {|f|
+        path.p.glob('**/*.rb').each {|f|
           DepDefiner.load_context :source => self, :path => f do
             begin
               load f
