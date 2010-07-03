@@ -109,7 +109,7 @@ describe "loading deps" do
       @source.load!
     }
     it "should recover from load errors" do
-      @source.deps.names.should_not include('broken test dep 1')
+      @source.deps.names.should include('broken test dep 1')
       @source.deps.names.should include('test dep 1')
     end
   end
@@ -131,6 +131,18 @@ describe "defining deps" do
       @dep.template.should == Dep::BaseTemplate
       @dep.definer.should be_an_instance_of(BaseDepDefiner)
       @dep.runner.should be_an_instance_of(BaseDepRunner)
+    end
+  end
+  context "with errors" do
+    before {
+      @source = Source.new('spec/deps/bad')
+      @source.load!
+    }
+    it "should have defined the good deps" do
+      @source.deps.for('test dep 1').should be_dep_defined
+    end
+    it "should not have defined the bad deps" do
+      @source.deps.for('broken test dep 1').should_not be_dep_defined
     end
   end
 end
