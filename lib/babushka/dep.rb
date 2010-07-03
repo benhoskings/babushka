@@ -47,6 +47,7 @@ module Babushka
       @dep_source = source
       @template = template
       @load_path = DepDefiner.current_load_path
+      @dep_source.deps.register self
       define!
     end
 
@@ -55,7 +56,6 @@ module Babushka
       @definer = template.definer_class.new self, &@block
       definer.define_and_process
       debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      @dep_source.deps.register self
       @dep_defined = true
     end
 
