@@ -119,9 +119,6 @@ describe "defining deps" do
   before {
     @source = Source.new('spec/deps/good')
   }
-  it "should succeed" do
-    @source.load!.should be_true
-  end
   context "after loading" do
     it "should not have defined the deps" do
       dep = @source.deps.for('test dep 1')
@@ -216,12 +213,10 @@ end
 describe "finding" do
   it "should find the specified dep" do
     source = Source.new('spec/deps/good')
-    source.load!.should be_true
     source.find('test dep 1').should == source.deps.deps.first
   end
   it "should find the specified template" do
     source = Source.new('spec/deps/good')
-    source.load!.should be_true
     source.find_template('test meta 1').should == source.templates.templates.first
   end
 end
