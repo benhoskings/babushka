@@ -211,13 +211,15 @@ describe Source, '.present' do
 end
 
 describe "finding" do
+  before {
+    @source = Source.new('spec/deps/good')
+    @source.load!
+  }
   it "should find the specified dep" do
-    source = Source.new('spec/deps/good')
-    source.find('test dep 1').should == source.deps.deps.first
+    @source.find('test dep 1').should == @source.deps.deps.first
   end
   it "should find the specified template" do
-    source = Source.new('spec/deps/good')
-    source.find_template('test meta 1').should == source.templates.templates.first
+    @source.find_template('test meta 1').should == @source.templates.templates.first
   end
 end
 
