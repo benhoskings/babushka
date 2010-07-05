@@ -54,9 +54,14 @@ module Babushka
     def define!
       @runner = template.runner_class.new self
       @definer = template.definer_class.new self, &@block
-      definer.define_and_process
-      debug "\"#{name}\" depends on #{payload[:requires].inspect}"
-      @dep_defined = true
+      begin
+        definer.define_and_process
+        @dep_defined = true
+      rescue Exception => e
+        log_error "#{e.backtrace.first}: #{e.message}"
+        log "Check #{(e.backtrace.detect {|l| l[@load_path] } || @load_path).sub(/\:in [^:]+$/, '')}."
+        debug e.backtrace * "\n"
+      end
     end
 
     def dep_defined?
