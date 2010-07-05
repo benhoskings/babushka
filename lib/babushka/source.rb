@@ -156,7 +156,7 @@ module Babushka
         debug "Not re-loading #{name} (#{uri})."
       else
         path.p.glob('**/*.rb').each {|f|
-          DepDefiner.load_context :source => self, :path => f do
+          DepDefiner.load_context :source => self, :path => f, :opts => {:delay_defining => true} do
             begin
               load f
             rescue Exception => e
