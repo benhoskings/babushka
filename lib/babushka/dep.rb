@@ -33,7 +33,7 @@ module Babushka
         else
           DepDefiner.current_load_source.templates.for_dep(name)
         end
-        new name, source, opts, block, (template || BaseTemplate)
+        new name, source, DepDefiner.current_load_opts.merge(opts), block, (template || BaseTemplate)
       end
     end
 
