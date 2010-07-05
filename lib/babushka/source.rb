@@ -4,7 +4,7 @@ module Babushka
   class Source
     attr_reader :name, :uri, :type, :deps, :templates
 
-    delegate :count, :skipped_count, :uncache!, :to => :deps
+    delegate :count, :skipped_count, :uncache!, :define_deps!, :to => :deps
 
     def self.present
       source_prefix.glob('*').map(&:p).select {|path|
@@ -146,7 +146,7 @@ module Babushka
       unless @currently_loading
         @currently_loading = true
         pull! if cloneable?
-        load_deps! unless implicit? # implicit sources can't be loaded.
+        load_deps! and define_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
     end
