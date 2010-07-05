@@ -44,10 +44,10 @@ module Babushka
     end
 
     def define!
-      @template = template_for opts[:template]
-      @runner = template.runner_class.new self
-      @definer = template.definer_class.new self, &@block
       begin
+        @template = template_for opts[:template]
+        @runner = template.runner_class.new self
+        @definer = template.definer_class.new self, &@block
         definer.define_and_process
         @dep_defined = true
       rescue Exception => e
