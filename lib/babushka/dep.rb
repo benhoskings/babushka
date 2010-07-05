@@ -26,18 +26,11 @@ module Babushka
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        template = if opts[:template]
-          returning Base.sources.template_for(opts[:template], :from => DepDefiner.current_load_source) do |t|
-            raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-          end
-        else
-          DepDefiner.current_load_source.templates.for_dep(name)
-        end
-        new name, source, DepDefiner.current_load_opts.merge(opts), block, (template || BaseTemplate)
+        new name, source, DepDefiner.current_load_opts.merge(opts), block
       end
     end
 
-    def initialize name, source, in_opts, block, template
+    def initialize name, source, in_opts, block
       @name = name.to_s
       @opts = {
         :for => :all
@@ -45,13 +38,13 @@ module Babushka
       @block = block
       @vars = {}
       @dep_source = source
-      @template = template
       @load_path = DepDefiner.current_load_path
       @dep_source.deps.register self
       define! unless opts[:delay_defining]
     end
 
     def define!
+      @template = template_for opts[:template]
       @runner = template.runner_class.new self
       @definer = template.definer_class.new self, &@block
       begin
@@ -66,6 +59,16 @@ module Babushka
 
     def dep_defined?
       @dep_defined
+    end
+
+    def template_for template_name
+      if template_name
+        returning Base.sources.template_for(template_name, :from => DepDefiner.current_load_source) do |t|
+          raise DepError, "There is no template named '#{template_name}' to define '#{name}' against." if t.nil?
+        end
+      else
+        DepDefiner.current_load_source.templates.for_dep(name) || BaseTemplate
+      end
     end
 
     def self.for dep_spec, opts = {}
