@@ -48,7 +48,7 @@ module Babushka
       @template = template
       @load_path = DepDefiner.current_load_path
       @dep_source.deps.register self
-      define!
+      define! unless opts[:delay_defining]
     end
 
     def define!

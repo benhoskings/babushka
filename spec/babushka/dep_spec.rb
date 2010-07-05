@@ -128,6 +128,27 @@ describe "dep creation" do
   after { Base.sources.anonymous.templates.clear! }
 end
 
+describe Dep, "defining" do
+  it "should define the dep when called without a block" do
+    dep('defining test').should be_dep_defined
+  end
+  it "should define the dep when called with a block" do
+    dep('defining test with block') do
+      requires 'another dep'
+    end.should be_dep_defined
+  end
+  context "with delayed defining" do
+    it "should not define the dep when called without a block" do
+      dep('delayed defining test', :delay_defining => true).should_not be_dep_defined
+    end
+    it "should not define the dep when called with a block" do
+      dep('delayed defining test with block', :delay_defining => true) do
+        requires 'another dep'
+      end.should_not be_dep_defined
+    end
+  end
+end
+
 describe Dep, '#basename' do
   context "for base deps" do
     it "should be the same as the dep's name" do
