@@ -131,7 +131,7 @@ end
 describe DepDefiner, '.load_context' do
   context "without delayed defining" do
     before {
-      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil, Dep::BaseTemplate)
+      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
     }
     it "should pass the correct options" do
       dep 'load_context without delay'
@@ -139,7 +139,7 @@ describe DepDefiner, '.load_context' do
   end
   context "with delayed defining" do
     before {
-      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil, Dep::BaseTemplate)
+      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil)
     }
     it "should pass the correct options" do
       DepDefiner.load_context :opts => {:delay_defining => true} do
