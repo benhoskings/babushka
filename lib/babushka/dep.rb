@@ -49,7 +49,7 @@ module Babushka
         define_dep!
       rescue Exception => e
         log_error "#{e.backtrace.first}: #{e.message}"
-        log "Check #{(e.backtrace.detect {|l| l[@load_path] } || @load_path).sub(/\:in [^:]+$/, '')}."
+        log "Check #{(e.backtrace.detect {|l| l[@load_path] } || @load_path).sub(/\:in [^:]+$/, '')}." unless @load_path.nil?
         debug e.backtrace * "\n"
       end
     end
