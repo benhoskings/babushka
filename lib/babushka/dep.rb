@@ -247,7 +247,10 @@ module Babushka
     public
 
     def inspect
-      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}'" +
+      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}' #{defined_info}"
+    end
+
+    def defined_info
       if dep_defined?
         "#{" (#{'un' unless cached_process}met)" if cached?} <- [#{definer.requires.map(&:name).join(', ')}]>"
       else
