@@ -4,7 +4,7 @@ module Babushka
   class Source
     attr_reader :name, :uri, :type, :deps, :templates
 
-    delegate :count, :skipped_count, :uncache!, :define_deps!, :to => :deps
+    delegate :count, :skipped_count, :uncache!, :to => :deps
 
     def self.present
       source_prefix.glob('*').map(&:p).select {|path|
@@ -168,6 +168,12 @@ module Babushka
         }
         log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}." unless deps.count.zero?
         @loaded = true
+      end
+    end
+
+    def define_deps!
+      DepDefiner.load_context :source => self do
+        deps.define_deps!
       end
     end
 
