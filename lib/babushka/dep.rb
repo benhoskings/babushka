@@ -46,15 +46,19 @@ module Babushka
     def define!
       begin
         @template = template_for opts[:template]
-        @runner = template.runner_class.new self
-        @definer = template.definer_class.new self, &@block
-        definer.define_and_process
-        @dep_defined = true
+        define_dep!
       rescue Exception => e
         log_error "#{e.backtrace.first}: #{e.message}"
         log "Check #{(e.backtrace.detect {|l| l[@load_path] } || @load_path).sub(/\:in [^:]+$/, '')}."
         debug e.backtrace * "\n"
       end
+    end
+
+    def define_dep!
+      @runner = template.runner_class.new self
+      @definer = template.definer_class.new self, &@block
+      definer.define_and_process
+      @dep_defined = true
     end
 
     def dep_defined?
