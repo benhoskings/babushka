@@ -44,8 +44,8 @@ module Babushka
     end
 
     def define!
+      @template = template_for_dep
       begin
-        @template = template_for_dep
         define_dep!
       rescue Exception => e
         log_error "#{e.backtrace.first}: #{e.message}"
