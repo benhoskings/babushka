@@ -42,20 +42,20 @@ describe SourcePool, '#template_for' do
       Base.sources.template_for('anonymous meta').should == @anonymous_meta
     end
     it "should find templates in the core source" do
-      Base.sources.template_for('core meta').should == @core_meta
+      Base.sources.template_for('core_meta').should == @core_meta
     end
     it "should not find templates from non-default sources" do
-      Base.sources.template_for('meta 1').should be_nil
-      Base.sources.template_for('meta 3').should be_nil
+      Base.sources.template_for('meta_1').should be_nil
+      Base.sources.template_for('meta_3').should be_nil
     end
   end
   context "with namespacing" do
     it "should find the dep when the namespace is correct" do
-      Base.sources.template_for('source_1:meta 1').should == @meta1
+      Base.sources.template_for('source_1:meta_1').should == @meta1
       Base.sources.template_for('source_2:meta 4').should == @meta4
     end
     it "should not find the dep when the namespace is wrong" do
-      Base.sources.template_for('source_1:meta 3').should be_nil
+      Base.sources.template_for('source_1:').should be_nil
       Base.sources.template_for('source_2:meta 2').should be_nil
     end
   end
