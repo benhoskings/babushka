@@ -48,6 +48,20 @@ describe SourcePool, '#template_for' do
       Base.sources.template_for('meta_1').should be_nil
       Base.sources.template_for('meta_3').should be_nil
     end
+    context "with :from" do
+      it "should find the template in the same source" do
+        Base.sources.template_for('from test', :from => @source1).should == @from1
+        Base.sources.template_for('from test', :from => @source2).should == @from2
+      end
+      context "when it doesn't exist in the :from source" do
+        it "should find the template in the core source" do
+          Base.sources.template_for('core from', :from => @source1).should == @core_from
+        end
+        it "should not find the template in other sources" do
+          Base.sources.template_for('from test 2', :from => @source1).should be_nil
+        end
+      end
+    end
   end
   context "with namespacing" do
     it "should find the dep when the namespace is correct" do

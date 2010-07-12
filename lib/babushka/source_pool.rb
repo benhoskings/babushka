@@ -54,7 +54,7 @@ module Babushka
         source_name, template_name = template_spec.split(SOURCE_DEP_SEPARATOR, 2)
         Source.for_name(source_name).find_template(template_name)
       elsif opts[:from]
-        opts[:from].find_template(template_spec)
+        opts[:from].find_template(template_spec) || template_for(template_spec)
       else
         matches = Base.sources.default.map {|source| source.find_template(template_spec) }.flatten.compact
         if matches.length > 1
