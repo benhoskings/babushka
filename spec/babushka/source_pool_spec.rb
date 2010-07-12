@@ -1,5 +1,6 @@
 require 'spec_support'
 require 'sources_support'
+require 'source_pool_support'
 
 describe SourcePool, '#dep_for' do
   before {
@@ -34,25 +35,7 @@ end
 
 describe SourcePool, '#template_for' do
   before {
-    @source1 = Source.new nil, :name => 'source_1'
-    @source2 = Source.new nil, :name => 'source_2'
-    [Base.sources.anonymous, Base.sources.core, @source1, @source2].each {|s| s.stub!(:load!) }
-    Source.stub!(:present).and_return [@source1, @source2]
-
-    DepDefiner.load_context :source => Base.sources.anonymous do
-      @anonymous_meta = meta 'anonymous meta'
-    end
-    DepDefiner.load_context :source => Base.sources.core do
-      @core_meta = meta 'core meta'
-    end
-    DepDefiner.load_context :source => @source1 do
-      @meta1 = meta 'meta 1'
-      @meta2 = meta 'meta 2'
-    end
-    DepDefiner.load_context :source => @source2 do
-      @meta3 = meta 'meta 3'
-      @meta4 = meta 'meta 4'
-    end
+    mock_sources
   }
   context "without namespacing" do
     it "should find templates in the anonymous source" do
