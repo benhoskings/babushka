@@ -26,7 +26,7 @@ managed_template = L{
     add_cfg_deps
   }
   met? {
-    if !installs.blank?
+    if installs.blank?
       log_ok "Not required on #{pkg_manager.manager_key}-based systems."
     else
       packages_present? and provided?
