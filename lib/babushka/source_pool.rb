@@ -50,7 +50,9 @@ module Babushka
     end
 
     def template_for template_spec, opts = {}
-      if template_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
+      if template_spec.nil?
+        nil
+      elsif template_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
         source_name, template_name = template_spec.split(SOURCE_DEP_SEPARATOR, 2)
         Source.for_name(source_name).find_template(template_name)
       elsif opts[:from]

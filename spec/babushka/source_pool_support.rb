@@ -23,3 +23,9 @@ def mock_sources
     @from2_2 = meta 'from test 2'
   end
 end
+
+def mock_dep dep_name, opts
+  DepDefiner.load_context :source => opts[:in] do
+    dep dep_name, :template => opts[:template]
+  end
+end

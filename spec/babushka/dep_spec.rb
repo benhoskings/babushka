@@ -109,11 +109,29 @@ describe "dep creation" do
     before {
       @template = meta '.suffix_template'
     }
-    it "should use the specified template as an option" do
-      dep('with suffix template', :template => 'suffix_template').template.should == @template
+    context "as option template" do
+      before {
+        @dep = dep('with suffix template', :template => 'suffix_template')
+      }
+      it "should use the specified template as an option" do
+        @dep.template.should == @template
+      end
+      it "should not be suffixed" do
+        @dep.should_not be_suffixed
+        @dep.suffix.should be_nil
+      end
     end
-    it "should use the specified template as a suffix" do
-      dep('with suffix template.suffix_template').template.should == @template
+    context "as suffix template" do
+      before {
+        @dep = dep('with suffix template.suffix_template')
+      }
+      it "should use the specified template as a suffix" do
+        @dep.template.should == @template
+      end
+      it "should not be suffixed" do
+        @dep.should be_suffixed
+        @dep.suffix.should == 'suffix_template'
+      end
     end
   end
   context "with both templates" do
@@ -173,7 +191,7 @@ describe Dep, '#basename' do
     after { Base.sources.anonymous.templates.clear! }
   end
   context "for suffix-templated deps" do
-    before { meta '.basename_template' }
+    before { meta 'basename_template' }
     it "should remove the suffix name" do
       dep('basename test.basename_template').basename.should == 'basename test'
     end

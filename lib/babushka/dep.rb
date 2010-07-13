@@ -71,7 +71,7 @@ module Babushka
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
       else
-        returning Base.sources.template_for(name.gsub(/^.*\./, ''), :from => DepDefiner.current_load_source) || BaseTemplate do |t|
+        returning Base.sources.template_for(suffix, :from => DepDefiner.current_load_source) || BaseTemplate do |t|
           opts[:suffixed] = (t != BaseTemplate)
         end
       end
@@ -94,7 +94,11 @@ module Babushka
     end
 
     def basename
-      template.suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
+      suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
+    end
+
+    def suffix
+      name.scan(MetaDepWrapper::TEMPLATE_SUFFIX).flatten.first
     end
 
     def met?
@@ -242,6 +246,10 @@ module Babushka
     end
     def cache_process value
       @_cached_process = (value.nil? ? false : value)
+    end
+
+    def suffixed?
+      opts[:suffixed]
     end
 
     def payload
