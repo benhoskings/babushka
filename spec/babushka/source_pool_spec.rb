@@ -78,3 +78,46 @@ describe SourcePool, '#template_for' do
     Base.sources.core.templates.clear!
   }
 end
+
+describe "template selection during defining" do
+  before {
+    mock_sources
+  }
+  context "with namespacing" do
+    it "should use templates from the named source" do
+      dep('template selection 1', :template => 'source_1:meta_1').template.should == @meta1
+    end
+    it "should not find the template with the wrong source prefix, and raise" do
+      L{
+        dep('template selection 2', :template => 'source_2:meta_1')
+      }.should raise_error DepError, "There is no template named 'source_2:meta_1' to define 'template selection 2' against."
+    end
+  end
+  context "without namespacing" do
+    context "with :template option" do
+      it "should find a template in the same source" do
+        mock_dep('template selection 3', :template => 'meta_1', :in => @source1).template.should == @meta1
+      end
+      it "should not find a template in the wrong source, and raise" do
+        L{
+          mock_dep('template selection 4', :template => 'meta_3', :in => @source1)
+          }.should raise_error DepError, "There is no template named 'meta_3' to define 'template selection 4' against."
+      end
+    end
+    context "with suffixes" do
+      it "should find a template in the same source" do
+        mock_dep('template selection 3.meta_1', :in => @source1).template.should == @meta1
+      end
+      it "should find a template in the core source" do
+        mock_dep('template selection 3.core_meta', :in => @source1).template.should == @core_meta
+      end
+      it "should not find a template in the wrong source, and use the base template" do
+        mock_dep('template selection 4.meta_3', :in => @source1).template.should == Dep::BaseTemplate
+      end
+    end
+  end
+  after {
+    Base.sources.anonymous.templates.clear!
+    Base.sources.core.templates.clear!
+  }
+end
