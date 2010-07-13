@@ -44,7 +44,7 @@ module Babushka
     end
 
     def define!
-      @template = template_for_dep
+      assign_template
       begin
         define_dep!
       rescue Exception => e
@@ -65,8 +65,8 @@ module Babushka
       @dep_defined
     end
 
-    def template_for_dep
-      if opts[:template]
+    def assign_template
+      @template = if opts[:template]
         returning Base.sources.template_for(opts[:template], :from => DepDefiner.current_load_source) do |t|
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
