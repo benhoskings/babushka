@@ -6,7 +6,7 @@ module Babushka
 
     attr_reader :payload, :source_path
 
-    delegate :name, :to => :dependency
+    delegate :name, :basename, :to => :dependency
     delegate :merge, :var, :define_var, :to => :runner
 
     def default_blocks
