@@ -94,7 +94,7 @@ module Babushka
     end
 
     def basename
-      template.suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
+      suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
     end
 
     def suffix
