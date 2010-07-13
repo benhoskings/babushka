@@ -143,19 +143,20 @@ module Babushka
     end
 
     def load!
-      pull! if cloneable?
-      load_deps! unless implicit? # implicit sources can't be loaded.
+      unless @currently_loading
+        @currently_loading = true
+        pull! if cloneable?
+        load_deps! and define_deps! unless implicit? # implicit sources can't be loaded.
+        @currently_loading = false
+      end
     end
 
     def load_deps!
       if @loaded
         debug "Not re-loading #{name} (#{uri})."
       else
-        path.p.glob('**/*.rb').partition {|f|
-          f.p.basename == 'templates.rb' or
-          f.p.parent.basename == 'templates'
-        }.flatten.each {|f|
-          DepDefiner.load_context :source => self, :path => f do
+        path.p.glob('**/*.rb').each {|f|
+          DepDefiner.load_context :source => self, :path => f, :opts => {:delay_defining => true} do
             begin
               load f
             rescue Exception => e
@@ -167,6 +168,12 @@ module Babushka
         }
         log_ok "Loaded #{deps.count}#{" and skipped #{skipped_count}" unless skipped_count.zero?} deps from #{path}." unless deps.count.zero?
         @loaded = true
+      end
+    end
+
+    def define_deps!
+      DepDefiner.load_context :source => self do
+        deps.define_deps!
       end
     end
 

@@ -26,9 +26,10 @@ module Babushka
     def self.load_context opts, &block
       @@current_load_source = opts[:source]
       @@current_load_path = opts[:path]
+      @@current_load_opts = opts[:opts]
       yield
     ensure
-      @@current_load_source = @@current_load_path = nil
+      @@current_load_source = @@current_load_path = @@current_load_opts = nil
     end
 
     def initialize dep, &block
@@ -62,6 +63,10 @@ module Babushka
 
     def self.current_load_path
       @@current_load_path ||= nil
+    end
+
+    def self.current_load_opts
+      @@current_load_opts ||= {}
     end
 
     def self.accepted_blocks

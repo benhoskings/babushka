@@ -58,7 +58,7 @@ end
 
 dep 'babushka installed' do
   requires 'ruby', 'git'
-  requires_when_unmet 'writable install location'
+  requires_when_unmet 'writable.install_path'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { git_repo?(var(:install_path)) }
   meet {

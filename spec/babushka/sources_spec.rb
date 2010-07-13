@@ -81,21 +81,69 @@ describe Source, '#path' do
 end
 
 describe "loading deps" do
-  it "should load deps from a file" do
-    source = Source.new('spec/deps/good')
-    source.load!.should be_true
-    source.deps.names.should include('test dep 1')
+  context "with a good source" do
+    before {
+      @source = Source.new('spec/deps/good')
+      @source.stub!(:define_deps!)
+      @source.load!
+    }
+    it "should load deps from a file" do
+      @source.deps.names.should include('test dep 1')
+      @source.deps.names.should include('test dep 2')
+    end
+    it "should not have defined the deps" do
+      dep = @source.deps.for('test dep 1')
+      dep.dep_defined?.should be_false
+      dep.template.should be_nil
+      dep.definer.should be_nil
+      dep.runner.should be_nil
+    end
+    it "should store the source the dep was loaded from" do
+      @source.deps.for('test dep 1').dep_source.should == @source
+    end
   end
-  it "should recover from load errors" do
-    source = Source.new('spec/deps/bad')
-    source.load!.should be_true
-    source.deps.names.should_not include('broken test dep 1')
-    source.deps.names.should include('test dep 1')
+  context "with a source with errors" do
+    before {
+      @source = Source.new('spec/deps/bad')
+      @source.stub!(:define_deps!)
+      @source.load!
+    }
+    it "should recover from load errors" do
+      @source.deps.names.should include('broken test dep 1')
+      @source.deps.names.should include('test dep 1')
+    end
   end
-  it "should store the source the dep was loaded from" do
-    source = Source.new('spec/deps/good')
-    source.load!
-    source.deps.deps.first.dep_source.should == source
+end
+
+describe "defining deps" do
+  before {
+    @source = Source.new('spec/deps/good')
+    @source.load!
+  }
+  context "after loading" do
+    before {
+      @dep = @source.deps.for('test dep 1')
+    }
+    it "should have defined the deps" do
+      @dep.dep_defined?.should be_true
+    end
+    it "should have the right template, definer and runner" do
+      @dep.template.should == Dep::BaseTemplate
+      @dep.definer.should be_an_instance_of(BaseDepDefiner)
+      @dep.runner.should be_an_instance_of(BaseDepRunner)
+    end
+  end
+  context "with errors" do
+    before {
+      @source = Source.new('spec/deps/bad')
+      @source.load!
+    }
+    it "should have defined the good deps" do
+      @source.deps.for('test dep 1').should be_dep_defined
+    end
+    it "should not have defined the bad deps" do
+      @source.deps.for('broken test dep 1').should_not be_dep_defined
+    end
   end
 end
 
@@ -180,15 +228,15 @@ describe Source, '.present' do
 end
 
 describe "finding" do
+  before {
+    @source = Source.new('spec/deps/good')
+    @source.load!
+  }
   it "should find the specified dep" do
-    source = Source.new('spec/deps/good')
-    source.load!.should be_true
-    source.find('test dep 1').should == source.deps.deps.first
+    @source.find('test dep 1').should == @source.deps.deps.first
   end
   it "should find the specified template" do
-    source = Source.new('spec/deps/good')
-    source.load!.should be_true
-    source.find_template('test meta 1').should == source.templates.templates.first
+    @source.find_template('test meta 1').should == @source.templates.templates.first
   end
 end
 

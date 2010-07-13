@@ -38,6 +38,9 @@ module Babushka
     def uncache!
       deps.each {|dep| dep.send :uncache! }
     end
+    def define_deps!
+      deps.each {|dep| dep.define! }
+    end
 
     def register dep
       raise "There is already a registered dep called '#{dep.name}'." if @dep_hash.has_key?(dep.name)

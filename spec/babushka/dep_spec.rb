@@ -32,8 +32,8 @@ describe "Dep.make" do
   context "with template" do
     it "should fail to create optioned deps against a missing template" do
       L{
-        Dep.make("valid dep name", Base.sources.anonymous, {:template => 'template'}, nil)
-      }.should raise_error DepError, "There is no template named 'template' to define 'valid dep name' against."
+        Dep.make("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil)
+      }.should raise_error DepError, "There is no template named 'template' to define 'valid but missing template' against."
     end
     context "with template from options" do
       before {
@@ -126,6 +126,27 @@ describe "dep creation" do
     end
   end
   after { Base.sources.anonymous.templates.clear! }
+end
+
+describe Dep, "defining" do
+  it "should define the dep when called without a block" do
+    dep('defining test').should be_dep_defined
+  end
+  it "should define the dep when called with a block" do
+    dep('defining test with block') do
+      requires 'another dep'
+    end.should be_dep_defined
+  end
+  context "with delayed defining" do
+    it "should not define the dep when called without a block" do
+      dep('delayed defining test', :delay_defining => true).should_not be_dep_defined
+    end
+    it "should not define the dep when called with a block" do
+      dep('delayed defining test with block', :delay_defining => true) do
+        requires 'another dep'
+      end.should_not be_dep_defined
+    end
+  end
 end
 
 describe Dep, '#basename' do

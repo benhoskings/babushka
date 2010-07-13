@@ -8,6 +8,9 @@ module Babushka
     def count
       @template_hash.length
     end
+    def names
+      @template_hash.keys
+    end
     def templates
       @template_hash.values
     end
