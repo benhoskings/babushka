@@ -191,7 +191,7 @@ describe Dep, '#basename' do
     after { Base.sources.anonymous.templates.clear! }
   end
   context "for suffix-templated deps" do
-    before { meta '.basename_template' }
+    before { meta 'basename_template' }
     it "should remove the suffix name" do
       dep('basename test.basename_template').basename.should == 'basename test'
     end
