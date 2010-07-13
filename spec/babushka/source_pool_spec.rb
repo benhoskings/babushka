@@ -1,5 +1,6 @@
 require 'spec_support'
 require 'sources_support'
+require 'source_pool_support'
 
 describe SourcePool, '#dep_for' do
   before {
@@ -34,45 +35,41 @@ end
 
 describe SourcePool, '#template_for' do
   before {
-    @source1 = Source.new nil, :name => 'source_1'
-    @source2 = Source.new nil, :name => 'source_2'
-    [Base.sources.anonymous, Base.sources.core, @source1, @source2].each {|s| s.stub!(:load!) }
-    Source.stub!(:present).and_return [@source1, @source2]
-
-    DepDefiner.load_context :source => Base.sources.anonymous do
-      @anonymous_meta = meta 'anonymous meta'
-    end
-    DepDefiner.load_context :source => Base.sources.core do
-      @core_meta = meta 'core meta'
-    end
-    DepDefiner.load_context :source => @source1 do
-      @meta1 = meta 'meta 1'
-      @meta2 = meta 'meta 2'
-    end
-    DepDefiner.load_context :source => @source2 do
-      @meta3 = meta 'meta 3'
-      @meta4 = meta 'meta 4'
-    end
+    mock_sources
   }
   context "without namespacing" do
     it "should find templates in the anonymous source" do
       Base.sources.template_for('anonymous meta').should == @anonymous_meta
     end
     it "should find templates in the core source" do
-      Base.sources.template_for('core meta').should == @core_meta
+      Base.sources.template_for('core_meta').should == @core_meta
     end
     it "should not find templates from non-default sources" do
-      Base.sources.template_for('meta 1').should be_nil
-      Base.sources.template_for('meta 3').should be_nil
+      Base.sources.template_for('meta_1').should be_nil
+      Base.sources.template_for('meta_3').should be_nil
+    end
+    context "with :from" do
+      it "should find the template in the same source" do
+        Base.sources.template_for('from test', :from => @source1).should == @from1
+        Base.sources.template_for('from test', :from => @source2).should == @from2
+      end
+      context "when it doesn't exist in the :from source" do
+        it "should find the template in the core source" do
+          Base.sources.template_for('core from', :from => @source1).should == @core_from
+        end
+        it "should not find the template in other sources" do
+          Base.sources.template_for('from test 2', :from => @source1).should be_nil
+        end
+      end
     end
   end
   context "with namespacing" do
     it "should find the dep when the namespace is correct" do
-      Base.sources.template_for('source_1:meta 1').should == @meta1
+      Base.sources.template_for('source_1:meta_1').should == @meta1
       Base.sources.template_for('source_2:meta 4').should == @meta4
     end
     it "should not find the dep when the namespace is wrong" do
-      Base.sources.template_for('source_1:meta 3').should be_nil
+      Base.sources.template_for('source_1:').should be_nil
       Base.sources.template_for('source_2:meta 2').should be_nil
     end
   end

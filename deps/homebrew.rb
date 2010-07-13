@@ -9,7 +9,7 @@ dep 'homebrew binary in place' do
 end
 
 dep 'homebrew installed' do
-  requires_when_unmet 'writable install location', 'git'
+  requires_when_unmet 'writable.install_path', 'git'
   define_var :homebrew_prefix, :default => '/usr/local', :message => "Where would you like homebrew installed"
   define_var :homebrew_repo_user, :default => 'mxcl', :message => "Whose homebrew repo would you like to use?"
   setup {

@@ -26,31 +26,55 @@ module Babushka
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        template = if opts[:template]
-          returning DepDefiner.current_load_source.templates.for(opts[:template]) do |t|
-            raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-          end
-        else
-          DepDefiner.current_load_source.templates.for_dep(name)
-        end
-        new name, source, opts, block, (template || BaseTemplate)
+        new name, source, DepDefiner.current_load_opts.merge(opts), block
       end
     end
 
-    def initialize name, source, in_opts, block, template
+    def initialize name, source, in_opts, block
       @name = name.to_s
       @opts = {
         :for => :all
       }.merge in_opts
+      @block = block
       @vars = {}
       @dep_source = source
-      @template = template
-      @runner = template.runner_class.new self
-      @definer = template.definer_class.new self, &block
-      definer.define_and_process
-      debug "\"#{name}\" depends on #{payload[:requires].inspect}"
       @load_path = DepDefiner.current_load_path
-      source.deps.register self
+      @dep_source.deps.register self
+      define! unless opts[:delay_defining]
+    end
+
+    def define!
+      assign_template
+      begin
+        define_dep!
+      rescue Exception => e
+        log_error "#{e.backtrace.first}: #{e.message}"
+        log "Check #{(e.backtrace.detect {|l| l[@load_path] } || @load_path).sub(/\:in [^:]+$/, '')}." unless @load_path.nil?
+        debug e.backtrace * "\n"
+      end
+    end
+
+    def define_dep!
+      @runner = template.runner_class.new self
+      @definer = template.definer_class.new self, &@block
+      definer.define_and_process
+      @dep_defined = true
+    end
+
+    def dep_defined?
+      @dep_defined
+    end
+
+    def assign_template
+      @template = if opts[:template]
+        returning Base.sources.template_for(opts[:template], :from => DepDefiner.current_load_source) do |t|
+          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+        end
+      else
+        returning Base.sources.template_for(name.gsub(/^.*\./, ''), :from => DepDefiner.current_load_source) || BaseTemplate do |t|
+          opts[:suffixed] = (t != BaseTemplate)
+        end
+      end
     end
 
     def self.for dep_spec, opts = {}
@@ -91,7 +115,9 @@ module Babushka
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
-        if task.callstack.include? self
+        if !dep_defined?
+          log_error "This dep isn't defined. Perhaps there was a load error?"
+        elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !host.matches?(opts[:for])
           log_ok "Not required on #{host.differentiator_for opts[:for]}."
@@ -229,7 +255,15 @@ module Babushka
     public
 
     def inspect
-      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}'#{" (#{'un' unless cached_process}met)" if cached?} <- [#{definer.requires.map(&:name).join(', ')}]>"
+      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}' #{defined_info}>"
+    end
+
+    def defined_info
+      if dep_defined?
+        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{definer.requires.map(&:name).join(', ')}]"
+      else
+        "(not defined yet)"
+      end
     end
   end
 end
