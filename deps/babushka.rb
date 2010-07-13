@@ -1,5 +1,5 @@
 dep 'babushka' do
-  requires 'babushka in path', 'babushka up to date', 'dep source'
+  requires 'babushka in path', 'babushka up to date'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
   define_var :babushka_branch,
     :message => "Which branch would you like to update from?",
@@ -56,22 +56,9 @@ dep 'babushka in path' do
   }
 end
 
-dep 'dep source' do
-  requires 'babushka in path'
-  setup {
-    define_var :dep_source, :default => (shell('git config github.user') || 'benhoskings'), :message => "Whose deps would you like to install (you can add others' later)"
-  }
-  met? {
-    returning(!(source_count = shell('babushka sources -l').split("\n").reject {|l| l.starts_with? '#' }.length).zero?) do |result|
-      log_ok "There #{source_count == 1 ? 'is' : 'are'} #{source_count} dep source#{'s' unless source_count == 1} set up." if result
-    end
-  }
-  meet { shell "babushka sources -a '#{var :dep_source}' 'git://github.com/#{var(:dep_source)}/babushka-deps'", :log => true }
-end
-
 dep 'babushka installed' do
   requires 'ruby', 'git'
-  requires_when_unmet 'writable install location'
+  requires_when_unmet 'writable.install_path'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { git_repo?(var(:install_path)) }
   meet {

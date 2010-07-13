@@ -34,7 +34,7 @@ describe "an already met dep tree" do
       @yield_counts['g'].should == @yield_counts_none
     end
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end
 
 describe "an unmeetable dep tree" do
@@ -61,7 +61,7 @@ describe "an unmeetable dep tree" do
       %w[d e g].each {|i| @yield_counts[i].should == @yield_counts_none }
     end
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end
 
 describe "a meetable dep tree" do
@@ -79,10 +79,10 @@ describe "a meetable dep tree" do
   describe "meet" do
     before { Dep('a').meet }
     it "should meet each dep exactly once" do
-      Dep.pool.names.each {|i| @yield_counts[i].should == @yield_counts_meet_run }
+      Base.sources.anonymous.deps.names.each {|i| @yield_counts[i].should == @yield_counts_meet_run }
     end
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end
 
 describe "a partially meetable dep tree" do
@@ -109,5 +109,5 @@ describe "a partially meetable dep tree" do
       %w[a b d].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
     end
   end
-  after { Dep.pool.clear! }
+  after { Base.sources.anonymous.deps.clear! }
 end

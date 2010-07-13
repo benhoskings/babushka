@@ -34,22 +34,18 @@ babushka_components = %w[
   babushka/pkg_helpers/src_helper
   babushka/dep
   babushka/dep_pool
+  babushka/meta_dep_pool
   babushka/definer_helpers
   babushka/task
   babushka/source
+  babushka/source_pool
   babushka/dep_runner
   babushka/dep_runners/base_dep_runner
   babushka/dep_runners/meta_dep_runner
-  babushka/dep_runners/pkg_dep_runner
-  babushka/dep_runners/gem_dep_runner
-  babushka/dep_runners/ext_dep_runner
   babushka/dep_definer
   babushka/dep_definers/meta_dep_wrapper
   babushka/dep_definers/base_dep_definer
   babushka/dep_definers/meta_dep_definer
-  babushka/dep_definers/pkg_dep_definer
-  babushka/dep_definers/gem_dep_definer
-  babushka/dep_definers/ext_dep_definer
 ]
 
 require File.join(
@@ -90,7 +86,4 @@ include Babushka::VersionOf::Helpers
 if $0 == __FILE__
   # Running standalone - run the specified command and exit.
   exit Babushka::Base.run(ARGV) ? 0 : 1
-else
-  # Required - just init and load deps.
-  Babushka::Base.setup_noninteractive
 end

@@ -81,7 +81,7 @@ module Babushka
     end
 
     def extract &block
-      in_build_dir { process_extract &block }
+      in_dir(archive_prefix, :create => true) { process_extract &block }
     end
 
     def process_extract &block
@@ -99,11 +99,23 @@ module Babushka
     end
 
     def content_subdir
+      identity_dirs.reject {|dir|
+        %w[app pkg bundle tmbundle prefPane].map {|i|
+          /\.#{i}$/
+        }.any? {|dont_descend|
+          dir[dont_descend]
+        }
+      }.first
+    end
+
+    def identity_dirs
       Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
         dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
-      }.reject {|dir|
-        [/\.app$/, /\.pkg$/].any? {|dont_descend| dir[dont_descend] }
-      }.first
+      }
+    end
+
+    def archive_prefix
+      BuildPrefix
     end
   end
 

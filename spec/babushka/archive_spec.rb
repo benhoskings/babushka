@@ -48,18 +48,44 @@ describe Archive do
   end
   it "should yield in the extracted dir" do
     Archive.for(archive_path / "archive.tar").extract {
-      Dir.pwd.should == '~/.babushka/src/archive'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/archive')
     }
   end
   it "should yield in the nested dir if there is one" do
     Archive.for(archive_path / "nested_archive.tar").extract {
-      Dir.pwd.should == '~/.babushka/src/nested_archive/nested archive'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/nested_archive/nested archive')
     }
   end
   it "should find a standard content dir as a nested dir" do
     Archive.for(archive_path / "test-0.3.1.tgz").extract {
-      Dir.pwd.should == '~/.babushka/src/test-0.3.1/test-0.3.1'.p
+      Dir.pwd.should == (tmp_prefix / 'archives/test-0.3.1/test-0.3.1')
       Dir.glob('*').should == ['content.txt']
     }
+  end
+  it "shouldn't descend into some dirs" do
+    Archive.for(archive_path / "Blah.app.zip").extract {
+      Dir.pwd.should == (tmp_prefix / 'archives/Blah.app')
+      Dir.glob('**/*').should == ['Blah.app', 'Blah.app/content.txt']
+    }
+  end
+end
+
+describe Archive, '#content_subdir' do
+  before {
+    @archive = Archive.new('test.zip')
+    @archive.stub!(:identity_dirs).and_return(
+      %w[
+        Blah.app
+        Some.pkg
+        Test.bundle
+        Lolcode.tmbundle
+        OMGSettings.prefPane
+        something.else
+        and_a_random.file
+      ]
+    )
+  }
+  it "should reject dirs that shouldn't be descended" do
+    @archive.content_subdir.should == 'something.else'
   end
 end

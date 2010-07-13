@@ -1,9 +1,8 @@
-ext 'xcode tools' do
-  if_missing 'gcc', 'g++', 'autoconf', 'make', 'ld' do
-    log_and_open "Install Xcode, and then run Babushka again.",
-      "http://developer.apple.com/technology/xcode.html"
-    :fail
-  end
+dep 'xcode tools', :template => 'external' do
+  expects 'gcc', 'g++', 'autoconf', 'make', 'ld'
+  otherwise {
+    log_and_open "Install Xcode, and then run Babushka again.", "http://developer.apple.com/technology/xcode.html"
+  }
 end
 
 dep 'llvm in path', :for => :snow_leopard do

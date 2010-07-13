@@ -1,4 +1,4 @@
-src 'macports' do
+dep 'macports.src' do
   requires 'build tools'
   provides 'port'
   prefix '/opt/local'
@@ -6,14 +6,15 @@ src 'macports' do
   after { log_shell "Running port selfupdate", "port selfupdate", :sudo => true }
 end
 
-ext 'apt' do
+dep 'apt', :template => 'external' do
   requires {
     on :ubuntu, 'main apt source', 'universe apt source'
     on :debian, 'main apt source'
   }
-  if_missing 'apt-get' do
+  expects 'apt-get'
+  otherwise {
     log "Your system doesn't seem to have Apt installed. Is it Debian-based?"
-  end
+  }
 end
 
 meta :apt_source do
@@ -34,11 +35,11 @@ meta :apt_source do
   }
 end
 
-apt_source 'main apt source' do
+dep 'main.apt_source' do
   source_name 'main'
 end
 
-apt_source 'universe apt source' do
+dep 'universe.apt_source' do
   source_name 'universe'
 end
 

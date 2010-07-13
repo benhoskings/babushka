@@ -22,15 +22,8 @@ module Babushka
           Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
           Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
         ]),
-        Opt.new(:list, '-l', '--list', "List dep sources", false, []),
-        Opt.new(:remove, '-r', '--remove', "Remove dep source", false, [
-          Arg.new(:name_or_uri, "The name or URI of the source to remove", false, false, 'benhoskings')
-        ]),
-        Opt.new(:clear, '-c', '--clear', "Remove all dep sources", false, [])
+        Opt.new(:list, '-l', '--list', "List dep sources", false, [])
       ], []),
-      Verb.new(:pull, nil, nil, "Update dep sources", [], [
-        Arg.new(:source, "Pull just a specific source", true, false)
-      ]),
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
@@ -56,7 +49,6 @@ module Babushka
       print_version
     end
     def handle_list verb
-      setup_noninteractive
       filter_str = verb.args.first.value unless verb.args.first.nil?
       Dep.pool.deps.select {|dep|
         filter_str.nil? || dep.name[filter_str]
@@ -84,18 +76,17 @@ module Babushka
     def handle_sources verb
       if verb.opts.length != 1
         fail_with help_for verb.def, "'sources' requires exactly one option."
-      else
-        Source.send "#{verb.opts.first.def.name}!", *verb.opts.first.args.map(&:value)
+      elsif verb.opts.first.def.name == :add
+        args = verb.opts.first.args.map(&:value)
+        begin
+          Source.new(args.last, :name => args.first).add!
+        rescue SourceError => ex
+          log_error ex.message
+        end
+      elsif verb.opts.first.def.name == :list
+        Base.sources.list!
       end
     end
-    def handle_pull verb
-      if verb.args.empty?
-        Source.pull!
-      else
-        puts "'pull' doesn't accept any options."
-      end
-    end
-
   end
   end
 end

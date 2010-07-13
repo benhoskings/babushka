@@ -1,6 +1,7 @@
 module Babushka
   WorkingPrefix = '~/.babushka'
-  SrcPrefix = WorkingPrefix / 'src'
+  SourcePrefix = WorkingPrefix / 'sources'
+  BuildPrefix = WorkingPrefix / 'build'
   DownloadPrefix = WorkingPrefix / 'downloads'
   LogPrefix = WorkingPrefix / 'logs'
   VarsPrefix = WorkingPrefix / 'vars'
@@ -17,30 +18,16 @@ module Babushka
     end
 
     def process dep_spec
-      if dep_spec[/\//].nil?
-        Base.setup_noninteractive
-        process_dep dep_spec
-      else
-        source_name, dep_name = dep_spec.split('/', 2)
-        if source = Source.add_external!(source_name, :from => :github)
-          if Base.setup_noninteractive_for source.path
-            process_dep dep_name
-          end
-        end
-      end
-    end
-
-    def process_dep dep_name
-      load_previous_run_info_for dep_name
-      returning(log_dep(dep_name) {
-        returning Dep.process dep_name do |result|
-          if Dep dep_name
-            save_run_info_for dep_name, result
-            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at #{LogPrefix / dep_name}." unless result
+      load_previous_run_info_for dep_spec
+      returning(log_dep(dep_spec) {
+        returning Dep.process(dep_spec, :top_level => true) do |result|
+          unless result.nil? # nil means the dep isn't defined
+            save_run_info_for dep_spec, result
+            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{LogPrefix / dep_spec}'." unless result
           end
         end
       }) {
-        BugReporter.report dep_name if reportable
+        BugReporter.report dep_spec if reportable
       }
     end
 
