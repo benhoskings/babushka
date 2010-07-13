@@ -97,6 +97,10 @@ module Babushka
       template.suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
     end
 
+    def suffix
+      name.scan(MetaDepWrapper::TEMPLATE_SUFFIX).flatten.first
+    end
+
     def met?
       process :dry_run => true, :top_level => true
     end
@@ -242,6 +246,10 @@ module Babushka
     end
     def cache_process value
       @_cached_process = (value.nil? ? false : value)
+    end
+
+    def suffixed?
+      opts[:suffixed]
     end
 
     def payload
