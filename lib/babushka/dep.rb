@@ -71,7 +71,9 @@ module Babushka
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
       else
-        DepDefiner.current_load_source.templates.for_dep(name) || BaseTemplate
+        returning Base.sources.template_for(name.gsub(/^.*\./, ''), :from => DepDefiner.current_load_source) || BaseTemplate do |t|
+          opts[:suffixed] = (t != BaseTemplate)
+        end
       end
     end
 
