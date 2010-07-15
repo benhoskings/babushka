@@ -5,7 +5,7 @@ module Babushka
     include Shell::Helpers
     extend Shell::Helpers
 
-    def self.get_source url, &block
+    def self.get url, &block
       filename = URI.unescape(url.to_s).p.basename
       if filename.to_s.blank?
         log_error "Not a valid URL to download: #{url}"
@@ -16,8 +16,14 @@ module Babushka
         if !download_path
           log_error "Failed to download #{url}."
         else
-          in_build_dir { Resource.for(download_path).extract(&block) }
+          block.call download_path
         end
+      end
+    end
+
+    def self.get_source url, &block
+      get url do |download_path|
+        in_build_dir { Resource.for(download_path).extract(&block) }
       end
     end
 
