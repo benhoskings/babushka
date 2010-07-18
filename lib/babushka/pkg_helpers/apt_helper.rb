@@ -9,7 +9,7 @@ module Babushka
     def manager_key; :apt end
 
     def _install! pkgs, opts
-      log_shell "Downloading", "#{pkg_cmd} -d install #{pkgs.join(' ')}", :sudo => should_sudo?
+      log_shell "Downloading", "#{pkg_cmd} -y -d install #{pkgs.join(' ')}", :sudo => should_sudo?
       super
     end
 
