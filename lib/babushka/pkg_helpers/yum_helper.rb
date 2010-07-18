@@ -12,10 +12,6 @@ module Babushka
       failable_shell("#{pkg_binary} list '#{pkg_name}'").stdout.val_for(/^#{pkg_name}\.(\w+)/).ends_with?('installed')
     end
 
-    def pkg_update_timeout
-      3600 * 24 # 1 day
-    end
-
   end
   end
 end
