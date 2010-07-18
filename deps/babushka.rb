@@ -1,15 +1,21 @@
 dep 'babushka' do
-  requires 'babushka set up', 'dep source'
+  requires 'set up.babushka'
   setup { set :babushka_branch, 'master' }
 end
 
 dep 'babushka next' do
-  requires 'babushka set up'
+  requires 'set up.babushka'
   setup { set :babushka_branch, 'next' }
 end
 
-dep 'babushka set up' do
-  requires 'babushka in path', 'babushka up to date'
+meta :babushka do
+  template {
+    run_in L{ var(:install_path) }
+  }
+end
+
+dep 'set up.babushka' do
+  requires 'babushka in path', 'up to date.babushka'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
   define_var :babushka_branch,
     :message => "Which branch would you like to update from?",
@@ -23,8 +29,8 @@ dep 'babushka set up' do
   }
 end
 
-dep 'babushka up to date' do
-  requires 'babushka repo clean', 'babushka update would fast forward'
+dep 'up to date.babushka' do
+  requires 'repo clean.babushka', 'update would fast forward.babushka'
   met? {
     in_dir(var(:install_path)) {
       shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty?
@@ -33,7 +39,7 @@ dep 'babushka up to date' do
   meet { in_dir(var(:install_path)) { shell("git merge origin/#{var :babushka_branch}", :log => true) } }
 end
 
-dep 'babushka update would fast forward' do
+dep 'update would fast forward.babushka' do
   requires 'babushka installed'
   met? {
     in_dir(var(:install_path)) {
@@ -48,7 +54,7 @@ dep 'babushka update would fast forward' do
   }
 end
 
-dep 'babushka repo clean' do
+dep 'repo clean.babushka' do
   requires 'babushka installed'
   met? {
     in_dir(var(:install_path)) {
