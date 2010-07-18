@@ -46,3 +46,9 @@ end
 dep 'homebrew' do
   requires 'homebrew binary in place', 'build tools'
 end
+
+dep 'yum', :template => 'external' do
+  if_missing 'yum' do
+    log "Your system doesn't seem to have Yum installed. Is it Redhat-based?"
+  end
+end
