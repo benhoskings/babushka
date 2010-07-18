@@ -51,11 +51,11 @@ meta :managed do
   end
 
   def pkg_manager
-    Babushka::PkgHelper.for_system
+    Babushka::Base.host.pkg_helper
   end
 
   def chooser
-    Babushka::PkgHelper.for_system.manager_key
+    Babushka::Base.host.pkg_helper.manager_key
   end
 
   def chooser_choices

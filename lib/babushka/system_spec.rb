@@ -23,6 +23,7 @@ module Babushka
 
     def linux?; false end
     def osx?; false end
+    def pkg_helper; nil end
 
     def name
       (name_map[system][flavour] || {})[release]
@@ -165,6 +166,7 @@ module Babushka
     def version; version_info.val_for 'ProductVersion' end
     def release; version.match(/^\d+\.\d+/).to_s end
     def get_version_info; shell 'sw_vers' end
+    def pkg_helper; BrewHelper end
   end
   
   class LinuxSystemSpec < SystemSpec
@@ -202,6 +204,7 @@ module Babushka
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
     def get_version_info; shell 'lsb_release -a' end
+    def pkg_helper; AptHelper end
   end
 
   class RedhatSystemSpec < LinuxSystemSpec
