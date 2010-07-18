@@ -5,13 +5,6 @@ module Babushka
 
     def pkg_binary; pkg_cmd end
 
-    def for_system
-      {
-        :osx => BrewHelper,
-        :linux => AptHelper
-      }[host.system]
-    end
-
     def manager_dep
       manager_key.to_s
     end
