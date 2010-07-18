@@ -135,7 +135,7 @@ module Babushka
     end
 
     def process_in_dir
-      path = payload[:run_in].is_a?(Symbol) ? vars[payload[:run_in]] : payload[:run_in]
+      path = definer.run_in.empty? ? nil : definer.run_in.first.to_s
       in_dir path do
         process_task(:internal_setup)
         process_task(:setup)
