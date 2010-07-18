@@ -51,7 +51,7 @@ module Babushka
 
     def check_for_formulas pkgs
       pkgs.all? {|pkg|
-        returning has_formula_for? pkg do |result|
+        returning has_formula_for?(pkg) do |result|
           log_error "There is no formula for '#{pkg}' in #{formulas_path}." unless result
         end
       }
@@ -80,7 +80,7 @@ module Babushka
       installed = Dir[
         installed_pkgs_path / pkg_name / '*'
       ].map {|i|
-        File.basename i.chomp '/'
+        File.basename i.chomp('/')
       }.map(&:to_version)
     end
 

@@ -9,7 +9,7 @@ module Babushka
       system = {
         'Linux' => LinuxSystemSpec,
         'Darwin' => OSXSystemSpec
-      }[shell 'uname -s']
+      }[shell('uname -s')]
       system.for_flavour unless system.nil?
     end
 

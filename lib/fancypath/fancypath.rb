@@ -7,7 +7,7 @@ class Fancypath < Pathname
       Fancypath.new to_tilde_expanded_path
     end
     def to_expanded_fancypath
-      Fancypath.new File.expand_path to_tilde_expanded_path
+      Fancypath.new File.expand_path(to_tilde_expanded_path)
     end
     def to_tilde_expanded_path
       sub(/^\~\/|^\~$/) {|_| Etc.getpwuid(Process.euid).dir.end_with('/') }

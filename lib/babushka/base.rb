@@ -60,7 +60,7 @@ module Babushka
     end
 
     def parse_cmdline_opt opt_def, args
-      returning PassedOpt.new opt_def, [] do |parsed_opt|
+      returning PassedOpt.new(opt_def, []) do |parsed_opt|
         parsed_opt.args = parse_cmdline_args(parsed_opt, opt_def.args, args)
       end
     end
