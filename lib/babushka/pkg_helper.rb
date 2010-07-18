@@ -5,6 +5,10 @@ module Babushka
 
     def pkg_binary; pkg_cmd end
 
+    def all_manager_keys
+      [:apt, :brew, :macports, :src]
+    end
+
     def manager_dep
       manager_key.to_s
     end
