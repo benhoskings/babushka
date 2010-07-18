@@ -27,7 +27,7 @@ dep 'babushka up to date' do
   requires 'babushka repo clean', 'babushka update would fast forward'
   met? {
     in_dir(var(:install_path)) {
-      shell("git rev-list ..origin/#{var :babushka_branch}").lines.to_a.empty?
+      shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty?
     }
   }
   meet { in_dir(var(:install_path)) { shell("git merge origin/#{var :babushka_branch}", :log => true) } }
@@ -40,7 +40,7 @@ dep 'babushka update would fast forward' do
       if !shell('git fetch')
         fail_because("Couldn't pull the latest code - check your internet connection.")
       else
-        shell("git rev-list origin/#{var :babushka_branch}..").lines.to_a.empty? or
+        shell("git rev-list origin/#{var :babushka_branch}..").split("\n").empty? or
         fail_because("There are unpushed commits in #{var(:install_path)}.")
       end
     }
@@ -51,7 +51,7 @@ dep 'babushka repo clean' do
   requires 'babushka installed'
   met? {
     in_dir(var(:install_path)) {
-      shell('git ls-files -m').lines.to_a.empty? or
+      shell('git ls-files -m').split("\n").empty? or
       fail_because("There are local changes in #{var(:install_path)}.")
     }
   }
