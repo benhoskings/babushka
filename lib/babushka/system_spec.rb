@@ -178,7 +178,7 @@ module Babushka
 
     def self.for_flavour
       unless (detected_flavour = detect_using_release_file).nil?
-        self.const_get("#{detected_flavour.capitalize}SystemSpec").new
+        Babushka.const_get("#{detected_flavour.capitalize}SystemSpec").new
       end
     end
 
