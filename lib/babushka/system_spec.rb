@@ -5,15 +5,16 @@ module Babushka
 
     attr_reader :version_info
 
-    def self.for_system
-      self.for({
-        'Linux' => :linux,
-        'Darwin' => :osx
-      }[shell 'uname -s'])
+    def self.for_host
+      system = {
+        'Linux' => LinuxSystemSpec,
+        'Darwin' => OSXSystemSpec
+      }[shell 'uname -s']
+      system.for_flavour unless system.nil?
     end
 
-    def self.for uname_info
-      system_map[uname_info].new
+    def self.for_flavour
+      new
     end
 
     def initialize
@@ -59,13 +60,6 @@ module Babushka
         [:system, :flavour, :name].index spec
       }.compact
       send "#{nonmatches.last}_str" unless nonmatches.empty?
-    end
-
-    def self.system_map
-      {
-        :osx => OSXSystemSpec,
-        :linux => LinuxSystemSpec
-      }
     end
 
     def all_systems
