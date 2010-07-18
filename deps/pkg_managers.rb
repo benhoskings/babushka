@@ -48,7 +48,8 @@ dep 'homebrew' do
 end
 
 dep 'yum', :template => 'external' do
-  if_missing 'yum' do
+  expects 'yum'
+  otherwise {
     log "Your system doesn't seem to have Yum installed. Is it Redhat-based?"
-  end
+  }
 end
