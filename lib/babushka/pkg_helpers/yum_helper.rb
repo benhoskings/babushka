@@ -9,7 +9,11 @@ module Babushka
     private
 
     def _has? pkg_name
-      failable_shell("#{pkg_binary} list '#{pkg_name}'").stdout.val_for(/^#{pkg_name}\.(\w+)/).ends_with?('installed')
+      # Some example output, with 'wget' installed:
+      #   fedora-13:  'wget.x86_64  1.12-2.fc13       @fedora'
+      #   centos-5.5: 'wget.x86_64  1.11.4-2.el5_4.1  installed'
+      final_word = failable_shell("#{pkg_binary} list '#{pkg_name}'").stdout[/[^\s]+$/] || ''
+      (final_word == 'installed') || final_word.starts_with?('@')
     end
 
   end
