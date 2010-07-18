@@ -171,10 +171,36 @@ module Babushka
     def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
+    def flavour_str; flavour_str_map[system][flavour] end
+    def release; version end
+
+    def self.for_flavour
+      unless (detected_flavour = detect_using_release_file).nil?
+        self.const_get("#{detected_flavour.capitalize}SystemSpec").new
+      end
+    end
+
+    private
+
+    def self.detect_using_release_file
+      %w[
+        debian_version
+        redhat-release
+        gentoo-release
+        SuSE-release
+        arch-release
+      ].select {|release_file|
+        File.exists? "/etc/#{release_file}"
+      }.map {|release_file|
+        release_file.sub(/[_\-](version|release)$/, '')
+      }.first
+    end
+  end
+
+  class DebianSystemSpec < LinuxSystemSpec
     def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
-    def release; version end
     def get_version_info; shell 'lsb_release -a' end
   end
 end
