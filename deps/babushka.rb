@@ -40,8 +40,9 @@ dep 'babushka update would fast forward' do
       if !shell('git fetch')
         fail_because("Couldn't pull the latest code - check your internet connection.")
       else
-        shell("git rev-list origin/#{var :babushka_branch}..").lines.to_a.empty? or
-        fail_because("There are unpushed commits in #{var(:install_path)}.")
+        current_branch = shell("git branch").split("\n").collapse(/^\* /).first
+        shell("git rev-list origin/#{current_branch}..").split("\n").empty? or
+        fail_because("There are unpushed commits in #{current_branch}.")
       end
     }
   }
