@@ -9,11 +9,15 @@ module Babushka
     private
 
     def _has? pkg_name
-      failable_shell("#{pkg_binary} list '#{pkg_name}'").stdout.val_for(/^#{pkg_name}\.(\w+)/).ends_with?('installed')
-    end
-
-    def pkg_update_timeout
-      3600 * 24 # 1 day
+      # Some example output, with 'wget' installed:
+      #   fedora-13:  'wget.x86_64  1.12-2.fc13       @fedora'
+      #   centos-5.5: 'wget.x86_64  1.11.4-2.el5_4.1  installed'
+      failable_shell("#{pkg_binary} list -q '#{pkg_name}'").stdout.split("\n").select {|line|
+        line[/^#{Regexp.escape(pkg_name.to_s)}\.\w+\b/] # e.g. wget.x86_64
+      }.any? {|match|
+        final_word = match[/[^\s]+$/] || ''
+        (final_word == 'installed') || final_word.starts_with?('@')
+      }
     end
 
   end
