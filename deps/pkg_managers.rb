@@ -8,8 +8,8 @@ end
 
 dep 'apt', :template => 'external' do
   requires {
-    on :ubuntu, 'main apt source', 'universe apt source'
-    on :debian, 'main apt source'
+    on :ubuntu, 'main.apt_source', 'universe.apt_source'
+    on :debian, 'main.apt_source'
   }
   expects 'apt-get'
   otherwise {
