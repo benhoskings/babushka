@@ -8,7 +8,7 @@ module Babushka
       @task ||= Task.new
     end
     def host
-      @host ||= Babushka::SystemSpec.for_system
+      @host ||= Babushka::SystemSpec.for_host
     end
     def sources
       @sources ||= SourcePool.new
