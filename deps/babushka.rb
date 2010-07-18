@@ -1,4 +1,14 @@
 dep 'babushka' do
+  requires 'babushka set up', 'dep source'
+  setup { set :babushka_branch, 'master' }
+end
+
+dep 'babushka next' do
+  requires 'babushka set up'
+  setup { set :babushka_branch, 'next' }
+end
+
+dep 'babushka set up' do
   requires 'babushka in path', 'babushka up to date'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
   define_var :babushka_branch,
@@ -10,7 +20,6 @@ dep 'babushka' do
     }
   setup {
     set :install_path, Babushka::Path.path if Babushka::Path.run_from_path?
-    set :babushka_branch, 'master'
   }
 end
 
