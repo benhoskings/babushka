@@ -31,36 +31,45 @@ end
 
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
-  met? {
-    in_dir(var(:install_path)) {
-      shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty?
-    }
-  }
-  meet { in_dir(var(:install_path)) { shell("git merge origin/#{var :babushka_branch}", :log => true) } }
+  met? { shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty? }
+  meet { shell("git merge origin/#{var :babushka_branch}", :log => true) }
 end
 
 dep 'update would fast forward.babushka' do
-  requires 'babushka installed'
+  requires 'on correct branch.babushka'
   met? {
-    in_dir(var(:install_path)) {
-      if !shell('git fetch')
-        fail_because("Couldn't pull the latest code - check your internet connection.")
-      else
-        current_branch = shell("git branch").split("\n").collapse(/^\* /).first
-        shell("git rev-list origin/#{current_branch}..").split("\n").empty? or
+    if !shell('git fetch')
+      fail_because("Couldn't pull the latest code - check your internet connection.")
+    else
+      current_branch = shell("git branch").split("\n").collapse(/^\* /).first
+      if !shell('git branch -a').split("\n").map(&:strip).include? "remotes/origin/#{current_branch}"
+        fail_because("The current branch, #{current_branch}, isn't pushed to origin/#{current_branch}.")
+      elsif !shell("git rev-list origin/#{current_branch}..").split("\n").empty?
         fail_because("There are unpushed commits in #{current_branch}.")
+      else
+        true
       end
-    }
+    end
   }
+end
+
+dep 'on correct branch.babushka' do
+  requires 'repo clean.babushka', 'branch exists.babushka'
+  met? { shell("git branch").split("\n").collapse(/^\* /).first == var(:babushka_branch) }
+  meet { shell("git checkout '#{var(:babushka_branch)}'") }
+end
+
+dep 'branch exists.babushka' do
+  requires 'babushka installed'
+  met? { !shell("git branch").split("\n").map {|i| i.gsub(/^[* ]+/, '') }.grep(var(:babushka_branch)).empty? }
+  meet { shell("git checkout -t 'origin/#{var(:babushka_branch)}'") }
 end
 
 dep 'repo clean.babushka' do
   requires 'babushka installed'
   met? {
-    in_dir(var(:install_path)) {
-      shell('git ls-files -m').split("\n").empty? or
-      fail_because("There are local changes in #{var(:install_path)}.")
-    }
+    shell('git ls-files -m').split("\n").empty? or
+    fail_because("There are local changes in #{var(:install_path)}.")
   }
 end
 
