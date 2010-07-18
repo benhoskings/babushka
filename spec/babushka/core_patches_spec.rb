@@ -36,6 +36,29 @@ describe Array, "to_list" do
   end
 end
 
+describe Array, '#collapse' do
+  it "should work for empty lists" do
+    [].collapse('blah').should == []
+    [].collapse(/blah/).should == []
+  end
+  it "should select first names from a list" do
+    [
+      'Ben Hoskings',
+      'Nathan Sampimon',
+      'Nathan de Vries'
+    ].collapse(/Nathan /).should == ['Sampimon', 'de Vries']
+  end
+  it "should strip git branch prefixes" do
+    [
+      '  next',
+      '* master',
+      '  topic'
+    ].collapse(/^\* /).should == [
+      'master'
+    ]
+  end
+end
+
 describe Array, '#local_group_by' do
   it "should work for empty lists" do
     [].group_by(&:length).should == {}
