@@ -143,6 +143,16 @@ module Babushka
         }
       }
     end
+    def flavour_str_map
+      # Only required for names that can't be auto-capitalized,
+      # e.g. :ubuntu => 'Ubuntu' isn't required.
+      {
+        :linux => {
+          :centos => 'CentOS',
+          :redhat => 'Red Hat'
+        }
+      }
+    end
 
   end
 
