@@ -203,4 +203,10 @@ module Babushka
     def version; version_info.val_for 'Release' end
     def get_version_info; shell 'lsb_release -a' end
   end
+
+  class RedhatSystemSpec < LinuxSystemSpec
+    def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
+    def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
+    def get_version_info; File.read '/etc/redhat-release' end
+  end
 end
