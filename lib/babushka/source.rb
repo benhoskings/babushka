@@ -76,12 +76,12 @@ module Babushka
 
     def find dep_spec
       load!
-      deps.for(dep_spec).tap {|o| debug "#{name} (#{count} deps, #{templates.count} templates): #{o.inspect}" }
+      deps.for(dep_spec)
     end
 
     def find_template template_spec
       load!
-      templates.for(template_spec).tap {|o| debug "#{name} (#{count} deps, #{templates.count} templates): #{o.inspect}" }
+      templates.for(template_spec)
     end
 
     def prefix
