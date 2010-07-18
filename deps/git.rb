@@ -8,6 +8,7 @@ end
 dep 'git.managed' do
   installs {
     via :apt, 'git-core'
+    via :yum, 'git'
     via :brew, 'git'
     via :macports, 'git-core +svn +bash_completion'
   }
