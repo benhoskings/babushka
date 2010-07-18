@@ -59,8 +59,7 @@ meta :managed do
   end
 
   def chooser_choices
-    # TODO integrate into SystemSpec, like SystemSpec.all_systems
-    [:apt, :brew, :macports, :src]
+    Babushka::PkgHelper.all_manager_keys
   end
 
   template &managed_template
