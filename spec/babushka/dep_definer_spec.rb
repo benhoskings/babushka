@@ -147,4 +147,18 @@ describe DepDefiner, '.load_context' do
       end
     end
   end
+  context "with nesting" do
+    before {
+      @source1, @source2 = Source.new(nil), Source.new(nil)
+    }
+    it "should maintain the outer context after the inner one returns" do
+      DepDefiner.load_context :source => @source1 do
+        DepDefiner.current_load_source.should == @source1
+        DepDefiner.load_context :source => @source2 do
+          DepDefiner.current_load_source.should == @source2
+        end
+        DepDefiner.current_load_source.should == @source1
+      end
+    end
+  end
 end
