@@ -104,26 +104,27 @@ module Babushka
       current.each {|source| source.send :uncache! }
     end
 
-    def load_context opts, &block
-      @current_load_source = opts[:source]
-      @current_load_path = opts[:path]
-      @current_load_opts = opts[:opts]
+    def load_context context, &block
+      (@load_contexts ||= []).push context
       yield
     ensure
-      @current_load_source = @current_load_path = @current_load_opts = nil
+      @load_contexts.pop
     end
 
     def current_load_source
-      @current_load_source ||= nil
-      @current_load_source || Base.sources.anonymous
+      current_load_context[:source] || Base.sources.anonymous
     end
-
     def current_load_path
-      @current_load_path ||= nil
+      current_load_context[:path]
+    end
+    def current_load_opts
+      current_load_context[:opts] || {}
     end
 
-    def current_load_opts
-      @current_load_opts ||= {}
+    private
+
+    def current_load_context
+      (@load_contexts ||= []).last || {}
     end
 
   end
