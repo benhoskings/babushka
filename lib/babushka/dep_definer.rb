@@ -27,7 +27,7 @@ module Babushka
       @dep = dep
       @payload = {}
       @block = block
-      @source_path = self.class.current_load_path.p unless self.class.current_load_path.nil?
+      @source_path = Base.sources.current_load_path.p unless Base.sources.current_load_path.nil?
     end
 
     def dependency
