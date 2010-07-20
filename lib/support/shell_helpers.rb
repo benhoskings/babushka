@@ -220,8 +220,8 @@ end
 def erb_path_for erb
   if erb.to_s.starts_with? '/'
     erb # absolute path
-  elsif source_path
-    File.dirname(source_path) / erb # directory this dep is in, plus relative path
+  elsif load_path
+    File.dirname(load_path) / erb # directory this dep is in, plus relative path
   end
 end
 

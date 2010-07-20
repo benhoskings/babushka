@@ -4,7 +4,7 @@ module Babushka
     include Prompt::Helpers
     include DepDefiner::Helpers
 
-    delegate :source_path, :to => :definer
+    delegate :load_path, :to => :the_dep
 
     def initialize dep
       @dep = dep

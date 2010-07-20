@@ -6,7 +6,7 @@ managed_template = L{
   helper :add_cfg_deps do
     cfg.all? {|target|
       target_file = target.to_s
-      source_file = File.dirname(source_path) / name / "#{File.basename(target_file)}.erb"
+      source_file = File.dirname(load_path) / name / "#{File.basename(target_file)}.erb"
       requires(dep("#{File.basename(target_file)} for #{name}") {
         met? { babushka_config? target_file }
         before {

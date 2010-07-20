@@ -14,7 +14,7 @@ module Babushka
       def meta name, opts = {}, &block; Base.sources.current_load_source.templates.add name, opts, block end
     end
 
-    attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source
+    attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source, :load_path
     attr_accessor :unmet_message
 
     delegate :desc, :to => :definer
@@ -49,7 +49,7 @@ module Babushka
         define_dep!
       rescue Exception => e
         log_error "#{e.backtrace.first}: #{e.message}"
-        log "Check #{(e.backtrace.detect {|l| l[@load_path] } || @load_path).sub(/\:in [^:]+$/, '')}." unless @load_path.nil?
+        log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
         debug e.backtrace * "\n"
       end
     end
@@ -209,7 +209,7 @@ module Babushka
     rescue StandardError => e
       log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
       log "#{e.backtrace.first}: #{e.message}".colorize('red')
-      dep_callpoint = e.backtrace.detect {|l| l[definer.source_path.to_s] } unless definer.source_path.nil?
+      dep_callpoint = e.backtrace.detect {|l| l[load_path.to_s] } unless load_path.nil?
       log "Check #{dep_callpoint}." unless dep_callpoint.nil?
       debug e.backtrace * "\n"
       Base.task.reportable = true

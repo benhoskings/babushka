@@ -4,7 +4,7 @@ module Babushka
     include Prompt::Helpers
     include VersionList
 
-    attr_reader :payload, :source_path
+    attr_reader :payload
 
     delegate :name, :basename, :to => :dependency
     delegate :merge, :var, :define_var, :to => :runner
@@ -27,7 +27,6 @@ module Babushka
       @dep = dep
       @payload = {}
       @block = block
-      @source_path = Base.sources.current_load_path.p unless Base.sources.current_load_path.nil?
     end
 
     def dependency
