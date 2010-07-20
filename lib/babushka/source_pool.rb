@@ -21,16 +21,18 @@ module Babushka
     def anonymous
       @_cached_anonymous ||= Source.new(nil, :name => 'anonymous')
     end
-
     def core
       @_cached_core ||= Source.new(Path.path / 'deps', :name => 'core')
     end
+    def current_dir
+      @_cached_current_dir ||= Source.new('./babushka_deps', :name => 'current dir')
+    end
+    def personal
+      @_cached_personal ||= Source.new('~/.babushka/deps', :name => 'personal')
+    end
 
     def standard
-      (@_cached_standard ||= [
-        Source.new('./babushka_deps', :name => 'current dir'),
-        Source.new('~/.babushka/deps', :name => 'personal')
-      ]).dup
+      [current_dir, personal]
     end
 
     def dep_for dep_spec, opts = {}
