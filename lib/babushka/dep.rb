@@ -136,7 +136,7 @@ module Babushka
 
     def process_in_dir
       path = definer.run_in.empty? ? nil : definer.run_in.first.to_s
-      in_dir path do
+      in_dir path, :create => true do
         process_task(:internal_setup)
         process_task(:setup)
         process_deps and process_self
