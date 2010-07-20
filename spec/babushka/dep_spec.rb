@@ -59,6 +59,36 @@ describe "Dep.make" do
   end
 end
 
+describe Dep, '.for' do
+  before {
+    @dep = dep 'Dep.for tests'
+  }
+  it "should work for strings" do
+    Dep.for('Dep.for tests').should == @dep
+  end
+  it "should work for VersionOfs" do
+    Dep.for(ver('Dep.for tests')).should == @dep
+  end
+  it "should work for deps" do
+    Dep.for(@dep).should == @dep
+  end
+  it "should not find the dep with namespacing" do
+    Dep.for('namespaced:namespaced Dep.for tests').should be_nil
+  end
+  context "with namespaced dep defined" do
+    before {
+      @source = Source.new(nil, :name => 'namespaced')
+      Source.stub!(:present).and_return([@source])
+      Base.sources.load_context :source => @source do
+        @namespaced_dep = dep 'Dep.for tests'
+      end
+    }
+    it "should work with namespacing" do
+      Dep.for('namespaced:Dep.for tests').should == @namespaced_dep
+    end
+  end
+end
+
 describe "dep creation" do
   it "should work for blank deps" do
     L{
