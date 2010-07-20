@@ -10,8 +10,8 @@ module Babushka
 
     module Helpers
       def Dep spec, opts = {};         Dep.for spec, opts end
-      def dep name, opts = {}, &block; DepDefiner.current_load_source.deps.add name, opts, block end
-      def meta name, opts = {}, &block; DepDefiner.current_load_source.templates.add name, opts, block end
+      def dep name, opts = {}, &block; Base.sources.current_load_source.deps.add name, opts, block end
+      def meta name, opts = {}, &block; Base.sources.current_load_source.templates.add name, opts, block end
     end
 
     attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source
@@ -26,7 +26,7 @@ module Babushka
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
       else
-        new name, source, DepDefiner.current_load_opts.merge(opts), block
+        new name, source, Base.sources.current_load_opts.merge(opts), block
       end
     end
 
@@ -38,7 +38,7 @@ module Babushka
       @block = block
       @vars = {}
       @dep_source = source
-      @load_path = DepDefiner.current_load_path
+      @load_path = Base.sources.current_load_path
       @dep_source.deps.register self
       define! unless opts[:delay_defining]
     end
@@ -67,11 +67,11 @@ module Babushka
 
     def assign_template
       @template = if opts[:template]
-        returning Base.sources.template_for(opts[:template], :from => DepDefiner.current_load_source) do |t|
+        returning Base.sources.template_for(opts[:template], :from => Base.sources.current_load_source) do |t|
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
       else
-        returning Base.sources.template_for(suffix, :from => DepDefiner.current_load_source) || BaseTemplate do |t|
+        returning Base.sources.template_for(suffix, :from => Base.sources.current_load_source) || BaseTemplate do |t|
           opts[:suffixed] = (t != BaseTemplate)
         end
       end

@@ -28,7 +28,7 @@ module Babushka
         raise ArgumentError, "You can't use '#{name}' for a template name - it can only contain [a-z0-9_]."
       elsif opts[:suffix] && name[VALID_SUFFIX].nil?
         raise ArgumentError, "You can't use '#{name}' for a suffixed template name - it can only contain [a-z0-9_]."
-      elsif DepDefiner.current_load_source.templates.for(name)
+      elsif Base.sources.current_load_source.templates.for(name)
         raise ArgumentError, "A template called '#{name}' has already been defined."
       else
         new name, source, opts, &block

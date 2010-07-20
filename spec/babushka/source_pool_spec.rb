@@ -8,11 +8,11 @@ describe SourcePool, '#dep_for' do
     @source1.stub!(:load!)
     @source2 = Source.new nil, :name => 'source_2'
     @source2.stub!(:load!)
-    DepDefiner.load_context :source => @source1 do
+    Base.sources.load_context :source => @source1 do
       @dep1 = dep 'dep 1'
       @dep2 = dep 'dep 2'
     end
-    DepDefiner.load_context :source => @source2 do
+    Base.sources.load_context :source => @source2 do
       @dep3 = dep 'dep 3'
       @dep4 = dep 'dep 4'
     end
@@ -79,6 +79,41 @@ describe SourcePool, '#template_for' do
   }
 end
 
+describe SourcePool, '#load_context' do
+  context "without delayed defining" do
+    before {
+      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
+    }
+    it "should pass the correct options" do
+      dep 'load_context without delay'
+    end
+  end
+  context "with delayed defining" do
+    before {
+      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil)
+    }
+    it "should pass the correct options" do
+      Base.sources.load_context :opts => {:delay_defining => true} do
+        dep 'load_context with delay'
+      end
+    end
+  end
+  context "with nesting" do
+    before {
+      @source1, @source2 = Source.new(nil), Source.new(nil)
+    }
+    it "should maintain the outer context after the inner one returns" do
+      Base.sources.load_context :source => @source1 do
+        Base.sources.current_load_source.should == @source1
+        Base.sources.load_context :source => @source2 do
+          Base.sources.current_load_source.should == @source2
+        end
+        Base.sources.current_load_source.should == @source1
+      end
+    end
+  end
+end
+
 describe "template selection during defining" do
   before {
     mock_sources
@@ -120,4 +155,76 @@ describe "template selection during defining" do
     Base.sources.anonymous.templates.clear!
     Base.sources.core.templates.clear!
   }
+end
+
+describe "template selection during defining from a real source" do
+  before {
+    @source = Source.new('spec/deps/good', :name => 'good source')
+    @source.load!
+    Source.stub!(:present).and_return([@source])
+  }
+  it "should have loaded deps" do
+    @source.deps.names.should =~ [
+      'test dep 1',
+      'test dep 2',
+      'option-templated dep',
+      'suffix-templated dep.test_template'
+    ]
+  end
+  it "should have loaded templates" do
+    @source.templates.names.should == [
+      'test_template',
+      'test meta 1'
+    ]
+  end
+  it "should have defined deps against the correct template" do
+    @source.find('test dep 1').template.should == Dep::BaseTemplate
+    @source.find('test dep 2').template.should == Dep::BaseTemplate
+    @source.find('option-templated dep').template.should == @source.find_template('test_template')
+    @source.find('suffix-templated dep.test_template').template.should == @source.find_template('test_template')
+  end
+end
+
+describe "nested source loads" do
+  before {
+    @outer_source = Source.new('spec/deps/outer', :name => 'outer source')
+    @nested_source = Source.new('spec/deps/good', :name => 'nested source')
+
+    Source.stub!(:present).and_return([@outer_source, @nested_source])
+    @outer_source.load!
+  }
+  it "should have loaded deps" do
+    @outer_source.deps.names.should =~ [
+      'test dep 1',
+      'externally templated',
+      'locally templated',
+      'locally templated.local_template',
+      'separate file',
+      'separate file.another_local_template'
+    ]
+    @nested_source.deps.names.should =~ [
+      'test dep 1',
+      'test dep 2',
+      'option-templated dep',
+      'suffix-templated dep.test_template'
+    ]
+  end
+  it "should have loaded templates" do
+    @outer_source.templates.names.should =~ [
+      'local_template',
+      'another_local_template'
+    ]
+    @nested_source.templates.names.should =~ [
+      'test_template',
+      'test meta 1'
+    ]
+  end
+  it "should have defined deps against the correct template" do
+    @outer_source.find('test dep 1').template.should == Dep::BaseTemplate
+    @outer_source.find('externally templated').template.should == @nested_source.find_template('test_template')
+    @outer_source.find('locally templated').template.should == @outer_source.find_template('local_template')
+    @outer_source.find('locally templated.local_template').template.should == @outer_source.find_template('local_template')
+    @outer_source.find('separate file').template.should == @outer_source.find_template('another_local_template')
+    @outer_source.find('separate file.another_local_template').template.should == @outer_source.find_template('another_local_template')
+  end
 end

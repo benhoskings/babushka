@@ -103,5 +103,29 @@ module Babushka
     def uncache!
       current.each {|source| source.send :uncache! }
     end
+
+    def load_context context, &block
+      (@load_contexts ||= []).push context
+      yield
+    ensure
+      @load_contexts.pop
+    end
+
+    def current_load_source
+      current_load_context[:source] || Base.sources.anonymous
+    end
+    def current_load_path
+      current_load_context[:path]
+    end
+    def current_load_opts
+      current_load_context[:opts] || {}
+    end
+
+    private
+
+    def current_load_context
+      (@load_contexts ||= []).last || {}
+    end
+
   end
 end

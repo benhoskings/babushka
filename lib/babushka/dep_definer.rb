@@ -23,20 +23,11 @@ module Babushka
       (@@default_blocks ||= Hashish.hash)[klass]
     end
 
-    def self.load_context opts, &block
-      @@current_load_source = opts[:source]
-      @@current_load_path = opts[:path]
-      @@current_load_opts = opts[:opts]
-      yield
-    ensure
-      @@current_load_source = @@current_load_path = @@current_load_opts = nil
-    end
-
     def initialize dep, &block
       @dep = dep
       @payload = {}
       @block = block
-      @source_path = self.class.current_load_path.p unless self.class.current_load_path.nil?
+      @source_path = Base.sources.current_load_path.p unless Base.sources.current_load_path.nil?
     end
 
     def dependency
@@ -54,19 +45,6 @@ module Babushka
 
     def process
       true # overridden in subclassed definers
-    end
-
-    def self.current_load_source
-      @@current_load_source ||= nil
-      @@current_load_source || Base.sources.anonymous
-    end
-
-    def self.current_load_path
-      @@current_load_path ||= nil
-    end
-
-    def self.current_load_opts
-      @@current_load_opts ||= {}
     end
 
     def self.accepted_blocks
