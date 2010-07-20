@@ -8,11 +8,11 @@ describe SourcePool, '#dep_for' do
     @source1.stub!(:load!)
     @source2 = Source.new nil, :name => 'source_2'
     @source2.stub!(:load!)
-    DepDefiner.load_context :source => @source1 do
+    Base.sources.load_context :source => @source1 do
       @dep1 = dep 'dep 1'
       @dep2 = dep 'dep 2'
     end
-    DepDefiner.load_context :source => @source2 do
+    Base.sources.load_context :source => @source2 do
       @dep3 = dep 'dep 3'
       @dep4 = dep 'dep 4'
     end
@@ -77,6 +77,41 @@ describe SourcePool, '#template_for' do
     Base.sources.anonymous.templates.clear!
     Base.sources.core.templates.clear!
   }
+end
+
+describe SourcePool, '#load_context' do
+  context "without delayed defining" do
+    before {
+      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
+    }
+    it "should pass the correct options" do
+      dep 'load_context without delay'
+    end
+  end
+  context "with delayed defining" do
+    before {
+      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil)
+    }
+    it "should pass the correct options" do
+      Base.sources.load_context :opts => {:delay_defining => true} do
+        dep 'load_context with delay'
+      end
+    end
+  end
+  context "with nesting" do
+    before {
+      @source1, @source2 = Source.new(nil), Source.new(nil)
+    }
+    it "should maintain the outer context after the inner one returns" do
+      Base.sources.load_context :source => @source1 do
+        Base.sources.current_load_source.should == @source1
+        Base.sources.load_context :source => @source2 do
+          Base.sources.current_load_source.should == @source2
+        end
+        Base.sources.current_load_source.should == @source1
+      end
+    end
+  end
 end
 
 describe "template selection during defining" do

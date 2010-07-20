@@ -127,38 +127,3 @@ describe "#on for scoping accepters" do
     Dep('scoping').send(:payload)[:met?].should == {:osx => @lambda}
   end
 end
-
-describe DepDefiner, '.load_context' do
-  context "without delayed defining" do
-    before {
-      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
-    }
-    it "should pass the correct options" do
-      dep 'load_context without delay'
-    end
-  end
-  context "with delayed defining" do
-    before {
-      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil)
-    }
-    it "should pass the correct options" do
-      DepDefiner.load_context :opts => {:delay_defining => true} do
-        dep 'load_context with delay'
-      end
-    end
-  end
-  context "with nesting" do
-    before {
-      @source1, @source2 = Source.new(nil), Source.new(nil)
-    }
-    it "should maintain the outer context after the inner one returns" do
-      DepDefiner.load_context :source => @source1 do
-        DepDefiner.current_load_source.should == @source1
-        DepDefiner.load_context :source => @source2 do
-          DepDefiner.current_load_source.should == @source2
-        end
-        DepDefiner.current_load_source.should == @source1
-      end
-    end
-  end
-end
