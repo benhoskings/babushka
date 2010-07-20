@@ -71,3 +71,9 @@ dep 'rubygems installed' do
     end
   }
 end
+
+dep 'curl', :template => 'managed' do
+  installs {
+    via :apt, 'curl'
+  }
+end
