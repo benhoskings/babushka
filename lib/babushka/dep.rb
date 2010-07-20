@@ -78,7 +78,10 @@ module Babushka
     end
 
     def self.for dep_spec, opts = {}
-      Base.sources.dep_for dep_spec.to_s, :from => opts[:parent_source]
+      Base.sources.dep_for(
+        dep_spec.respond_to?(:name) ? dep_spec.name : dep_spec.to_s,
+        :from => opts[:parent_source]
+      )
     end
 
     extend Suggest::Helpers
