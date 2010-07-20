@@ -75,6 +75,9 @@ class Array
   def squash!
     delete_if &:blank?
   end
+  def collapse by
+    grep(by).map {|i| i.sub by, '' }
+  end
   def to_list(opts = {})
     if opts[:limit].nil? || (self.length <= opts[:limit])
       [
@@ -245,6 +248,9 @@ class Object
   end
   def tapp
     tap { puts "#{File.basename caller[4]}: #{self.inspect}" }
+  end
+  def taph
+    tap { puts("#{File.basename caller[4]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') + "<br />") }
   end
   require 'pp'
   def tappp

@@ -81,7 +81,7 @@ module Babushka
     end
 
     def extract &block
-      in_build_dir { process_extract &block }
+      in_dir(archive_prefix, :create => true) { process_extract &block }
     end
 
     def process_extract &block
@@ -112,6 +112,10 @@ module Babushka
       Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
         dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
       }
+    end
+
+    def archive_prefix
+      BuildPrefix
     end
   end
 

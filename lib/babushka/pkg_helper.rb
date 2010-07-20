@@ -5,11 +5,8 @@ module Babushka
 
     def pkg_binary; pkg_cmd end
 
-    def for_system
-      {
-        :osx => BrewHelper,
-        :linux => AptHelper
-      }[host.system]
+    def all_manager_keys
+      [:apt, :brew, :macports, :yum]
     end
 
     def manager_dep
@@ -29,10 +26,7 @@ module Babushka
       _install! [*pkgs].map {|pkg| ver pkg }, opts
     end
     def _install! pkgs, opts
-      log_shell "Installing #{pkgs.join(', ')} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
-    end
-    def setup_for_install_of dep, pkgs
-      true
+      log_shell "Installing #{pkgs.to_list} via #{manager_key}", "#{pkg_cmd} -y install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
     end
     def prefix
       cmd_dir(pkg_binary).p.dir

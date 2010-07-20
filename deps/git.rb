@@ -1,26 +1,27 @@
 dep 'git' do
   requires {
-    on :osx, 'installer git'
-    on :linux, 'pkg git'
+    on :osx, 'git.installer'
+    on :linux, 'git.managed'
   }
 end
 
-pkg 'pkg git' do
+dep 'git.managed' do
   installs {
     via :apt, 'git-core'
+    via :yum, 'git'
     via :brew, 'git'
     via :macports, 'git-core +svn +bash_completion'
   }
   provides 'git'
 end
 
-installer 'installer git' do
-  requires_when_unmet 'install location exists'
+dep 'git.installer' do
+  requires_when_unmet 'usr-local subpaths exist'
   source "http://git-osx-installer.googlecode.com/files/git-1.7.1-intel-leopard.dmg"
   provides 'git'
   after {
     in_dir '/usr/local/bin' do
-      sudo "ln -sf /usr/local/git/bin/git* ." unless 'git'.p.exists?
+      sudo "ln -sf /usr/local/git/bin/git* ."
     end
   }
 end

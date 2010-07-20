@@ -95,7 +95,7 @@ module Babushka
       }[uri.scheme] || L{ unsupported_scheme(uri) }).call
     end
 
-    def call_task task_name, opts = {}
+    def call_task task_name
       if (task_block = send(task_name)).nil?
         true
       else

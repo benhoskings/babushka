@@ -100,6 +100,9 @@ describe Fancypath do
     it "should glob with no args" do
       (TMP_DIR / '**/*').glob.should == ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
     end
+    it "should be case insensitive" do
+      TMP_DIR.glob('**/TEST*').should == ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
+    end
   end
 
   describe '#write' do

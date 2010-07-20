@@ -5,15 +5,16 @@ module Babushka
 
     attr_reader :version_info
 
-    def self.for_system
-      self.for({
-        'Linux' => :linux,
-        'Darwin' => :osx
-      }[shell 'uname -s'])
+    def self.for_host
+      system = {
+        'Linux' => LinuxSystemSpec,
+        'Darwin' => OSXSystemSpec
+      }[shell('uname -s')]
+      system.for_flavour unless system.nil?
     end
 
-    def self.for uname_info
-      system_map[uname_info].new
+    def self.for_flavour
+      new
     end
 
     def initialize
@@ -22,6 +23,7 @@ module Babushka
 
     def linux?; false end
     def osx?; false end
+    def pkg_helper; nil end
 
     def name
       (name_map[system][flavour] || {})[release]
@@ -59,13 +61,6 @@ module Babushka
         [:system, :flavour, :name].index spec
       }.compact
       send "#{nonmatches.last}_str" unless nonmatches.empty?
-    end
-
-    def self.system_map
-      {
-        :osx => OSXSystemSpec,
-        :linux => LinuxSystemSpec
-      }
     end
 
     def all_systems
@@ -149,6 +144,16 @@ module Babushka
         }
       }
     end
+    def flavour_str_map
+      # Only required for names that can't be auto-capitalized,
+      # e.g. :ubuntu => 'Ubuntu' isn't required.
+      {
+        :linux => {
+          :centos => 'CentOS',
+          :redhat => 'Red Hat'
+        }
+      }
+    end
 
   end
 
@@ -161,16 +166,51 @@ module Babushka
     def version; version_info.val_for 'ProductVersion' end
     def release; version.match(/^\d+\.\d+/).to_s end
     def get_version_info; shell 'sw_vers' end
+    def pkg_helper; BrewHelper end
   end
   
   class LinuxSystemSpec < SystemSpec
     def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
+    def flavour_str; flavour_str_map[system][flavour] end
+    def release; version end
+
+    def self.for_flavour
+      unless (detected_flavour = detect_using_release_file).nil?
+        Babushka.const_get("#{detected_flavour.capitalize}SystemSpec").new
+      end
+    end
+
+    private
+
+    def self.detect_using_release_file
+      %w[
+        debian_version
+        redhat-release
+        gentoo-release
+        SuSE-release
+        arch-release
+      ].select {|release_file|
+        File.exists? "/etc/#{release_file}"
+      }.map {|release_file|
+        release_file.sub(/[_\-](version|release)$/, '')
+      }.first
+    end
+  end
+
+  class DebianSystemSpec < LinuxSystemSpec
     def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
-    def release; version end
     def get_version_info; shell 'lsb_release -a' end
+    def pkg_helper; AptHelper end
+  end
+
+  class RedhatSystemSpec < LinuxSystemSpec
+    def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
+    def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
+    def get_version_info; File.read '/etc/redhat-release' end
+    def pkg_helper; YumHelper end
   end
 end

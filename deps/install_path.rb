@@ -11,8 +11,8 @@ meta :install_path do
   }
 end
 
-install_path 'writable install location' do
-  requires 'install location exists', 'admins can sudo'
+dep 'writable.install_path' do
+  requires 'existing.install_path', 'admins can sudo'
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable_real?(install_prefix / path) }
     returning nonwritable.empty? do |result|
@@ -29,11 +29,17 @@ install_path 'writable install location' do
   }
 end
 
-install_path 'install location exists' do
+dep 'existing.install_path' do
   met? { subpaths.all? {|path| File.directory?(install_prefix / path) } }
   meet { subpaths.each {|path| sudo "mkdir -p '#{install_prefix / path}'" } }
 end
 
-ext 'install location in path' do
+# TODO this won't be required once we can pass vars around
+dep 'usr-local.install_path' do
+  met? { subpaths.all? {|path| File.directory?('/usr/local' / path) } }
+  meet { subpaths.each {|path| sudo "mkdir -p '#{'/usr/local' / path}'" } }
+end
+
+dep 'install location in path', :template => 'external' do
   met? { ENV['PATH'].split(':').include? install_prefix / 'bin' }
 end

@@ -6,7 +6,7 @@ module Babushka
 
     attr_reader :payload, :source_path
 
-    delegate :name, :to => :dependency
+    delegate :name, :basename, :to => :dependency
     delegate :merge, :var, :define_var, :to => :runner
 
     def default_blocks
@@ -21,6 +21,15 @@ module Babushka
     end
     def self.default_blocks_for klass
       (@@default_blocks ||= Hashish.hash)[klass]
+    end
+
+    def self.load_context opts, &block
+      @@current_load_source = opts[:source]
+      @@current_load_path = opts[:path]
+      @@current_load_opts = opts[:opts]
+      yield
+    ensure
+      @@current_load_source = @@current_load_path = @@current_load_opts = nil
     end
 
     def initialize dep, &block
@@ -47,32 +56,21 @@ module Babushka
       true # overridden in subclassed definers
     end
 
+    def self.current_load_source
+      @@current_load_source ||= nil
+      @@current_load_source || Base.sources.anonymous
+    end
+
     def self.current_load_path
       @@current_load_path ||= nil
     end
 
-    def self.accepted_blocks
-      default_blocks.keys
+    def self.current_load_opts
+      @@current_load_opts ||= {}
     end
 
-    def self.load_deps_from path
-      $stdout.flush
-      previous_length, previous_skipped = Dep.pool.count, Dep.pool.skipped_count
-      path.p.glob('**/*.rb').partition {|f|
-        f.p.basename == 'templates.rb' or
-        f.p.parent.basename == 'templates'
-      }.flatten.each {|f|
-        @@current_load_path = f
-        begin
-          require f
-        rescue Exception => e
-          log_error "#{e.backtrace.first}: #{e.message}"
-          log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
-          debug e.backtrace * "\n"
-        end
-      }
-      @@current_load_path = nil
-      log_ok "Loaded #{Dep.pool.count - previous_length}#{" and skipped #{Dep.pool.skipped_count - previous_skipped}" unless Dep.pool.skipped_count == previous_skipped} deps from #{path}."
+    def self.accepted_blocks
+      default_blocks.keys
     end
 
     def self.accepts_block_for method_name, &default_block
@@ -153,11 +151,11 @@ module Babushka
     end
 
     def self.set_up_delegating_for method_name
-      runner_class.send :delegate, method_name, :to => :definer
+      source_template.runner_class.send :delegate, method_name, :to => :definer
     end
 
-    def self.runner_class
-      Object.recursive_const_get name.to_s.sub('Definer', 'Runner')
+    def self.source_template
+      Dep::BaseTemplate
     end
 
   end

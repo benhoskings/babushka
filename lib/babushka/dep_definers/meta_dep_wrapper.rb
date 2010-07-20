@@ -2,56 +2,63 @@ module Babushka
   class MetaDepWrapper
     INVALID_NAMES = %w[base]
 
-    def self.wrappers
-      @wrappers ||= Hashish.hash
-    end
+    VALID_NAME_START_CHARS = /[a-z]/
+    VALID_NAME_CHARS = /#{VALID_NAME_START_CHARS}[a-z0-9_ ]+/
+    VALID_SUFFIX_CHARS = /#{VALID_NAME_START_CHARS}[a-z0-9_]+/
+    VALID_NAME_START = /^#{VALID_NAME_START_CHARS}/
+    VALID_NAME = /\A#{VALID_NAME_CHARS}\z/m
+    VALID_SUFFIX = /\A#{VALID_SUFFIX_CHARS}\z/m
 
-    def self.for supplied_name, opts, &block
+    TEMPLATE_SUFFIX = /\A.+\.(#{VALID_SUFFIX_CHARS})\z/m
+
+    def self.for supplied_name, source, opts, &block
       name = supplied_name.to_s.downcase
+      if name.starts_with? '.'
+        name = name[1..-1]
+        opts.update :suffix => true
+      end
+
       if name.to_s.blank?
-        raise ArgumentError, "You can't define a meta dep with a blank name."
+        raise ArgumentError, "You can't define a template with a blank name."
       elsif name.in? INVALID_NAMES
-        raise ArgumentError, "You can't use '#{name}' for a meta dep name, because it's reserved."
-      elsif Babushka.const_defined?("#{name.to_s.camelize}DepDefiner") || Babushka.const_defined?("#{name.to_s.camelize}DepRunner")
-        raise ArgumentError, "A meta dep called '#{name}' has already been defined."
+        raise ArgumentError, "You can't use '#{name}' for a template name, because it's reserved."
+      elsif name[VALID_NAME_START].nil?
+        raise ArgumentError, "You can't use '#{name}' for a template name - it must start with a letter."
+      elsif !opts[:suffix] && name[VALID_NAME].nil?
+        raise ArgumentError, "You can't use '#{name}' for a template name - it can only contain [a-z0-9_]."
+      elsif opts[:suffix] && name[VALID_SUFFIX].nil?
+        raise ArgumentError, "You can't use '#{name}' for a suffixed template name - it can only contain [a-z0-9_]."
+      elsif DepDefiner.current_load_source.templates.for(name)
+        raise ArgumentError, "A template called '#{name}' has already been defined."
       else
-        new name, opts, &block
+        new name, source, opts, &block
       end
     end
 
-    attr_reader :name, :opts, :definer_class, :runner_class
+    attr_reader :name, :source, :opts, :definer_class, :runner_class
 
-    def initialize name, opts, &block
-      @name = name.to_sym
-      @opts = opts
-      @block = block
+    def initialize name, source, opts, &block
+      @name, @source, @opts, @block = name, source, opts, block
       @definer_class = build_definer block
       @runner_class = build_runner
-      define_dep_helper
-      self.class.wrappers[@name] = self
+      source.templates.register self
+    end
+
+    def suffixed?
+      opts[:suffix]
     end
 
     def build_definer block
-      Babushka.const_set "#{name.to_s.camelize}DepDefiner", Class.new(MetaDepDefiner, &block)
+      returning Class.new(MetaDepDefiner, &block) do |definer|
+        shadow = self
+        definer.metaclass.send :define_method, :source_template do
+          shadow
+        end
+      end
     end
 
     def build_runner
-      Babushka.const_set "#{name.to_s.camelize}DepRunner", Class.new(MetaDepRunner)
+      Class.new(MetaDepRunner)
     end
-
-    def define_dep name, opts, &block
-      Dep.pool.add name, opts, block, definer_class, runner_class
-    end
-
-    def define_dep_helper
-      file, line = caller.first.split(':', 2)
-      line = line.to_i
-      Object.class_eval <<-EOS, file, line
-        def #{name} name, opts = {}, &block
-          MetaDepWrapper.wrappers[#{name.inspect}].define_dep name, opts, &block
-        end
-      EOS
-    end
-
   end
 end

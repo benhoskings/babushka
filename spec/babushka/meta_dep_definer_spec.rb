@@ -1,25 +1,28 @@
 require 'spec_support'
 require 'dep_definer_support'
 
-def remove_constants_for str
-  Babushka.send :remove_const, "#{str.camelize}DepDefiner"
-  Babushka.send :remove_const, "#{str.camelize}DepRunner"
-end
-
-describe "name checks" do
-  it "should not allow blank names" do
-    L{ meta(nil) }.should raise_error ArgumentError, "You can't define a meta dep with a blank name."
-    L{ meta('') }.should raise_error ArgumentError, "You can't define a meta dep with a blank name."
+shared_examples_for 'defined meta dep' do
+  it "should set the name" do
+    @meta.name.should == 'test'
   end
-  it "should not allow reserved names" do
-    L{ meta(:base) }.should raise_error ArgumentError, "You can't use 'base' for a meta dep name, because it's reserved."
+  it "should set the source" do
+    @meta.source.should == Base.sources.anonymous
   end
-  describe "duplicate declaration" do
-    before { meta 'duplicate' }
-    it "should be prevented" do
-      L{ meta(:duplicate) }.should raise_error ArgumentError, "A meta dep called 'duplicate' has already been defined."
-    end
-    after { remove_constants_for 'duplicate' }
+  it "should define a dep definer" do
+    @meta.definer_class.should be_an_instance_of Class
+    @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner
+    @meta.runner_class.should_not == Babushka::BaseDepDefiner
+  end
+  it "should define template on the definer" do
+    @meta.definer_class.source_template.should == @meta
+  end
+  it "should define a dep runner" do
+    @meta.runner_class.should be_an_instance_of Class
+    @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
+    @meta.runner_class.should_not == Babushka::BaseDepRunner
+  end
+  it "should not define a dep helper" do
+    Object.new.should_not respond_to 'test'
   end
 end
 
@@ -27,38 +30,56 @@ describe "declaration" do
   before {
     @meta = meta 'test'
   }
-  it "should set the name" do
-    @meta.name.should == :test
+  it "should work" do
+    L{ meta 'count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
   end
-  it "should define a dep definer" do
-    @meta.definer_class.should be_an_instance_of Class
-    @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner
+  it_should_behave_like 'defined meta dep'
+  it "should not be marked as suffixed" do
+    @meta.opts[:suffix].should be_false
   end
-  it "should define a dep runner" do
-    @meta.runner_class.should be_an_instance_of Class
-    @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
+  after { Base.sources.anonymous.templates.clear! }
+end
+
+describe "declaration with dot" do
+  before {
+    @meta = meta '.test'
+  }
+  it "should work" do
+    L{ meta '.suffix_count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
   end
-  it "should define a dep helper" do
-    Object.new.should_not respond_to 'helper_test'
-    @meta = meta 'helper_test'
-    Object.new.should respond_to 'helper_test'
+  it_should_behave_like 'defined meta dep'
+  it "should be marked as suffixed" do
+    @meta.opts[:suffix].should be_true
+  end
+  describe "collisions" do
+    before { meta 'collision_test' }
+    it "should conflict, disregarding the dot" do
+      L{ meta '.collision_test' }.should raise_error ArgumentError, "A template called 'collision_test' has already been defined."
+    end
+  end
+  after { Base.sources.anonymous.templates.clear! }
+end
+
+describe "using" do
+  describe "invalid templates" do
+    it "should not define deps as options" do
+      L{
+        dep('something undefined', :template => 'undefined').should be_nil
+      }.should raise_error DepError, "There is no template named 'undefined' to define 'something undefined' against."
+    end
+    it "should define deps as options" do
+      dep('something.undefined').should be_an_instance_of(Dep)
+    end
   end
 
   describe "without template" do
-    it "should define the helper" do
-      Object.new.respond_to?('templateless_test').should be_false
-      meta('templateless_test') {}
-      Object.new.respond_to?('templateless_test').should be_true
+    before {
+      @meta = meta('.templateless_test') {}
+    }
+    it "should define deps based on the template" do
+      dep('templateless dep.templateless_test').template.should == @meta
     end
-    describe "the helper" do
-      before {
-        meta('templateless_test') {}
-      }
-      it "should be callable" do
-        templateless_test('templateless dep').should be_an_instance_of Dep
-      end
-    end
-    after { remove_constants_for 'templateless_test' }
+    after { Base.sources.anonymous.templates.clear! }
   end
 
   describe "with template" do
@@ -77,20 +98,20 @@ describe "declaration" do
     it "should define the helper on the runner class" do
       @meta.runner_class.respond_to?(:a_helper).should be_false
       @meta.runner_class.new(nil).respond_to?(:a_helper).should be_false
-      template_test('dep1').runner.respond_to?(:a_helper).should be_true
+      dep('dep1.template_test').runner.respond_to?(:a_helper).should be_true
     end
     it "should correctly define the helper" do
-      template_test('dep2').runner.a_helper.should == 'hello from the helper!'
+      dep('dep2.template_test').runner.a_helper.should == 'hello from the helper!'
     end
     it "should correctly define the met? block" do
-      template_test('dep3').send(:call_task, :met?).should == 'this dep is met.'
+      dep('dep3.template_test').send(:call_task, :met?).should == 'this dep is met.'
     end
     it "should override the template correctly" do
-      template_test('dep4') {
+      dep('dep4.template_test') {
         met? { 'overridden met? block.' }
       }.send(:call_task, :met?).should == 'overridden met? block.'
     end
-    after { remove_constants_for 'template_test' }
+    after { Base.sources.anonymous.templates.clear! }
   end
 
   describe "acceptors" do
@@ -109,12 +130,12 @@ describe "declaration" do
       end
     }
     it "should handle accepts_list_for" do
-      acceptor_test('unmet accepts_list_for') { list_test 'invalid' }.met?.should be_false
-      acceptor_test('met accepts_list_for') { list_test 'valid' }.met?.should be_true
+      dep('unmet accepts_list_for.acceptor_test') { list_test 'invalid' }.met?.should be_false
+      dep('met accepts_list_for.acceptor_test') { list_test 'valid' }.met?.should be_true
     end
     it "should handle accepts_block_for" do
       block_called = false
-      acceptor_test('accepts_block_for') {
+      dep('accepts_block_for.acceptor_test') {
         list_test 'invalid'
         block_test {
           block_called = true
@@ -122,8 +143,6 @@ describe "declaration" do
       }.meet
       block_called.should be_true
     end
-    after { remove_constants_for 'acceptor_test' }
+    after { Base.sources.anonymous.templates.clear! }
   end
-
-  after { remove_constants_for 'test' }
 end

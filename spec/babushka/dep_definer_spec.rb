@@ -1,17 +1,6 @@
 require 'spec_support'
 require 'dep_definer_support'
 
-describe "loading deps" do
-  it "should load deps from a file" do
-    DepDefiner.load_deps_from('spec/deps/good').should be_true
-    Dep.pool.names.should include('test dep 1')
-  end
-  it "should recover from load errors" do
-    DepDefiner.load_deps_from('spec/deps/bad').should be_true
-    Dep.pool.names.should_not include('broken test dep 1')
-  end
-end
-
 describe "accepts_block_for behaviour" do
   before {
     setup_test_lambdas
@@ -54,7 +43,13 @@ describe "accepts_block_for behaviour" do
     value_from_block.should == lambda
   end
 
-  after { Dep.pool.clear! }
+  after { Base.sources.anonymous.deps.clear! }
+end
+
+describe "source_template" do
+  it "should return BaseTemplate" do
+    DepDefiner.source_template.should == Dep::BaseTemplate
+  end
 end
 
 describe "helper" do
@@ -111,7 +106,7 @@ describe "accepts_list_for behaviour" do
     make_test_deps
   }
   it "should choose requires for the correct system" do
-    Dep('build tools').definer.requires.should == [ver('xcode tools')]
+    Dep('test build tools').definer.requires.should == [ver('xcode tools')]
   end
 end
 
@@ -130,5 +125,26 @@ describe "#on for scoping accepters" do
   }
   it "should only allow choices that match" do
     Dep('scoping').send(:payload)[:met?].should == {:osx => @lambda}
+  end
+end
+
+describe DepDefiner, '.load_context' do
+  context "without delayed defining" do
+    before {
+      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
+    }
+    it "should pass the correct options" do
+      dep 'load_context without delay'
+    end
+  end
+  context "with delayed defining" do
+    before {
+      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil)
+    }
+    it "should pass the correct options" do
+      DepDefiner.load_context :opts => {:delay_defining => true} do
+        dep 'load_context with delay'
+      end
+    end
   end
 end

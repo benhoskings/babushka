@@ -8,10 +8,10 @@ module Babushka
       @task ||= Task.new
     end
     def host
-      @host ||= Babushka::SystemSpec.for_system
+      @host ||= Babushka::SystemSpec.for_host
     end
-    def dep_pool
-      @pool ||= DepPool.new
+    def sources
+      @sources ||= SourcePool.new
     end
 
     def run args
@@ -25,13 +25,6 @@ module Babushka
       end
     end
 
-    def setup_noninteractive
-      load_deps_from all_dep_locations
-    end
-
-    def setup_noninteractive_for dep_locations
-      load_deps_from core_dep_locations.concat([*dep_locations]).concat(all_dep_locations).uniq
-    end
 
     private
 
@@ -67,7 +60,7 @@ module Babushka
     end
 
     def parse_cmdline_opt opt_def, args
-      returning PassedOpt.new opt_def, [] do |parsed_opt|
+      returning PassedOpt.new(opt_def, []) do |parsed_opt|
         parsed_opt.args = parse_cmdline_args(parsed_opt, opt_def.args, args)
       end
     end
@@ -187,25 +180,6 @@ module Babushka
       }.inject(Verbs.map {|v| v.name.to_s }.abbrev) {|hsh,names|
         names.compact.each {|name| hsh[name] = name }
         hsh
-      }
-    end
-
-    def core_dep_locations
-      [ Path.path / 'deps' ]
-    end
-
-    def all_dep_locations
-      [
-        core_dep_locations, # The bundled deps
-        './babushka_deps', # deps in the current directory
-        '~/.babushka/deps', # the user's custom deps
-        Source.paths # each dep source
-      ].flatten
-    end
-
-    def load_deps_from dep_locations
-      [*dep_locations].all? {|dep_path|
-        DepDefiner.load_deps_from dep_path
       }
     end
 
