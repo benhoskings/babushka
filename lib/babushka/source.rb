@@ -189,6 +189,9 @@ module Babushka
       if @pulled
         debug "Already pulled #{name} (#{uri}) this session."
         true
+      elsif Base.sources.local_only?
+        debug "Not pulling #{name} (#{uri}) - in local-only mode."
+        true
       else
         @pulled = git uri, :prefix => prefix, :dir => name, :log => true
       end

@@ -104,6 +104,18 @@ module Babushka
       current.each {|source| source.send :uncache! }
     end
 
+    def local_only?
+      @local_only
+    end
+
+    def local_only &block
+      previously = @local_only
+      @local_only = true
+      yield
+    ensure
+      @local_only = previously
+    end
+
     def load_context context, &block
       (@load_contexts ||= []).push context
       yield
