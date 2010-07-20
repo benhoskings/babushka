@@ -14,7 +14,9 @@ module Babushka
       ], [
         Arg.new(:dep_names, "The name of the dep to run", false, true)
       ]),
-      Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
+      Verb.new(:list, '-T', '--tasks', "List the available deps", [
+        Opt.new(:templates, '-t', '--templates', "List templates instead of deps", true, [])
+      ], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
       Verb.new(:sources, nil, nil, "Manage dep sources", [
