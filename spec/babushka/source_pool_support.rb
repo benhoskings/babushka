@@ -12,12 +12,12 @@ def mock_sources
     @core_from = meta 'core from'
   end
   DepDefiner.load_context :source => @source1 do
-    @meta1 = meta 'meta_1'
+    @meta1 = meta :meta_1
     @meta2 = meta 'meta 2'
     @from1 = meta 'from test'
   end
   DepDefiner.load_context :source => @source2 do
-    @meta3 = meta 'meta_3'
+    @meta3 = meta :meta_3
     @meta4 = meta 'meta 4'
     @from2 = meta 'from test'
     @from2_2 = meta 'from test 2'
