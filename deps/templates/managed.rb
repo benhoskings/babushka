@@ -72,7 +72,7 @@ meta :gem do
   accepts_list_for :cfg
 
   def default_pkg
-    VersionOf.new name
+    Babushka::VersionOf.new name
   end
 
   def pkg_manager
