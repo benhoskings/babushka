@@ -180,7 +180,6 @@ describe "template selection during defining from a real source" do
   it "should have defined deps against the correct template" do
     @source.find('test dep 1').template.should == Dep::BaseTemplate
     @source.find('test dep 2').template.should == Dep::BaseTemplate
-    @source.find_template('test_template').taph
     @source.find('option-templated dep').template.should == @source.find_template('test_template')
     @source.find('suffix-templated dep.test_template').template.should == @source.find_template('test_template')
   end
