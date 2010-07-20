@@ -150,3 +150,37 @@ describe "template selection during defining from a real source" do
     @source.find('suffix-templated dep.test_template').template.should == @source.find_template('test_template')
   end
 end
+
+describe "nested source loads" do
+  before {
+    @outer_source = Source.new('spec/deps/outer', :name => 'outer source')
+    @nested_source = Source.new('spec/deps/good', :name => 'nested source')
+
+    Source.stub!(:present).and_return([@outer_source, @nested_source])
+    @outer_source.load!
+  }
+  it "should have loaded deps" do
+    @outer_source.deps.names.should =~ [
+      'test dep 1',
+      'templated test dep 1'
+    ]
+    @nested_source.deps.names.should =~ [
+      'test dep 1',
+      'test dep 2',
+      'option-templated dep',
+      'suffix-templated dep.test_template'
+    ]
+  end
+  it "should have loaded templates" do
+    @outer_source.templates.names.should == [
+    ]
+    @nested_source.templates.names.should == [
+      'test_template',
+      'test meta 1'
+    ]
+  end
+  it "should have defined deps against the correct template" do
+    @outer_source.find('test dep 1').template.should == Dep::BaseTemplate
+    @outer_source.find('templated test dep 1').template.should == @nested_source.find_template('test_template')
+  end
+end
