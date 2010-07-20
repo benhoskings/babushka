@@ -121,3 +121,32 @@ describe "template selection during defining" do
     Base.sources.core.templates.clear!
   }
 end
+
+describe "template selection during defining from a real source" do
+  before {
+    @source = Source.new('spec/deps/good', :name => 'good source')
+    @source.load!
+    Source.stub!(:present).and_return([@source])
+  }
+  it "should have loaded deps" do
+    @source.deps.names.should =~ [
+      'test dep 1',
+      'test dep 2',
+      'option-templated dep',
+      'suffix-templated dep.test_template'
+    ]
+  end
+  it "should have loaded templates" do
+    @source.templates.names.should == [
+      'test_template',
+      'test meta 1'
+    ]
+  end
+  it "should have defined deps against the correct template" do
+    @source.find('test dep 1').template.should == Dep::BaseTemplate
+    @source.find('test dep 2').template.should == Dep::BaseTemplate
+    @source.find_template('test_template').taph
+    @source.find('option-templated dep').template.should == @source.find_template('test_template')
+    @source.find('suffix-templated dep.test_template').template.should == @source.find_template('test_template')
+  end
+end
