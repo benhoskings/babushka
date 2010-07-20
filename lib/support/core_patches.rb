@@ -75,9 +75,6 @@ class Array
   def squash!
     delete_if &:blank?
   end
-  def collapse by
-    grep(by).map {|i| i.sub by, '' }
-  end
   def to_list(opts = {})
     if opts[:limit].nil? || (self.length <= opts[:limit])
       [
