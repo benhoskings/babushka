@@ -44,7 +44,7 @@ module Babushka
       else # Otherwise, load from the current source (opts[:from]) or the standard set.
         matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
         if matches.length > 1
-          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_name}'."
+          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_spec}'."
         else
           matches.first
         end
