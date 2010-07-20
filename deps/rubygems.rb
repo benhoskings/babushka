@@ -75,5 +75,6 @@ end
 dep 'curl', :template => 'managed' do
   installs {
     via :apt, 'curl'
+    via :yum, 'curl'
   }
 end
