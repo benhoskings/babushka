@@ -2,14 +2,18 @@ dep 'test dep 1' do
   
 end
 
-dep 'templated test dep 1', :template => 'nested source:test_template' do
+dep 'externally templated', :template => 'nested source:test_template' do
   
 end
 
-meta 'meta within this source' do
+meta 'local_template' do
   accepts_list_for :uri
 end
 
-dep 'locally templated dep', :template => 'meta within this source' do
+dep 'locally templated', :template => 'local_template' do
+  uri 'http://local.test.org'
+end
+
+dep 'locally templated.local_template' do
   uri 'http://local.test.org'
 end
