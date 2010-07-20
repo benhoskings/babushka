@@ -288,7 +288,7 @@ describe "run_in" do
     Dir.pwd.should == cwd
     ran_in.should == tmp_prefix
   end
-  it "should run this deps' requirements in the same directory" do
+  it "should run this deps' requirements in the original directory" do
     cwd = Dir.pwd
     ran_in = child_ran_in = nil
     dep 'another without run_in set' do
@@ -301,18 +301,18 @@ describe "run_in" do
     end.met?
     Dir.pwd.should == cwd
     ran_in.should == tmp_prefix
-    child_ran_in.should == tmp_prefix
+    child_ran_in.should == cwd
   end
   it "should run this deps' requirements in their own directories when specified" do
     cwd = Dir.pwd
     ran_in = child_ran_in = nil
     (tmp_prefix / 'run_in').mkdir
-    dep 'another without run_in set' do
+    dep 'another with run_in set' do
       run_in tmp_prefix / 'run_in'
       met? { child_ran_in = Dir.pwd }
     end
     dep 'dep with run_in set' do
-      requires 'another without run_in set'
+      requires 'another with run_in set'
       run_in tmp_prefix
       met? { ran_in = Dir.pwd }
     end.met?

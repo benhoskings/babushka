@@ -127,20 +127,17 @@ module Babushka
           log_ok "Not required on #{host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
-          returning process_in_dir do
+          returning process_this_dep do
             task.callstack.pop
           end
         end
       end
     end
 
-    def process_in_dir
-      path = definer.run_in.empty? ? nil : definer.run_in.first.to_s
-      in_dir path do
-        process_task(:internal_setup)
-        process_task(:setup)
-        process_deps and process_self
-      end
+    def process_this_dep
+      process_task(:internal_setup)
+      process_task(:setup)
+      process_deps and process_self
     end
 
     def process_deps accessor = :requires
@@ -150,19 +147,22 @@ module Babushka
     end
 
     def process_self
-      process_met_task(:initial => true) {
-        if task.opt(:dry_run)
-          false # unmet
-        else
-          process_task(:prepare)
-          if !process_deps(:requires_when_unmet)
-            false # install-time deps unmet
+      path = definer.run_in.empty? ? nil : definer.run_in.first.to_s
+      in_dir path do
+        process_met_task(:initial => true) {
+          if task.opt(:dry_run)
+            false # unmet
           else
-            process_task(:before) and process_task(:meet) and process_task(:after)
-            process_met_task
+            process_task(:prepare)
+            if !process_deps(:requires_when_unmet)
+              false # install-time deps unmet
+            else
+              process_task(:before) and process_task(:meet) and process_task(:after)
+              process_met_task
+            end
           end
-        end
-      }
+        }
+      end
     end
 
     def process_met_task task_opts = {}, &block
