@@ -10,6 +10,6 @@ meta 'meta within this source' do
   accepts_list_for :uri
 end
 
-dep 'locally templated dep' do
+dep 'locally templated dep', :template => 'meta within this source' do
   uri 'http://local.test.org'
 end
