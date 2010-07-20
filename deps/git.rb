@@ -16,7 +16,7 @@ dep 'git.managed' do
 end
 
 dep 'git.installer' do
-  requires_when_unmet 'usr-local subpaths exist'
+  requires_when_unmet 'usr-local.install_path'
   source "http://git-osx-installer.googlecode.com/files/git-1.7.1-intel-leopard.dmg"
   provides 'git'
   after {
