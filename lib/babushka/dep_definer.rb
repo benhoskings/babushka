@@ -23,6 +23,11 @@ module Babushka
       (@@default_blocks ||= Hashish.hash)[klass]
     end
 
+    def self.desc str = nil
+      @desc = str.strip unless str.nil?
+      @desc
+    end
+
     def initialize dep, &block
       @dep = dep
       @payload = {}

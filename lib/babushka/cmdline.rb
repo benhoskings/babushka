@@ -14,7 +14,9 @@ module Babushka
       ], [
         Arg.new(:dep_names, "The name of the dep to run", false, true)
       ]),
-      Verb.new(:list, '-T', '--tasks', "List the available deps", [], [
+      Verb.new(:list, '-T', '--tasks', "List the available deps", [
+        Opt.new(:templates, '-t', '--templates', "List templates instead of deps", true, [])
+      ], [
         Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
       ]),
       Verb.new(:sources, nil, nil, "Manage dep sources", [
@@ -49,17 +51,10 @@ module Babushka
       print_version
     end
     def handle_list verb
+      to_list = verb.opts.empty? ? :deps : verb.opts.first.def.name
       filter_str = verb.args.first.value unless verb.args.first.nil?
-      Dep.pool.deps.select {|dep|
-        filter_str.nil? || dep.name[filter_str]
-      }.sort_by {|dep|
-        dep.name
-      }.tap {|deps|
-        indent = (deps.map {|dep| dep.name.length }.max || 0) + 3
-        log ""
-        deps.each {|dep|
-          log "#{program_name} #{"'#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
-        }
+      Base.sources.local_only {
+        generate_list_for to_list, filter_str
       }
     end
 
@@ -86,6 +81,36 @@ module Babushka
       elsif verb.opts.first.def.name == :list
         Base.sources.list!
       end
+    end
+
+
+    private
+
+    def generate_list_for to_list, filter_str
+      context = to_list == :deps ? program_name : ':template =>'
+      Base.sources.all_present.each {|source|
+        source.load!
+      }.map {|source|
+        [source, source.send(to_list).send(to_list)]
+      }.map {|(source,items)|
+        if filter_str.nil? || source.name[filter_str]
+          [source, items]
+        else
+          [source, items.select {|item| item.name[filter_str] }]
+        end
+      }.select {|(source,items)|
+        !items.empty?
+      }.sort_by {|(source,items)|
+        source.name
+      }.each {|(source,items)|
+        indent = (items.map {|item| "#{source.name}:#{item.name}".length }.max || 0) + 3
+        log ""
+        log "# #{source.name} (#{source.type})#{" - #{source.uri}" unless source.implicit?}"
+        log "# #{items.length} #{to_list.to_s.chomp(items.length == 1 ? 's' : '')}#{" matching '#{filter_str}'" unless filter_str.nil?}:"
+        items.each {|dep|
+          log "#{context} #{"'#{source.name}:#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
+        }
+      }
     end
   end
   end
