@@ -233,10 +233,12 @@ describe "finding" do
     @source.load!
   }
   it "should find the specified dep" do
-    @source.find('test dep 1').should == @source.deps.deps.first
+    @source.find('test dep 1').should be_an_instance_of Dep
+    @source.deps.deps.include?(@source.find('test dep 1')).should be_true
   end
   it "should find the specified template" do
-    @source.find_template('test meta 1').should == @source.templates.templates.first
+    @source.find_template('test meta 1').should be_an_instance_of MetaDepWrapper
+    @source.templates.templates.include?(@source.find_template('test meta 1')).should be_true
   end
 end
 
