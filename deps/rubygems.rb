@@ -55,7 +55,7 @@ end
 
 dep 'rubygems installed' do
   requires 'ruby'
-  requires_when_unmet 'curl'
+  requires_when_unmet 'curl.managed'
   merge :versions, :rubygems => '1.3.7'
   met? { provided? %w[gem ruby] }
   meet {
@@ -72,7 +72,7 @@ dep 'rubygems installed' do
   }
 end
 
-dep 'curl', :template => 'managed' do
+dep 'curl.managed' do
   installs {
     via :apt, 'curl'
     via :yum, 'curl'
