@@ -14,20 +14,6 @@ describe "creation" do
     ver(ver('ruby', '1.8')).should == ver('ruby', '1.8')
     ver(ver('ruby', '1.8'), '1.9').should == ver('ruby', '1.9')
   end
-  context "with name-version string input" do
-    it "should accept name-version strings" do
-      ver('ruby-1.8').should == ver('ruby', '1.8')
-      ver('ruby-1.8-2').should == ver('ruby', '1.8-2')
-      ver('rails-3.0.0.beta').should == ver('rails', '3.0.0.beta')
-    end
-    it "should override with a separate version when specified" do
-      ver('ruby-1.8', '1.9').should == ver('ruby', '1.9')
-    end
-    it "should ignore dashes that don't separate versions" do
-      ver('apt-get').name.should == 'apt-get'
-      ver('apt-get').version.should be_nil
-    end
-  end
 end
 
 describe "to_s" do
