@@ -9,13 +9,18 @@ module Babushka
     attr_accessor :name, :version
 
     def initialize name, version = nil
-      @name = name.respond_to?(:name) ? name.name : name
-      @version = if version.nil?
-        name.version if name.respond_to?(:version)
-      elsif version.is_a? VersionStr
-        version
+      @name, parsed_version = if name.respond_to?(:name)
+        [name.name, name.version]
+      elsif name && name[/\-\d[^\-]*$/]
+        name.split('-', 2)
       else
-        version.to_version
+        [name, nil]
+      end
+      version ||= parsed_version
+      @version = if version.nil?
+        nil
+      else
+        version.is_a?(VersionStr) ? version : version.to_version
       end
     end
 
