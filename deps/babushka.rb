@@ -1,11 +1,17 @@
 dep 'babushka' do
   requires 'set up.babushka'
-  setup { set :babushka_branch, 'master' }
+  setup {
+    set :babushka_branch, 'master'
+    set :install_path, Babushka::Path.path if Babushka::Path.run_from_path?
+  }
 end
 
 dep 'babushka next' do
   requires 'set up.babushka'
-  setup { set :babushka_branch, 'next' }
+  setup {
+    set :babushka_branch, 'next'
+    set :install_path, Babushka::Path.path if Babushka::Path.run_from_path?
+  }
 end
 
 meta :babushka do
@@ -24,9 +30,6 @@ dep 'set up.babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
-  setup {
-    set :install_path, Babushka::Path.path if Babushka::Path.run_from_path?
-  }
 end
 
 dep 'up to date.babushka' do
