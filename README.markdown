@@ -175,7 +175,7 @@ If you want to write deps just for yourself that you don't plan to push online, 
 
 If you'd rather edit the live versions of those deps, you can find them in `/usr/local/babushka/sources/super-secret`. Don't forget to commit your changes though!
 
-You can also put project-specific deps in `./babushka_deps`, and babushka will load those too whenever you run it from that directory.
+You can also put project-specific deps in `./babushka-deps`, and babushka will load those too whenever you run it from that directory.
 
 
 ## n.b.

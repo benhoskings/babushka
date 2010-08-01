@@ -22,7 +22,7 @@ module Babushka
       Verb.new(:sources, nil, nil, "Manage dep sources", [
         Opt.new(:add, '-a', '--add', "Add dep source", false, [
           Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
-          Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka_deps')
+          Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka-deps')
         ]),
         Opt.new(:list, '-l', '--list', "List dep sources", false, [])
       ], []),

@@ -32,7 +32,7 @@ describe Source, '.discover_uri_and_type' do
   end
   it "should work for local paths" do
     Source.discover_uri_and_type('~/.babushka/deps').should == ['~/.babushka/deps'.p, :local]
-    Source.discover_uri_and_type('/tmp/babushka_deps').should == ['/tmp/babushka_deps', :local]
+    Source.discover_uri_and_type('/tmp/babushka-deps').should == ['/tmp/babushka-deps', :local]
   end
 end
 
@@ -45,7 +45,7 @@ describe Source, '#uri_matches?' do
   end
   it "should not match on differing URIs" do
     Source.new(nil).uri_matches?('').should be_false
-    Source.new('~/.babushka/deps').uri_matches?('~/.babushka/babushka_deps').should be_false
+    Source.new('~/.babushka/deps').uri_matches?('~/.babushka/babushka-deps').should be_false
     Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('http://github.com/benhoskings/babushka-deps.git').should be_false
     Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps').should be_false
     Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('github.com:benhoskings/babushka-deps.git').should be_false
