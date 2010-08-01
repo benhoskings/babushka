@@ -25,7 +25,7 @@ module Babushka
       @_cached_core ||= Source.new(Path.path / 'deps', :name => 'core')
     end
     def current_dir
-      @_cached_current_dir ||= Source.new('./babushka_deps', :name => 'current dir')
+      @_cached_current_dir ||= Source.new('./babushka-deps', :name => 'current dir')
     end
     def personal
       @_cached_personal ||= Source.new('~/.babushka/deps', :name => 'personal')
