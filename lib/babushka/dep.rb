@@ -12,6 +12,19 @@ module Babushka
       def Dep spec, opts = {};         Dep.for spec, opts end
       def dep name, opts = {}, &block; Base.sources.current_load_source.deps.add name, opts, block end
       def meta name, opts = {}, &block; Base.sources.current_load_source.templates.add name, opts, block end
+
+      %w[pkg managed gem src app font installer tmbundle dl nginx apache2 lighttpd_module gem_source security_apt_source plist_default pathogen_plugin_source pathogen_link_exists].each {|meta|
+        define_method meta do |*args|
+          name = args.first
+          new_meta = {'pkg' => 'managed'}[meta] || meta
+          log_error "#{caller.first.sub(/\:in [^:]+$/, '')}: This syntax isn't valid any more:"
+          log "  #{meta} '#{name}'"
+          log_error "Instead, you should use one of these:"
+          log "  dep '#{name.end_with(".#{new_meta}")}'"
+          log "  dep '#{name.chomp(".#{new_meta}")}', :template => '#{new_meta}'"
+          log ""
+        end
+      }
     end
 
     attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source, :load_path
