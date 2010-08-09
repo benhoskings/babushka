@@ -13,6 +13,7 @@ module Babushka
       def dep name, opts = {}, &block; Base.sources.current_load_source.deps.add name, opts, block end
       def meta name, opts = {}, &block; Base.sources.current_load_source.templates.add name, opts, block end
 
+      # TODO remove this after a while
       %w[pkg managed gem src app font installer tmbundle dl nginx apache2 vim_plugin lighttpd_module gem_source security_apt_source plist_default pathogen_plugin_source pathogen_link_exists].each {|meta|
         define_method meta do |*args|
           name = args.first
