@@ -2,7 +2,7 @@ meta :tmbundle, :for => :osx do
   accepts_list_for :source
 
   template {
-    requires 'TextMate.app'
+    requires 'benhoskings:TextMate.app'
     helper :path do
       '~/Library/Application Support/TextMate/Bundles' / name
     end
