@@ -7,8 +7,9 @@ include Babushka::Logger::Helpers
 include Babushka::Dep::Helpers
 include Babushka::Shell::Helpers
 
-require 'spec'
-include Spec::DSL::Main
+require 'rubygems'
+require 'rspec'
+Rspec.configure
 
 def tmp_prefix
   "#{'/private' if host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
