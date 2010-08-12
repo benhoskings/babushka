@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 require 'version_list_support'
 
 describe "invalid input" do

@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe URI, "escaping" do
   it "should escape URLs" do

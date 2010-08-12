@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe XMLString do
   it "should parse xml like a son of a bitch" do

@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe Babushka::SystemSpec, '.for_host' do
   it "should return OSXSystemSpec on Darwin boxes" do

@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 require 'prompt_helpers_support'
 
 describe "prompt_for_value" do

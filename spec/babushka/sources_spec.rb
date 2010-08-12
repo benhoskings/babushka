@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 require 'sources_support'
 
 describe Source, "arguments" do

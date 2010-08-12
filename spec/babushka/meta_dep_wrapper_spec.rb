@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe "name checks" do
   it "should not allow blank names" do

@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe Array, "to_list" do
   it "no elements" do
