@@ -1,16 +1,11 @@
 require 'rake'
-require 'spec/rake/spectask'
+require 'rspec/core/rake_task'
 
-desc "Run all specs"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.libs.concat %w[spec]
-end
+desc 'Run the spec suite'
+RSpec::Core::RakeTask.new('spec')
 
-desc "Run all specs with rcov"
-Spec::Rake::SpecTask.new('rcov') do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-  t.libs.concat %w[spec]
+desc 'Run code coverage'
+RSpec::Core::RakeTask.new('rcov') {|t|
   t.rcov = true
-  t.rcov_opts = ['--exclude', 'spec']
-end
+  t.rcov_opts = %w[--exclude spec]
+}
