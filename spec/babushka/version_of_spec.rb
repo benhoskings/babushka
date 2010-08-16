@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe "creation" do
   it "should store name" do

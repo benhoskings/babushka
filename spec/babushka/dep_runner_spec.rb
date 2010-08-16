@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe "vars" do
   before {

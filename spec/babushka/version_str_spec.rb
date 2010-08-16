@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 require 'version_str_support'
 
 def compare_with operator

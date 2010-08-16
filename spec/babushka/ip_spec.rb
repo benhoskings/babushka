@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 describe "IP" do
   it "should accept IPs, arrays and strings" do

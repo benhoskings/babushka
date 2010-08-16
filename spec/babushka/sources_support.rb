@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 def test_dep_source name = 'test'
   returning ["file:/#{tmp_prefix / 'source_remotes' / name}", {:name => name}] do |source|

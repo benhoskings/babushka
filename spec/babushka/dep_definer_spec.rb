@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 require 'dep_definer_support'
 
 describe "accepts_block_for behaviour" do

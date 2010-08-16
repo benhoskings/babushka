@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 require 'dep_support'
 
 describe "Dep.make" do

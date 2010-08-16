@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 def archive_path
   __FILE__.p.parent.parent / 'archives'
