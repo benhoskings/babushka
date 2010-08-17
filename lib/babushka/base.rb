@@ -51,12 +51,17 @@ module Babushka
     end
 
     def parse_cmdline_token verb, args
-      if (detected_opt = verb.def.opts.detect {|o| args.first.in? [o.short, o.long] }).nil?
+      detected_opt = detect_option_in(verb.def.opts, args) || detect_option_in(Opts, args)
+      if detected_opt.nil?
         verb.args = parse_cmdline_args(verb, verb.def.args, args)
       else
         args.shift
         verb.opts << parse_cmdline_opt(detected_opt, args)
       end
+    end
+
+    def detect_option_in opts, args
+      opts.detect {|o| args.first.in? [o.short, o.long] }
     end
 
     def parse_cmdline_opt opt_def, args
