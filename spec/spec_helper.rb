@@ -19,7 +19,7 @@ FileUtils.rm_r tmp_prefix if File.exists? tmp_prefix
 FileUtils.mkdir_p tmp_prefix unless File.exists? tmp_prefix
 
 module Babushka
-  class Archive
+  class Resource
     def archive_prefix
       tmp_prefix / 'archives'
     end

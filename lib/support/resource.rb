@@ -1,7 +1,7 @@
 module Babushka
-  class ArchiveError < StandardError
+  class ResourceError < StandardError
   end
-  class Archive
+  class Resource
     include Shell::Helpers
     extend Shell::Helpers
 
@@ -16,7 +16,7 @@ module Babushka
         if !download_path
           log_error "Failed to download #{url}."
         else
-          in_build_dir { Archive.for(download_path).extract(&block) }
+          in_build_dir { Resource.for(download_path).extract(&block) }
         end
       end
     end
@@ -119,7 +119,7 @@ module Babushka
     end
   end
 
-  class TarArchive < Archive
+  class TarResource < Resource
     def extract_command
       "tar -#{extract_option(type)}xf '#{path}'"
     end
@@ -132,13 +132,13 @@ module Babushka
     end
   end
 
-  class ZipArchive < Archive
+  class ZipResource < Resource
     def extract_command
       "unzip -o '#{path}'"
     end
   end
 
-  class DmgArchive < Archive
+  class DmgResource < Resource
     def extract &block
       in_download_dir {
         output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
@@ -159,21 +159,21 @@ module Babushka
     end
   end
   
-  class Archive
+  class Resource
     CLASSES = {
-      :tar => TarArchive,
-      :gzip => TarArchive,
-      :bzip2 => TarArchive,
-      :zip => ZipArchive,
-      :dmg => DmgArchive
+      :tar => TarResource,
+      :gzip => TarResource,
+      :bzip2 => TarResource,
+      :zip => ZipResource,
+      :dmg => DmgResource
     }
 
     def self.for path, opts = {}
       path = path.p
       filename = path.basename.to_s
-      raise ArchiveError, "The archive #{filename} does not exist." unless path.exists?
+      raise ResourceError, "The archive #{filename} does not exist." unless path.exists?
       klass = CLASSES[type(path)]
-      raise ArchiveError, "Don't know how to extract #{filename}." if klass.nil?
+      raise ResourceError, "Don't know how to extract #{filename}." if klass.nil?
       klass.new(path, opts)
     end
   end
