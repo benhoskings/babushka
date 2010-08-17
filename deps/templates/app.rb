@@ -52,7 +52,7 @@ meta :app do
             pre = pre.to_s # TODO shouldn't be required once accepts_list_for is more generic
             target_path = pre / entry
             if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
-              if archive.is_a? Babushka::DmgArchive
+              if archive.is_a? Babushka::DmgResource
                 log_block("Found #{entry} in the DMG, copying to #{pre}") {
                   shell "cp -a '#{entry}' '#{pre.end_with('/')}'"
                 }

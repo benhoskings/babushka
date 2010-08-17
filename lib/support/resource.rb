@@ -1,11 +1,11 @@
 module Babushka
-  class ArchiveError < StandardError
+  class ResourceError < StandardError
   end
-  class Archive
+  class Resource
     include Shell::Helpers
     extend Shell::Helpers
 
-    def self.get_source url, &block
+    def self.get url, &block
       filename = URI.unescape(url.to_s).p.basename
       if filename.to_s.blank?
         log_error "Not a valid URL to download: #{url}"
@@ -16,8 +16,14 @@ module Babushka
         if !download_path
           log_error "Failed to download #{url}."
         else
-          in_build_dir { Archive.for(download_path).extract(&block) }
+          block.call download_path
         end
+      end
+    end
+
+    def self.extract url, &block
+      get url do |download_path|
+        in_build_dir { Resource.for(download_path).extract(&block) }
       end
     end
 
@@ -51,6 +57,7 @@ module Babushka
     end
 
     TYPES = {
+      :deb => {:file_match => 'Debian binary package', :exts => %w[deb]},
       :tar => {:file_match => 'tar archive', :exts => %w[tar]},
       :gzip => {:file_match => 'gzip compressed data', :exts => %w[tgz tar.gz]},
       :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[tbz2 tar.bz2]},
@@ -119,7 +126,15 @@ module Babushka
     end
   end
 
-  class TarArchive < Archive
+  class DebResource < Resource
+    def extract &block
+      in_download_dir {
+        block.call(self)
+      }
+    end
+  end
+
+  class TarResource < Resource
     def extract_command
       "tar -#{extract_option(type)}xf '#{path}'"
     end
@@ -132,13 +147,13 @@ module Babushka
     end
   end
 
-  class ZipArchive < Archive
+  class ZipResource < Resource
     def extract_command
       "unzip -o '#{path}'"
     end
   end
 
-  class DmgArchive < Archive
+  class DmgResource < Resource
     def extract &block
       in_download_dir {
         output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
@@ -159,21 +174,22 @@ module Babushka
     end
   end
   
-  class Archive
+  class Resource
     CLASSES = {
-      :tar => TarArchive,
-      :gzip => TarArchive,
-      :bzip2 => TarArchive,
-      :zip => ZipArchive,
-      :dmg => DmgArchive
+      :deb => DebResource,
+      :tar => TarResource,
+      :gzip => TarResource,
+      :bzip2 => TarResource,
+      :zip => ZipResource,
+      :dmg => DmgResource
     }
 
     def self.for path, opts = {}
       path = path.p
       filename = path.basename.to_s
-      raise ArchiveError, "The archive #{filename} does not exist." unless path.exists?
+      raise ResourceError, "The archive #{filename} does not exist." unless path.exists?
       klass = CLASSES[type(path)]
-      raise ArchiveError, "Don't know how to extract #{filename}." if klass.nil?
+      raise ResourceError, "Don't know how to extract #{filename}." if klass.nil?
       klass.new(path, opts)
     end
   end
