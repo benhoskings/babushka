@@ -1,4 +1,4 @@
-require 'spec_support'
+require 'spec_helper'
 
 def stub_repo name = 'a'
   in_dir tmp_prefix / 'repos' / name, :create => true do
