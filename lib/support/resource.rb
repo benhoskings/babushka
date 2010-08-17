@@ -21,7 +21,7 @@ module Babushka
       end
     end
 
-    def self.get_source url, &block
+    def self.extract url, &block
       get url do |download_path|
         in_build_dir { Resource.for(download_path).extract(&block) }
       end

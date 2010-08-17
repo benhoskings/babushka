@@ -89,8 +89,8 @@ module Babushka
     def handle_source uri, &block
       uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
       ({
-        'http' => L{ Resource.get_source(uri, &block) },
-        'ftp' => L{ Resource.get_source(uri, &block) },
+        'http' => L{ Resource.extract(uri, &block) },
+        'ftp' => L{ Resource.extract(uri, &block) },
         'git' => L{ git(uri, &block) }
       }[uri.scheme] || L{ unsupported_scheme(uri) }).call
     end
