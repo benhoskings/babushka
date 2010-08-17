@@ -96,22 +96,19 @@ def change_line line, replacement, filename
   }
 end
 
-def insert_into_file insert_after, insert_before, path, lines
-  end_of_insertion = "# }\n"
+def insert_into_file insert_before, path, lines, opts = {}
+  opts = {:comment_char => '#', :insert_after => nil}.merge(opts)
   nlines = lines.split("\n").length
   before, after = path.p.readlines.cut {|l| l.strip == insert_before.strip }
 
   log "Patching #{path}"
-  if before.last == end_of_insertion
-    log_extra "Already written to line #{before.length + 1 - 2 - nlines} of #{path}."
-  elsif before.last.strip != insert_after.strip
+  if after.empty? || (opts[:insert_after] && before.last.strip != opts[:insert_after].strip)
     log_error "Couldn't find the spot to write to in #{path}."
   else
-    shell "cat > #{path}", :as => File.owner(path), :sudo => !File.writable?(path), :input => [
+    shell "cat > #{path}", :as => path.owner, :sudo => !File.writable?(path), :input => [
       before,
-      added_by_babushka(nlines).start_with('# { ').end_with("\n"),
+      added_by_babushka(nlines).start_with(opts[:comment_char] + ' ').end_with("\n"),
       lines.end_with("\n"),
-      end_of_insertion,
       after
     ].join
   end
