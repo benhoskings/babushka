@@ -25,11 +25,8 @@ module Babushka
         }
       end
 
-      def prompt_for_value message, in_opts = {}, &block
-        opts = {
-          :prompt => '? '
-        }.merge in_opts
-
+      def prompt_for_value message, opts = {}, &block
+        opts.defaults! :prompt => '? '
         prompt_and_read_value prompt_message(message, opts), opts, &block
       end
 

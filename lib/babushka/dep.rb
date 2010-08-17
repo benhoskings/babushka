@@ -46,9 +46,7 @@ module Babushka
 
     def initialize name, source, in_opts, block
       @name = name.to_s
-      @opts = {
-        :for => :all
-      }.merge in_opts
+      @opts = in_opts.defaults :for => :all
       @block = block
       @vars = {}
       @dep_source = source

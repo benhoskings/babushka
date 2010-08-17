@@ -97,7 +97,7 @@ def change_line line, replacement, filename
 end
 
 def insert_into_file insert_before, path, lines, opts = {}
-  opts = {:comment_char => '#', :insert_after => nil}.merge(opts)
+  opts.defaults! :comment_char => '#', :insert_after => nil
   nlines = lines.split("\n").length
   before, after = path.p.readlines.cut {|l| l.strip == insert_before.strip }
 
