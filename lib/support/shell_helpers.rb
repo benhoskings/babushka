@@ -107,7 +107,7 @@ def insert_into_file insert_after, insert_before, path, lines
   elsif before.last.strip != insert_after.strip
     log_error "Couldn't find the spot to write to in #{path}."
   else
-    sudo "cat > #{path}", :as => File.owner(path), :input => [
+    shell "cat > #{path}", :as => File.owner(path), :sudo => !File.writable?(path), :input => [
       before,
       added_by_babushka(nlines).start_with('# { ').end_with("\n"),
       lines.end_with("\n"),
