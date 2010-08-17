@@ -69,8 +69,8 @@ module Babushka
       end
     end
     def handle_sources verb
-      if verb.opts.length != 1
-        fail_with help_for(verb.def, "'sources' requires exactly one option.")
+      if verb.opts.empty?
+        fail_with help_for(verb.def, "'sources' requires an option.")
       elsif verb.opts.first.def.name == :add
         args = verb.opts.first.args.map(&:value)
         begin
