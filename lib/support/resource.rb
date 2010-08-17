@@ -121,6 +121,11 @@ module Babushka
   end
 
   class DebResource < Resource
+    def extract &block
+      in_download_dir {
+        block.call(self)
+      }
+    end
   end
 
   class TarResource < Resource
