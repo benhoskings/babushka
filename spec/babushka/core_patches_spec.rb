@@ -106,6 +106,21 @@ tres
   end
 end
 
+describe Hash, '#defaults!' do
+  it "should work for empty hashes" do
+    {}.defaults!(:a => 'b', :c => 'd').should == {:a => 'b', :c => 'd'}
+  end
+  it "should work for empty defaults" do
+    {:a => 'custom b', :c => 'custom d'}.defaults!({}).should == {:a => 'custom b', :c => 'custom d'}
+  end
+  it "should combine defaults with the hash" do
+    {:a => 'custom b', :c => 'custom d'}.defaults!({:e => 'f', :g => 'h'}).should == {:a => 'custom b', :c => 'custom d', :e => 'f', :g => 'h'}
+  end
+  it "should override default values" do
+    {:a => 'custom b', :e => 'custom e'}.defaults!({:e => 'f', :g => 'h'}).should == {:a => 'custom b', :e => 'custom e', :g => 'h'}
+  end
+end
+
 describe String, "val_for" do
   it "space separation" do
     'key value'.val_for('key').should == 'value'

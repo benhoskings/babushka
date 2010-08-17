@@ -138,6 +138,10 @@ class Hash
     }
   end
 
+  def defaults! defaults
+    replace defaults.merge(self)
+  end
+
   def map_values &block
     dup.map_values! &block
   end
