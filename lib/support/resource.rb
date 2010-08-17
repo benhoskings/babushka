@@ -51,6 +51,7 @@ module Babushka
     end
 
     TYPES = {
+      :deb => {:file_match => 'Debian binary package', :exts => %w[deb]},
       :tar => {:file_match => 'tar archive', :exts => %w[tar]},
       :gzip => {:file_match => 'gzip compressed data', :exts => %w[tgz tar.gz]},
       :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[tbz2 tar.bz2]},
@@ -119,6 +120,9 @@ module Babushka
     end
   end
 
+  class DebResource < Resource
+  end
+
   class TarResource < Resource
     def extract_command
       "tar -#{extract_option(type)}xf '#{path}'"
@@ -161,6 +165,7 @@ module Babushka
   
   class Resource
     CLASSES = {
+      :deb => DebResource,
       :tar => TarResource,
       :gzip => TarResource,
       :bzip2 => TarResource,
