@@ -1,13 +1,5 @@
 module Babushka
-  WorkingPrefix = '~/.babushka'
-  SourcePrefix = WorkingPrefix / 'sources'
-  BuildPrefix = WorkingPrefix / 'build'
-  DownloadPrefix = WorkingPrefix / 'downloads'
-  LogPrefix = WorkingPrefix / 'logs'
-  VarsPrefix = WorkingPrefix / 'vars'
-
   class Task
-
     attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
     attr_accessor :verb, :reportable
 

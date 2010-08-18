@@ -20,6 +20,8 @@ babushka_components = %w[
   support/colorizer
   support/levenshtein
 
+  babushka
+
   babushka/structs
   babushka/cmdline
   babushka/base

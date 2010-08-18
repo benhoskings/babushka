@@ -1,6 +1,4 @@
 module Babushka
-  VERSION = '0.6.2'
-
   class Base
   class << self
 
