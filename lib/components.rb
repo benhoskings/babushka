@@ -4,7 +4,17 @@ module Babushka
   ]
 
   Components = %w[
-    core_patches
+    core_patches/array
+    core_patches/hash
+    core_patches/hashish
+    core_patches/integer
+    core_patches/io
+    core_patches/module
+    core_patches/numeric
+    core_patches/object
+    core_patches/string
+    core_patches/symbol
+    core_patches/uri
     xml_string
     popen
     shell
