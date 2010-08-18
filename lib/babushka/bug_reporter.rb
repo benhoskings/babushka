@@ -1,9 +1,8 @@
 module Babushka
   class BugReporter
-  class << self
-    include PromptHelpers
+    extend PromptHelpers
 
-    def report dep_name
+    def self.report dep_name
       confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
         post_report dep_name,
           (which('git') && shell('git config github.user')) || 'anonymous',
@@ -16,7 +15,7 @@ module Babushka
     private
 
     # gist.github.com API example at http://gist.github.com/4277
-    def post_report dep_name, user, vars, log
+    def self.post_report dep_name, user, vars, log
       require 'net/http'
       require 'uri'
 
@@ -32,7 +31,7 @@ module Babushka
       end.is_a? Net::HTTPSuccess
     end
 
-    def report_report_result dep_name, response
+    def self.report_report_result dep_name, response
       if response.is_a? Net::HTTPSuccess
         gist_id = response.body.scan(/<repo>(\d+)<\/repo>/).flatten.first
         if gist_id.blank?
@@ -48,7 +47,5 @@ module Babushka
         log "to ben@hoskings.net? Thanks."
       end
     end
-
-  end
   end
 end
