@@ -16,7 +16,6 @@ module Babushka
       }
     end
 
-    extend Babushka::Shell::Helpers
     def self.for_path path
       path = path.p
       if !path.directory?
@@ -183,7 +182,6 @@ module Babushka
 
     private
 
-    include Shell::Helpers
     include GitHelpers
     def pull!
       if @pulled
@@ -206,7 +204,7 @@ module Babushka
     end
 
     def self.source_prefix
-      SourcePrefix
+      SourcePrefix.p
     end
   end
 end

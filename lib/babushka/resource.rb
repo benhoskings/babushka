@@ -2,9 +2,6 @@ module Babushka
   class ResourceError < StandardError
   end
   class Resource
-    include Shell::Helpers
-    extend Shell::Helpers
-
     def self.get url, &block
       filename = URI.unescape(url.to_s).p.basename
       if filename.to_s.blank?

@@ -1,11 +1,7 @@
 $:.concat %w[spec/babushka spec/fancypath]
 
-require 'bin/babushka'
+require 'lib/babushka'
 include Babushka
-
-include Babushka::Logger::Helpers
-include Babushka::Dep::Helpers
-include Babushka::Shell::Helpers
 
 require 'rubygems'
 require 'rspec'

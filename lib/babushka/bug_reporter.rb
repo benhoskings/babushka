@@ -1,7 +1,6 @@
 module Babushka
   class BugReporter
   class << self
-    include Shell::Helpers
     include Prompt::Helpers
 
     def report dep_name

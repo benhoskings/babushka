@@ -1,6 +1,5 @@
 module Babushka
   class DepRunner
-    include Shell::Helpers
     include Prompt::Helpers
     include DepDefiner::Helpers
 

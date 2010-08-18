@@ -1,8 +1,5 @@
 module Babushka
   class SystemSpec
-    include Shell::Helpers
-    extend Shell::Helpers
-
     attr_reader :version_info
 
     def self.for_host
