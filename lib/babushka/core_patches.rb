@@ -1,25 +1,3 @@
-module StartsAndEndsChecks
-  # Returns true iff +other+ appears exactly at the start of +self+.
-  def starts_with? other
-    self[0, other.length] == other
-  end
-
-  # Returns true iff +other+ appears exactly at the end of +self+.
-  def ends_with? other
-    self[-other.length, other.length] == other
-  end
-
-  # Return a duplicate of +self+, with +other+ prepended to it if it doesn't already start with +other+.
-  def start_with other
-    starts_with?(other) ? self : other + self
-  end
-
-  # Return a duplicate of +self+, with +other+ appended to it if it doesn't already end with +other+.
-  def end_with other
-    ends_with?(other) ? self : self + other
-  end
-end
-
 class Array
   # Returns true iff +other+ appears exactly at the start of +self+.
   def starts_with? first, *rest
@@ -269,7 +247,25 @@ class Object
 end
 
 class String
-  include StartsAndEndsChecks
+  # Returns true iff +other+ appears exactly at the start of +self+.
+  def starts_with? other
+    self[0, other.length] == other
+  end
+
+  # Returns true iff +other+ appears exactly at the end of +self+.
+  def ends_with? other
+    self[-other.length, other.length] == other
+  end
+
+  # Return a duplicate of +self+, with +other+ prepended to it if it doesn't already start with +other+.
+  def start_with other
+    starts_with?(other) ? self : other + self
+  end
+
+  # Return a duplicate of +self+, with +other+ appended to it if it doesn't already end with +other+.
+  def end_with other
+    ends_with?(other) ? self : self + other
+  end
 
   def val_for key
     split("\n").grep(
