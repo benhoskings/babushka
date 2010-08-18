@@ -6,8 +6,8 @@ module Babushka
       confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
         post_report dep_name,
           (which('git') && shell('git config github.user')) || 'anonymous',
-          read_file(Base.task.var_path_for(dep_name)),
-          read_file(Base.task.log_path_for(dep_name))
+          Base.task.var_path_for(dep_name).read,
+          Base.task.log_path_for(dep_name).read
       end
     end
 

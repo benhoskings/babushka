@@ -90,11 +90,6 @@ module Babushka
       end
     end
 
-    def read_file filename
-      path = filename.p
-      path.read.chomp if path.exists?
-    end
-
     def babushka_config? path
       if !path.p.exists?
         unmet "the config hasn't been generated yet"
