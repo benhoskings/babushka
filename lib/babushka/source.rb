@@ -206,7 +206,7 @@ module Babushka
     end
 
     def self.source_prefix
-      SourcePrefix
+      SourcePrefix.p
     end
   end
 end
