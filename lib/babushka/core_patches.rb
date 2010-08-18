@@ -222,6 +222,8 @@ class Integer
   end
 end
 
+alias :L :lambda
+
 class Object
   def returning obj, &block
     yield obj

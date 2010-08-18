@@ -6,7 +6,6 @@ module Babushka
   Components = %w[
     core_patches
     xml_string
-    utils
     logger
     popen
     prompt_helpers
