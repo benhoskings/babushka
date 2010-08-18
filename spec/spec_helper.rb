@@ -8,7 +8,7 @@ require 'rspec'
 Rspec.configure
 
 def tmp_prefix
-  "#{'/private' if host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
+  "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
 end
 
 FileUtils.rm_r tmp_prefix if File.exists? tmp_prefix

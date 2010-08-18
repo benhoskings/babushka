@@ -29,8 +29,8 @@ Object.class_eval {
   # Dep helpers like #Dep, #dep & #meta;
   include Babushka::Dep::Helpers
   # Logging helpers like #log, #log_ok, #log_error & #debug.
-  include Babushka::Logger::Helpers
+  include Babushka::LogHelpers
   # Shell helpers like #shell, #failable_shell & #sudo.
-  include Babushka::Shell::Helpers
+  include Babushka::ShellHelpers
   include Babushka::VersionOf::Helpers
 }

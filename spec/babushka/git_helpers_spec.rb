@@ -1,7 +1,9 @@
 require 'spec_helper'
 
+class PathSupport; extend PathHelpers end
+
 def stub_repo name = 'a'
-  in_dir tmp_prefix / 'repos' / name, :create => true do
+  PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
     shell 'git init'
     shell 'echo "Hello from the babushka specs!" >> content.txt'
     shell 'git add .'

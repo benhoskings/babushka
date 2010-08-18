@@ -2,6 +2,9 @@ module Babushka
   class DepError < StandardError
   end
   class Dep
+    include PathHelpers
+    extend SuggestHelpers
+
     class BaseTemplate
       def self.suffixed?; false end
       def self.definer_class; BaseDepDefiner end
@@ -96,8 +99,6 @@ module Babushka
       )
     end
 
-    extend Suggest::Helpers
-
     def self.process dep_name, with_run_opts = {}
       if (dep = Dep(dep_name, with_run_opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
@@ -138,7 +139,7 @@ module Babushka
           log_error "This dep isn't defined. Perhaps there was a load error?"
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif !host.matches?(opts[:for])
+        elsif !Base.host.matches?(opts[:for])
           log_ok "Not required on #{host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
