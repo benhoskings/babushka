@@ -2,6 +2,9 @@ module Babushka
   class DepError < StandardError
   end
   class Dep
+    include PathHelpers
+    extend SuggestHelpers
+
     class BaseTemplate
       def self.suffixed?; false end
       def self.definer_class; BaseDepDefiner end
@@ -95,8 +98,6 @@ module Babushka
         :from => opts[:parent_source]
       )
     end
-
-    extend Suggest::Helpers
 
     def self.process dep_name, with_run_opts = {}
       if (dep = Dep(dep_name, with_run_opts)).nil?

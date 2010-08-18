@@ -1,6 +1,5 @@
 module Babushka
   class DepDefiner
-    include Prompt::Helpers
     include VersionList
 
     attr_reader :payload

@@ -1,5 +1,7 @@
 module Babushka
   class Task
+    include PathHelpers
+
     attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
     attr_accessor :verb, :reportable
 

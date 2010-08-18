@@ -2,6 +2,11 @@ module Babushka
   class SourceError < StandardError
   end
   class Source
+    include GitHelpers
+    include LogHelpers
+    include PathHelpers
+    extend PathHelpers
+
     attr_reader :name, :uri, :type, :deps, :templates
 
     delegate :count, :skipped_count, :uncache!, :to => :deps
@@ -182,7 +187,6 @@ module Babushka
 
     private
 
-    include GitHelpers
     def pull!
       if @pulled
         debug "Already pulled #{name} (#{uri}) this session."

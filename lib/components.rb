@@ -6,13 +6,15 @@ module Babushka
   Components = %w[
     core_patches
     xml_string
-    logger
     popen
-    prompt_helpers
     shell
-    shell_helpers
-    suggest_helpers
-    git_helpers
+    helpers/log_helpers
+    helpers/shell_helpers
+    helpers/prompt_helpers
+    helpers/path_helpers
+    helpers/run_helpers
+    helpers/suggest_helpers
+    helpers/git_helpers
     resource
     lambda_chooser
     ip
@@ -37,7 +39,6 @@ module Babushka
     dep
     dep_pool
     meta_dep_pool
-    definer_helpers
     task
     source
     source_pool
