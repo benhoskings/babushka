@@ -80,7 +80,7 @@ dep 'babushka in path' do
   requires 'babushka installed'
   met? { which 'babushka' }
   meet {
-    log_shell "Linking babushka into #{var(:install_path) / '../bin'}", %Q{ln -sf "#{var(:install_path) / 'bin/babushka.rb'}" "#{var(:install_path) / '../bin/babushka'}"}
+    log_shell "Linking babushka into #{var(:install_path) / '../bin'}", %Q{ln -sf "#{var(:install_path) / 'bin/babushka'}" "#{var(:install_path) / '../bin/babushka'}"}
   }
 end
 
