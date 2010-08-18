@@ -138,7 +138,7 @@ module Babushka
           log_error "This dep isn't defined. Perhaps there was a load error?"
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif !host.matches?(opts[:for])
+        elsif !Base.host.matches?(opts[:for])
           log_ok "Not required on #{host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
