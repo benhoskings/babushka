@@ -3,10 +3,12 @@ module Babushka
   class << self
 
     # Check structs.rb for the definitions of Verb, Opt and Arg.
+    Opts = [
+      Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
+      Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, [])
+    ]
     Verbs = [
       Verb.new(:meet, nil, nil, "The main one: run a dep and all its dependencies.", [
-        Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
-        Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, []),
         Opt.new(:track_blocks, nil, '--track-blocks', "Track deps' blocks in TextMate as they're run", true, []),
         Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
         Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
@@ -69,8 +71,8 @@ module Babushka
       end
     end
     def handle_sources verb
-      if verb.opts.length != 1
-        fail_with help_for(verb.def, "'sources' requires exactly one option.")
+      if verb.opts.empty?
+        fail_with help_for(verb.def, "'sources' requires an option.")
       elsif verb.opts.first.def.name == :add
         args = verb.opts.first.args.map(&:value)
         begin
