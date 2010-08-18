@@ -124,8 +124,6 @@ class Module
   end
 end
 
-require 'etc'
-
 class Hash
   def dragnet *keys
     dup.dragnet! *keys
