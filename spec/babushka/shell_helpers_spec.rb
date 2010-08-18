@@ -3,6 +3,10 @@ require 'spec_helper'
 SucceedingLs = 'ls /bin'
 FailingLs = 'ls /nonexistent'
 
+class PathTester; extend PathHelpers end
+class RunTester; extend RunHelpers end
+class ShellTester; extend ShellHelpers end
+
 describe "shell" do
   it "should return something true on successful commands" do
     shell('true').should_not be_nil
@@ -114,23 +118,23 @@ end
 
 describe "grep" do
   it "should grep existing files" do
-    grep('include', 'spec/spec_helper.rb').should include "include Babushka\n"
+    RunTester.grep('include', 'spec/spec_helper.rb').should include "include Babushka\n"
   end
   it "should return nil when there are no matches" do
-    grep('lol', 'spec/spec_helper.rb').should be_nil
+    RunTester.grep('lol', 'spec/spec_helper.rb').should be_nil
   end
   it "should return nil for nonexistent files" do
-    grep('lol', '/nonexistent').should be_nil
+    RunTester.grep('lol', '/nonexistent').should be_nil
   end
 end
 
 describe "which" do
   it "should return the path for valid commands" do
     path = `which ls`.chomp
-    which('ls').should == path
+    ShellTester.which('ls').should == path
   end
   it "should return nil for nonexistent commands" do
-    which('nonexistent').should be_nil
+    ShellTester.which('nonexistent').should be_nil
   end
 end
 
@@ -150,7 +154,7 @@ describe "in_dir" do
 
   it "should yield if no dir is given" do
     has_yielded = false
-    in_dir(nil) {|path|
+    PathTester.in_dir(nil) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
@@ -160,7 +164,7 @@ describe "in_dir" do
 
   it "should yield if no chdir is required" do
     has_yielded = false
-    in_dir(@original_pwd) {|path|
+    PathTester.in_dir(@original_pwd) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
@@ -169,7 +173,7 @@ describe "in_dir" do
   end
   it "should change dir for the duration of the block" do
     has_yielded = false
-    in_dir(@tmp_dir) {
+    PathTester.in_dir(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
       has_yielded = true
     }
@@ -177,9 +181,9 @@ describe "in_dir" do
     Dir.pwd.should == @original_pwd
   end
   it "should work recursively" do
-    in_dir(@tmp_dir) {
+    PathTester.in_dir(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
-      in_dir(@tmp_dir_2) {
+      PathTester.in_dir(@tmp_dir_2) {
         Dir.pwd.should == @tmp_dir_2
       }
       Dir.pwd.should == @tmp_dir
@@ -187,10 +191,10 @@ describe "in_dir" do
     Dir.pwd.should == @original_pwd
   end
   it "should fail on nonexistent dirs" do
-    L{ in_dir(@nonexistent_dir) }.should raise_error Errno::ENOENT
+    L{ PathTester.in_dir(@nonexistent_dir) }.should raise_error Errno::ENOENT
   end
   it "should create nonexistent dirs if :create => true is specified" do
-    in_dir(@nonexistent_dir, :create => true) {
+    PathTester.in_dir(@nonexistent_dir, :create => true) {
       Dir.pwd.should == @nonexistent_dir
     }
     Dir.pwd.should == @original_pwd
@@ -202,13 +206,13 @@ describe "in_build_dir" do
     @original_pwd = Dir.pwd
   }
   it "should change to the build dir with no args" do
-    in_build_dir {
+    PathTester.in_build_dir {
       Dir.pwd.should == "~/.babushka/build".p
     }
     Dir.pwd.should == @original_pwd
   end
   it "should append the supplied path when supplied" do
-    in_build_dir "tmp" do
+    PathTester.in_build_dir "tmp" do
       Dir.pwd.should == "~/.babushka/build/tmp".p
     end
     Dir.pwd.should == @original_pwd
@@ -220,13 +224,13 @@ describe "in_download_dir" do
     @original_pwd = Dir.pwd
   }
   it "should change to the download dir with no args" do
-    in_download_dir {
+    PathTester.in_download_dir {
       Dir.pwd.should == "~/.babushka/downloads".p
     }
     Dir.pwd.should == @original_pwd
   end
   it "should append the supplied path when supplied" do
-    in_download_dir "tmp" do
+    PathTester.in_download_dir "tmp" do
       Dir.pwd.should == "~/.babushka/downloads/tmp".p
     end
     Dir.pwd.should == @original_pwd
@@ -235,9 +239,9 @@ end
 
 describe "cmd_dir" do
   it "should return the cmd_dir of an existing command" do
-    cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
+    ShellTester.cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
   end
   it "should return nil for nonexistent commands" do
-    cmd_dir('nonexistent').should be_nil
+    ShellTester.cmd_dir('nonexistent').should be_nil
   end
 end
