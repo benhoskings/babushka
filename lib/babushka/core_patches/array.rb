@@ -61,11 +61,11 @@ class Array
       [
         self[0..-2].squash.join(', '),
         last
-      ].squash.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ") +
-      (opts[:suffix] ? " #{self.length > 1 ? 'are' : 'is'} #{opts[:suffix].strip}" : '')
+      ].squash.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
     else
-      self[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " &mdash; #{self.length} #{opts[:noun]}")
-    end
+      self[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " - #{self.length} #{opts[:noun]}")
+    end +
+    (opts[:suffix] ? " #{self.length > 1 ? 'are' : 'is'} #{opts[:suffix].strip}" : '')
   end
   def extract_options!
     last.is_a?(::Hash) ? pop : {}
@@ -75,7 +75,7 @@ class Array
     map {|term|
       [term, term.similarity_to(string)]
     }.select {|(i, similarity)|
-      similarity <= [i.length - 1, (i.length / 5) + 2].min
+      similarity <= [i.length - 2, (i.length / 5) + 2].min
     }.sort_by {|(i, similarity)|
       similarity
     }.map {|(i, similarity)|
