@@ -1,8 +1,6 @@
 module Babushka
   class PkgHelper
   class << self
-    include Shell::Helpers
-
     def pkg_binary; pkg_cmd end
 
     def all_manager_keys

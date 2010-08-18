@@ -228,7 +228,6 @@ module Babushka
       :fail
     end
 
-    include Shell::Helpers
     def track_block_for task_name
       if definer.has_task?(task_name)
         file, line = *definer.send(task_name).inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten

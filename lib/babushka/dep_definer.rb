@@ -1,6 +1,5 @@
 module Babushka
   class DepDefiner
-    include Shell::Helpers
     include Prompt::Helpers
     include VersionList
 
