@@ -1,24 +1,24 @@
 #!/usr/bin/env ruby
 
 babushka_components = %w[
-  support/core_patches
-  support/xml_string
-  support/utils
-  support/logger
-  support/popen
-  support/prompt_helpers
-  support/shell
-  support/shell_helpers
-  support/suggest_helpers
-  support/git_helpers
-  support/resource
-  support/lambda_chooser
-  support/ip
-  support/version_str
-  support/version_of
-  support/version_list
-  support/colorizer
-  support/levenshtein
+  babushka/core_patches
+  babushka/xml_string
+  babushka/utils
+  babushka/logger
+  babushka/popen
+  babushka/prompt_helpers
+  babushka/shell
+  babushka/shell_helpers
+  babushka/suggest_helpers
+  babushka/git_helpers
+  babushka/resource
+  babushka/lambda_chooser
+  babushka/ip
+  babushka/version_str
+  babushka/version_of
+  babushka/version_list
+  babushka/colorizer
+  babushka/levenshtein
 
   babushka
 
