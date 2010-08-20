@@ -1,4 +1,4 @@
-alias :L :lambda
+alias :L :proc
 
 class Object
   def returning obj, &block
