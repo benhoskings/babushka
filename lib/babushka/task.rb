@@ -140,7 +140,7 @@ module Babushka
     end
 
     def vars_for_save
-      vars.inject(saved_vars.dup) {|vars_to_save,(var,data)|
+      vars.dup.inject(saved_vars.dup) {|vars_to_save,(var,data)|
         vars_to_save[var].update vars[var]
         save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
         vars_to_save
