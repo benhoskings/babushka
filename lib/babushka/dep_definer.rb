@@ -89,7 +89,7 @@ module Babushka
       differentiator = Base.host.differentiator_for payload[task_name].keys
       L{
         debug([
-          "#{@dep.name} / #{task_name} not defined",
+          "'#{@dep.name}' / #{task_name} not defined",
           "#{" for #{differentiator}" unless differentiator.nil?}",
           {
             :met? => ", moving on",
