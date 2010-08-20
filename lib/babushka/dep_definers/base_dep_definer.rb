@@ -25,11 +25,11 @@ module Babushka
     private
 
     def chooser
-      host.match_list
+      Base.host.match_list
     end
 
     def chooser_choices
-      host.all_tokens
+      Base.host.all_tokens
     end
 
   end

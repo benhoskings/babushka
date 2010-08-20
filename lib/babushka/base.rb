@@ -1,6 +1,4 @@
 module Babushka
-  VERSION = '0.6.2'
-
   class Base
   class << self
 
@@ -38,8 +36,6 @@ module Babushka
         PassedVerb.new verb_for(verb_abbrevs[verb]), [], []
       end
     end
-
-    include Suggest::Helpers
 
     def validate_verb verb
       verb if verb.in? verb_abbrevs.keys

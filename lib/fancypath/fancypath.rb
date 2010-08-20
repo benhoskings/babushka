@@ -182,9 +182,6 @@ class Fancypath < Pathname
 
 end
 
-def Fancypath path
-  Fancypath.new path
-end
 class Pathname
   include Fancypath::Helpers
 end

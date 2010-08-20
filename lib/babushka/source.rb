@@ -2,6 +2,11 @@ module Babushka
   class SourceError < StandardError
   end
   class Source
+    include GitHelpers
+    include LogHelpers
+    include PathHelpers
+    extend PathHelpers
+
     attr_reader :name, :uri, :type, :deps, :templates
 
     delegate :count, :skipped_count, :uncache!, :to => :deps
@@ -16,7 +21,6 @@ module Babushka
       }
     end
 
-    extend Babushka::Shell::Helpers
     def self.for_path path
       path = path.p
       if !path.directory?
@@ -183,8 +187,6 @@ module Babushka
 
     private
 
-    include Shell::Helpers
-    include GitHelpers
     def pull!
       if @pulled
         debug "Already pulled #{name} (#{uri}) this session."
@@ -206,7 +208,7 @@ module Babushka
     end
 
     def self.source_prefix
-      SourcePrefix
+      SourcePrefix.p
     end
   end
 end

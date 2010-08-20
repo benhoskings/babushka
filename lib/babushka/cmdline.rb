@@ -60,7 +60,6 @@ module Babushka
       }
     end
 
-    include Shell::Helpers
     def handle_meet verb
       if (tasks = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."

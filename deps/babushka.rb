@@ -21,7 +21,7 @@ meta :babushka do
 end
 
 dep 'set up.babushka' do
-  requires 'babushka in path', 'up to date.babushka'
+  requires 'up to date.babushka', 'babushka in path'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
   define_var :babushka_branch,
     :message => "Which branch would you like to update from?",
@@ -77,10 +77,10 @@ dep 'repo clean.babushka' do
 end
 
 dep 'babushka in path' do
-  requires 'babushka installed'
+  requires 'up to date.babushka'
   met? { which 'babushka' }
   meet {
-    log_shell "Linking babushka into #{var(:install_path) / '../bin'}", %Q{ln -sf "#{var(:install_path) / 'bin/babushka.rb'}" "#{var(:install_path) / '../bin/babushka'}"}
+    log_shell "Linking babushka into #{var(:install_path) / '../bin'}", %Q{ln -sf "#{var(:install_path) / 'bin/babushka'}" "#{var(:install_path) / '../bin/babushka'}"}
   }
 end
 

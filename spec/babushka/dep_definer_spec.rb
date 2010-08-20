@@ -27,7 +27,7 @@ describe "accepts_block_for behaviour" do
     test_accepts_block_for_response :test_response, @lambda_hello, @lambda_hello
   end
   it "should accept and return a block for this system" do
-    test_accepts_block_for_response :test_this_system, @lambda_hello, @lambda_hello, :on => host.system
+    test_accepts_block_for_response :test_this_system, @lambda_hello, @lambda_hello, :on => Base.host.system
   end
   it "should return nothing on a non-specified system" do
     test_accepts_block_for_response :test_other_system, @lambda_hello, nil, :on => :nonexistent
