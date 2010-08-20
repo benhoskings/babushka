@@ -1,4 +1,4 @@
-$:.concat %w[spec/babushka spec/fancypath]
+$:.concat %w[spec/babushka spec/fancypath .]
 
 require 'lib/babushka'
 include Babushka
