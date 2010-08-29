@@ -77,6 +77,10 @@ class Fancypath < Pathname
   end
   alias_method :rm, :remove
 
+  def read
+    super.chomp if exists?
+  end
+
   def readlink
     if !symlink?
       self

@@ -156,9 +156,7 @@ module Babushka
     end
 
     def load_deps!
-      if @loaded
-        debug "Not re-loading #{name} (#{uri})."
-      else
+      unless @loaded
         path.p.glob('**/*.rb').each {|f|
           Base.sources.load_context :source => self, :path => f, :opts => {:delay_defining => true} do
             begin

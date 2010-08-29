@@ -31,7 +31,7 @@ describe Array, "to_list" do
       %w[a b c d e].to_list(:limit => 4).should == 'a, b, c, d et al'
     end
     it "with noun" do
-      %w[a b c].to_list(:limit => 2, :noun => 'items').should == 'a, b et al &mdash; 3 items'
+      %w[a b c].to_list(:limit => 2, :noun => 'items').should == 'a, b et al - 3 items'
     end
   end
 end
