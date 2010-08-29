@@ -41,7 +41,7 @@ end
 dep 'update would fast forward.babushka' do
   requires 'on correct branch.babushka'
   met? {
-    if !shell('git fetch')
+    if !shell('git fetch origin')
       fail_because("Couldn't pull the latest code - check your internet connection.")
     else
       current_branch = shell("git branch").split("\n").collapse(/^\* /).first
