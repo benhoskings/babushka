@@ -1,4 +1,12 @@
 class Integer
+  # Return a string describing this integer as a human-readable, approximated
+  # duration, assuming it is a number of seconds. The description will be
+  # either 'now', 'less than a minute', or a value in minutes, hours or days.
+  # Some examples:
+  #   12.xsecs      #=> "less than a minute"
+  #   80.xsecs      #=> "1 minute"
+  #   1337.xsecs    #=> "22 minutes"
+  #   1234567.xsecs #=> "14 days"
   def xsecs
     value = self.abs
     past = (self < 0)
