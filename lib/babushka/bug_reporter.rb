@@ -2,6 +2,9 @@ module Babushka
   class BugReporter
     extend PromptHelpers
 
+    # This method creates a bug report for the dep specified in +dep_name+, by
+    # reading the debug log and vars associated with it and posting them as
+    # an anonymous gist.
     def self.report dep_name
       confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
         post_report dep_name,
