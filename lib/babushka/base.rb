@@ -2,12 +2,28 @@ module Babushka
   class Base
   class << self
 
+    # +task+ represents the overall job that is being run, and the parts that
+    # are external to running the corresponding dep tree itself - logging, and
+    # var loading and saving in particular.
     def task
       @task ||= Task.new
     end
+
+    # +host+ is an instance of Babushka::SystemSpec for the system the command
+    # was invoked on. If the current system isn't supported, SystemSpec.for_host
+    # will return +nil+, and Base.run will fail early.
     def host
       @host ||= Babushka::SystemSpec.for_host
     end
+
+    # +sources+ is an instance of Babushka::SourcePool, contains all the
+    # sources that babushka can currently load deps from. This means all the sources
+    # found in ~/.babushka/sources, plus the default sources:
+    #   - anonymous (no source file; i.e. deps defined in an +irb+ session,
+    #     or similar)
+    #   - core (the builtin deps that babushka uses to install itself)
+    #   - current dir (the contents of ./babushka-deps)
+    #   - personal (the contents of ~/.babushka/deps)
     def sources
       @sources ||= SourcePool.new
     end
