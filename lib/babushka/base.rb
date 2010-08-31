@@ -12,6 +12,10 @@ module Babushka
       @sources ||= SourcePool.new
     end
 
+    # The top-level entry point for babushka runs invoked at the command line.
+    # When the `babushka` command is run, bin/babushka first triggers a load
+    # via lib/babushka.rb, and then calls this method, passing in the
+    # arguments that were passed on the command line.
     def run args
       if host.nil?
         fail_with "This system is not supported."
