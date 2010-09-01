@@ -166,7 +166,7 @@ The organisation and naming of the files within the source is completely up to y
 
 You can define deps and templates in the same source, arranged however you like. You don't have to worry about having templates loaded before deps that are defined against them, because the load is a two-stage process that first reads every file and sets up the templates, and then defines all the deps that were found.
 
-The best way use a source is to make <tt>~/.babushka/deps</tt> a git repo, and push it to <tt>git://github.com/username/babushka-deps.git</tt>.
+The best way manage your own source is to make <tt>~/.babushka/deps</tt> a git repo, and push it to <tt>git://github.com/username/babushka-deps.git</tt>.
 
 To run deps from others' sources, you don't need to add the source explicitly. Just prefix the dep name with the correct username:
 
