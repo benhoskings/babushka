@@ -35,7 +35,7 @@ end
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
   met? { shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty? }
-  meet { shell("git merge origin/#{var :babushka_branch}", :log => true) }
+  meet { shell("git reset --hard origin/#{var :babushka_branch}", :log => true) }
 end
 
 dep 'update would fast forward.babushka' do
