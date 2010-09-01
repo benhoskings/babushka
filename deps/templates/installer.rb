@@ -5,8 +5,14 @@ meta :installer do
   accepts_list_for :pkg_name, :name
 
   template {
+    helper :current_version? do
+      provides.all? {|p|
+        shell("#{p} --version").split(/[\s\-]/).include? var(:versions)[p.to_s]
+      }
+    end
+
     prepare { setup_source_uris }
-    met? { provided? }
+    met? { provided? and current_version? }
 
     # At the moment, we just try to install every .[m]pkg in the archive. If that's not
     # what you want, specify the name of the pkg to choose from the archive using

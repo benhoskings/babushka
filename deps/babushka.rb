@@ -35,13 +35,13 @@ end
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
   met? { shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty? }
-  meet { shell("git merge origin/#{var :babushka_branch}", :log => true) }
+  meet { shell("git reset --hard origin/#{var :babushka_branch}", :log => true) }
 end
 
 dep 'update would fast forward.babushka' do
   requires 'on correct branch.babushka'
   met? {
-    if !shell('git fetch')
+    if !shell('git fetch origin')
       fail_because("Couldn't pull the latest code - check your internet connection.")
     else
       current_branch = shell("git branch").split("\n").collapse(/^\* /).first

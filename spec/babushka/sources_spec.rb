@@ -153,13 +153,13 @@ describe "equality" do
     @remote_2 = test_dep_source 'equality_2'
   }
   it "should be equal when uri, name and type are the same" do
-    (Source.new(@remote_1) == Source.new(@remote_1)).should be_true
+    (Source.new(*@remote_1) == Source.new(*@remote_1)).should be_true
   end
   it "shouldn't be equal when the name differs" do
-    (Source.new(@remote_1) == Source.new(@remote_1, :name => 'remote_other')).should be_false
+    (Source.new(*@remote_1) == Source.new(@remote_1.first, :name => 'remote_other')).should be_false
   end
   it "shouldn't be equal when the uri differs" do
-    (Source.new(@remote_1) == Source.new(@remote_2, :name => 'remote_1')).should be_false
+    (Source.new(*@remote_1) == Source.new(@remote_2.first, :name => 'remote_1')).should be_false
   end
 end
 

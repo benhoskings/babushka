@@ -1,4 +1,4 @@
-$:.concat %w[spec/babushka spec/fancypath]
+$:.concat %w[spec/babushka spec/fancypath .]
 
 require 'lib/babushka'
 include Babushka
@@ -44,8 +44,10 @@ module Babushka
       end
     end
   end
-end
 
-def print_log message, opts
-  # Don't log while running specs.
+  module LogHelpers
+    def print_log message, opts
+      # Don't log while running specs.
+    end
+  end
 end

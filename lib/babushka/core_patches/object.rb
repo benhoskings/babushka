@@ -1,4 +1,4 @@
-alias :L :lambda
+alias :L :proc
 
 class Object
   # Yield the supplied object to the block before returning it. This is useful
