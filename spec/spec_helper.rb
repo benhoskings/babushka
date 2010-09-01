@@ -7,6 +7,8 @@ require 'rubygems'
 require 'rspec'
 Rspec.configure
 
+puts "babushka@#{`git rev-parse --short HEAD`.strip} • ruby-#{RUBY_VERSION} • rspec-#{RSpec::Version::STRING}"
+
 def tmp_prefix
   "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
 end
