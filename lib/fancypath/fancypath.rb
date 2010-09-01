@@ -77,6 +77,10 @@ class Fancypath < Pathname
   end
   alias_method :rm, :remove
 
+  def read
+    super.chomp if exists?
+  end
+
   def readlink
     if !symlink?
       self
@@ -182,9 +186,6 @@ class Fancypath < Pathname
 
 end
 
-def Fancypath path
-  Fancypath.new path
-end
 class Pathname
   include Fancypath::Helpers
 end

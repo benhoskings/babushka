@@ -1,6 +1,5 @@
 module Babushka
   module GitHelpers
-
     def git uri, opts = {}, &block
       in_dir opts[:prefix] || BuildPrefix, :create => true do
         repo = (opts[:dir] || File.basename(uri.to_s)).p
@@ -50,6 +49,5 @@ module Babushka
         branch_line.scan(/\* (.*)/).flatten.first unless branch_line.nil?
       end
     end
-
   end
 end

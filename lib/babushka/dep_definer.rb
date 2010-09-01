@@ -1,7 +1,5 @@
 module Babushka
   class DepDefiner
-    include Shell::Helpers
-    include Prompt::Helpers
     include VersionList
 
     attr_reader :payload
@@ -88,10 +86,10 @@ module Babushka
     end
 
     def default_task task_name
-      differentiator = host.differentiator_for payload[task_name].keys
+      differentiator = Base.host.differentiator_for payload[task_name].keys
       L{
         debug([
-          "#{@dep.name} / #{task_name} not defined",
+          "'#{@dep.name}' / #{task_name} not defined",
           "#{" for #{differentiator}" unless differentiator.nil?}",
           {
             :met? => ", moving on",
@@ -128,7 +126,7 @@ module Babushka
     end
 
     def specific_block_for method_name
-      payload[method_name][(host.match_list & payload[method_name].keys).first] ||
+      payload[method_name][(Base.host.match_list & payload[method_name].keys).first] ||
       default_blocks[method_name]
     end
 

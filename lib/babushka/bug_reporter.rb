@@ -1,15 +1,16 @@
 module Babushka
   class BugReporter
-  class << self
-    include Shell::Helpers
-    include Prompt::Helpers
+    extend PromptHelpers
 
-    def report dep_name
+    # This method creates a bug report for the dep specified in +dep_name+, by
+    # reading the debug log and vars associated with it and posting them as
+    # an anonymous gist.
+    def self.report dep_name
       confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
         post_report dep_name,
           (which('git') && shell('git config github.user')) || 'anonymous',
-          read_file(Base.task.var_path_for(dep_name)),
-          read_file(Base.task.log_path_for(dep_name))
+          Base.task.var_path_for(dep_name).read,
+          Base.task.log_path_for(dep_name).read
       end
     end
 
@@ -17,7 +18,7 @@ module Babushka
     private
 
     # gist.github.com API example at http://gist.github.com/4277
-    def post_report dep_name, user, vars, log
+    def self.post_report dep_name, user, vars, log
       require 'net/http'
       require 'uri'
 
@@ -33,7 +34,7 @@ module Babushka
       end.is_a? Net::HTTPSuccess
     end
 
-    def report_report_result dep_name, response
+    def self.report_report_result dep_name, response
       if response.is_a? Net::HTTPSuccess
         gist_id = response.body.scan(/<repo>(\d+)<\/repo>/).flatten.first
         if gist_id.blank?
@@ -49,7 +50,5 @@ module Babushka
         log "to ben@hoskings.net? Thanks."
       end
     end
-
-  end
   end
 end

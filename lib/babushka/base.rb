@@ -1,24 +1,42 @@
 module Babushka
-  VERSION = '0.6.2'
-
   class Base
   class << self
 
+    # +task+ represents the overall job that is being run, and the parts that
+    # are external to running the corresponding dep tree itself - logging, and
+    # var loading and saving in particular.
     def task
       @task ||= Task.new
     end
+
+    # +host+ is an instance of Babushka::SystemSpec for the system the command
+    # was invoked on. If the current system isn't supported, SystemSpec.for_host
+    # will return +nil+, and Base.run will fail early.
     def host
       @host ||= Babushka::SystemSpec.for_host
     end
+
+    # +sources+ is an instance of Babushka::SourcePool, contains all the
+    # sources that babushka can currently load deps from. This means all the sources
+    # found in ~/.babushka/sources, plus the default sources:
+    #   - anonymous (no source file; i.e. deps defined in an +irb+ session,
+    #     or similar)
+    #   - core (the builtin deps that babushka uses to install itself)
+    #   - current dir (the contents of ./babushka-deps)
+    #   - personal (the contents of ~/.babushka/deps)
     def sources
       @sources ||= SourcePool.new
     end
 
+    # The top-level entry point for babushka runs invoked at the command line.
+    # When the `babushka` command is run, bin/babushka first triggers a load
+    # via lib/babushka.rb, and then calls this method, passing in the
+    # arguments that were passed on the command line.
     def run args
-      if (task.verb = extract_verb(args)).nil?
-        fail_with "Not sure what you meant."
-      elsif host.nil?
+      if host.nil?
         fail_with "This system is not supported."
+      elsif (task.verb = extract_verb(args)).nil?
+        fail_with "Not sure what you meant."
       else
         parse_cmdline task.verb, args
         send "handle_#{task.verb.def.name}", task.verb
@@ -38,8 +56,6 @@ module Babushka
         PassedVerb.new verb_for(verb_abbrevs[verb]), [], []
       end
     end
-
-    include Suggest::Helpers
 
     def validate_verb verb
       verb if verb.in? verb_abbrevs.keys
