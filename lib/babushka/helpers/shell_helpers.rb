@@ -12,12 +12,22 @@ module Babushka
     # and +stderr+.
     #
     # Several options can be provided to alter #shell's behaviour.
-    #   <tt>:sudo => true</tt> runs the the command as a sudo. If the command
+    #   <tt>:sudo => true</tt> runs the the command as root. If the command
     #     contains piping or redirection, a 'sudo su' variant will be used
     #     instead so that the pipe receiver or redirect targets are also
     #     included in the sudo.
     #   <tt>:as => 'user'</tt> causes sudo to run as the specified user instead
     #     of root.
+    #   <tt>:sudo => 'user'</tt> is a shortcut that has the same effect as
+    #     <tt>:sudo => true, :as => 'user'</tt>
+    #   <tt>:input</tt> can be used to supply input for the shell command. It
+    #     be any object that can be written to an IO with <tt>io << obj</tt>.
+    #     If it is passed, it will be written to the command's stdin pipe
+    #     before any output is read.
+    #   <tt>:spinner => true</tt> When this option is passed, a /-\| spinner
+    #     is printed to stdout, and advanced whenever a line is read on the
+    #     command's stdout or stderr pipes. This is useful for monitoring the
+    #     progress of a long-running command, like a build or an installer.
     def shell cmd, opts = {}, &block
       shell_method = opts[:sudo] ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block
