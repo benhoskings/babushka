@@ -1,9 +1,5 @@
 module Babushka
   module ShellHelpers
-    def shell_cmd cmd, opts = {}, &block
-      Shell.new(cmd).run opts, &block
-    end
-
     def shell cmd, opts = {}, &block
       shell_method = opts.delete(:sudo) ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block
@@ -55,6 +51,12 @@ module Babushka
       log_block message do
         send opts.delete(:sudo) ? :sudo : :shell, cmd, opts.merge(:failable => true), &block
       end
+    end
+
+    private
+
+    def shell_cmd cmd, opts = {}, &block
+      Shell.new(cmd).run opts, &block
     end
   end
 end
