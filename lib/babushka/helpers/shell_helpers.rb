@@ -5,7 +5,7 @@ module Babushka
     end
 
     def shell cmd, opts = {}, &block
-      shell_method = opts.delete(:sudo) ? :sudo : :shell_cmd
+      shell_method = opts[:sudo] ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block
     end
 
@@ -19,12 +19,13 @@ module Babushka
 
     def sudo cmd, opts = {}, &block
       cmd = cmd.to_s
+      opts[:as] ||= opts[:sudo] if opts[:sudo].is_a?(String)
       sudo_cmd = if opts[:su] || cmd[' |'] || cmd[' >']
         "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\""
       else
         "sudo -u #{opts[:as] || 'root'} #{cmd}"
       end
-      shell sudo_cmd, opts, &block
+      shell sudo_cmd, opts.discard(:sudo), &block
     end
 
     def which cmd_name, &block
