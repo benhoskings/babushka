@@ -8,7 +8,7 @@ meta :app do
 
   template {
     helper :app_name_match do
-      provides.first.sub(/\.app$/, '*.app')
+      provides.first.to_s.sub(/\.app$/, '*.app')
     end
 
     helper :check_version do |path|

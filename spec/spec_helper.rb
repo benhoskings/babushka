@@ -1,4 +1,6 @@
-$:.concat %w[spec/babushka spec/fancypath]
+# -*- coding: utf-8 -*-
+
+$:.concat %w[spec/babushka spec/fancypath .]
 
 require 'lib/babushka'
 include Babushka
@@ -6,6 +8,8 @@ include Babushka
 require 'rubygems'
 require 'rspec'
 Rspec.configure
+
+puts "babushka@#{`git rev-parse --short HEAD`.strip} • ruby-#{RUBY_VERSION} • rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
   "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
@@ -44,8 +48,10 @@ module Babushka
       end
     end
   end
-end
 
-def print_log message, opts
-  # Don't log while running specs.
+  module LogHelpers
+    def print_log message, opts
+      # Don't log while running specs.
+    end
+  end
 end
