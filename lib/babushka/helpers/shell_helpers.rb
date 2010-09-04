@@ -33,6 +33,13 @@ module Babushka
       send shell_method, cmd, opts, &block
     end
 
+    # This method is a shortcut for accessing the results of a shell command
+    # without using a block. The method itself returns the shell object that
+    # is yielded to the block by +#shell+.
+    # As an example, this shell command:
+    #   shell('grep rails Gemfile') {|shell| shell.stdout }.empty?
+    # can be simplified to this:
+    #   failable_shell('grep rails Gemfile').stdout.empty?
     def failable_shell cmd, opts = {}
       shell = nil
       Babushka::Shell.new(cmd).run opts.merge(:fail_ok => true) do |s|
@@ -41,6 +48,25 @@ module Babushka
       shell
     end
 
+    # Run +cmd+ via sudo.
+    #
+    # The return behaviour and block handling of +#sudo+ are identical to that
+    # of +#shell+. In fact, +#sudo+ constructs a sudo command, and then uses
+    # +#shell+ internally to run the command.
+    #
+    # All the options that can be passed to +#shell+ are valid for +#sudo+ as
+    # well. The :sudo and :as options can be ommitted, though, which will cause
+    # the command to be run as root. Hence, this sudo call:
+    #   sudo('ls')
+    # is equivalent to this shell call:
+    #   shell('ls', :sudo => true)
+    #   shell('ls', :as => 'root')
+    #
+    # In the same manner, this sudo call:
+    #   sudo('ls', :as => 'ben')
+    # is equivalent to these two shell calls:
+    #   shell('ls', :sudo => 'ben')
+    #   shell('ls', :as => 'ben')
     def sudo cmd, opts = {}, &block
       cmd = cmd.to_s
       opts[:as] ||= opts[:sudo] if opts[:sudo].is_a?(String)
@@ -52,11 +78,25 @@ module Babushka
       shell sudo_cmd, opts.discard(:as, :sudo), &block
     end
 
+    # This method returns the full path to the specified command in the PATH,
+    # if that command appears anywhere in the PATH. If it doesn't, nil is
+    # returned.
+    #
+    # This is roughly equivalent to running
+    #   shell("which #{cmd_name}")
+    # except, the behaviour of `which` varies across different flavours of
+    # unix, and so it's best to use this method so that the platform variations
+    # can be wrapped.
     def which cmd_name, &block
       result = shell "which #{cmd_name}", &block
       result unless result.nil? || result["no #{cmd_name} in"]
     end
 
+    # Return the directory from which the specified command would run if
+    # invoked via the PATH. If the command doesn't appear in the PATH, nil is
+    # returned.
+    # For example, on a stock OS X machine:
+    #   cmd_dir('ruby') #=> "/usr/bin"
     def cmd_dir cmd_name
       which("#{cmd_name}") {|shell|
         File.dirname shell.stdout if shell.ok?
