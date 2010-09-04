@@ -35,13 +35,6 @@ module Babushka
       }
     end
 
-    def log_block message, opts = {}, &block
-      log "#{message}...", :newline => false
-      returning block.call do |result|
-        log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
-      end
-    end
-
     def log_shell message, cmd, opts = {}, &block
       log_block message do
         opts.delete(:sudo) ? sudo(cmd, opts.merge(:spinner => true), &block) : shell(cmd, opts.merge(:spinner => true), &block)

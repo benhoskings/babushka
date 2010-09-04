@@ -33,6 +33,13 @@ module Babushka
       end
     end
 
+    def log_block message, opts = {}, &block
+      log "#{message}...", :newline => false
+      returning block.call do |result|
+        log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
+      end
+    end
+
     def log_ok message, opts = {}, &block
       if !Base.task.opt(:quiet)
         log message.end_with('.'), opts.merge(:as => :ok), &block
