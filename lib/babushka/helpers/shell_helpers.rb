@@ -29,7 +29,7 @@ module Babushka
     #     command's stdout or stderr pipes. This is useful for monitoring the
     #     progress of a long-running command, like a build or an installer.
     def shell cmd, opts = {}, &block
-      shell_method = opts[:sudo] ? :sudo : :shell_cmd
+      shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block
     end
 
@@ -49,7 +49,7 @@ module Babushka
       else
         "sudo -u #{opts[:as] || 'root'} #{cmd}"
       end
-      shell sudo_cmd, opts.discard(:sudo), &block
+      shell sudo_cmd, opts.discard(:as, :sudo), &block
     end
 
     def which cmd_name, &block
