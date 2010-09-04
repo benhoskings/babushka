@@ -103,6 +103,21 @@ module Babushka
       }
     end
 
+    # Run a shell command, logging before and after using #log_block, and using
+    # a spinner while the command runs.
+    # The first argument, +message+, is the message to print before running the
+    # command, and the remaining arguments are identical to those of #shell.
+    #
+    # As an example, suppose we called #log_shell as follows:
+    #   log_shell('Sleeping for a bit', 'sleep 10')
+    #
+    # While the command runs, the log would show
+    #   Sleeping for a bit... (without a newline)
+    #
+    # Then the command would run, with a /-\| spinner that animates each time a
+    # line of output is emitted by the command. Once the command terminates, the
+    # log would be completed to
+    #   Sleeping for a bit... done.
     def log_shell message, cmd, opts = {}, &block
       log_block message do
         shell cmd, opts.merge(:spinner => true), &block
