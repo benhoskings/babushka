@@ -37,7 +37,7 @@ module Babushka
 
     def log_shell message, cmd, opts = {}, &block
       log_block message do
-        opts.delete(:sudo) ? sudo(cmd, opts.merge(:spinner => true), &block) : shell(cmd, opts.merge(:spinner => true), &block)
+        shell cmd, opts.merge(:spinner => true), &block
       end
     end
 
