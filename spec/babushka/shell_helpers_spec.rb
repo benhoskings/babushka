@@ -71,6 +71,12 @@ describe "sudo" do
   it "should run as the given user" do
     sudo('whoami', :as => @current_user).should == @current_user
   end
+  it "should treat :sudo => 'string' as a username" do
+    shell('whoami', :sudo => @current_user).should == @current_user
+  end
+  it "should sudo from #shell when :as is specified" do
+    shell('whoami', :as => 'root').should == 'root'
+  end
   describe "compound commands" do
     it "should use 'sudo su -' when opts[:su] is supplied" do
       sudo("echo \\`whoami\\`", :su => true).should == 'root'
