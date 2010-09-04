@@ -1,4 +1,17 @@
 class Hash
+  # Return a new hash filtered to exclude any key-value pairs whose keys appear
+  # in +keys+.
+  def discard *keys
+    dup.discard! *keys
+  end
+
+  # Filter this hash in-place so any key-value pairs whose keys appear in
+  # +keys+ are removed.
+  def discard! *keys
+    keys.each {|k| delete k }
+    self
+  end
+
   # Return a new hash filtered to contain only the key-value pairs whose keys
   # appear in +keys+.
   def dragnet *keys
