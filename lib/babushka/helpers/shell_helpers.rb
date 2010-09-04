@@ -114,9 +114,9 @@ module Babushka
     # While the command runs, the log would show
     #   Sleeping for a bit... (without a newline)
     #
-    # Then the command would run, with a /-\| spinner that animates each time a
-    # line of output is emitted by the command. Once the command terminates, the
-    # log would be completed to
+    # The command runs with a /-\| spinner that animates each time a line of
+    # output is emitted by the command. Once the command terminates, the log
+    # would be completed to show
     #   Sleeping for a bit... done.
     def log_shell message, cmd, opts = {}, &block
       log_block message do
