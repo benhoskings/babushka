@@ -264,7 +264,7 @@ module Babushka
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !Base.host.matches?(opts[:for])
-          log_ok "Not required on #{host.differentiator_for opts[:for]}."
+          log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
           returning process_this_dep do
