@@ -68,7 +68,7 @@ module Babushka
     end
 
     def sed
-      host.linux? ? 'sed' : 'gsed'
+      Base.host.linux? ? 'sed' : 'gsed'
     end
 
     def append_to_file text, file, opts = {}
