@@ -71,9 +71,9 @@ module Babushka
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
-        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
+        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
       elsif /\:/ =~ name
-        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed."
+        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
         new name, source, Base.sources.current_load_opts.merge(opts), block
       end

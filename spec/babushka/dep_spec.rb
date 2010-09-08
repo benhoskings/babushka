@@ -11,13 +11,13 @@ describe "Dep.make" do
   it "should reject deps slashes in their names" do
     L{
       Dep.make "slashes/invalidate names", Base.sources.anonymous, {}, nil
-    }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
+    }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     L{
       Dep.make "colons:invalidate names", Base.sources.anonymous, {}, nil
-    }.should raise_error DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed."
+    }.should raise_error DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
     Dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
