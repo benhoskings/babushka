@@ -41,11 +41,9 @@ module Babushka
     # can be simplified to this:
     #   failable_shell('grep rails Gemfile').stdout.empty?
     def failable_shell cmd, opts = {}
-      shell = nil
-      Babushka::Shell.new(cmd).run opts.merge(:fail_ok => true) do |s|
-        shell = s
-      end
-      shell
+      result = nil
+      shell(cmd, opts.merge(:fail_ok => true)) {|s| result = s }
+      result
     end
 
     # Run +cmd+ via sudo.
