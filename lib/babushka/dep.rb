@@ -72,6 +72,8 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
+      elsif /\:/ =~ name
+        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed."
       else
         new name, source, Base.sources.current_load_opts.merge(opts), block
       end

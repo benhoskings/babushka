@@ -14,6 +14,12 @@ describe "Dep.make" do
     }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed."
     Dep("slashes/invalidate names").should be_nil
   end
+  it "should reject deps colons in their names" do
+    L{
+      Dep.make "colons:invalidate names", Base.sources.anonymous, {}, nil
+    }.should raise_error DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed."
+    Dep("colons:invalidate names").should be_nil
+  end
   it "should create deps with valid names" do
     L{
       Dep.make("valid dep name", Base.sources.anonymous, {}, nil).should be_an_instance_of(Dep)
