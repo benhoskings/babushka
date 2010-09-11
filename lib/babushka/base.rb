@@ -43,6 +43,17 @@ module Babushka
       end
     end
 
+    def exit_on_interrupt!
+      stty_save = `stty -g`.chomp
+      trap("INT") {
+        system "stty", stty_save
+        if Base.task.current_dep
+          puts "\n#{closing_log_message("#{Base.task.current_dep} (cancelled)", false, :closing_status => true)}"
+        end
+        exit
+      }
+    end
+
 
     private
 
