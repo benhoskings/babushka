@@ -109,15 +109,7 @@ module Babushka
         @@indentation_level += 1 if printable
         returning yield do |result|
           @@indentation_level -= 1 if printable
-          if opts[:closing_status] == :status_only
-            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar}".colorize(result ? 'green' : 'red'), opts
-          elsif opts[:closing_status] == :dry_run
-            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : '~'} #{message}".colorize(result ? 'green' : 'blue'), opts
-          elsif opts[:closing_status]
-            log '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar} #{message}".colorize(result ? 'green' : 'red'), opts
-          else
-            log "}".colorize('grey'), opts
-          end
+          log closing_log_message(message, result, opts), opts
         end
       else
         message = message.to_s.rstrip.gsub "\n", "\n#{indentation}"
@@ -128,6 +120,18 @@ module Babushka
         print_log message, printable
         $stdout.flush
         nil
+      end
+    end
+
+    def closing_log_message message, result = true, opts = {}
+      if opts[:closing_status] == :status_only
+        '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar}".colorize(result ? 'green' : 'red')
+      elsif opts[:closing_status] == :dry_run
+        '}'.colorize('grey') + ' ' + "#{result ? TickChar : '~'} #{message}".colorize(result ? 'green' : 'blue')
+      elsif opts[:closing_status]
+        '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar} #{message}".colorize(result ? 'green' : 'red')
+      else
+        "}".colorize('grey')
       end
     end
 

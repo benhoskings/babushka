@@ -2,7 +2,7 @@ module Babushka
   class Task
     include PathHelpers
 
-    attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
+    attr_reader :base_opts, :run_opts, :vars, :current_dep, :saved_vars, :persistent_log
     attr_accessor :verb, :reportable
 
     def initialize
@@ -13,7 +13,7 @@ module Babushka
 
     def process dep_spec
       load_previous_run_info_for dep_spec
-      returning(log_dep(dep_spec) {
+      returning(log_dep(@current_dep = dep_spec) {
         returning Dep.process(dep_spec, :top_level => true) do |result|
           unless result.nil? # nil means the dep isn't defined
             save_run_info_for dep_spec, result
@@ -22,6 +22,7 @@ module Babushka
         end
       }) {
         BugReporter.report dep_spec if reportable
+        @current_dep = nil
       }
     end
 

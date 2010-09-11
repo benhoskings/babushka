@@ -11,6 +11,8 @@ require File.expand_path(
   )
 )
 
+Babushka::Base.exit_on_interrupt!
+
 # If babushka was invoked as a command, then we run according to the arguments
 # and exit. If it wasn't (i.e. it was required by an interactive session or
 # another app), then the above require is all we needed to do.
