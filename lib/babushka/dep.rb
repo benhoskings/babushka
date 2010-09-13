@@ -9,7 +9,7 @@ module Babushka
     # this class with the default values it contains means that the code below
     # can be simpler, because at the code level everything is defined against
     # a 'template' of some sort; some are just BaseTemplate, and some are
-    # actual meta deps..
+    # actual meta deps.
     class BaseTemplate
       def self.suffixed?; false end
       def self.context_class; DepContext end
