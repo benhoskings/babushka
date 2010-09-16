@@ -13,11 +13,7 @@ module Babushka
         download_path = in_download_dir {|path|
           path / filename if download(url, filename)
         }
-        if !download_path
-          log_error "Failed to download #{url}."
-        else
-          block.call download_path
-        end
+        block.call download_path unless download_path.nil?
       end
     end
 
