@@ -2,7 +2,11 @@ module Babushka
   class RunReporter
   class << self
     def report dep, result, reportable
-      post_report dep, (reportable ? 'error' : (result ? 'ok' : 'fail'))
+      if dep.dep_source.type != :public
+        debug "Not reporting #{dep.contextual_name}, since it's not in a public source."
+      else
+        post_report dep, (reportable ? 'error' : (result ? 'ok' : 'fail'))
+      end
     end
 
 
