@@ -27,7 +27,7 @@ module Babushka
     def queue_report dep, result
       ReportPrefix.p.mkdir
       (ReportPrefix / Time.now.to_f).open('w') {|f|
-        f << run_report_for(dep, result).inspect
+        f << run_report_for(dep, result).to_http_params
       }
     end
 
