@@ -101,9 +101,6 @@ module Babushka
       }
     end
 
-
-    private
-
     def default_run_opts
       {
         :callstack => []
