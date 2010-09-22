@@ -12,16 +12,30 @@ module Babushka
 
     private
 
-    def post_report dep, result
-      require 'net/http'
-      require 'uri'
+    def post_report report
+      returning submit_report_to_webservice(report.p.read) do |result|
+        if result
+          log "Done, removing local copy."
+          report.p.rm
+        else
+          log "Failed."
+        end
+      end
+    end
 
-      returning(Net::HTTP.post_form(
-        URI.parse('http://babushka.me/runs.json'),
-        Base.task.task_info(dep, result)
-      )) do |response|
-        log "Anonymous report: #{response.class}: #{response.body}"
-      end.is_a? Net::HTTPSuccess
+    def submit_report_to_webservice data
+      require 'net/http'
+
+      Net::HTTP.start('babushka.me') {|http|
+        http.open_timeout = http.read_timeout = 5
+        http.post '/runs.json', data
+      }.tapp.is_a?(Net::HTTPSuccess)
+    rescue Timeout::Error
+      debug "Timeout while submitting run report."
+    end
+
+    def most_recent_report
+      ReportPrefix.p.glob('*').sort.last
     end
 
     def queue_report dep, result
