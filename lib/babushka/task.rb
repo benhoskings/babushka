@@ -18,7 +18,7 @@ module Babushka
           unless result.nil? # nil means the dep isn't defined
             save_run_info_for dep_spec, result
             log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{LogPrefix / dep_spec}'." unless result
-            RunReporter.report Dep(dep_spec), result, reportable
+            RunReporter.queue Dep(dep_spec), result, reportable
           end
         end
       }) {
