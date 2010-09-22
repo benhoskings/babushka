@@ -28,11 +28,9 @@ module Babushka
     end
 
     def task_info dep, result
-      now = Time.now
       {
         :version => Babushka::VERSION,
-        :date => now,
-        :unix_date => now.to_i,
+        :date => Time.now,
         :system_info => Base.host.description,
         :dep_name => dep.name,
         :source_uri => dep.dep_source.uri.to_s,
