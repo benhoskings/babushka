@@ -5,6 +5,11 @@ module Babushka
     include PathHelpers
     extend SuggestHelpers
 
+    # This class is used for deps that aren't defined against a meta dep. Using
+    # this class with the default values it contains means that the code below
+    # can be simpler, because at the code level everything is defined against
+    # a 'template' of some sort; some are just BaseTemplate, and some are
+    # actual meta deps..
     class BaseTemplate
       def self.suffixed?; false end
       def self.definer_class; BaseDepDefiner end
@@ -12,11 +17,32 @@ module Babushka
     end
 
     module Helpers
-      def Dep spec, opts = {};         Dep.for spec, opts end
-      def dep name, opts = {}, &block; Base.sources.current_load_source.deps.add name, opts, block end
-      def meta name, opts = {}, &block; Base.sources.current_load_source.templates.add name, opts, block end
+      # Use +spec+ to look up a dep. Because +spec+ might include a source
+      # prefix, the dep this method returns could be from any of the currently
+      # known sources.
+      # If no dep matching +spec+ is found, nil is returned.
+      def Dep spec, opts = {}
+        Dep.for spec, opts
+      end
 
-      # TODO remove this after a while
+      # Define and return a dep named +name+, and whose implementation is found
+      # in +block+. This is the usual top-level entry point of the babushka
+      # DSL (along with +meta+); templated or not, this is how deps are
+      # defined.
+      def dep name, opts = {}, &block
+        Base.sources.current_load_source.deps.add name, opts, block
+      end
+
+      # Define and return a meta dep named +name+, and whose implementation is
+      # found in +block+. This method, along with +dep, together are the
+      # top level of babushka's DSL.
+      def meta name, opts = {}, &block
+        Base.sources.current_load_source.templates.add name, opts, block
+      end
+
+      # TODO remove this after a while. These methods are here to catch calls
+      # against the old version of the template DSL, and suggest how they
+      # should be upgraded.
       %w[pkg managed src app font installer tmbundle dl nginx apache2 vim_plugin lighttpd_module gem_source security_apt_source plist_default pathogen_plugin_source pathogen_link_exists].each {|meta|
         define_method meta do |*args|
           name = args.first
@@ -37,16 +63,25 @@ module Babushka
     delegate :desc, :to => :definer
     delegate :set, :merge, :define_var, :to => :runner
 
+    # Create a new dep named +name+ within +source+, whose implementation is
+    # found in +block+. This method is used internally by DepPool when a dep is
+    # added to the pool. To define deps yourself, you should call +dep+ (which
+    # is +DepHelpers#dep+).
     def self.make name, source, opts, block
       if /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
-        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed."
+        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
+      elsif /\:/ =~ name
+        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
         new name, source, Base.sources.current_load_opts.merge(opts), block
       end
     end
 
+    # Store the dep's name, implementation, and other details like its source
+    # and options. The dep isn't defined if defining has been delayed (i.e. if
+    # we're loading from a source).
     def initialize name, source, in_opts, block
       @name = name.to_s
       @opts = in_opts.defaults :for => :all
@@ -58,6 +93,10 @@ module Babushka
       define! unless opts[:delay_defining]
     end
 
+    # Attempt to look up the template this dep was defined against (or if no
+    # template was specified, BaseTemplate), and then define the dep against
+    # it. If an error occurs, the backtrace point within the dep from which the
+    # exception was triggered is logged, as well as the actual exception point.
     def define!
       assign_template
       begin
@@ -69,6 +108,12 @@ module Babushka
       end
     end
 
+    # Create a definer and runner for this dep from its template, and then
+    # process the dep's outer block against the definer.
+    #
+    # This results in the details of the dep being stored, like the
+    # implementation of +met?+ and +meet+, as well as its +requires+ list and
+    # any other items defined at the top level.
     def define_dep!
       @runner = template.runner_class.new self
       @definer = template.definer_class.new self, &@block
@@ -76,10 +121,15 @@ module Babushka
       @dep_defined = true
     end
 
+    # Returns true if +#define!+ has aready successfully run on this dep.
     def dep_defined?
       @dep_defined
     end
 
+    # Attempt to retrieve the template specified in +opts[:template]+. If the
+    # template name includes a source prefix, it is searched for within the
+    # corresponding source. Otherwise, it is searched for in the current source
+    # and the core sources.
     def assign_template
       @template = if opts[:template]
         returning Base.sources.template_for(opts[:template], :from => Base.sources.current_load_source) do |t|
@@ -99,6 +149,9 @@ module Babushka
       )
     end
 
+    # Look up the dep specified by +dep_name+, calling +#process+ on it if it
+    # was found. If no dep was found by the exact dep_name that was specified,
+    # suggest other similarly spelt ones in case there was a typo.
     def self.process dep_name, with_run_opts = {}
       if (dep = Dep(dep_name, with_run_opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
@@ -109,6 +162,17 @@ module Babushka
       end
     end
 
+    # Return this dep's name, first removing the template suffix if one is
+    # present.
+    #
+    # Note that this only removes the suffix when it was used to define the
+    # dep. Dep names that end in something that looks like a template suffix,
+    # but didn't match a template and result in a templated dep, won't be
+    # touched.
+    #
+    # Some examples:
+    #   Dep('benhoskings:Chromium.app').basename #=> 'Chromium'
+    #   Dep('generated report.pdf').basename     #=> "generated report.pdf"
     def basename
       suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
     end
@@ -117,17 +181,79 @@ module Babushka
       dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
     end
 
+    # Returns the portion of the end of the dep name that looks like a template
+    # suffix, if any. Unlike +#basename+, this method will return anything that
+    # looks like a template suffix, even if it doesn't match a template.
     def suffix
       name.scan(MetaDepWrapper::TEMPLATE_SUFFIX).flatten.first
     end
 
+    # Entry point for a dry +#process+ run, where only +met?+ blocks will be
+    # evaluated.
+    #
+    # This is useful to inspect the current state of a dep tree, without
+    # altering the system. It can cause failures, though, because some deps
+    # have requirements that need to be met before the dep can perform its
+    # +met?+ check.
+    #
+    # TODO: In future, there will be support for specifying that in the DSL.
     def met?
       process :dry_run => true, :top_level => true
     end
+
+    # Entry point for a full met?/meet +#process+ run.
     def meet
       process :dry_run => false, :top_level => true
     end
 
+    # Trigger a dep run with this dep at the top of the tree.
+    #
+    # Running the dep involves the following:
+    #   - First, the +setup+ block is run.
+    #   - Next, the dep's dependencies (i.e. the contents of +requires+) are
+    #     run recursively by calling +#process+ on each; this dep's +#process+
+    #     early-exits if any of the subdeps fail.
+    #   - Next, the +met?+ block is run. If +met?+ returns:
+    #     - +true+, or any true-like value, the dep is already met and there is
+    #       nothing to do.
+    #     - +:fail+, the dep is considered unmeetable and the run fails.
+    #     - Otherwise, the dep is unmet, and the following happens:
+    #       - The +prepare+ task is run
+    #       - The +before+ task is run
+    #       - If +before+ returned a true-like value, the +meet+ task is run.
+    #         This is where the actual work of achieving the dep's aim is done.
+    #       - If +meet+ returned a true-like value, the +after+ task is run.
+    #       - Finally, the +met?+ task is run again, to check whether running
+    #         +meet+ has achieved the dep's goal.
+    #
+    # The final step is important to understand. The +meet+ block is run
+    # unconditionally, and its return value is ignored, apart from it
+    # determining whether to run the +after+ block. The result of a dep is
+    # always taken from its +met?+ block, whether it was already met,
+    # unmeetable, or met during the run.
+    #
+    # Specifically, the following describes the return values of a few
+    # components, and of the dep itself.
+    #   - A '-' means the corresponding block wouldn't be run at all.
+    #   - An 'X' means the corresponding return value doesn't matter, and is
+    #     discarded.
+    #
+    # Initial state   | initial +met?+ | meet  | subsequent +met?+ | dep returns
+    # ----------------+----------------+-------+-------------------+------------
+    # already met     | true           | -     | -                 | true
+    # unmeetable      | :fail          | -     | -                 | false
+    # couldn't be met | false          | X     | false             | false
+    # met during run  | false          | X     | true              | true
+    #
+    # Wherever possible, the +met?+ test shouldn't directly test that the
+    # +meet+ block performed specific tasks; only that its overall purpose has
+    # been achieved. For example, if the purpose of a given dep is to make sure
+    # the webserver is running, the contents of the +meet+ block would probably
+    # involve `/etc/init.d/nginx start` or similar, on a Linux system at least.
+    # In this case, the +met?+ block shouldn't test anything involving
+    # `/etc/init.d` directly; instead, it should separately test that the
+    # webserver is running, for example by using `netstat` to check that
+    # something is listening on port 80.
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
       returning cached? ? cached_result : process_and_cache do
@@ -144,7 +270,7 @@ module Babushka
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !Base.host.matches?(opts[:for])
-          log_ok "Not required on #{host.differentiator_for opts[:for]}."
+          log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
           returning process_this_dep do

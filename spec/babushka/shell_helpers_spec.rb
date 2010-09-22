@@ -40,6 +40,9 @@ describe "failable_shell" do
     shell.stdout.should be_empty
     shell.stderr.should include "No such file or directory"
   end
+  it "should support sudo" do
+    failable_shell('whoami', :sudo => true).stdout.should == "root\n"
+  end
 end
 
 describe 'argument behaviour' do
