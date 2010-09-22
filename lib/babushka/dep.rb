@@ -363,8 +363,8 @@ module Babushka
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       runner.instance_eval &definer.send(task_name)
     rescue StandardError => e
-      log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
-      log "#{e.backtrace.first}: #{e.message}".colorize('red')
+      log "#{e.class} at #{e.backtrace.first}:".colorize('red')
+      log e.message.colorize('red')
       dep_callpoint = e.backtrace.detect {|l| l[load_path.to_s] } unless load_path.nil?
       log "Check #{dep_callpoint}." unless dep_callpoint.nil?
       debug e.backtrace * "\n"
