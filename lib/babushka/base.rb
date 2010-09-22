@@ -28,6 +28,14 @@ module Babushka
       @sources ||= SourcePool.new
     end
 
+    def threads
+      @threads ||= []
+    end
+
+    def in_thread &block
+      threads.push Thread.new &block
+    end
+
     # The top-level entry point for babushka runs invoked at the command line.
     # When the `babushka` command is run, bin/babushka first triggers a load
     # via lib/babushka.rb, and then calls this method, passing in the
