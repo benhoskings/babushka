@@ -113,6 +113,10 @@ module Babushka
       suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
     end
 
+    def contextual_name
+      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
+    end
+
     def suffix
       name.scan(MetaDepWrapper::TEMPLATE_SUFFIX).flatten.first
     end
@@ -235,10 +239,6 @@ module Babushka
         shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
         sleep 2
       end
-    end
-
-    def contextual_name
-      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
     end
 
     def unmet_message_for result
