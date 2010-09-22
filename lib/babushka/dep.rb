@@ -295,6 +295,7 @@ module Babushka
       process_task(:internal_setup)
       process_task(:setup)
       process_deps and process_self
+    rescue DepError => ex
     end
 
     def process_deps accessor = :requires
@@ -369,7 +370,7 @@ module Babushka
       log "Check #{dep_callpoint}." unless dep_callpoint.nil? || e.backtrace.first[dep_callpoint]
       debug e.backtrace * "\n"
       Base.task.reportable = true
-      :fail
+      raise DepError, e.message
     end
 
     def track_block_for task_name
