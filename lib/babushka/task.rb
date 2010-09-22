@@ -2,7 +2,7 @@ module Babushka
   class Task
     include PathHelpers
 
-    attr_reader :base_opts, :run_opts, :vars, :current_dep, :saved_vars, :persistent_log
+    attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
     attr_accessor :verb, :reportable
 
     def initialize
@@ -48,6 +48,10 @@ module Babushka
 
     def opt name
       opts[name]
+    end
+
+    def dep_running?
+      !callstack.empty?
     end
 
     def callstack

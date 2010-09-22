@@ -47,8 +47,8 @@ module Babushka
       stty_save = `stty -g`.chomp
       trap("INT") {
         system "stty", stty_save
-        if Base.task.current_dep
-          puts "\n#{closing_log_message("#{Base.task.current_dep} (cancelled)", false, :closing_status => true)}"
+        if Base.task.dep_running?
+          puts "\n#{closing_log_message("#{Base.task.callstack.first.contextual_name} (cancelled)", false, :closing_status => true)}"
         end
         exit
       }
