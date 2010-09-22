@@ -135,6 +135,26 @@ module Babushka
       end
     end
 
+    def log_table headings, rows
+      all_rows = rows.map {|row|
+        row.map(&:to_s)
+      }.unshift(
+        headings
+      ).transpose.map {|col|
+        max_length = col.map(&:length).max
+        col.map {|cell| cell.ljust(max_length) }
+      }.transpose
+
+      [
+        all_rows.first.join(' | '),
+        all_rows.first.map {|i| '-' * i.length }.join('-+-')
+      ].concat(
+        all_rows[1..-1].map {|row| row.join(' | ') }
+      ).each {|row|
+        log row
+      }
+    end
+
 
     private
 
