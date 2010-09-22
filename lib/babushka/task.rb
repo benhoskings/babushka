@@ -27,6 +27,19 @@ module Babushka
       }
     end
 
+    def task_info dep, result
+      now = Time.now
+      {
+        :version => Babushka::VERSION,
+        :date => now,
+        :unix_date => now.to_i,
+        :uname => shell('uname -a'),
+        :dep_name => dep.name,
+        :source_uri => dep.dep_source.uri,
+        :result => result
+      }
+    end
+
     def opts
       verb_opts.merge @run_opts
     end
@@ -119,19 +132,6 @@ module Babushka
 
     def dump_yaml_to filename, data
       File.open(filename, 'w') {|f| YAML.dump data, f }
-    end
-
-    def task_info dep, result
-      now = Time.now
-      {
-        :version => Babushka::VERSION,
-        :date => now,
-        :unix_date => now.to_i,
-        :uname => shell('uname -a'),
-        :dep_name => dep.name,
-        :source_uri => dep.dep_source.uri,
-        :result => result
-      }
     end
 
     def sticky_vars_for_save
