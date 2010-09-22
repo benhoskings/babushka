@@ -127,7 +127,7 @@ module Babushka
         :version => Babushka::VERSION,
         :date => now,
         :unix_date => now.to_i,
-        :uname => `uname -a`,
+        :uname => shell('uname -a'),
         :dep_name => dep.name,
         :result => result
       }
