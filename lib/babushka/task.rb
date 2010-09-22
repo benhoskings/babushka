@@ -12,7 +12,11 @@ module Babushka
     end
 
     def process dep_names
+      raise "A task is already running." if running?
+      @running = true
       dep_names.all? {|dep_name| process_dep dep_name }
+    ensure
+      @running = false
     end
 
     def process_dep dep_name
@@ -57,8 +61,8 @@ module Babushka
       opts[name]
     end
 
-    def dep_running?
-      !callstack.empty?
+    def running?
+      @running
     end
 
     def callstack
