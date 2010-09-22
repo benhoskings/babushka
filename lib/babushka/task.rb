@@ -129,6 +129,7 @@ module Babushka
         :unix_date => now.to_i,
         :uname => shell('uname -a'),
         :dep_name => dep.name,
+        :source_uri => dep.dep_source.uri,
         :result => result
       }
     end
