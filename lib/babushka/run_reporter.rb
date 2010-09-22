@@ -9,6 +9,15 @@ module Babushka
       end
     end
 
+    def post_reports
+      require 'net/http'
+
+      while Base.task.current_dep && (report = most_recent_report)
+        log "Posting anonymous report: #{report} (#{report.p.read})"
+        post_report report
+      end
+    end
+
 
     private
 
