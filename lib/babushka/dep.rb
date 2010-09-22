@@ -366,7 +366,7 @@ module Babushka
       log "#{e.class} at #{e.backtrace.first}:".colorize('red')
       log e.message.colorize('red')
       dep_callpoint = e.backtrace.detect {|l| l[load_path.to_s] } unless load_path.nil?
-      log "Check #{dep_callpoint}." unless dep_callpoint.nil?
+      log "Check #{dep_callpoint}." unless dep_callpoint.nil? || e.backtrace.first[dep_callpoint]
       debug e.backtrace * "\n"
       Base.task.reportable = true
       :fail
