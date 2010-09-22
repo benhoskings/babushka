@@ -60,12 +60,12 @@ module Babushka
       opts[:callstack]
     end
 
-    def log_path_for dep_name
-      log_prefix / dep_name
+    def log_path_for dep
+      log_prefix / dep.contextual_name
     end
 
-    def var_path_for dep_name
-      VarsPrefix.p / dep_name
+    def var_path_for dep
+      VarsPrefix.p / dep.contextual_name
     end
 
     def sticky_var_path
@@ -74,9 +74,9 @@ module Babushka
 
     private
 
-    def log_dep dep_name
-      FileUtils.mkdir_p log_prefix unless File.exists? log_prefix
-      File.open(log_path_for(dep_name), 'w') {|f|
+    def log_dep dep
+      log_prefix.mkdir
+      log_path_for(dep).open('w') {|f|
         @persistent_log = f
         returning(yield) { @persistent_log = nil }
       }
@@ -87,8 +87,8 @@ module Babushka
     end
 
     require 'yaml'
-    def load_previous_run_info_for dep_name
-      load_var_log_for(var_path_for(dep_name)).each_pair {|var_name,var_data|
+    def load_previous_run_info_for dep
+      load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
         @saved_vars[var_name].update var_data
       }
       load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
@@ -97,10 +97,10 @@ module Babushka
       }
     end
 
-    def save_run_info_for dep_name, result
+    def save_run_info_for dep, result
       save_var_log_for sticky_var_path, :vars => sticky_vars_for_save
-      save_var_log_for var_path_for(dep_name), {
-        :info => task_info(Dep(dep_name), result),
+      save_var_log_for var_path_for(dep), {
+        :info => task_info(dep, result),
         :vars => vars_for_save
       }
     end
