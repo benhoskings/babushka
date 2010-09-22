@@ -6,6 +6,7 @@ module Babushka
   DownloadPrefix = '~/.babushka/downloads'
   LogPrefix      = '~/.babushka/logs'
   VarsPrefix     = '~/.babushka/vars'
+  ReportPrefix   = '~/.babushka/runs'
 
   module Path
     def self.binary() File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__ end

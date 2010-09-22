@@ -1,6 +1,4 @@
 module Babushka
-  RunReportQueue = '~/.babushka/runs'
-
   class RunReporter
   class << self
     def queue dep, result, reportable
@@ -27,13 +25,10 @@ module Babushka
     end
 
     def queue_report dep, result
-      RunReportQueue.p.open('a') {|f|
-        f << sanitised_run_report_for(dep, result)
+      ReportPrefix.p.mkdir
+      (ReportPrefix / Time.now.to_f).open('w') {|f|
+        f << run_report_for(dep, result).inspect
       }
-    end
-
-    def sanitised_run_report_for dep, result
-      run_report_for(dep, result).inspect.gsub("\n", ' ').end_with("\n")
     end
 
     def run_report_for dep, result
