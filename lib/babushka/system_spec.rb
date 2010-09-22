@@ -22,6 +22,15 @@ module Babushka
     def osx?; false end
     def pkg_helper; nil end
 
+    def description
+      [
+        (flavour_str unless flavour_str == system_str),
+        system_str,
+        version,
+        "(#{name_str})"
+      ].compact.join(' ')
+    end
+
     def name
       (name_map[system][flavour] || {})[release]
     end
