@@ -28,6 +28,7 @@ module Babushka
         ]),
         Opt.new(:list, '-l', '--list', "List dep sources", false, [])
       ], []),
+      Verb.new(:shell, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
@@ -61,12 +62,12 @@ module Babushka
     end
 
     def handle_meet verb
-      if (tasks = verb.args.map(&:value)).empty?
+      if (dep_names = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
       elsif Base.task.opt(:track_blocks) && !which('mate')
-        fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings/textmate"
+        fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings:textmate"
       else
-        tasks.all? {|dep_name| task.process dep_name }
+        task.process dep_names
       end
     end
     def handle_sources verb
@@ -84,6 +85,9 @@ module Babushka
       end
     end
 
+    def handle_shell verb
+      exec "irb -r'#{Path.lib / 'babushka'}' --simple-prompt"
+    end
 
     private
 

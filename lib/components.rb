@@ -37,6 +37,7 @@ module Babushka
     cmdline
     base
     system_spec
+    run_reporter
     bug_reporter
     pkg_helper
     pkg_helpers/base_helper

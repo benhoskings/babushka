@@ -13,10 +13,10 @@ describe Task, "process" do
   describe "with a dep name" do
     before {
       dep 'task spec'
-      Dep.should_receive(:process)
+      Dep('task spec').should_receive(:process)
     }
     it "should run a dep when just the name is passed" do
-      Base.task.process 'task spec'
+      Base.task.process ['task spec']
     end
   end
   after {
