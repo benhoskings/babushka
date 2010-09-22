@@ -14,6 +14,7 @@ module Babushka
     def process dep_names
       raise "A task is already running." if running?
       @running = true
+      Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep dep_name }
     ensure
       @running = false
