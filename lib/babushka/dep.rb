@@ -177,6 +177,15 @@ module Babushka
       suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
     end
 
+    # Returns this dep's name, including the source name as a prefix if this
+    # dep is in a cloneable source.
+    #
+    # A cloneable source is one that babushka knows how to automatically
+    # update; i.e. a source that babushka could have installed itself.
+    #
+    # In effect, a cloneable source is one whose deps you prefix when you run
+    # them, so this method returns the dep's name in the same form as you would
+    # refer to it on the commandline or within a +require+ call in another dep.
     def contextual_name
       dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
     end
