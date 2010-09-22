@@ -17,14 +17,19 @@ module Babushka
 
     def process_dep dep_name
       Dep.find_or_suggest dep_name do |dep|
-        log_dep dep do
-          load_previous_run_info_for dep
-          returning dep.process(:top_level => true) do |result|
-            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{var_path_for(dep)}'." unless result
-            save_run_info_for dep, result
-            RunReporter.queue dep, result, reportable
-            BugReporter.report dep if reportable
-          end
+        returning run_dep(dep) do |result|
+          log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{var_path_for(dep)}'." unless result
+          RunReporter.queue dep, result, reportable
+          BugReporter.report dep if reportable
+        end
+      end
+    end
+
+    def run_dep dep
+      log_dep dep do
+        load_previous_run_info_for dep
+        returning dep.process(:top_level => true) do |result|
+          save_run_info_for dep, result
         end
       end
     end
