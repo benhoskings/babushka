@@ -13,7 +13,6 @@ module Babushka
       require 'net/http'
 
       while Base.task.running? && (report = most_recent_report)
-        log "Posting anonymous report: #{report} (#{report.p.read})"
         post_report report
       end
     end
@@ -23,12 +22,7 @@ module Babushka
 
     def post_report report
       returning submit_report_to_webservice(report.p.read) do |result|
-        if result
-          log "Done, removing local copy."
-          report.p.rm
-        else
-          log "Failed."
-        end
+        report.p.rm if result
       end
     end
 
@@ -38,7 +32,7 @@ module Babushka
       Net::HTTP.start('babushka.me') {|http|
         http.open_timeout = http.read_timeout = 5
         http.post '/runs.json', data
-      }.tapp.is_a?(Net::HTTPSuccess)
+      }.is_a?(Net::HTTPSuccess)
     rescue Timeout::Error
       debug "Timeout while submitting run report."
     end
