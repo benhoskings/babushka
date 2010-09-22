@@ -49,6 +49,8 @@ module Babushka
         parse_cmdline task.verb, args
         send "handle_#{task.verb.def.name}", task.verb
       end
+    ensure
+      Base.threads.each &:join
     end
 
     def exit_on_interrupt!
