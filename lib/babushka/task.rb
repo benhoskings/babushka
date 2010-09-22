@@ -83,7 +83,7 @@ module Babushka
     def save_run_info_for dep_name, result
       save_var_log_for sticky_var_path, :vars => sticky_vars_for_save
       save_var_log_for var_path_for(dep_name), {
-        :info => task_info(dep_name, result),
+        :info => task_info(Dep(dep_name), result),
         :vars => vars_for_save
       }
     end
@@ -121,14 +121,14 @@ module Babushka
       File.open(filename, 'w') {|f| YAML.dump data, f }
     end
 
-    def task_info dep_name, result
+    def task_info dep, result
       now = Time.now
       {
         :version => Babushka::VERSION,
         :date => now,
         :unix_date => now.to_i,
         :uname => `uname -a`,
-        :dep_name => dep_name,
+        :dep_name => dep.name,
         :result => result
       }
     end
