@@ -11,20 +11,22 @@ module Babushka
       @run_opts = default_run_opts
     end
 
-    def process dep_spec
-      load_previous_run_info_for dep_spec
-      returning(log_dep(@current_dep = dep_spec) {
-        returning Dep.process(dep_spec, :top_level => true) do |result|
-          unless result.nil? # nil means the dep isn't defined
-            save_run_info_for dep_spec, result
-            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{LogPrefix / dep_spec}'." unless result
-            RunReporter.queue Dep(dep_spec), result, reportable
+    def process dep_names
+      dep_names.all? {|dep_name| process_dep dep_name }
+    end
+
+    def process_dep dep_name
+      Dep.find_or_suggest dep_name do |dep|
+        log_dep dep do
+          load_previous_run_info_for dep
+          returning dep.process(:top_level => true) do |result|
+            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{var_path_for(dep)}'." unless result
+            save_run_info_for dep, result
+            RunReporter.queue dep, result, reportable
+            BugReporter.report dep if reportable
           end
         end
-      }) {
-        BugReporter.report dep_spec if reportable
-        @current_dep = nil
-      }
+      end
     end
 
     def task_info dep, result
