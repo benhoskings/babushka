@@ -33,7 +33,7 @@ module Babushka
         :version => Babushka::VERSION,
         :date => now,
         :unix_date => now.to_i,
-        :uname => shell('uname -a'),
+        :system_info => Base.host.description,
         :dep_name => dep.name,
         :source_uri => dep.dep_source.uri,
         :result => result
