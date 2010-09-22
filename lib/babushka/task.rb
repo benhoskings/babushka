@@ -33,7 +33,7 @@ module Babushka
         :date => Time.now,
         :system_info => Base.host.description,
         :dep_name => dep.name,
-        :source_uri => dep.dep_source.uri.to_s,
+        :source_uri => dep.dep_source.uri,
         :result => result
       }
     end
