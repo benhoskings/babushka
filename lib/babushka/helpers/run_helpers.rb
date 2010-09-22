@@ -2,6 +2,10 @@ module Babushka
   module RunHelpers
     include PathHelpers
 
+    def hostname
+      shell 'hostname -f'
+    end
+
     def rake cmd, &block
       sudo "rake #{cmd} RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
     end
@@ -64,7 +68,7 @@ module Babushka
     end
 
     def sed
-      host.linux? ? 'sed' : 'gsed'
+      Base.host.linux? ? 'sed' : 'gsed'
     end
 
     def append_to_file text, file, opts = {}

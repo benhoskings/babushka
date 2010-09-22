@@ -28,6 +28,7 @@ module Babushka
         ]),
         Opt.new(:list, '-l', '--list', "List dep sources", false, [])
       ], []),
+      Verb.new(:shell, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
@@ -84,6 +85,9 @@ module Babushka
       end
     end
 
+    def handle_shell verb
+      exec "irb -r'#{Path.lib / 'babushka'}' --simple-prompt"
+    end
 
     private
 

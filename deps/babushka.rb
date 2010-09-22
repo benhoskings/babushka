@@ -34,7 +34,15 @@ end
 
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
-  met? { shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty? }
+  met? {
+    returning shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty? do |result|
+      if result
+        log_ok "babushka is up to date at revision #{shell('git rev-parse --short HEAD')}."
+      else
+        log "babushka can be updated: #{shell('git rev-parse --short HEAD')}..#{shell("git rev-parse --short origin/#{var(:babushka_branch)}")}"
+      end
+    end
+  }
   meet { shell("git reset --hard origin/#{var :babushka_branch}", :log => true) }
 end
 
