@@ -134,7 +134,7 @@ module Babushka
           i[:source_uri],
           ((i[:runs_this_week] && i[:runs_this_week] > 0) ? "#{i[:runs_this_week]} this week" : "#{i[:total_runs]} ever"),
           ((i[:runs_this_week] && i[:runs_this_week] > 0) ? "#{(i[:success_rate_this_week] * 100).round}%" : ((i[:total_runs] && i[:total_runs] > 0) ? "#{(i[:total_success_rate] * 100).round}%" : '')),
-          (i[:source_uri][github_autosource_regex] ? "#{program_name} #{$1}:#{i[:name]}" : '✣')
+          (i[:source_uri][github_autosource_regex] ? "#{program_name} #{$1}:#{"'" if i[:name][/\s/]}#{i[:name]}#{"'" if i[:name][/\s/]}" : '✣')
         ]
       }
     end
