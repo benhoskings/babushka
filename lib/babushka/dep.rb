@@ -154,8 +154,8 @@ module Babushka
     #
     # If no such dep exists, search for other similarly spelt deps and re-call
     # this same method on the one chosen by the user, if any.
-    def self.find_or_suggest dep_name, &block
-      if (dep = Dep(dep_name)).nil?
+    def self.find_or_suggest dep_name, opts = {}, &block
+      if (dep = Dep(dep_name, opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         suggestion = suggest_value_for(dep_name, Base.sources.current_names)
         Dep.context suggestion unless suggestion.nil?
@@ -300,8 +300,8 @@ module Babushka
 
     def process_deps accessor = :requires
       definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
-        Dep.find_or_suggest dep_name do |dep|
-          dep.process :parent_source => dep_source
+        Dep.find_or_suggest dep_name, :parent_source => dep_source do |dep|
+          dep.process
         end
       })
     end
