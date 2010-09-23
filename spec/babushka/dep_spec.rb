@@ -95,6 +95,33 @@ describe Dep, '.for' do
   end
 end
 
+describe Dep, '.find_or_suggest' do
+  before {
+    @dep = dep 'Dep.find_or_suggest tests'
+  }
+  it "should find the given dep and yield the block" do
+    Dep.find_or_suggest('Dep.find_or_suggest tests') {|dep| dep }.should == @dep
+  end
+  context "namespaced" do
+    before {
+      @source = Source.new(nil, :name => 'namespaced')
+      Source.stub!(:present).and_return([@source])
+      Base.sources.load_context :source => @source do
+        @namespaced_dep = dep 'namespaced Dep.find_or_suggest tests'
+      end
+    }
+    it "should not find the dep without a namespace" do
+      Dep.find_or_suggest('namespaced Dep.find_or_suggest tests').should be_nil
+    end
+    it "should not find the dep with an incorrect namespace" do
+      Dep.find_or_suggest('incorrect:namespaced Dep.find_or_suggest tests').should be_nil
+    end
+    it "should find the dep with the correct namespace" do
+      Dep.find_or_suggest('namespaced:namespaced Dep.find_or_suggest tests') {|dep| dep }.should == @namespaced_dep
+    end
+  end
+end
+
 describe "dep creation" do
   it "should work for blank deps" do
     L{
