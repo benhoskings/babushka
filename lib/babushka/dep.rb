@@ -158,7 +158,7 @@ module Babushka
       if (dep = Dep(dep_name, opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         suggestion = suggest_value_for(dep_name, Base.sources.current_names)
-        Dep.context suggestion unless suggestion.nil?
+        Dep.find_or_suggest suggestion, opts, &block unless suggestion.nil?
       else
         block.call dep
       end
