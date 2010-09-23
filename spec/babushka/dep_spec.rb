@@ -120,6 +120,50 @@ describe Dep, '.find_or_suggest' do
       Dep.find_or_suggest('namespaced:namespaced Dep.find_or_suggest tests') {|dep| dep }.should == @namespaced_dep
     end
   end
+  context "from other deps" do
+    before {
+      @source = Source.new(nil, :name => 'namespaced')
+      Source.stub!(:present).and_return([@source])
+      Base.sources.load_context :source => @source do
+        @namespaced_dep = dep 'namespaced Dep.find_or_suggest tests' do
+          requires 'Dep.find_or_suggest sub-dep'
+        end
+      end
+    }
+    context "without namespacing" do
+      before {
+        @sub_dep = dep 'Dep.find_or_suggest sub-dep'
+      }
+      it "should find the sub dep" do
+        @sub_dep.should_receive :process
+        @namespaced_dep.process
+      end
+    end
+    context "in the same namespace" do
+      before {
+        Base.sources.load_context :source => @source do
+          @sub_dep = dep 'Dep.find_or_suggest sub-dep'
+        end
+      }
+      it "should find the sub dep" do
+        @sub_dep.should_receive :process
+        @namespaced_dep.process
+      end
+    end
+    context "in a different namespace" do
+      before {
+        @source2 = Source.new(nil, :name => 'another namespaced')
+        Source.stub!(:present).and_return([@source, @source2])
+        Base.sources.load_context :source => @source2 do
+          @sub_dep = dep 'Dep.find_or_suggest sub-dep'
+        end
+      }
+      it "should not find the sub dep" do
+        @sub_dep.should_not_receive :process
+        @namespaced_dep.process
+      end
+    end
+  end
 end
 
 describe "dep creation" do
