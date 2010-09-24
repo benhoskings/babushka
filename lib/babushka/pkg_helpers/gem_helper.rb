@@ -34,6 +34,20 @@ module Babushka
       env_info.val_for('RUBY EXECUTABLE').p
     end
 
+    def ruby_wrapper_path
+      if ruby_path.to_s['/.rvm/rubies/'].nil?
+        ruby_path
+      else
+        ruby_path.sub(
+          # /Users/ben/.rvm/rubies/ruby-1.9.2-p0/bin/ruby
+          /^(.*)\/\.rvm\/rubies\/([^\/]+)\/bin\/ruby/
+        ) {
+          # /Users/ben/.rvm/wrappers/ruby-1.9.2-p0/ruby
+          "#{$1}/.rvm/wrappers/#{$2}/ruby"
+        }
+      end
+    end
+
     def should_sudo?
       super || !File.writable?(gem_root)
     end
