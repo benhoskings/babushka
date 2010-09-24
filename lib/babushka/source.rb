@@ -193,7 +193,12 @@ module Babushka
         debug "Not pulling #{name} (#{uri}) - in local-only mode."
         true
       else
-        @pulled = git uri, :prefix => prefix, :dir => name, :log => true
+        last_pulled_at = Time.now - path.mtime
+        if last_pulled_at < 60
+          debug "#{name} (#{uri}) was pulled #{last_pulled_at.round.xsecs} ago, not pulling now."
+        else
+          @pulled = git uri, :prefix => prefix, :dir => name, :log => true
+        end
       end
     end
 
