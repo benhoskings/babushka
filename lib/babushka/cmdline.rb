@@ -120,6 +120,7 @@ module Babushka
             log "   $ #{program_name} <alias>:<dep>"
           end
         end
+        !results.empty?
       end
     end
 
