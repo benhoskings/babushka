@@ -36,6 +36,7 @@ describe "comparing" do
 
   it "should compare word pieces properly if they include a number" do
     (VersionStr.new('3.0.0.beta2') > VersionStr.new('3.0.0.beta1')).should be_true
+    (VersionStr.new('3.0.0.beta10') > VersionStr.new('3.0.0.beta1')).should be_true
   end
   
   it "should allow for integers in strings and sort correctly" do
