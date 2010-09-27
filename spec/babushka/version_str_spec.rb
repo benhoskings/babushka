@@ -50,9 +50,9 @@ describe "parsing" do
   it "should parse the version number" do
     VersionStr.new('0.2').pieces.should == [0, 2]
     VersionStr.new('0.3.10.2').pieces.should == [0, 3, 10, 2]
-    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1, 'p243']
+    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1, 'p', 243]
     VersionStr.new('3.0.0.beta').pieces.should == [3, 0, 0, 'beta']
-    VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta3']
+    VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta', 3]
   end
   it "should parse the operator if supplied" do
     v = VersionStr.new('>0.2')
