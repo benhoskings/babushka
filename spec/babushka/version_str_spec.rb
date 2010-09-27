@@ -30,11 +30,16 @@ describe "comparing" do
     (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta1')).should be_true
   end
 
+  it "should compare word pieces alphabetically" do
+    (VersionStr.new('3.0.0.beta') < VersionStr.new('3.0.0.pre')).should be_true
+    (VersionStr.new('3.0.0.pre') < VersionStr.new('3.0.0.rc')).should be_true
+  end
+
   it "should treat word pieces with a number as more than without one" do
     (VersionStr.new('3.0.0.beta1') > VersionStr.new('3.0.0.beta')).should be_true
   end
 
-  it "should compare word pieces properly if they include a number" do
+  it "should compare number parts of word pieces numerically" do
     (VersionStr.new('3.0.0.beta2') > VersionStr.new('3.0.0.beta1')).should be_true
     (VersionStr.new('3.0.0.beta10') > VersionStr.new('3.0.0.beta1')).should be_true
   end
