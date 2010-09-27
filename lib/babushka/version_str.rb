@@ -1,80 +1,55 @@
 module Babushka
   class VersionStr
-
     include Comparable
-    attr_reader :pieces, :operator
+    attr_reader :pieces, :operator, :version
     GemVersionOperators = %w[= == != > < >= <= ~>].freeze
 
     def <=> other
-      other = other.to_version if other.is_a? String
+      other = other.to_version unless other.is_a? VersionStr
       max_length = [pieces.length, other.pieces.length].max
-      (0...max_length).each do |index|
+      (0...max_length).to_a.pick {|index|
         result = compare_pieces pieces[index], other.pieces[index]
-        return result unless result == 0
-      end
-      
-      0 # no mismatches, consider it equal
+        result unless result == 0
+      } || 0
     end
-    
+
     def initialize str
-      captures = str.strip.scan(/^((#{GemVersionOperators.join('|')})\s*)?(\d.*)/)
-      raise "Bad input: '#{str}'" if captures.nil? || captures.first.nil?
-      
-      operator_with_space, @operator, version = captures.first
-      
-      if version.nil?
-        raise "Bad input: '#{str}'"
+      @operator, @version = str.strip.scan(/^(#{GemVersionOperators.join('|')})?\s*(\d.*)/).first
+
+      if @operator.nil? && @version.nil?
+        raise ArgumentError, "VersionStr.new('#{str}'): bad input."
       elsif !(@operator.nil? || GemVersionOperators.include?(@operator))
-        raise "Bad operator: '#{@operator}'"
+        raise ArgumentError, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
+      elsif @version.nil? || @version[/^\d\w*([\.\-]\w*)*$/].nil?
+        raise ArgumentError, "VersionStr.new('#{str}'): couldn't parse a version number."
       else
-        @original_version = version
-        @pieces = version.strip.split(/[\.\-]/).collect { |piece|
+        @pieces = @version.strip.scan(/\d+|[a-zA-Z]+|\w+/).map {|piece|
           piece[/^\d+$/] ? piece.to_i : piece
         }
-        @operator = '==' if @operator == '='
+        @operator = '==' if @operator.nil? || @operator == '='
       end
     end
+
     def to_s
-      [
-        operator_str,
-        @original_version
-      ].compact.join(' ')
+      @operator == '==' ? @version : "#{@operator} #{@version}"
     end
-    def match_operator
-      operator || '=='
-    end
-    def operator_str
-      operator.gsub('==', '=') unless operator.nil?
-    end
+
     define_method "!=" do |other|
       !(self == other)
     end
+
     define_method "~>" do |other|
       (self >= other) && pieces.starts_with?(other.pieces[0..-2])
     end
-    
+
     private
-    
-    def compare_pieces(this, that)
-      this = normalise_piece(this, that)
-      that = normalise_piece(that, this)
-      
-      # String vs nil - nil wins
-      return 1  if this.nil?
-      return -1 if that.nil?
-      
-      if this.is_a?(String) && that.is_a?(String)
-        compare_pieces this[/\d+/].to_i, that[/\d+/].to_i
+
+    def compare_pieces this, that
+      if this.is_a?(String) ^ that.is_a?(String)
+        this.is_a?(String) ? -1 : 1
       else
-        this <=> that
+        (this || 0) <=> (that || 0)
       end
-    end
-    
-    def normalise_piece(piece, reference)
-      return piece unless piece.nil?
-      
-      # Only change nils to 0's if reference isn't an integer
-      reference.is_a?(String) ? nil : 0
     end
   end
 end
