@@ -25,8 +25,17 @@ describe "comparing" do
     (VersionStr.new('0.3.1') > '0.2.9').should be_true
   end
   
-  it "should treat strings as less than no piece" do
+  it "should treat word pieces as less than no piece" do
     (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta')).should be_true
+    (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta1')).should be_true
+  end
+
+  it "should treat word pieces with a number as more than without one" do
+    (VersionStr.new('3.0.0.beta1') > VersionStr.new('3.0.0.beta')).should be_true
+  end
+
+  it "should compare word pieces properly if they include a number" do
+    (VersionStr.new('3.0.0.beta2') > VersionStr.new('3.0.0.beta1')).should be_true
   end
   
   it "should allow for integers in strings and sort correctly" do
