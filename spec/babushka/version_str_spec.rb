@@ -92,8 +92,8 @@ describe 'rendering' do
     VersionStr.new('0.3.1').to_s.should == '0.3.1'
   end
   it "should render the full string with an operator" do
-    VersionStr.new('= 0.3.1').to_s.should == '= 0.3.1'
-    VersionStr.new('== 0.3.1').to_s.should == '= 0.3.1'
+    VersionStr.new('= 0.3.1').to_s.should == '0.3.1'
+    VersionStr.new('== 0.3.1').to_s.should == '0.3.1'
     VersionStr.new('~> 0.3.1').to_s.should == '~> 0.3.1'
   end
   it "should keep string pieces" do
