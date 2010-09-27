@@ -25,8 +25,23 @@ describe "comparing" do
     (VersionStr.new('0.3.1') > '0.2.9').should be_true
   end
   
-  it "should treat strings as less than no piece" do
+  it "should treat word pieces as less than no piece" do
     (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta')).should be_true
+    (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta1')).should be_true
+  end
+
+  it "should compare word pieces alphabetically" do
+    (VersionStr.new('3.0.0.beta') < VersionStr.new('3.0.0.pre')).should be_true
+    (VersionStr.new('3.0.0.pre') < VersionStr.new('3.0.0.rc')).should be_true
+  end
+
+  it "should treat word pieces with a number as more than without one" do
+    (VersionStr.new('3.0.0.beta1') > VersionStr.new('3.0.0.beta')).should be_true
+  end
+
+  it "should compare number parts of word pieces numerically" do
+    (VersionStr.new('3.0.0.beta2') > VersionStr.new('3.0.0.beta1')).should be_true
+    (VersionStr.new('3.0.0.beta10') > VersionStr.new('3.0.0.beta1')).should be_true
   end
   
   it "should allow for integers in strings and sort correctly" do
@@ -40,11 +55,15 @@ describe "parsing" do
   it "should parse the version number" do
     VersionStr.new('0.2').pieces.should == [0, 2]
     VersionStr.new('0.3.10.2').pieces.should == [0, 3, 10, 2]
-    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1, 'p243']
+    VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1, 'p', 243]
     VersionStr.new('3.0.0.beta').pieces.should == [3, 0, 0, 'beta']
-    VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta3']
+    VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta', 3]
   end
   it "should parse the operator if supplied" do
+    v = VersionStr.new('>0.2')
+    v.pieces.should == [0, 2]
+    v.operator.should == '>'
+
     v = VersionStr.new('>= 0.2')
     v.pieces.should == [0, 2]
     v.operator.should == '>='
@@ -65,11 +84,11 @@ describe "parsing" do
   it "should reject invalid operators" do
     L{
       VersionStr.new('~ 0.2')
-    }.should raise_error "Bad input: '~ 0.2'"
+    }.should raise_error "VersionStr.new('~ 0.2'): bad input."
 
     L{
       VersionStr.new('>> 0.2')
-    }.should raise_error "Bad input: '>> 0.2'"
+    }.should raise_error "VersionStr.new('>> 0.2'): bad input."
   end
 end
 
@@ -78,8 +97,8 @@ describe 'rendering' do
     VersionStr.new('0.3.1').to_s.should == '0.3.1'
   end
   it "should render the full string with an operator" do
-    VersionStr.new('= 0.3.1').to_s.should == '= 0.3.1'
-    VersionStr.new('== 0.3.1').to_s.should == '= 0.3.1'
+    VersionStr.new('= 0.3.1').to_s.should == '0.3.1'
+    VersionStr.new('== 0.3.1').to_s.should == '0.3.1'
     VersionStr.new('~> 0.3.1').to_s.should == '~> 0.3.1'
   end
   it "should keep string pieces" do
