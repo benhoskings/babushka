@@ -30,7 +30,8 @@ module Babushka
         ]),
         Opt.new(:list, '-l', '--list', "List dep sources", false, [])
       ], []),
-      Verb.new(:shell, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
+      Verb.new(:console, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
+      Verb.new(:shell, nil, nil, "Renamed to 'console'.", [], []),
       Verb.new(:search, nil, nil, "Search for deps in the community database", [], [
         Arg.new(:q, "The keyword to search for", true, false, 'ruby')
       ]),
@@ -90,8 +91,12 @@ module Babushka
       end
     end
 
-    def handle_shell verb
+    def handle_console verb
       exec "irb -r'#{Path.lib / 'babushka'}' --simple-prompt"
+    end
+
+    def handle_shell verb
+      fail_with "The 'shell' command was renamed to 'console', for consistency with rails and friends."
     end
 
     def handle_search verb
