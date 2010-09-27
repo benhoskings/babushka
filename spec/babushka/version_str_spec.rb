@@ -54,6 +54,10 @@ describe "parsing" do
     VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta3']
   end
   it "should parse the operator if supplied" do
+    v = VersionStr.new('>0.2')
+    v.pieces.should == [0, 2]
+    v.operator.should == '>'
+
     v = VersionStr.new('>= 0.2')
     v.pieces.should == [0, 2]
     v.operator.should == '>='

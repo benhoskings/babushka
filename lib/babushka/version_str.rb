@@ -17,7 +17,7 @@ module Babushka
     end
     
     def initialize str
-      captures = str.strip.scan(/^((#{GemVersionOperators.join('|')})\s+)?(\d.*)/)
+      captures = str.strip.scan(/^((#{GemVersionOperators.join('|')})\s*)?(\d.*)/)
       raise "Bad input: '#{str}'" if captures.nil? || captures.first.nil?
       
       operator_with_space, @operator, version = captures.first
