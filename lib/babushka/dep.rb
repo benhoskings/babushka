@@ -205,22 +205,22 @@ module Babushka
     # Trigger a dep run with this dep at the top of the tree.
     #
     # Running the dep involves the following:
-    #   - First, the +setup+ block is run.
-    #   - Next, the dep's dependencies (i.e. the contents of +requires+) are
-    #     run recursively by calling +#process+ on each; this dep's +#process+
-    #     early-exits if any of the subdeps fail.
-    #   - Next, the +met?+ block is run. If +met?+ returns:
-    #     - +true+, or any true-like value, the dep is already met and there is
-    #       nothing to do.
-    #     - +:fail+, the dep is considered unmeetable and the run fails.
-    #     - Otherwise, the dep is unmet, and the following happens:
-    #       - The +prepare+ task is run
-    #       - The +before+ task is run
-    #       - If +before+ returned a true-like value, the +meet+ task is run.
-    #         This is where the actual work of achieving the dep's aim is done.
-    #       - If +meet+ returned a true-like value, the +after+ task is run.
-    #       - Finally, the +met?+ task is run again, to check whether running
-    #         +meet+ has achieved the dep's goal.
+    # - First, the +setup+ block is run.
+    # - Next, the dep's dependencies (i.e. the contents of +requires+) are
+    #   run recursively by calling +#process+ on each; this dep's +#process+
+    #   early-exits if any of the subdeps fail.
+    # - Next, the +met?+ block is run. If +met?+ returns:
+    #   - +true+, or any true-like value, the dep is already met and there is
+    #     nothing to do.
+    #   - +:fail+, the dep is considered unmeetable and the run fails.
+    #   - Otherwise, the dep is unmet, and the following happens:
+    #     - The +prepare+ task is run
+    #     - The +before+ task is run
+    #     - If +before+ returned a true-like value, the +meet+ task is run.
+    #       This is where the actual work of achieving the dep's aim is done.
+    #     - If +meet+ returned a true-like value, the +after+ task is run.
+    #     - Finally, the +met?+ task is run again, to check whether running
+    #       +meet+ has achieved the dep's goal.
     #
     # The final step is important to understand. The +meet+ block is run
     # unconditionally, and its return value is ignored, apart from it
@@ -230,16 +230,16 @@ module Babushka
     #
     # Specifically, the following describes the return values of a few
     # components, and of the dep itself.
-    #   - A '-' means the corresponding block wouldn't be run at all.
-    #   - An 'X' means the corresponding return value doesn't matter, and is
-    #     discarded.
+    # - A '-' means the corresponding block wouldn't be run at all.
+    # - An 'X' means the corresponding return value doesn't matter, and is
+    #   discarded.
     #
-    # Initial state   | initial +met?+ | meet  | subsequent +met?+ | dep returns
-    # ----------------+----------------+-------+-------------------+------------
-    # already met     | true           | -     | -                 | true
-    # unmeetable      | :fail          | -     | -                 | false
-    # couldn't be met | false          | X     | false             | false
-    # met during run  | false          | X     | true              | true
+    #     Initial state   | initial +met?+ | meet  | subsequent +met?+ | dep returns
+    #     ----------------+----------------+-------+-------------------+------------
+    #     already met     | true           | -     | -                 | true
+    #     unmeetable      | :fail          | -     | -                 | false
+    #     couldn't be met | false          | X     | false             | false
+    #     met during run  | false          | X     | true              | true
     #
     # Wherever possible, the +met?+ test shouldn't directly test that the
     # +meet+ block performed specific tasks; only that its overall purpose has
