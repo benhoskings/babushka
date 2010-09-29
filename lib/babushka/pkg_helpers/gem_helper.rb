@@ -91,11 +91,17 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      gem_root.glob("#{pkg_name}-*").map {|i|
-        File.basename i
+      gemspecs_for(pkg_name).select {|i|
+        i.p.read.val_for('s.name')[/^[\'\"\%qQ\{]*#{pkg_name}[\'\"\}]*$/]
       }.map {|i|
-        i.gsub(/^#{pkg_name}-/, '').to_version
+        File.basename(i).scan(/^#{pkg_name}-(.*).gemspec$/).flatten.first
+      }.map {|i|
+        i.to_version
       }.sort
+    end
+
+    def gemspecs_for pkg_name
+      gemspec_dir.glob("#{pkg_name}-*.gemspec")
     end
 
     def env_info
