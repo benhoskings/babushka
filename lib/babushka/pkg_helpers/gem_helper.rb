@@ -27,9 +27,17 @@ module Babushka
     end
 
     def gem_root
-      env_info.val_for('INSTALLATION DIRECTORY') / 'gems'
+      gemdir / 'gems'
     end
-    
+
+    def gemspec_dir
+      gemdir / 'specifications'
+    end
+
+    def gemdir
+      env_info.val_for('INSTALLATION DIRECTORY')
+    end
+
     def ruby_path
       env_info.val_for('RUBY EXECUTABLE').p
     end
