@@ -52,8 +52,12 @@ end
 
 dep 'rubygems up to date' do
   requires 'rubygems installed'
-  met? { shell('gem --version').to_version >= var(:versions)[:rubygems] }
-  meet { log_shell "Updating the rubygems install in #{which('gem').p.parent}", 'gem update --system', :sudo => !which('gem').p.writable? }
+  met? { Babushka::GemHelper.version >= var(:versions)[:rubygems] }
+  meet {
+    log_block "Updating the rubygems install in #{which('gem').p.parent}" do
+      Babushka::GemHelper.update!
+    end
+  }
 end
 
 dep 'rubygems installed' do
