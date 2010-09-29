@@ -27,9 +27,17 @@ module Babushka
     end
 
     def gem_root
-      env_info.val_for('INSTALLATION DIRECTORY') / 'gems'
+      gemdir / 'gems'
     end
-    
+
+    def gemspec_dir
+      gemdir / 'specifications'
+    end
+
+    def gemdir
+      env_info.val_for('INSTALLATION DIRECTORY')
+    end
+
     def ruby_path
       env_info.val_for('RUBY EXECUTABLE').p
     end
@@ -64,6 +72,16 @@ module Babushka
       super || !File.writable?(gem_root)
     end
 
+    def version
+      env_info.val_for('RUBYGEMS VERSION').to_version
+    end
+
+    def update!
+      shell('gem update --system', :sudo => !which('gem').p.writable?).tap {|result|
+        @_cached_env_info = nil # `gem` changed, so this info needs re-fetching
+      }
+    end
+
 
     private
 
@@ -73,11 +91,17 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      gem_root.glob("#{pkg_name}-*").map {|i|
-        File.basename i
+      gemspecs_for(pkg_name).select {|i|
+        i.p.read.val_for('s.name')[/^[\'\"\%qQ\{]*#{pkg_name}[\'\"\}]*$/]
       }.map {|i|
-        i.gsub(/^#{pkg_name}-/, '').to_version
+        File.basename(i).scan(/^#{pkg_name}-(.*).gemspec$/).flatten.first
+      }.map {|i|
+        i.to_version
       }.sort
+    end
+
+    def gemspecs_for pkg_name
+      gemspec_dir.glob("#{pkg_name}-*.gemspec")
     end
 
     def env_info

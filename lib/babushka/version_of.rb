@@ -29,7 +29,7 @@ module Babushka
     end
 
     def <=> other
-      raise ArgumentError, "You can't compare the versions of two different things." unless name == other.name
+      raise ArgumentError, "You can't compare the versions of two different things (#{name}, #{other.name})." unless name == other.name
       version <=> other.version
     end
 
