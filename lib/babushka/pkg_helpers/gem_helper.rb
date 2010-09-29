@@ -72,6 +72,10 @@ module Babushka
       super || !File.writable?(gem_root)
     end
 
+    def version
+      env_info.val_for('RUBYGEMS VERSION').to_version
+    end
+
 
     private
 
