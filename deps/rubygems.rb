@@ -34,8 +34,11 @@ end
 meta :gem_source do
   accepts_list_for :uri
   template {
+    helper :gem_sources do
+      "~/.gemrc".p.exists? ? (yaml("~/.gemrc".p)[:sources] || {}) : {}
+    end
     requires 'rubygems installed'
-    met? { uri.all? {|u| shell("gem sources")[u.to_s] } }
+    met? { uri.all? {|u| gem_sources.include? u.to_s } }
     meet { uri.each {|u| shell "gem sources -a #{u.to_s}", :sudo => !File.writable?(which('ruby')) } }
   }
 end
