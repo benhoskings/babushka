@@ -59,7 +59,7 @@ describe "comparisons" do
   it "should fail when the names don't match" do
     L{
       ver('ruby', '1.8') <=> ver('mongo', '1.4.2')
-    }.should raise_error(ArgumentError, "You can't compare the versions of two different things.")
+    }.should raise_error(ArgumentError, "You can't compare the versions of two different things (ruby, mongo).")
   end
   it "should defer to VersionStr#<=>" do
     (ver('ruby', '1.8') <=> ver('ruby', '1.9')).should == -1
