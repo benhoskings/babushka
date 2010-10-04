@@ -53,7 +53,7 @@ dep 'update would fast forward.babushka' do
       fail_because("Couldn't pull the latest code - check your internet connection.")
     else
       current_branch = shell("git branch").split("\n").collapse(/^\* /).first
-      if !shell('git branch -a').split("\n").map(&:strip).include? "remotes/origin/#{current_branch}"
+      if !shell('git branch -a').split("\n").map(&:strip).detect {|b| b[/^(remotes\/)?origin\/#{current_branch}$/] }
         fail_because("The current branch, #{current_branch}, isn't pushed to origin/#{current_branch}.")
       elsif !shell("git rev-list origin/#{current_branch}..").split("\n").empty?
         fail_because("There are unpushed commits in #{current_branch}.")
