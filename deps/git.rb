@@ -16,7 +16,7 @@ dep 'git.managed' do
 end
 
 dep 'git.installer' do
-  merge :versions, 'git' => '1.7.2.2'
+  merge :versions, 'git' => '1.7.3.1'
   requires_when_unmet 'usr-local.install_path'
   source "http://git-osx-installer.googlecode.com/files/git-#{var(:versions)['git']}-intel-leopard.dmg"
   provides 'git'
