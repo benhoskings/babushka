@@ -78,10 +78,3 @@ dep 'rubygems installed' do
     end
   }
 end
-
-dep 'curl.managed' do
-  installs {
-    via :apt, 'curl'
-    via :yum, 'curl'
-  }
-end
