@@ -55,7 +55,7 @@ describe "in_dir" do
     Dir.pwd.should == @original_pwd
   end
   it "should fail on nonexistent dirs" do
-    L{ PathTester.in_dir(@nonexistent_dir) }.should raise_error Errno::ENOENT
+    L{ PathTester.in_dir(@nonexistent_dir) }.should raise_error(Errno::ENOENT)
   end
   it "should create nonexistent dirs if :create => true is specified" do
     PathTester.in_dir(@nonexistent_dir, :create => true) {

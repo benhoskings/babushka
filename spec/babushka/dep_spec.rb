@@ -5,33 +5,33 @@ describe "Dep.make" do
   it "should reject deps with nonprintable characters in their names" do
     L{
       Dep.make "carriage\rreturn", Base.sources.anonymous, {}, nil
-    }.should raise_error DepError, "The dep name 'carriage\rreturn' contains nonprintable characters."
+    }.should raise_error(DepError, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
       Dep.make "slashes/invalidate names", Base.sources.anonymous, {}, nil
-    }.should raise_error DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
+    }.should raise_error(DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     L{
       Dep.make "colons:invalidate names", Base.sources.anonymous, {}, nil
-    }.should raise_error DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
+    }.should raise_error(DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
       Dep.make("valid dep name", Base.sources.anonymous, {}, nil).should be_an_instance_of(Dep)
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep("valid dep name").should be_an_instance_of Dep
+    Dep("valid dep name").should be_an_instance_of(Dep)
   end
   context "without template" do
     before {
       @dep = Dep.make("valid base dep", Base.sources.anonymous, {}, nil)
     }
     it "should work" do
-      @dep.should be_an_instance_of Dep
+      @dep.should be_an_instance_of(Dep)
       @dep.template.should == Dep::BaseTemplate
     end
   end
@@ -39,7 +39,7 @@ describe "Dep.make" do
     it "should fail to create optioned deps against a missing template" do
       L{
         Dep.make("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil)
-      }.should raise_error DepError, "There is no template named 'template' to define 'valid but missing template' against."
+      }.should raise_error(DepError, "There is no template named 'template' to define 'valid but missing template' against.")
     end
     context "with template from options" do
       before {
@@ -47,7 +47,7 @@ describe "Dep.make" do
         @dep = Dep.make("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
       }
       it "should work" do
-        @dep.should be_an_instance_of Dep
+        @dep.should be_an_instance_of(Dep)
         @dep.template.should == @meta
       end
     end
@@ -57,7 +57,7 @@ describe "Dep.make" do
         @dep = Dep.make("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
       }
       it "should work" do
-        @dep.should be_an_instance_of Dep
+        @dep.should be_an_instance_of(Dep)
         @dep.template.should == @meta
       end
     end
@@ -387,9 +387,9 @@ describe "run_in" do
   it "should fail when run_in is set to a nonexistent directory" do
     L{
       dep 'dep with run_in set to a nonexistent dir' do
-        run_in (tmp_prefix / 'nonexistent').to_s
+        run_in((tmp_prefix / 'nonexistent').to_s)
       end.met?
-    }.should raise_error Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}"
+    }.should raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}")
   end
   it "should run in the specified directory when run_in is set" do
     cwd = Dir.pwd

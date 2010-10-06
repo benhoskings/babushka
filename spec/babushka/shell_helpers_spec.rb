@@ -17,12 +17,12 @@ describe "shell" do
   end
   it "should provide the shell to supplied blocks" do
     shell(SucceedingLs) {|shell|
-      shell.stdout.should include 'bash'
+      shell.stdout.should include('bash')
       shell.stderr.should be_empty
     }
     shell(FailingLs) {|shell|
       shell.stdout.should be_empty
-      shell.stderr.should include "No such file or directory"
+      shell.stderr.should include("No such file or directory")
     }
   end
   it "should accept :input parameter" do
@@ -32,13 +32,13 @@ end
 
 describe "failable_shell" do
   it "should always return a Shell" do
-    failable_shell('true').should be_a Shell
-    failable_shell('false').should be_a Shell
+    failable_shell('true').should be_a(Shell)
+    failable_shell('false').should be_a(Shell)
   end
   it "should return stderr for failed commands" do
     shell = failable_shell(FailingLs)
     shell.stdout.should be_empty
-    shell.stderr.should include "No such file or directory"
+    shell.stderr.should include("No such file or directory")
   end
   it "should support sudo" do
     failable_shell('whoami', :sudo => true).stdout.should == "root\n"
