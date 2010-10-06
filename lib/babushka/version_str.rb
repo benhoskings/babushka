@@ -18,7 +18,7 @@ module Babushka
 
       if !(@operator.nil? || GemVersionOperators.include?(@operator))
         raise ArgumentError, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
-      elsif @version.nil? || @version[/^\d\w*([\.\-]\w*)*$/].nil?
+      elsif @version.nil?
         raise ArgumentError, "VersionStr.new('#{str}'): couldn't parse a version number."
       else
         @pieces = @version.strip.scan(/\d+|[a-zA-Z]+|\w+/).map {|piece|

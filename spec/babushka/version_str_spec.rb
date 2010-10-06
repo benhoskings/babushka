@@ -45,9 +45,8 @@ describe "comparing" do
   end
   
   it "should allow for integers in strings and sort correctly" do
-    (
-      VersionStr.new('3.0.0.beta12') > VersionStr.new('3.0.0.beta2')
-    ).should be_true
+    (VersionStr.new('3.0.0.beta12') > VersionStr.new('3.0.0.beta2')).should be_true
+    (VersionStr.new('R13B04') > VersionStr.new('R2B9')).should be_true
   end
 end
 
@@ -58,6 +57,7 @@ describe "parsing" do
     VersionStr.new('1.9.1-p243').pieces.should == [1, 9, 1, 'p', 243]
     VersionStr.new('3.0.0.beta').pieces.should == [3, 0, 0, 'beta']
     VersionStr.new('3.0.0.beta3').pieces.should == [3, 0, 0, 'beta', 3]
+    VersionStr.new('R13B04').pieces.should == ['R', 13, 'B', 4]
   end
   it "should parse the operator if supplied" do
     v = VersionStr.new('>0.2')
