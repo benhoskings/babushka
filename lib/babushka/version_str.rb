@@ -14,11 +14,9 @@ module Babushka
     end
 
     def initialize str
-      @operator, @version = str.strip.scan(/^(#{GemVersionOperators.join('|')})?\s*(\d.*)/).first
+      @operator, @version = str.strip.scan(/^([^\s\w\-\.]+)?\s*([\w\-\.]+)$/).first
 
-      if @operator.nil? && @version.nil?
-        raise ArgumentError, "VersionStr.new('#{str}'): bad input."
-      elsif !(@operator.nil? || GemVersionOperators.include?(@operator))
+      if !(@operator.nil? || GemVersionOperators.include?(@operator))
         raise ArgumentError, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
       elsif @version.nil? || @version[/^\d\w*([\.\-]\w*)*$/].nil?
         raise ArgumentError, "VersionStr.new('#{str}'): couldn't parse a version number."

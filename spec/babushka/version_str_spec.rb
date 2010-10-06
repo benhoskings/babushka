@@ -84,11 +84,20 @@ describe "parsing" do
   it "should reject invalid operators" do
     L{
       VersionStr.new('~ 0.2')
-    }.should raise_error "VersionStr.new('~ 0.2'): bad input."
+    }.should raise_error "VersionStr.new('~ 0.2'): invalid operator '~'."
 
     L{
       VersionStr.new('>> 0.2')
-    }.should raise_error "VersionStr.new('>> 0.2'): bad input."
+    }.should raise_error "VersionStr.new('>> 0.2'): invalid operator '>>'."
+  end
+  it "should reject bad version numbers" do
+    L{
+      VersionStr.new('0. 2')
+    }.should raise_error "VersionStr.new('0. 2'): couldn't parse a version number."
+
+    L{
+      VersionStr.new('0.2!')
+    }.should raise_error "VersionStr.new('0.2!'): couldn't parse a version number."
   end
 end
 
