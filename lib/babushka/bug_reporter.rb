@@ -2,15 +2,16 @@ module Babushka
   class BugReporter
     extend PromptHelpers
 
-    # This method creates a bug report for the dep specified in +dep_name+, by
-    # reading the debug log and vars associated with it and posting them as
-    # an anonymous gist.
-    def self.report dep_name
+    # This method creates a bug report for +dep+, by reading the debug log and
+    # vars associated with it and posting them as a gist. If the github user is
+    # set in the git config, it's marked as from that user, otherwise it's
+    # anonymous.
+    def self.report dep
       confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
-        post_report dep_name,
+        post_report dep,
           (which('git') && shell('git config github.user')) || 'anonymous',
-          Base.task.var_path_for(dep_name).read,
-          Base.task.log_path_for(dep_name).read
+          Base.task.var_path_for(dep).read,
+          Base.task.log_path_for(dep).read
       end
     end
 
@@ -18,7 +19,7 @@ module Babushka
     private
 
     # gist.github.com API example at http://gist.github.com/4277
-    def self.post_report dep_name, user, vars, log
+    def self.post_report dep, user, vars, log
       require 'net/http'
       require 'uri'
 
@@ -27,14 +28,14 @@ module Babushka
         {
           "files[from]" => user,
           "files[vars.yml]" => vars,
-          "files[#{dep_name}.log]" => log.decolorize
+          "files[#{dep.contextual_name}.log]" => log.decolorize
         }
       )) do |response|
-        report_report_result dep_name, response
+        report_report_result dep, response
       end.is_a? Net::HTTPSuccess
     end
 
-    def self.report_report_result dep_name, response
+    def self.report_report_result dep, response
       if response.is_a? Net::HTTPSuccess
         gist_id = response.body.scan(/<repo>(\d+)<\/repo>/).flatten.first
         if gist_id.blank?
@@ -45,8 +46,8 @@ module Babushka
         end
       else
         log "Deary me, the bug report couldn't be submitted! Would you mind emailing these two files:"
-        log '  ' + Base.task.var_path_for(dep_name)
-        log '  ' + Base.task.log_path_for(dep_name)
+        log '  ' + Base.task.var_path_for(dep)
+        log '  ' + Base.task.log_path_for(dep)
         log "to ben@hoskings.net? Thanks."
       end
     end

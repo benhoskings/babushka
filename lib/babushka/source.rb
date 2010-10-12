@@ -192,6 +192,8 @@ module Babushka
       elsif Base.sources.local_only?
         debug "Not pulling #{name} (#{uri}) - in local-only mode."
         true
+      elsif path.exists? && (Time.now - path.mtime < 60)
+        debug "#{name} (#{uri}) was pulled #{(Time.now - path.mtime).round.xsecs} ago, not pulling now."
       else
         @pulled = git uri, :prefix => prefix, :dir => name, :log => true
       end

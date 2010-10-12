@@ -9,20 +9,20 @@ shared_examples_for 'defined meta dep' do
     @meta.source.should == Base.sources.anonymous
   end
   it "should define a dep definer" do
-    @meta.definer_class.should be_an_instance_of Class
-    @meta.definer_class.ancestors.should include Babushka::BaseDepDefiner
+    @meta.definer_class.should be_an_instance_of(Class)
+    @meta.definer_class.ancestors.should include(Babushka::BaseDepDefiner)
     @meta.runner_class.should_not == Babushka::BaseDepDefiner
   end
   it "should define template on the definer" do
     @meta.definer_class.source_template.should == @meta
   end
   it "should define a dep runner" do
-    @meta.runner_class.should be_an_instance_of Class
-    @meta.runner_class.ancestors.should include Babushka::BaseDepRunner
+    @meta.runner_class.should be_an_instance_of(Class)
+    @meta.runner_class.ancestors.should include(Babushka::BaseDepRunner)
     @meta.runner_class.should_not == Babushka::BaseDepRunner
   end
   it "should not define a dep helper" do
-    Object.new.should_not respond_to 'test'
+    Object.new.should_not respond_to('test')
   end
 end
 
@@ -54,7 +54,7 @@ describe "declaration with dot" do
   describe "collisions" do
     before { meta 'collision_test' }
     it "should conflict, disregarding the dot" do
-      L{ meta '.collision_test' }.should raise_error ArgumentError, "A template called 'collision_test' has already been defined."
+      L{ meta '.collision_test' }.should raise_error(ArgumentError, "A template called 'collision_test' has already been defined.")
     end
   end
   after { Base.sources.anonymous.templates.clear! }
@@ -65,7 +65,7 @@ describe "using" do
     it "should not define deps as options" do
       L{
         dep('something undefined', :template => 'undefined').should be_nil
-      }.should raise_error DepError, "There is no template named 'undefined' to define 'something undefined' against."
+      }.should raise_error(DepError, "There is no template named 'undefined' to define 'something undefined' against.")
     end
     it "should define deps as options" do
       dep('something.undefined').should be_an_instance_of(Dep)

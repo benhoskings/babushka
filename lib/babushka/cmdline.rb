@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module Babushka
   class Base
   class << self
@@ -30,6 +32,9 @@ module Babushka
       ], []),
       Verb.new(:console, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
       Verb.new(:shell, nil, nil, "Renamed to 'console'.", [], []),
+      Verb.new(:search, nil, nil, "Search for deps in the community database", [], [
+        Arg.new(:q, "The keyword to search for", true, false, 'ruby')
+      ]),
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
@@ -63,12 +68,12 @@ module Babushka
     end
 
     def handle_meet verb
-      if (tasks = verb.args.map(&:value)).empty?
+      if (dep_names = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
       elsif Base.task.opt(:track_blocks) && !which('mate')
-        fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings/textmate"
+        fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings:textmate"
       else
-        tasks.all? {|dep_name| task.process dep_name }
+        task.process dep_names
       end
     end
     def handle_sources verb
@@ -94,7 +99,61 @@ module Babushka
       fail_with "The 'shell' command was renamed to 'console', for consistency with rails and friends."
     end
 
+    def handle_search verb
+      if verb.args.length != 1
+        fail_with "'search' requires a single argument."
+      else
+        require 'net/http'
+        require 'yaml'
+
+        results = search_results_for(verb.args.first.value)
+
+        if results.empty?
+          log "Never seen a dep with '#{verb.args.first.value}' in its name."
+        else
+          log "The webservice knows about #{results.length} dep#{'s' unless results.length == 1} that match#{'es' if results.length == 1} '#{verb.args.first.value}':"
+          log ""
+          log_table(
+            ['Name', 'Source', 'Runs', ' √', 'Command'],
+            results
+          )
+          if (custom_sources = results.select {|r| r[1][github_autosource_regex].nil? }.count) > 0
+            log ""
+            log "✣  #{custom_sources == 1 ? 'This source has a custom URI' : 'These sources have custom URIs'}, so babushka can't discover #{custom_sources == 1 ? 'it' : 'them'} automatically."
+            log "   You can run #{custom_sources == 1 ? 'its' : 'their'} deps in the same way, though, once you add #{custom_sources == 1 ? 'it' : 'them'} manually:"
+            log "   $ #{program_name} sources -a <alias> <uri>"
+            log "   $ #{program_name} <alias>:<dep>"
+          end
+        end
+        !results.empty?
+      end
+    end
+
     private
+
+    def search_results_for q
+      YAML.load(search_webservice_for(q).body).sort_by {|i|
+        -i[:runs_this_week]
+      }.map {|i|
+        [
+          i[:name],
+          i[:source_uri],
+          ((i[:runs_this_week] && i[:runs_this_week] > 0) ? "#{i[:runs_this_week]} this week" : "#{i[:total_runs]} ever"),
+          ((i[:runs_this_week] && i[:runs_this_week] > 0) ? "#{(i[:success_rate_this_week] * 100).round}%" : ((i[:total_runs] && i[:total_runs] > 0) ? "#{(i[:total_success_rate] * 100).round}%" : '')),
+          (i[:source_uri][github_autosource_regex] ? "#{program_name} #{$1}:#{"'" if i[:name][/\s/]}#{i[:name]}#{"'" if i[:name][/\s/]}" : '✣')
+        ]
+      }
+    end
+
+    def github_autosource_regex
+      /^git\:\/\/github\.com\/(.*)\/babushka-deps(\.git)?/
+    end
+
+    def search_webservice_for q
+      Net::HTTP.start('babushka.me') {|http|
+        http.get URI.encode("/deps/search.yaml/#{q}")
+      }
+    end
 
     def generate_list_for to_list, filter_str
       context = to_list == :deps ? program_name : ':template =>'

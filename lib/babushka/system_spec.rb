@@ -21,6 +21,18 @@ module Babushka
     def linux?; false end
     def osx?; false end
     def pkg_helper; nil end
+    # The extension that dynamic libraries are given on this system. On linux
+    # libraries are named like 'libssl.so'; on OS X, 'libssl.bundle'.
+    def library_ext; 'so' end
+
+    def description
+      [
+        (flavour_str unless flavour_str == system_str),
+        system_str,
+        version,
+        "(#{name_str})"
+      ].compact.join(' ')
+    end
 
     def name
       (name_map[system][flavour] || {})[release]
@@ -156,6 +168,7 @@ module Babushka
 
   class OSXSystemSpec < SystemSpec
     def osx?; true end
+    def library_ext; 'bundle' end
     def system; :osx end
     def system_str; 'Mac OS X' end
     def flavour; system end

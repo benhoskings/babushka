@@ -114,6 +114,10 @@ module Babushka
         Readline.completion_proc = L{|choice| choices.select {|i| i.starts_with? choice } }
       end
 
+      # This is required in addition to the call in bin/babushka.rb for
+      # interrupts to work during Readline calls.
+      Base.exit_on_interrupt!
+
       Readline.readline prompt, true
     rescue LoadError => e
       print prompt

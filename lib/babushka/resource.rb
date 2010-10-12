@@ -11,13 +11,10 @@ module Babushka
         log_error "Not a valid URL to download: #{url}"
       else
         download_path = in_download_dir {|path|
-          path / filename if download(url, filename)
+          downloaded_file = download(url, filename)
+          path / downloaded_file if downloaded_file
         }
-        if !download_path
-          log_error "Failed to download #{url}."
-        else
-          block.call download_path
-        end
+        block.call download_path unless download_path.nil?
       end
     end
 
@@ -30,10 +27,18 @@ module Babushka
     def self.download url, filename = url.to_s.p.basename
       if filename.p.exists? && !filename.p.empty?
         log_ok "Already downloaded #{filename}."
+        filename
       else
-        log_block "Downloading #{url}" do
-          shell %Q{curl -L -o "#{filename}.tmp" "#{url}"} and
-          shell %Q{mv -f "#{filename}.tmp" "#{filename}"}
+        location = shell(%Q{curl -I "#{url}"}).val_for('Location')
+        if !location.blank?
+          log "Following redirect from #{url}"
+          download location, location.p.basename
+        else
+          success = log_block "Downloading #{url}" do
+            shell %Q{curl -o "#{filename}.tmp" "#{url}"} and
+            shell %Q{mv -f "#{filename}.tmp" "#{filename}"}
+          end
+          filename if success
         end
       end
     end

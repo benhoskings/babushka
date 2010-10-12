@@ -10,9 +10,9 @@ module Babushka
       sudo "rake #{cmd} RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
     end
 
-    def rails_rake cmd, &block
+    def bundle_rake cmd, &block
       in_dir var(:rails_root) do
-        rake cmd, &block
+        sudo "bundle exec rake #{cmd} RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
       end
     end
 

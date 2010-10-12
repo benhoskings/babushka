@@ -27,15 +27,59 @@ module Babushka
     end
 
     def gem_root
-      env_info.val_for('INSTALLATION DIRECTORY') / 'gems'
+      gemdir / 'gems'
     end
-    
+
+    def gemspec_dir
+      gemdir / 'specifications'
+    end
+
+    def gemdir
+      env_info.val_for('INSTALLATION DIRECTORY')
+    end
+
     def ruby_path
       env_info.val_for('RUBY EXECUTABLE').p
     end
 
+    def ruby_wrapper_path
+      if ruby_path.to_s['/.rvm/rubies/'].nil?
+        ruby_path
+      else
+        ruby_path.sub(
+          # /Users/ben/.rvm/rubies/ruby-1.9.2-p0/bin/ruby
+          /^(.*)\/\.rvm\/rubies\/([^\/]+)\/bin\/ruby/
+        ) {
+          # /Users/ben/.rvm/wrappers/ruby-1.9.2-p0/ruby
+          "#{$1}/.rvm/wrappers/#{$2}/ruby"
+        }
+      end
+    end
+
+    def ruby_binary_slug
+      slug_command = %q{
+        [
+          (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
+          RUBY_VERSION,
+          RUBY_PLATFORM.gsub(/-.*$/, ''),
+          (RUBY_PLATFORM['darwin'] ? 'macosx' : RUBY_PLATFORM.sub(/^.*?-/, ''))
+        ].join('-')
+      }
+      shell %Q{#{ruby_wrapper_path} -e "puts #{slug_command.strip}"}
+    end
+
     def should_sudo?
       super || !File.writable?(gem_root)
+    end
+
+    def version
+      env_info.val_for('RUBYGEMS VERSION').to_version
+    end
+
+    def update!
+      shell('gem update --system', :sudo => !which('gem').p.writable?).tap {|result|
+        @_cached_env_info = nil # `gem` changed, so this info needs re-fetching
+      }
     end
 
 
@@ -47,11 +91,17 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      gem_root.glob("#{pkg_name}-*").map {|i|
-        File.basename i
+      gemspecs_for(pkg_name).select {|i|
+        i.p.read.val_for('s.name')[/^[\'\"\%qQ\{]*#{pkg_name}[\'\"\}]*$/]
       }.map {|i|
-        i.gsub(/^#{pkg_name}-/, '').to_version
+        File.basename(i).scan(/^#{pkg_name}-(.*).gemspec$/).flatten.first
+      }.map {|i|
+        i.to_version
       }.sort
+    end
+
+    def gemspecs_for pkg_name
+      gemspec_dir.glob("#{pkg_name}-*.gemspec")
     end
 
     def env_info

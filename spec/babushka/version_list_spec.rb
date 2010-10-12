@@ -7,7 +7,7 @@ describe "invalid input" do
       VersionListTest.new.records "stuff" do
         more "stuff"
       end
-    }.should raise_error ArgumentError, "You can supply arguments or a block, but not both."
+    }.should raise_error(ArgumentError, "You can supply arguments or a block, but not both.")
   end
 end
 

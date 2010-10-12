@@ -149,16 +149,18 @@ module Babushka
       )
     end
 
-    # Look up the dep specified by +dep_name+, calling +#process+ on it if it
-    # was found. If no dep was found by the exact dep_name that was specified,
-    # suggest other similarly spelt ones in case there was a typo.
-    def self.process dep_name, with_run_opts = {}
-      if (dep = Dep(dep_name, with_run_opts)).nil?
+    # Look up the dep specified by +dep_name+, yielding it to the block if it
+    # was found.
+    #
+    # If no such dep exists, search for other similarly spelt deps and re-call
+    # this same method on the one chosen by the user, if any.
+    def self.find_or_suggest dep_name, opts = {}, &block
+      if (dep = Dep(dep_name, opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         suggestion = suggest_value_for(dep_name, Base.sources.current_names)
-        Dep.process suggestion, with_run_opts unless suggestion.nil?
+        Dep.find_or_suggest suggestion, opts, &block unless suggestion.nil?
       else
-        dep.process with_run_opts
+        block.call dep
       end
     end
 
@@ -175,6 +177,19 @@ module Babushka
     #   Dep('generated report.pdf').basename     #=> "generated report.pdf"
     def basename
       suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
+    end
+
+    # Returns this dep's name, including the source name as a prefix if this
+    # dep is in a cloneable source.
+    #
+    # A cloneable source is one that babushka knows how to automatically
+    # update; i.e. a source that babushka could have installed itself.
+    #
+    # In effect, a cloneable source is one whose deps you prefix when you run
+    # them, so this method returns the dep's name in the same form as you would
+    # refer to it on the commandline or within a +require+ call in another dep.
+    def contextual_name
+      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
     end
 
     # Returns the portion of the end of the dep name that looks like a template
@@ -280,11 +295,14 @@ module Babushka
       process_task(:internal_setup)
       process_task(:setup)
       process_deps and process_self
+    rescue DepError => ex
     end
 
     def process_deps accessor = :requires
       definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
-        Dep.process dep_name, :parent_source => dep_source
+        Dep.find_or_suggest dep_name, :parent_source => dep_source do |dep|
+          dep.process
+        end
       })
     end
 
@@ -346,13 +364,13 @@ module Babushka
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       runner.instance_eval &definer.send(task_name)
     rescue StandardError => e
-      log "#{e.class} during '#{name}' / #{task_name}{}.".colorize('red')
-      log "#{e.backtrace.first}: #{e.message}".colorize('red')
+      log "#{e.class} at #{e.backtrace.first}:".colorize('red')
+      log e.message.colorize('red')
       dep_callpoint = e.backtrace.detect {|l| l[load_path.to_s] } unless load_path.nil?
-      log "Check #{dep_callpoint}." unless dep_callpoint.nil?
+      log "Check #{dep_callpoint}." unless dep_callpoint.nil? || e.backtrace.first[dep_callpoint]
       debug e.backtrace * "\n"
       Base.task.reportable = true
-      :fail
+      raise DepError, e.message
     end
 
     def track_block_for task_name
@@ -361,10 +379,6 @@ module Babushka
         shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
         sleep 2
       end
-    end
-
-    def contextual_name
-      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
     end
 
     def unmet_message_for result

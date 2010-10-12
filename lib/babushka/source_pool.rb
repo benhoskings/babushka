@@ -78,26 +78,13 @@ module Babushka
     end
 
     def list!
-      descriptions = Source.present.tap {|sources|
-        log "There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1} in #{Source.source_prefix}:"
-        log ''
-      }.map {|source|
-        source.description_pieces.map(&:to_s)
-      }.unshift(
-        ['Name', 'Source path', 'Type', 'Last updated']
-      ).transpose.map {|col|
-        max_length = col.map(&:length).max
-        col.map {|cell| cell.ljust(max_length) }
-      }.transpose
-
-      [
-        descriptions.first.join(' | '),
-        descriptions.first.map {|i| '-' * i.length }.join('-+-')
-      ].concat(
-        descriptions[1..-1].map {|row| row.join(' | ') }
-      ).each {|row|
-        log row
-      }
+      log_table(
+        ['Name', 'Source path', 'Type', 'Last updated'],
+        Source.present.tap {|sources|
+          log "There #{sources.length == 1 ? 'is' : 'are'} #{sources.length} source#{'s' unless sources.length == 1} in #{Source.source_prefix}:"
+          log ''
+        }.map(&:description_pieces)
+      )
     end
 
     def uncache!

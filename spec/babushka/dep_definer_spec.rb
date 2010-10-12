@@ -8,9 +8,9 @@ describe "accepts_block_for behaviour" do
   }
 
   it "should define a declarer" do
-    Dep('default').definer.should_not respond_to :test_defining
+    Dep('default').definer.should_not respond_to(:test_defining)
     DepDefiner.accepts_block_for :test_defining
-    Dep('default').definer.should respond_to :test_defining
+    Dep('default').definer.should respond_to(:test_defining)
   end
 
   it "should return lambda" do

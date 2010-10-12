@@ -34,8 +34,11 @@ end
 meta :gem_source do
   accepts_list_for :uri
   template {
+    helper :gem_sources do
+      "~/.gemrc".p.exists? ? (yaml("~/.gemrc".p)[:sources] || {}) : {}
+    end
     requires 'rubygems installed'
-    met? { uri.all? {|u| shell("gem sources")[u.to_s] } }
+    met? { uri.all? {|u| gem_sources.include? u.to_s } }
     meet { uri.each {|u| shell "gem sources -a #{u.to_s}", :sudo => !File.writable?(which('ruby')) } }
   }
 end
@@ -49,8 +52,12 @@ end
 
 dep 'rubygems up to date' do
   requires 'rubygems installed'
-  met? { shell('gem --version').to_version >= var(:versions)[:rubygems] }
-  meet { log_shell "Updating the rubygems install in #{which('gem').p.parent}", 'gem update --system', :sudo => !which('gem').p.writable? }
+  met? { Babushka::GemHelper.version >= var(:versions)[:rubygems] }
+  meet {
+    log_block "Updating the rubygems install in #{which('gem').p.parent}" do
+      Babushka::GemHelper.update!
+    end
+  }
 end
 
 dep 'rubygems installed' do
@@ -69,12 +76,5 @@ dep 'rubygems installed' do
         shell "ln -sf gem1.8 gem", :sudo => !File.writable?(which('ruby'))
       end
     end
-  }
-end
-
-dep 'curl.managed' do
-  installs {
-    via :apt, 'curl'
-    via :yum, 'curl'
   }
 end

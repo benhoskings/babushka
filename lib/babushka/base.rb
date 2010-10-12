@@ -28,6 +28,14 @@ module Babushka
       @sources ||= SourcePool.new
     end
 
+    def threads
+      @threads ||= []
+    end
+
+    def in_thread &block
+      threads.push Thread.new(&block)
+    end
+
     # The top-level entry point for babushka runs invoked at the command line.
     # When the `babushka` command is run, bin/babushka first triggers a load
     # via lib/babushka.rb, and then calls this method, passing in the
@@ -41,6 +49,19 @@ module Babushka
         parse_cmdline task.verb, args
         send "handle_#{task.verb.def.name}", task.verb
       end
+    ensure
+      Base.threads.each &:join
+    end
+
+    def exit_on_interrupt!
+      stty_save = `stty -g`.chomp
+      trap("INT") {
+        system "stty", stty_save
+        if Base.task.running?
+          puts "\n#{closing_log_message("#{Base.task.callstack.first.contextual_name} (cancelled)", false, :closing_status => true)}"
+        end
+        exit
+      }
     end
 
 

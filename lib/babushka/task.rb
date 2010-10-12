@@ -11,17 +11,42 @@ module Babushka
       @run_opts = default_run_opts
     end
 
-    def process dep_spec
-      load_previous_run_info_for dep_spec
-      returning(log_dep(dep_spec) {
-        returning Dep.process(dep_spec, :top_level => true) do |result|
-          unless result.nil? # nil means the dep isn't defined
-            save_run_info_for dep_spec, result
-            log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{LogPrefix / dep_spec}'." unless result
-          end
+    def process dep_names
+      raise "A task is already running." if running?
+      @running = true
+      Base.in_thread { RunReporter.post_reports }
+      dep_names.all? {|dep_name| process_dep dep_name }
+    ensure
+      @running = false
+    end
+
+    def process_dep dep_name
+      Dep.find_or_suggest dep_name do |dep|
+        returning run_dep(dep) do |result|
+          log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{var_path_for(dep)}'." unless result
+          RunReporter.queue dep, result, reportable
+          BugReporter.report dep if reportable
         end
-      }) {
-        BugReporter.report dep_spec if reportable
+      end
+    end
+
+    def run_dep dep
+      log_dep dep do
+        load_previous_run_info_for dep
+        returning dep.process(:top_level => true) do |result|
+          save_run_info_for dep, result
+        end
+      end
+    end
+
+    def task_info dep, result
+      {
+        :version => Babushka::VERSION,
+        :run_at => Time.now,
+        :system_info => Base.host.description,
+        :dep_name => dep.name,
+        :source_uri => dep.dep_source.uri,
+        :result => result
       }
     end
 
@@ -37,16 +62,20 @@ module Babushka
       opts[name]
     end
 
+    def running?
+      @running
+    end
+
     def callstack
       opts[:callstack]
     end
 
-    def log_path_for dep_name
-      log_prefix / dep_name
+    def log_path_for dep
+      log_prefix / dep.contextual_name
     end
 
-    def var_path_for dep_name
-      VarsPrefix.p / dep_name
+    def var_path_for dep
+      VarsPrefix.p / dep.contextual_name
     end
 
     def sticky_var_path
@@ -55,9 +84,9 @@ module Babushka
 
     private
 
-    def log_dep dep_name
-      FileUtils.mkdir_p log_prefix unless File.exists? log_prefix
-      File.open(log_path_for(dep_name), 'w') {|f|
+    def log_dep dep
+      log_prefix.mkdir
+      log_path_for(dep).open('w') {|f|
         @persistent_log = f
         returning(yield) { @persistent_log = nil }
       }
@@ -68,8 +97,8 @@ module Babushka
     end
 
     require 'yaml'
-    def load_previous_run_info_for dep_name
-      load_var_log_for(var_path_for(dep_name)).each_pair {|var_name,var_data|
+    def load_previous_run_info_for dep
+      load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
         @saved_vars[var_name].update var_data
       }
       load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
@@ -78,16 +107,13 @@ module Babushka
       }
     end
 
-    def save_run_info_for dep_name, result
+    def save_run_info_for dep, result
       save_var_log_for sticky_var_path, :vars => sticky_vars_for_save
-      save_var_log_for var_path_for(dep_name), {
-        :info => task_info(dep_name, result),
+      save_var_log_for var_path_for(dep), {
+        :info => task_info(dep, result),
         :vars => vars_for_save
       }
     end
-
-
-    private
 
     def default_run_opts
       {
@@ -117,18 +143,6 @@ module Babushka
 
     def dump_yaml_to filename, data
       File.open(filename, 'w') {|f| YAML.dump data, f }
-    end
-
-    def task_info dep_name, result
-      now = Time.now
-      {
-        :version => Babushka::VERSION,
-        :date => now,
-        :unix_date => now.to_i,
-        :uname => `uname -a`,
-        :dep_name => dep_name,
-        :result => result
-      }
     end
 
     def sticky_vars_for_save
