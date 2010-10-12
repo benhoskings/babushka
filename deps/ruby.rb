@@ -6,7 +6,10 @@ dep 'ruby' do
 end
 
 dep 'ruby.managed' do
-  installs { via :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby] }
+  installs {
+    on :maverick, %w[ruby ruby1.8-dev]
+    via :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby]
+  }
   provides %w[ruby irb]
 end
 

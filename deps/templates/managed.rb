@@ -55,11 +55,11 @@ meta :managed do
   end
 
   def chooser
-    Babushka::Base.host.pkg_helper.manager_key
+    [Babushka::Base.host.pkg_helper.manager_key] + Babushka::Base.host.match_list
   end
 
   def chooser_choices
-    Babushka::PkgHelper.all_manager_keys
+    Babushka::PkgHelper.all_manager_keys + Babushka::Base.host.all_tokens
   end
 
   template &managed_template

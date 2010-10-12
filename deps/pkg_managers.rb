@@ -25,7 +25,10 @@ meta :apt_source do
         grep(/^deb .* #{Babushka::Base.host.name} (\w+ )*#{Regexp.escape(name.to_s)}/, '/etc/apt/sources.list')
       }
     }
-    before { Babushka::AptHelper.source_for_system }
+    before {
+      # Don't edit sources.list unless we know how to edit it for this debian flavour and version.
+      Babushka::AptHelper.source_for_system and Babushka::Base.host.name
+    }
     meet {
       source_name.each {|name|
         append_to_file "deb #{Babushka::AptHelper.source_for_system} #{Babushka::Base.host.name} #{name}", '/etc/apt/sources.list', :sudo => true
