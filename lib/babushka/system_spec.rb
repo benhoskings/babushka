@@ -114,7 +114,8 @@ module Babushka
             '8.10'  => :intrepid,
             '9.04'  => :jaunty,
             '9.10'  => :karmic,
-            '10.04' => :lucid
+            '10.04' => :lucid,
+            '10.10' => :maverick
           },
           :debian => {
             '5.0.4' => :lenny
@@ -145,7 +146,8 @@ module Babushka
             '8.10'  => 'Intrepid Ibex',
             '9.04'  => 'Jaunty Jackalope',
             '9.10'  => 'Karmic Koala',
-            '10.04' => 'Lucid Lynx'
+            '10.04' => 'Lucid Lynx',
+            '10.10' => 'Maverick Meerkat'
           },
           :debian => {
             '5.0.4' => 'Lenny'
