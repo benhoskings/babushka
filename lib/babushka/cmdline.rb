@@ -151,7 +151,7 @@ module Babushka
 
     def search_webservice_for q
       Net::HTTP.start('babushka.me') {|http|
-        http.get URI.encode "/deps/search.yaml/#{q}"
+        http.get URI.encode("/deps/search.yaml/#{q}")
       }
     end
 

@@ -33,7 +33,7 @@ module Babushka
     end
 
     def in_thread &block
-      threads.push Thread.new &block
+      threads.push Thread.new(&block)
     end
 
     # The top-level entry point for babushka runs invoked at the command line.

@@ -2,7 +2,7 @@ dep 'homebrew binary in place' do
   requires 'homebrew installed'
   met? { which 'brew' }
   meet {
-    in_dir var :homebrew_prefix do
+    in_dir var(:homebrew_prefix) do
       log_shell "Resetting to HEAD", "git reset --hard"
     end
   }

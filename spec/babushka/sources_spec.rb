@@ -5,7 +5,7 @@ describe Source, "arguments" do
   it "should reject non-hash options" do
     L{
       Source.new 'a', 'b'
-    }.should raise_error ArgumentError, 'Source.new options must be passed as a hash, not as "b".'
+    }.should raise_error(ArgumentError, 'Source.new options must be passed as a hash, not as "b".')
   end
 end
 
@@ -233,11 +233,11 @@ describe "finding" do
     @source.load!
   }
   it "should find the specified dep" do
-    @source.find('test dep 1').should be_an_instance_of Dep
+    @source.find('test dep 1').should be_an_instance_of(Dep)
     @source.deps.deps.include?(@source.find('test dep 1')).should be_true
   end
   it "should find the specified template" do
-    @source.find_template('test meta 1').should be_an_instance_of MetaDepWrapper
+    @source.find_template('test meta 1').should be_an_instance_of(MetaDepWrapper)
     @source.templates.templates.include?(@source.find_template('test meta 1')).should be_true
   end
 end
