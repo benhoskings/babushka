@@ -9,11 +9,11 @@ module Babushka
       @task ||= Task.new
     end
 
-    # +host+ is an instance of Babushka::SystemSpec for the system the command
-    # was invoked on. If the current system isn't supported, SystemSpec.for_host
+    # +host+ is an instance of Babushka::SystemProfile for the system the command
+    # was invoked on. If the current system isn't supported, SystemProfile.for_host
     # will return +nil+, and Base.run will fail early.
     def host
-      @host ||= Babushka::SystemSpec.for_host
+      @host ||= Babushka::SystemProfile.for_host
     end
 
     # +sources+ is an instance of Babushka::SourcePool, contains all the

@@ -1,11 +1,11 @@
 module Babushka
-  class SystemSpec
+  class SystemProfile
     attr_reader :version_info
 
     def self.for_host
       system = {
-        'Linux' => LinuxSystemSpec,
-        'Darwin' => OSXSystemSpec
+        'Linux' => LinuxSystemProfile,
+        'Darwin' => OSXSystemProfile
       }[shell('uname -s')]
       system.for_flavour unless system.nil?
     end
@@ -168,7 +168,7 @@ module Babushka
 
   end
 
-  class OSXSystemSpec < SystemSpec
+  class OSXSystemProfile < SystemProfile
     def osx?; true end
     def library_ext; 'bundle' end
     def system; :osx end
@@ -181,7 +181,7 @@ module Babushka
     def pkg_helper; BrewHelper end
   end
   
-  class LinuxSystemSpec < SystemSpec
+  class LinuxSystemProfile < SystemProfile
     def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
@@ -190,7 +190,7 @@ module Babushka
 
     def self.for_flavour
       unless (detected_flavour = detect_using_release_file).nil?
-        Babushka.const_get("#{detected_flavour.capitalize}SystemSpec").new
+        Babushka.const_get("#{detected_flavour.capitalize}SystemProfile").new
       end
     end
 
@@ -211,7 +211,7 @@ module Babushka
     end
   end
 
-  class DebianSystemSpec < LinuxSystemSpec
+  class DebianSystemProfile < LinuxSystemProfile
     def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
@@ -219,7 +219,7 @@ module Babushka
     def pkg_helper; AptHelper end
   end
 
-  class RedhatSystemSpec < LinuxSystemSpec
+  class RedhatSystemProfile < LinuxSystemProfile
     def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
     def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
     def get_version_info; File.read '/etc/redhat-release' end
