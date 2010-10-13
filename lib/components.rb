@@ -36,6 +36,7 @@ module Babushka
     structs
     cmdline
     base
+    system_definitions
     system_profile
     run_reporter
     bug_reporter
