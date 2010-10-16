@@ -56,6 +56,19 @@ module Babushka
       end
     end
 
+    def ruby_arch
+      if RUBY_PLATFORM =~ /universal/
+        "universal"
+      elsif RUBY_PLATFORM == "java"
+        "java"
+      elsif RUBY_PLATFORM =~ /darwin/
+        # e.g. "/opt/ruby-enterprise/bin/ruby: Mach-O 64-bit executable x86_64"
+        shell("file -L '#{ruby_path}'").sub(/.* /, '')
+      else
+        Base.host.cpu_type
+      end
+    end
+
     def ruby_binary_slug
       slug_command = %q{
         [
