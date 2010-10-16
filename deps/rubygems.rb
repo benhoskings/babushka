@@ -3,6 +3,9 @@ dep 'rubygems' do
   setup {
     definer.requires('fake json gem') if shell('ruby --version')['ruby 1.9']
   }
+  after {
+    %w[cache ruby specs].each {|name| ('~/.gem' / name).mkdir }
+  }
 end
 
 dep 'fake json gem' do
