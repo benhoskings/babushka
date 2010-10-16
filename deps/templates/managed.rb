@@ -55,7 +55,7 @@ meta :managed do
   end
 
   def chooser
-    [Babushka::Base.host.pkg_helper.manager_key] + Babushka::Base.host.match_list
+    Babushka::Base.host.match_list
   end
 
   def chooser_choices
