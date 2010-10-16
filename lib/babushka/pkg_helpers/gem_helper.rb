@@ -73,7 +73,7 @@ module Babushka
       [
         (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
         RUBY_VERSION,
-        RUBY_PLATFORM.gsub(/-.*$/, ''),
+        ruby_arch,
         (RUBY_PLATFORM['darwin'] ? 'macosx' : RUBY_PLATFORM.sub(/^.*?-/, ''))
       ].join('-')
     end
