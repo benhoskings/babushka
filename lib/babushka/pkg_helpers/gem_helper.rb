@@ -70,15 +70,12 @@ module Babushka
     end
 
     def ruby_binary_slug
-      slug_command = %q{
-        [
-          (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
-          RUBY_VERSION,
-          RUBY_PLATFORM.gsub(/-.*$/, ''),
-          (RUBY_PLATFORM['darwin'] ? 'macosx' : RUBY_PLATFORM.sub(/^.*?-/, ''))
-        ].join('-')
-      }
-      shell %Q{#{ruby_wrapper_path} -e "puts #{slug_command.strip}"}
+      [
+        (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
+        RUBY_VERSION,
+        RUBY_PLATFORM.gsub(/-.*$/, ''),
+        (RUBY_PLATFORM['darwin'] ? 'macosx' : RUBY_PLATFORM.sub(/^.*?-/, ''))
+      ].join('-')
     end
 
     def should_sudo?
