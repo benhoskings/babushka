@@ -48,7 +48,7 @@ module Babushka
     end
 
     def match_list
-      [name, flavour, system, :all]
+      [name, flavour, pkg_helper, system, :all].compact
     end
 
     def matches? specs
