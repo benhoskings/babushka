@@ -35,6 +35,19 @@ describe "lambda choosing" do
     }.choose([:ours, :yours], :on).should == ["this is ours"]
   end
 
+  it "should not join lists from multiple choices" do
+    LambdaChooser.new(
+      nil,
+      :apt, :brew, :macports, :yum, :linux, :osx, :ubuntu, :debian, :osx, :karmic, :gutsy, :lucid, :intrepid, :dapper, :breezy, :jaunty, :feisty, :edgy, :warty, :hardy, :maverick, :hoary, :lenny, :snow_leopard, :panther, :tiger, :leopard
+    ) {
+      on :maverick, %w[ruby ruby1.8-dev]
+      on :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby]
+    }.choose(
+      [:maverick, :ubuntu, :apt, :linux, :all],
+      :on
+    ).should == %w[ruby ruby1.8-dev]
+  end
+
   it "should default the choice method to #on" do
     LambdaChooser.new(nil, :ours, :theirs) {
       on :ours, "this is ours"
