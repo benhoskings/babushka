@@ -56,16 +56,30 @@ module Babushka
       end
     end
 
+    def ruby_arch
+      if RUBY_PLATFORM =~ /universal/
+        "universal"
+      elsif RUBY_PLATFORM == "java"
+        "java"
+      elsif RUBY_PLATFORM =~ /darwin/
+        # e.g. "/opt/ruby-enterprise/bin/ruby: Mach-O 64-bit executable x86_64"
+        shell("file -L '#{ruby_path}'").sub(/.* /, '')
+      else
+        Base.host.cpu_type
+      end
+    end
+
     def ruby_binary_slug
-      slug_command = %q{
-        [
-          (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
-          RUBY_VERSION,
-          RUBY_PLATFORM.gsub(/-.*$/, ''),
-          (RUBY_PLATFORM['darwin'] ? 'macosx' : RUBY_PLATFORM.sub(/^.*?-/, ''))
-        ].join('-')
-      }
-      shell %Q{#{ruby_wrapper_path} -e "puts #{slug_command.strip}"}
+      [
+        (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
+        RUBY_VERSION,
+        ruby_arch,
+        (RUBY_PLATFORM['darwin'] ? 'macosx' : RUBY_PLATFORM.sub(/^.*?-/, ''))
+      ].join('-')
+    end
+
+    def slug_for ruby
+      shell %Q{#{ruby} -e "require '#{Babushka::Path.lib / 'babushka'}'; puts Babushka::GemHelper.ruby_binary_slug"}
     end
 
     def should_sudo?

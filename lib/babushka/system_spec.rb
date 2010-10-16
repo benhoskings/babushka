@@ -25,6 +25,12 @@ module Babushka
     # libraries are named like 'libssl.so'; on OS X, 'libssl.bundle'.
     def library_ext; 'so' end
 
+    def cpu_type
+      shell('uname -p').tap {|result|
+        result.replace shell('uname -m') if result[/unknown|\s/]
+      }
+    end
+
     def description
       [
         (flavour_str unless flavour_str == system_str),
