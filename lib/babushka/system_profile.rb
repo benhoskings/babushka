@@ -1,11 +1,11 @@
 module Babushka
-  class SystemSpec
+  class SystemProfile
     attr_reader :version_info
 
     def self.for_host
       system = {
-        'Linux' => LinuxSystemSpec,
-        'Darwin' => OSXSystemSpec
+        'Linux' => LinuxSystemProfile,
+        'Darwin' => OSXSystemProfile
       }[shell('uname -s')]
       system.for_flavour unless system.nil?
     end
@@ -41,10 +41,10 @@ module Babushka
     end
 
     def name
-      (name_map[system][flavour] || {})[release]
+      (SystemDefinitions.names[system][flavour] || {})[release]
     end
     def name_str
-      (name_str_map[system][flavour] || {})[release]
+      (SystemDefinitions.descriptions[system][flavour] || {})[release]
     end
 
     def match_list
@@ -79,88 +79,24 @@ module Babushka
     end
 
     def all_systems
-      name_map.keys
+      SystemDefinitions.names.keys
     end
     def all_flavours
-      name_map.values.map(&:keys).flatten
+      SystemDefinitions.names.values.map(&:keys).flatten
     end
     def all_names
-      name_map.values.map(&:values).map {|s| s.map(&:values) }.flatten
+      SystemDefinitions.names.values.map(&:values).map {|s| s.map(&:values) }.flatten
     end
     def our_flavours
-      name_map[system].keys
+      SystemDefinitions.names[system].keys
     end
     def our_flavour_names
-      name_map[system][flavour].values
+      SystemDefinitions.names[system][flavour].values
     end
     def all_tokens
       all_systems + all_flavours + all_names
     end
 
-    def name_map
-      {
-        :osx => {
-          :osx => {
-            '10.3' => :panther,
-            '10.4' => :tiger,
-            '10.5' => :leopard,
-            '10.6' => :snow_leopard
-          }
-        },
-        :linux => {
-          :ubuntu => {
-            '4.10'  => :warty,
-            '5.04'  => :hoary,
-            '5.10'  => :breezy,
-            '6.06'  => :dapper,
-            '6.10'  => :edgy,
-            '7.04'  => :feisty,
-            '7.10'  => :gutsy,
-            '8.04'  => :hardy,
-            '8.10'  => :intrepid,
-            '9.04'  => :jaunty,
-            '9.10'  => :karmic,
-            '10.04' => :lucid,
-            '10.10' => :maverick
-          },
-          :debian => {
-            '5.0.4' => :lenny
-          }
-        }
-      }
-    end
-    def name_str_map
-      {
-        :osx => {
-          :osx => {
-            '10.3' => 'Panther',
-            '10.4' => 'Tiger',
-            '10.5' => 'Leopard',
-            '10.6' => 'Snow Leopard'
-          }
-        },
-        :linux => {
-          :ubuntu => {
-            '4.10'  => 'Warty Warthog',
-            '5.04'  => 'Hoary Hedgehog',
-            '5.10'  => 'Breezy Badger',
-            '6.06'  => 'Dapper Drake',
-            '6.10'  => 'Edgy Eft',
-            '7.04'  => 'Feisty Fawn',
-            '7.10'  => 'Gutsy Gibbon',
-            '8.04'  => 'Hardy Heron',
-            '8.10'  => 'Intrepid Ibex',
-            '9.04'  => 'Jaunty Jackalope',
-            '9.10'  => 'Karmic Koala',
-            '10.04' => 'Lucid Lynx',
-            '10.10' => 'Maverick Meerkat'
-          },
-          :debian => {
-            '5.0.4' => 'Lenny'
-          }
-        }
-      }
-    end
     def flavour_str_map
       # Only required for names that can't be auto-capitalized,
       # e.g. :ubuntu => 'Ubuntu' isn't required.
@@ -174,7 +110,7 @@ module Babushka
 
   end
 
-  class OSXSystemSpec < SystemSpec
+  class OSXSystemProfile < SystemProfile
     def osx?; true end
     def library_ext; 'bundle' end
     def system; :osx end
@@ -187,7 +123,7 @@ module Babushka
     def pkg_helper; BrewHelper end
   end
   
-  class LinuxSystemSpec < SystemSpec
+  class LinuxSystemProfile < SystemProfile
     def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
@@ -196,7 +132,7 @@ module Babushka
 
     def self.for_flavour
       unless (detected_flavour = detect_using_release_file).nil?
-        Babushka.const_get("#{detected_flavour.capitalize}SystemSpec").new
+        Babushka.const_get("#{detected_flavour.capitalize}SystemProfile").new
       end
     end
 
@@ -217,7 +153,7 @@ module Babushka
     end
   end
 
-  class DebianSystemSpec < LinuxSystemSpec
+  class DebianSystemProfile < LinuxSystemProfile
     def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
@@ -225,7 +161,7 @@ module Babushka
     def pkg_helper; AptHelper end
   end
 
-  class RedhatSystemSpec < LinuxSystemSpec
+  class RedhatSystemProfile < LinuxSystemProfile
     def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
     def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
     def get_version_info; File.read '/etc/redhat-release' end
