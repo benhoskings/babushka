@@ -23,7 +23,7 @@ module Babushka
     def process_dep dep_name
       Dep.find_or_suggest dep_name do |dep|
         returning run_dep(dep) do |result|
-          log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{var_path_for(dep)}'." unless result
+          log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
         end
