@@ -1,5 +1,5 @@
 dep 'rubygems' do
-  requires 'rubygems up to date', 'rubygems.org.gem_source', 'github.gem_source'
+  requires 'rubygems up to date'
   setup {
     definer.requires('fake json gem') if shell('ruby --version')['ruby 1.9']
   }
@@ -29,25 +29,6 @@ dep 'fake json gem' do
       Babushka::GemHelper.install! 'json-1.1.9.gem', '--no-ri --no-rdoc'
     }
   }
-end
-
-meta :gem_source do
-  accepts_list_for :uri
-  template {
-    helper :gem_sources do
-      "~/.gemrc".p.exists? ? (yaml("~/.gemrc".p)[:sources] || {}) : {}
-    end
-    requires 'rubygems installed'
-    met? { uri.all? {|u| gem_sources.include? u.to_s } }
-    meet { uri.each {|u| shell "gem sources -a #{u.to_s}", :sudo => !File.writable?(which('ruby')) } }
-  }
-end
-
-dep 'rubygems.org.gem_source' do
-  uri 'http://rubygems.org'
-end
-dep 'github.gem_source' do
-  uri 'http://gems.github.com'
 end
 
 dep 'rubygems up to date' do
