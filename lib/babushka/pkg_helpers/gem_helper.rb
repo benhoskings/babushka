@@ -78,6 +78,10 @@ module Babushka
       ].join('-')
     end
 
+    def slug_for ruby
+      shell %Q{#{ruby} -e "require '#{Babushka::Path.lib / 'babushka'}'; puts Babushka::GemHelper.ruby_binary_slug"}
+    end
+
     def should_sudo?
       super || !File.writable?(gem_root)
     end
