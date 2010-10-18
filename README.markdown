@@ -118,7 +118,7 @@ Notice how the contents of the `template` block looks like a normal dep. That's 
 
 Given the `tmbundle` meta dep, this dep handles the cucumber bundle:
 
-    tmbundle 'Cucumber.tmbundle' do
+    dep 'Cucumber.tmbundle' do
       source 'git://github.com/bmabey/cucumber-tmbundle.git'
     end
 
