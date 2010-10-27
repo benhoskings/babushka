@@ -1,3 +1,4 @@
-.idea/
-sources/
+.idea
+sources
 sources.yml
+coverage
