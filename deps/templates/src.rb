@@ -5,7 +5,7 @@ meta :src do
   accepts_list_for :prefix, '/usr/local'
 
   def default_name
-    Babushka::VersionOf.new name
+    Babushka::VersionOf.new basename
   end
 
   accepts_block_for :preconfigure
