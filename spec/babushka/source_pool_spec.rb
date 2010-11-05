@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'sources_support'
+require 'source_support'
 require 'source_pool_support'
 
 describe SourcePool, '#dep_for' do

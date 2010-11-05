@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'sources_support'
+require 'source_support'
 
 describe Source, "arguments" do
   it "should reject non-hash options" do
