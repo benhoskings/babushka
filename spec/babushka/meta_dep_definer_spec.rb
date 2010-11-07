@@ -121,7 +121,7 @@ describe "using" do
         accepts_block_for :block_test
         template {
           met? {
-            list_test == [ver('valid')]
+            list_test == ['valid']
           }
           meet {
             block_test.call
