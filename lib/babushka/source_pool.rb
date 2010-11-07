@@ -4,6 +4,7 @@ module Babushka
 
     def current
       @_cached_current ||= default.concat(standard)
+      @_cached_current.dup
     end
 
     def default
