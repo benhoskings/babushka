@@ -33,6 +33,28 @@ describe SourcePool, '#dep_for' do
   end
 end
 
+describe SourcePool, '#dep_for core' do
+  before {
+    @core = Source.new nil, :name => 'core'
+    @core.stub!(:load!)
+    Base.sources.load_context :source => @core do
+      @dep1 = dep 'dep 1'
+      @dep2 = dep 'dep 2'
+    end
+    Base.sources.stub!(:current).and_return([@core])
+  }
+  it "should find the correct deps without namespacing" do
+    Base.sources.dep_for('dep 1').should == @dep1
+    Base.sources.dep_for('dep 4').should == @dep4
+  end
+  it "should find the dep when the namespace is correct" do
+    Base.sources.dep_for('core:dep 1').should == @dep1
+  end
+  it "should not find the dep when the namespace is wrong" do
+    Base.sources.dep_for('non_core:dep 1').should be_nil
+  end
+end
+
 describe SourcePool, '#template_for' do
   before {
     mock_sources
