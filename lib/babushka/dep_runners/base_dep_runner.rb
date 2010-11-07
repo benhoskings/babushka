@@ -71,7 +71,7 @@ module Babushka
 
     def parse_uris
       @uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
-      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
+      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if definer.respond_to?(:extra_source)
     end
 
     def uri_processor(method_name)
