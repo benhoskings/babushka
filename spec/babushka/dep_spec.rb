@@ -117,6 +117,9 @@ describe Dep, '.find_or_suggest' do
       Dep.find_or_suggest('incorrect:namespaced Dep.find_or_suggest tests').should be_nil
     end
     it "should find the dep with the correct namespace" do
+      Dep.find_or_suggest('namespaced:namespaced Dep.find_or_suggest tests').should == @namespaced_dep
+    end
+    it "should find the dep with the correct namespace and yield it to the block" do
       Dep.find_or_suggest('namespaced:namespaced Dep.find_or_suggest tests') {|dep| dep }.should == @namespaced_dep
     end
   end
