@@ -2,6 +2,23 @@ require 'spec_helper'
 require 'source_support'
 require 'source_pool_support'
 
+describe SourcePool, '#source_for' do
+  before {
+    @source1 = Source.new nil, :name => 'source_1'
+    @source1.stub!(:load!)
+    @source2 = Source.new nil, :name => 'source_2'
+    @source2.stub!(:load!)
+    Base.sources.stub!(:current).and_return([@source1])
+    Source.stub!(:present).and_return([@source2])
+  }
+  it "should find core sources" do
+    Base.sources.source_for('source_1').should == @source1
+  end
+  it "should find cloned sources" do
+    Base.sources.source_for('source_2').should == @source2
+  end
+end
+
 describe SourcePool, '#dep_for' do
   before {
     @source1 = Source.new nil, :name => 'source_1'

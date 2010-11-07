@@ -36,7 +36,7 @@ module Babushka
     end
 
     def source_for name
-      present.detect {|source| source.name == name } || Source.for_remote(name)
+      all_present.detect {|source| source.name == name } || Source.for_remote(name)
     end
 
     def dep_for dep_spec, opts = {}
