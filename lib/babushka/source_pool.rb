@@ -4,6 +4,7 @@ module Babushka
 
     def current
       @_cached_current ||= default.concat(standard)
+      @_cached_current.dup
     end
 
     def default
@@ -35,10 +36,14 @@ module Babushka
       [current_dir, personal]
     end
 
+    def source_for name
+      all_present.detect {|source| source.name == name } || Source.for_remote(name)
+    end
+
     def dep_for dep_spec, opts = {}
       if dep_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
         source_name, dep_name = dep_spec.split(SOURCE_DEP_SEPARATOR, 2)
-        Source.for_name(source_name).find(dep_name)
+        source_for(source_name).find(dep_name)
       elsif opts[:from]
         opts[:from].find(dep_spec) || dep_for(dep_spec)
       else # Otherwise, load from the current source (opts[:from]) or the standard set.
@@ -56,7 +61,7 @@ module Babushka
         nil
       elsif template_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
         source_name, template_name = template_spec.split(SOURCE_DEP_SEPARATOR, 2)
-        Source.for_name(source_name).find_template(template_name)
+        source_for(source_name).find_template(template_name)
       elsif opts[:from]
         opts[:from].find_template(template_spec) || template_for(template_spec)
       else

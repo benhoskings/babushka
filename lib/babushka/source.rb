@@ -35,8 +35,8 @@ module Babushka
       end
     end
 
-    def self.for_name name
-      present.detect {|source| source.name == name } || Source.new(default_remote_for(name, :github), :name => name)
+    def self.for_remote name
+      Source.new(default_remote_for(name, :github), :name => name)
     end
 
     def self.default_remote_for name, from
