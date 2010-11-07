@@ -210,5 +210,11 @@ module Babushka
     def self.source_prefix
       SourcePrefix.p
     end
+
+    public
+
+    def inspect
+      "#<Source:#{object_id} '#{name}' (#{deps.count} dep#{'s' unless deps.count == 1})>"
+    end
   end
 end
