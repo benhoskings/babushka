@@ -1,6 +1,6 @@
 module Babushka
   class DepDefiner
-    include VersionList
+    include AcceptsFor
 
     attr_reader :payload
 
