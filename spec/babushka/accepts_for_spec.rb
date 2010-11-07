@@ -1,10 +1,10 @@
 require 'spec_helper'
-require 'version_list_support'
+require 'accepts_for_support'
 
 describe "invalid input" do
   it "should reject values and a block at once" do
     L{
-      VersionListTest.new.records "stuff" do
+      AcceptsForTest.new.records "stuff" do
         more "stuff"
       end
     }.should raise_error(ArgumentError, "You can supply arguments or a block, but not both.")
@@ -13,7 +13,7 @@ end
 
 describe "storing" do
   before {
-    @list = VersionListTest.new
+    @list = AcceptsForTest.new
   }
   it "should return self to allow chaining" do
     [:records, :produces, :valid_formats].each {|method_name|
@@ -24,7 +24,7 @@ end
 
 describe "returning" do
   before {
-    @list = VersionListTest.new
+    @list = AcceptsForTest.new
   }
   it "should return the empty list for no input" do
     @list.records.should == []
@@ -53,7 +53,7 @@ end
 describe "value input" do
   it "should always return a [VersionOf] list" do
     test_lists.each_pair {|input, expected|
-      list = VersionListTest.new
+      list = AcceptsForTest.new
       list.records input
       list.records.should == expected
     }
@@ -63,14 +63,14 @@ end
 describe "lambda input" do
   it "should return the correct call's args" do
     test_lambdas.each_pair {|input, expected|
-      list = VersionListTest.new(input)
+      list = AcceptsForTest.new(input)
       list.records &input
       list.records.should == expected
     }
   end
   it "should ignore default whenever any lambda is specified" do
     test_lambdas.each_pair {|input, expected|
-      list = VersionListTest.new(input)
+      list = AcceptsForTest.new(input)
       list.produces &input
       list.produces.should == expected
     }
@@ -83,7 +83,7 @@ describe "lambda and value input" do
       l = L{
         via :macports, input
       }
-      list = VersionListTest.new
+      list = AcceptsForTest.new
       list.records &l
       list.records.should == expected
     }
@@ -92,10 +92,10 @@ end
 
 describe "defaults" do
   it "should accept a default value" do
-    VersionListTest.new.records.should == []
-    VersionListTest.new.produces.should == ['a default response']
-    VersionListTest.new.valid_formats.should == %w[html xml js json]
-    # TODO VersionListTest.new.dynamic_value.should == "some dynamic value"
+    AcceptsForTest.new.records.should == []
+    AcceptsForTest.new.produces.should == ['a default response']
+    AcceptsForTest.new.valid_formats.should == %w[html xml js json]
+    # TODO AcceptsForTest.new.dynamic_value.should == "some dynamic value"
   end
 end
 
@@ -111,7 +111,7 @@ describe "nested lambdas" do
         via :apt, "OK this one is just completely wrong"
       end
     }
-    list = VersionListTest.new
+    list = AcceptsForTest.new
     list.records &l
     list.records.should == [ver("haha, excellent")]
   end

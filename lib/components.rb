@@ -30,7 +30,7 @@ module Babushka
     ip
     version_str
     version_of
-    version_list
+    accepts_for
     colorizer
     levenshtein
     structs

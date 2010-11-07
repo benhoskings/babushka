@@ -1,5 +1,5 @@
 module Babushka
-  module VersionList
+  module AcceptsFor
     def self.included base
       base.send :include, InstanceMethods
       base.send :extend, ClassMethods
