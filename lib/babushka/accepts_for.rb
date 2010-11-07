@@ -7,8 +7,13 @@ module Babushka
 
     module ClassMethods
 
-      def accepts_list_for method_name, *args
+      def accepts_value_for method_name, *args
         opts = args.extract_options!
+        accepts_list_for method_name, *args.push(opts.merge(:type => 'value'))
+      end
+
+      def accepts_list_for method_name, *args
+        opts = {:type => 'list'}.merge args.extract_options!
         default = args.shift
 
         file, line = caller.first.split(':', 2)
@@ -19,9 +24,9 @@ module Babushka
             if !args.blank? && !block.nil?
               raise ArgumentError, "You can supply arguments or a block, but not both."
             elsif args.blank? && block.nil?
-              list_for #{method_name.inspect}, #{default.inspect}
+              #{opts[:type]}_for #{method_name.inspect}, #{default.inspect}
             else
-              store_list_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
+              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
               self
             end
           end
@@ -38,17 +43,13 @@ module Babushka
         if data.respond_to? :call
           store_list_for method_name, LambdaChooser.new(self, *chooser_choices, &data).choose(chooser, choose_with), choose_with
         else
-          (payload[method_name] ||= []).concat versions_for(data)
+          (payload[method_name] ||= []).concat(data || [])
         end
       end
 
       def versions_for data
         if data.nil?
           []
-        elsif data.is_a? Hash
-          data.map {|name,version| ver name, version }
-        elsif data.first.is_a? Hash
-          versions_for data.first
         else
           data.map {|name| name.is_a?(String) ? ver(name) : name }
         end
@@ -60,6 +61,16 @@ module Babushka
         else
           [*(default.is_a?(Symbol) ? send(default) : (default || []))]
         end
+      end
+
+      def store_value_for method_name, data, choose_with
+        raise "Multiple values for #{method_name}" if data.respond_to?(:length) && data.length > 1
+        payload.delete(method_name) # otherwise new values would be #concat'ed and ignored.
+        store_list_for method_name, data, choose_with
+      end
+
+      def value_for method_name, default
+        list_for(method_name, default).first
       end
 
     end
