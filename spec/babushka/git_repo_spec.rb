@@ -2,7 +2,7 @@ require 'spec_helper'
 
 class PathSupport; extend PathHelpers end
 
-def stub_repo name = 'a'
+def stub_repo name = 'a', opts = {}
   PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
     shell 'git init'
     shell 'echo "Hello from the babushka specs!" >> content.txt'
@@ -10,6 +10,16 @@ def stub_repo name = 'a'
     shell 'echo "Here are the rubies." >> lib/rubies.rb'
     shell 'git add .'
     shell 'git commit -m "Initial commit, by the spec suite."'
+  end
+  stub_remote(name) if opts[:with_remote]
+end
+
+def stub_remote name
+  PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
+    shell 'git init --bare'
+  end
+  PathSupport.in_dir tmp_prefix / 'repos' / name do
+    shell "git remote add origin ../#{name}_remote"
   end
 end
 
@@ -63,6 +73,39 @@ describe GitRepo, '#current_branch' do
       }
       it "should return 'next'" do
         subject.current_branch.should == 'master'
+      end
+    end
+  end
+end
+
+describe GitRepo, '#pushed?' do
+  before { stub_repo 'a', :with_remote => true }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return false if the current branch has no remote" do
+    subject.remote_branch_exists?.should be_false
+    subject.should_not be_pushed
+  end
+  context "when remote branch exists" do
+    before {
+      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        shell "git push origin master"
+        shell 'echo "Ch-ch-ch-changes" >> content.txt'
+        shell 'git commit -a -m "Changes!"'
+      }
+    }
+    it "should return false if there are unpushed commits on the current branch" do
+      subject.remote_branch_exists?.should be_true
+      subject.should_not be_pushed
+    end
+    context "when the branch is fully pushed" do
+      before {
+        PathSupport.in_dir(tmp_prefix / 'repos/a') {
+          shell "git push origin master"
+        }
+      }
+      it "should return true if the current branch is fully pushed" do
+        subject.remote_branch_exists?.should be_true
+        subject.should be_pushed
       end
     end
   end

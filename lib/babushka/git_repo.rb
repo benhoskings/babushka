@@ -27,5 +27,20 @@ module Babushka
     def current_branch
       File.read(path / '.git/HEAD').strip.sub(/^.*refs\/heads\//, '')
     end
+
+    def remote_branch_exists?
+      in_dir(path) {
+        shell('git branch -a').split("\n").map(&:strip).detect {|b|
+          b[/^(remotes\/)?origin\/#{current_branch}$/]
+        }
+      }
+    end
+
+    def pushed?
+      in_dir(path) {
+        remote_branch_exists? &&
+        shell("git rev-list origin/#{current_branch}..").split("\n").empty?
+      }
+    end
   end
 end
