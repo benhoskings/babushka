@@ -78,6 +78,14 @@ describe GitRepo, '#current_branch' do
   end
 end
 
+describe GitRepo, '#current_head' do
+  before { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return a commit id" do
+    subject.current_head.should =~ /^[0-9a-f]{7}$/
+  end
+end
+
 describe GitRepo, '#pushed?' do
   before { stub_repo 'a', :with_remote => true }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }

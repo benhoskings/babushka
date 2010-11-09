@@ -28,6 +28,10 @@ module Babushka
       File.read(path / '.git/HEAD').strip.sub(/^.*refs\/heads\//, '')
     end
 
+    def current_head
+      in_dir(path) { shell("git rev-parse --short HEAD") }
+    end
+
     def remote_branch_exists?
       in_dir(path) {
         shell('git branch -a').split("\n").map(&:strip).detect {|b|
