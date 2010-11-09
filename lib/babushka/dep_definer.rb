@@ -6,7 +6,7 @@ module Babushka
 
     attr_reader :payload
 
-    delegate :name, :basename, :to => :dependency
+    delegate :name, :basename, :runner, :to => :dependency
     delegate :merge, :var, :define_var, :to => :runner
 
     def self.desc str = nil
@@ -22,10 +22,6 @@ module Babushka
 
     def dependency
       @dep
-    end
-
-    def runner
-      @dep.runner
     end
 
     def define_and_process
