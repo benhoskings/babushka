@@ -46,5 +46,9 @@ module Babushka
         shell("git rev-list origin/#{current_branch}..").split("\n").empty?
       }
     end
+
+    def inspect
+      "#<GitRepo:#{path} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+    end
   end
 end
