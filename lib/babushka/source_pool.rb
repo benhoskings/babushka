@@ -82,6 +82,16 @@ module Babushka
       end
     end
 
+    def pull!
+      all_present.select {|source|
+        source.cloneable?
+      }.tap {|sources|
+        log "Updating #{sources.length} source#{'s' unless sources.length == 1}."
+      }.map {|source|
+        source.pull!
+      }.all?
+    end
+
     def list!
       log_table(
         ['Name', 'Source path', 'Type', 'Last updated'],
