@@ -4,7 +4,7 @@ module Babushka
     include AcceptsValueFor
     include AcceptsBlockFor
 
-    attr_reader :payload
+    attr_reader :payload, :dependency
 
     delegate :name, :basename, :runner, :to => :dependency
     delegate :merge, :var, :define_var, :to => :runner
@@ -15,13 +15,9 @@ module Babushka
     end
 
     def initialize dep, &block
-      @dep = dep
+      @dependency = dep
       @payload = {}
       @block = block
-    end
-
-    def dependency
-      @dep
     end
 
     def define_and_process
@@ -54,7 +50,7 @@ module Babushka
       differentiator = Base.host.differentiator_for payload[task_name].keys
       L{
         debug([
-          "'#{@dep.name}' / #{task_name} not defined",
+          "'#{dependency.name}' / #{task_name} not defined",
           "#{" for #{differentiator}" unless differentiator.nil?}",
           {
             :met? => ", moving on",
