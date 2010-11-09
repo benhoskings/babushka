@@ -183,8 +183,6 @@ module Babushka
       "#<Babushka::Source @name=#{name.inspect}, @type=#{type.inspect}, @uri=#{uri.inspect}, @deps.count=#{deps.count}>"
     end
 
-    private
-
     def pull!
       if @pulled
         debug "Already pulled #{name} (#{uri}) this session."
@@ -198,6 +196,8 @@ module Babushka
         @pulled = git uri, :prefix => prefix, :dir => name, :log => true
       end
     end
+
+    private
 
     def raise_unless_addable!
       present_sources = Base.sources.all_present
