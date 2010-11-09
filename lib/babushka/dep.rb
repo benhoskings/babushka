@@ -145,7 +145,7 @@ module Babushka
     def self.for dep_spec, opts = {}
       Base.sources.dep_for(
         dep_spec.respond_to?(:name) ? dep_spec.name : dep_spec.to_s,
-        :from => opts[:parent_source]
+        opts
       )
     end
 
@@ -302,7 +302,7 @@ module Babushka
 
     def process_deps accessor = :requires
       definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
-        Dep.find_or_suggest dep_name, :parent_source => dep_source do |dep|
+        Dep.find_or_suggest dep_name, :from => dep_source do |dep|
           dep.process
         end
       })
