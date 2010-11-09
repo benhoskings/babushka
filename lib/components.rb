@@ -32,6 +32,7 @@ module Babushka
     version_of
     accepts_list_for
     accepts_value_for
+    accepts_block_for
     colorizer
     levenshtein
     structs
