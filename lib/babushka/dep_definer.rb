@@ -9,11 +9,6 @@ module Babushka
     delegate :name, :basename, :runner, :to => :dependency
     delegate :merge, :var, :define_var, :to => :runner
 
-    def self.desc str = nil
-      @desc = str.strip unless str.nil?
-      @desc
-    end
-
     def initialize dep, &block
       @dependency = dep
       @payload = {}
