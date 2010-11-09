@@ -7,7 +7,7 @@ module Babushka
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :name, :uri, :type, :deps, :templates
+    attr_reader :name, :uri, :repo, :type, :deps, :templates
 
     delegate :count, :skipped_count, :uncache!, :to => :deps
 
@@ -98,6 +98,11 @@ module Babushka
         prefix / name
       end
     end
+
+    def repo
+      @repo ||= GitRepo.new(path) if cloneable?
+    end
+
     def updated_at
       Time.now - File.mtime(path)
     end
@@ -192,6 +197,10 @@ module Babushka
         true
       elsif path.exists? && (Time.now - path.mtime < 60)
         debug "#{name} (#{uri}) was pulled #{(Time.now - path.mtime).round.xsecs} ago, not pulling now."
+      elsif !repo.clean?
+        log "Not updating #{name} (#{path}) because there are uncommitted changes."
+      elsif !repo.pushed?
+        log "Not updating #{name} (#{path}) because there are unpushed commits."
       else
         @pulled = git uri, :prefix => prefix, :dir => name, :log => true
       end
