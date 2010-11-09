@@ -1,5 +1,6 @@
 module Babushka
   class GitRepo
+    include PathHelpers
     extend PathHelpers
 
     attr_reader :path
@@ -13,6 +14,14 @@ module Babushka
 
     def initialize path
       @path = self.class.repo_for(path)
+    end
+
+    def clean?
+      in_dir(path) { shell("git ls-files -m").empty? }
+    end
+
+    def dirty?
+      !clean?
     end
   end
 end

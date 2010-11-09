@@ -25,3 +25,17 @@ describe GitRepo, 'creation' do
     Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').path.should == tmp_prefix / 'repos/a'
   end
 end
+
+describe GitRepo, '#clean? / #dirty?' do
+  before { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return false for clean repos" do
+    subject.should be_clean
+    subject.should_not be_dirty
+  end
+  it "should return true when there are changes" do
+    PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
+    subject.should_not be_clean
+    subject.should be_dirty
+  end
+end
