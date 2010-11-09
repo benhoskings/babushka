@@ -22,7 +22,7 @@ module Babushka
       # known sources.
       # If no dep matching +spec+ is found, nil is returned.
       def Dep spec, opts = {}
-        Dep.for spec, opts
+        Base.sources.dep_for spec, opts
       end
 
       # Define and return a dep named +name+, and whose implementation is found
@@ -140,13 +140,6 @@ module Babushka
           opts[:suffixed] = (t != BaseTemplate)
         end
       end
-    end
-
-    def self.for dep_spec, opts = {}
-      Base.sources.dep_for(
-        dep_spec.respond_to?(:name) ? dep_spec.name : dep_spec.to_s,
-        opts
-      )
     end
 
     # Look up the dep specified by +dep_name+, yielding it to the block if it
