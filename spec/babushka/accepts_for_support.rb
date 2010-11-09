@@ -1,5 +1,6 @@
 class AcceptsForTest
-  include AcceptsFor
+  include AcceptsListFor
+  include AcceptsValueFor
   attr_reader :payload
   def initialize name = nil
     @name = name

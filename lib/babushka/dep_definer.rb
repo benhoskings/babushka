@@ -1,6 +1,7 @@
 module Babushka
   class DepDefiner
-    include AcceptsFor
+    include AcceptsListFor
+    include AcceptsValueFor
 
     attr_reader :payload
 
