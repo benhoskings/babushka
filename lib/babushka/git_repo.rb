@@ -23,5 +23,9 @@ module Babushka
     def dirty?
       !clean?
     end
+
+    def current_branch
+      File.read(path / '.git/HEAD').strip.sub(/^.*refs\/heads\//, '')
+    end
   end
 end
