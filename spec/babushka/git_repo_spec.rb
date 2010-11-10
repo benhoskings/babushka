@@ -35,11 +35,18 @@ describe GitRepo, 'creation' do
   it "should return nil on non-repo paths" do
     Babushka::GitRepo.new(tmp_prefix / 'repos').repo.should == nil
   end
-  it "should recognise the repo path" do
+  it "should recognise the repo path as a string" do
+    Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).repo.should == tmp_prefix / 'repos/a'
+  end
+  it "should recognise the repo path as a Fancypath" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/a').repo.should == tmp_prefix / 'repos/a'
   end
   it "should find the parent when called on the subdir" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').repo.should == tmp_prefix / 'repos/a'
+  end
+  it "should return the repo path as a Fancypath" do
+    Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).repo.should be_an_instance_of(Fancypath)
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a').repo.should be_an_instance_of(Fancypath)
   end
 end
 
@@ -57,9 +64,11 @@ end
 
 describe GitRepo, "with a repo" do
   before { stub_repo 'a' }
-  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should exist" do
-    subject.exists?.should be_true
+  it "should exist with string path" do
+    Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).exists?.should be_true
+  end
+  it "should exist with Fancypath path" do
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a').exists?.should be_true
   end
 end
 
