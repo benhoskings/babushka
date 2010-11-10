@@ -17,8 +17,12 @@ module Babushka
       @repo = self.class.repo_for(path)
     end
 
+    def exists?
+      !repo.nil? && repo.exists?
+    end
+
     def repo_shell cmd
-      if repo.nil? || !repo.exists?
+      if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
         shell cmd, :dir => repo
