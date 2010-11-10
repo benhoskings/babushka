@@ -41,7 +41,11 @@ module Babushka
     end
 
     def dep_for dep_spec, opts = {}
-      if dep_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
+      if dep_spec.is_a?(Dep)
+        dep_spec
+      elsif dep_spec.is_a?(VersionOf)
+        dep_for dep_spec.to_s, opts
+      elsif dep_spec[/#{SOURCE_DEP_SEPARATOR}/] # If a source was specified, that's where we load from.
         source_name, dep_name = dep_spec.split(SOURCE_DEP_SEPARATOR, 2)
         source_for(source_name).find(dep_name)
       elsif opts[:from]

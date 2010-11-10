@@ -19,6 +19,36 @@ describe SourcePool, '#source_for' do
   end
 end
 
+describe Dep, '#dep_for, disregarding sources' do
+  before {
+    @dep = dep 'Base.sources.dep_for tests'
+  }
+  it "should work for strings" do
+    Base.sources.dep_for('Base.sources.dep_for tests').should == @dep
+  end
+  it "should work for VersionOfs" do
+    Base.sources.dep_for(ver('Base.sources.dep_for tests')).should == @dep
+  end
+  it "should work for deps" do
+    Base.sources.dep_for(@dep).should == @dep
+  end
+  it "should not find the dep with namespacing" do
+    Base.sources.dep_for('namespaced:namespaced Base.sources.dep_for tests').should be_nil
+  end
+  context "with namespaced dep defined" do
+    before {
+      @source = Source.new(nil, :name => 'namespaced')
+      Source.stub!(:present).and_return([@source])
+      Base.sources.load_context :source => @source do
+        @namespaced_dep = dep 'Base.sources.dep_for tests'
+      end
+    }
+    it "should work with namespacing" do
+      Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should == @namespaced_dep
+    end
+  end
+end
+
 describe SourcePool, '#dep_for' do
   before {
     @source1 = Source.new nil, :name => 'source_1'
