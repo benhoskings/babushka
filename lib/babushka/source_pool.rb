@@ -82,7 +82,7 @@ module Babushka
       end
     end
 
-    def pull!
+    def update!
       all_present.select {|source|
         source.cloneable?
       }.tap {|sources|

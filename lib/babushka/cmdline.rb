@@ -89,7 +89,7 @@ module Babushka
           log_error ex.message
         end
       elsif verb.opts.first.def.name == :update
-        Base.sources.pull!
+        Base.sources.update!
       elsif verb.opts.first.def.name == :list
         Base.sources.list!
       end
