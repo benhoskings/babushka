@@ -146,7 +146,7 @@ module Babushka
       else
         raise_unless_addable!
         log_block "Adding #{name}" do
-          pull!
+          update!
         end
       end
     end
@@ -154,7 +154,7 @@ module Babushka
     def load!
       unless @currently_loading
         @currently_loading = true
-        pull! if cloneable?
+        update! if cloneable?
         load_deps! and define_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
@@ -188,8 +188,8 @@ module Babushka
       "#<Babushka::Source @name=#{name.inspect}, @type=#{type.inspect}, @uri=#{uri.inspect}, @deps.count=#{deps.count}>"
     end
 
-    def pull!
-      if @pulled
+    def update!
+      if @updated
         debug "Already pulled #{name} (#{uri}) this session."
         true
       elsif Base.sources.local_only?
@@ -202,7 +202,7 @@ module Babushka
       elsif !repo.pushed?
         log "Not updating #{name} (#{path}) because there are unpushed commits."
       else
-        @pulled = git uri, :prefix => prefix, :dir => name, :log => true
+        @updated = git uri, :prefix => prefix, :dir => name, :log => true
       end
     end
 

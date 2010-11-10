@@ -88,7 +88,7 @@ module Babushka
       }.tap {|sources|
         log "Updating #{sources.length} source#{'s' unless sources.length == 1}."
       }.map {|source|
-        source.pull!
+        source.update!
       }.all?
     end
 
