@@ -45,11 +45,11 @@ end
 
 describe GitRepo, 'without a repo' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/nonexistent') }
-    [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
-      it "should raise on #{method}" do
-        L{ subject.send(method) }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/nonexistent'}."
-      end
-    }
+  [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
+    it "should raise on #{method}" do
+      L{ subject.send(method) }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/nonexistent'}."
+    end
+  }
 end
 
 describe GitRepo, '#clean? / #dirty?' do
