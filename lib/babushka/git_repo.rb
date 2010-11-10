@@ -8,10 +8,8 @@ module Babushka
     attr_reader :repo
 
     def self.repo_for path
-      in_dir(path) {
-        maybe = shell("git rev-parse --git-dir")
-        maybe.p / '..' unless maybe.nil?
-      } if path.p.dir?
+      maybe = shell("git rev-parse --git-dir", :dir => path) if path.p.dir?
+      maybe == '.git' ? path : maybe.p / '..' unless maybe.nil?
     end
 
     def initialize path
