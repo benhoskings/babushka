@@ -197,10 +197,10 @@ module Babushka
         true
       elsif path.exists? && (Time.now - path.mtime < 60)
         debug "#{name} (#{uri}) was pulled #{(Time.now - path.mtime).round.xsecs} ago, not pulling now."
-      elsif !repo.clean?
-        log "Not updating #{name} (#{path}) because there are uncommitted changes."
-      elsif !repo.pushed?
-        log "Not updating #{name} (#{path}) because there are unpushed commits."
+      elsif repo.exists? && repo.dirty?
+        log "Not updating #{name} (#{path}) because there are local changes."
+      elsif repo.exists? && repo.ahead?
+        log "Not updating #{name} (#{path}) because it's ahead of origin."
       else
         @updated = git uri, :prefix => prefix, :dir => name, :log => true
       end
