@@ -20,6 +20,10 @@ module Babushka
     #     of root.
     #   <tt>:sudo => 'user'</tt> is a shortcut that has the same effect as
     #     <tt>:sudo => true, :as => 'user'</tt>
+    #   <tt>:dir</tt> specifies the directory in which the command should run.
+    #     If the path doesn't exist or isn't a directory, an error is raised.
+    #     Internally, the command is updated to something like
+    #     `cd #{dir} && #{cmd}`.
     #   <tt>:input</tt> can be used to supply input for the shell command. It
     #     be any object that can be written to an IO with <tt>io << obj</tt>.
     #     If it is passed, it will be written to the command's stdin pipe
@@ -29,6 +33,10 @@ module Babushka
     #     command's stdout or stderr pipes. This is useful for monitoring the
     #     progress of a long-running command, like a build or an installer.
     def shell cmd, opts = {}, &block
+      if opts[:dir]
+        raise Errno::ENOENT, opts[:dir] unless opts[:dir].p.exists?
+        cmd = "cd \"#{opts[:dir].to_s.gsub('"', '\"')}\" && #{cmd}"
+      end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block
     end

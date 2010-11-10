@@ -28,6 +28,20 @@ describe "shell" do
   it "should accept :input parameter" do
     shell('cat', :input => 'lol').should == "lol"
   end
+  context ":dir parameter" do
+    before { (tmp_prefix / 'dir_param').mkdir }
+    it "should run in the current directory when :dir isn't specified" do
+      shell("pwd").should == Dir.pwd
+    end
+    it "should run in the specified directory" do
+      shell("pwd", :dir => (tmp_prefix / 'dir_param')).should == (tmp_prefix / 'dir_param').to_s
+    end
+    it "should raise when the path is nonexistent" do
+      L{
+        shell("pwd", :dir => (tmp_prefix / 'nonexistent'))
+      }.should raise_error Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}"
+    end
+  end
 end
 
 describe "failable_shell" do
