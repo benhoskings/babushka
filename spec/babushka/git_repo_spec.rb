@@ -30,13 +30,13 @@ end
 describe GitRepo, 'creation' do
   before { stub_repo 'a' }
   it "should return nil on non-repo paths" do
-    Babushka::GitRepo.new(tmp_prefix / 'repos').path.should == nil
+    Babushka::GitRepo.new(tmp_prefix / 'repos').repo.should == nil
   end
   it "should recognise the repo path" do
-    Babushka::GitRepo.new(tmp_prefix / 'repos/a').path.should == tmp_prefix / 'repos/a'
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a').repo.should == tmp_prefix / 'repos/a'
   end
   it "should find the parent when called on the subdir" do
-    Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').path.should == tmp_prefix / 'repos/a'
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').repo.should == tmp_prefix / 'repos/a'
   end
 end
 

@@ -3,7 +3,7 @@ module Babushka
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :path
+    attr_reader :repo
 
     def self.repo_for path
       in_dir(path) {
@@ -13,11 +13,11 @@ module Babushka
     end
 
     def initialize path
-      @path = self.class.repo_for(path)
+      @repo = self.class.repo_for(path)
     end
 
     def clean?
-      in_dir(path) { shell("git ls-files -m").empty? }
+      in_dir(repo) { shell("git ls-files -m").empty? }
     end
 
     def dirty?
@@ -25,15 +25,15 @@ module Babushka
     end
 
     def current_branch
-      File.read(path / '.git/HEAD').strip.sub(/^.*refs\/heads\//, '')
+      File.read(repo / '.git/HEAD').strip.sub(/^.*refs\/heads\//, '')
     end
 
     def current_head
-      in_dir(path) { shell("git rev-parse --short HEAD") }
+      in_dir(repo) { shell("git rev-parse --short HEAD") }
     end
 
     def remote_branch_exists?
-      in_dir(path) {
+      in_dir(repo) {
         shell('git branch -a').split("\n").map(&:strip).detect {|b|
           b[/^(remotes\/)?origin\/#{current_branch}$/]
         }
@@ -41,14 +41,14 @@ module Babushka
     end
 
     def pushed?
-      in_dir(path) {
+      in_dir(repo) {
         remote_branch_exists? &&
         shell("git rev-list origin/#{current_branch}..").split("\n").empty?
       }
     end
 
     def inspect
-      "#<GitRepo:#{path} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+      "#<GitRepo:#{repo} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
     end
   end
 end
