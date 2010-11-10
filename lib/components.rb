@@ -25,6 +25,7 @@ module Babushka
     helpers/run_helpers
     helpers/suggest_helpers
     helpers/git_helpers
+    git_repo
     resource
     lambda_chooser
     ip

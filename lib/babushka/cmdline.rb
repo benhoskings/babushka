@@ -29,6 +29,7 @@ module Babushka
           Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
           Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka-deps')
         ]),
+        Opt.new(:update, '-u', '--update', "Update all known sources", false, []),
         Opt.new(:list, '-l', '--list', "List dep sources", false, [])
       ], []),
       Verb.new(:console, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
@@ -87,6 +88,8 @@ module Babushka
         rescue SourceError => ex
           log_error ex.message
         end
+      elsif verb.opts.first.def.name == :update
+        Base.sources.update!
       elsif verb.opts.first.def.name == :list
         Base.sources.list!
       end
