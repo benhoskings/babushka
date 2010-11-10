@@ -63,6 +63,9 @@ describe "in_dir" do
     }
     Dir.pwd.should == @original_pwd
   end
+  after {
+    Dir.rmdir(@nonexistent_dir) if File.directory?(@nonexistent_dir)
+  }
 end
 
 describe "in_build_dir" do
