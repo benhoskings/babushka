@@ -6,11 +6,13 @@ def stub_repo name = 'a', opts = {}
   shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
   PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
     shell 'git init'
-    shell 'echo "Hello from the babushka specs!" >> content.txt'
-    shell 'mkdir lib'
-    shell 'echo "Here are the rubies." >> lib/rubies.rb'
-    shell 'git add .'
-    shell 'git commit -m "Initial commit, by the spec suite."'
+    unless opts[:empty]
+      shell 'echo "Hello from the babushka specs!" >> content.txt'
+      shell 'mkdir lib'
+      shell 'echo "Here are the rubies." >> lib/rubies.rb'
+      shell 'git add .'
+      shell 'git commit -m "Initial commit, by the spec suite."'
+    end
   end
   stub_remote(name) if opts[:with_remote]
 end
