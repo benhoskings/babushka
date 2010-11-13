@@ -227,4 +227,18 @@ describe GitRepo, '#ahead?' do
       end
     end
   end
+
+  describe GitRepo, '#reset_hard!' do
+    before {
+      stub_repo_with_remote 'a'
+      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        shell "echo 'more rubies' >> lib/rubies.rb"
+      }
+    }
+    it "should make a dirty repo clean" do
+      subject.should be_dirty
+      subject.reset_hard!
+      subject.should be_clean
+    end
+  end
 end

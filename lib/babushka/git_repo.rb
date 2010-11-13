@@ -68,6 +68,10 @@ module Babushka
       repo_shell("git checkout '#{branch}'")
     end
 
+    def reset_hard! refspec = 'HEAD'
+      repo_shell("git reset --hard #{refspec}", :log => true)
+    end
+
     def inspect
       "#<GitRepo:#{repo} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
     end
