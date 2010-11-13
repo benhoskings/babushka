@@ -14,16 +14,17 @@ def stub_repo name = 'a', opts = {}
       shell 'git commit -m "Initial commit, by the spec suite."'
     end
   end
-  stub_remote(name) if opts[:with_remote]
 end
 
-def stub_remote name
+def stub_repo_with_remote name
   shell "rm -rf '#{tmp_prefix / 'repos' / "#{name}_remote"}'"
   PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
-    shell 'git init --bare'
+    shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
   end
-  PathSupport.in_dir tmp_prefix / 'repos' / name do
-    shell "git remote add origin ../#{name}_remote"
+
+  shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
+  PathSupport.in_dir tmp_prefix / 'repos' do
+    shell "git clone ./#{name}_remote/remote.git ./#{name}"
   end
 end
 
@@ -153,7 +154,12 @@ describe GitRepo, '#current_head' do
 end
 
 describe GitRepo, '#ahead?' do
-  before { stub_repo 'a', :with_remote => true }
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "git checkout -b topic"
+    }
+  }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return true if the current branch has no remote" do
     subject.remote_branch_exists?.should be_false
