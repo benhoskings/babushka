@@ -161,6 +161,9 @@ describe GitRepo, '#ahead?' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should have a local topic branch" do
+    subject.current_branch.should == 'topic'
+  end
   it "should return true if the current branch has no remote" do
     subject.remote_branch_exists?.should be_false
     subject.should be_ahead
@@ -168,11 +171,14 @@ describe GitRepo, '#ahead?' do
   context "when remote branch exists" do
     before {
       PathSupport.in_dir(tmp_prefix / 'repos/a') {
-        shell "git push origin master"
+        shell "git push origin topic"
         shell 'echo "Ch-ch-ch-changes" >> content.txt'
         shell 'git commit -a -m "Changes!"'
       }
     }
+    it "should have a local topic branch" do
+      subject.current_branch.should == 'topic'
+    end
     it "should return false if there are unpushed commits on the current branch" do
       subject.remote_branch_exists?.should be_true
       subject.should be_ahead
@@ -180,7 +186,7 @@ describe GitRepo, '#ahead?' do
     context "when the branch is fully pushed" do
       before {
         PathSupport.in_dir(tmp_prefix / 'repos/a') {
-          shell "git push origin master"
+          shell "git push origin topic"
         }
       }
       it "should return true" do
