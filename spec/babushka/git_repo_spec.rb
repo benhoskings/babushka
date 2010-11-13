@@ -218,6 +218,7 @@ describe GitRepo, '#checkout!' do
       shell "git checkout -b next"
     }
   }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should already have a next branch" do
     subject.branches.should =~ %w[master next]
     subject.current_branch.should == 'next'
@@ -237,6 +238,7 @@ describe GitRepo, '#reset_hard!' do
       shell "echo 'more rubies' >> lib/rubies.rb"
     }
   }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should make a dirty repo clean" do
     subject.should be_dirty
     subject.reset_hard!
