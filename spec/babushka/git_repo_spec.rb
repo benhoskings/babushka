@@ -3,23 +3,28 @@ require 'spec_helper'
 class PathSupport; extend PathHelpers end
 
 def stub_repo name = 'a', opts = {}
+  shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
   PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
     shell 'git init'
-    shell 'echo "Hello from the babushka specs!" >> content.txt'
-    shell 'mkdir lib'
-    shell 'echo "Here are the rubies." >> lib/rubies.rb'
-    shell 'git add .'
-    shell 'git commit -m "Initial commit, by the spec suite."'
+    unless opts[:empty]
+      shell 'echo "Hello from the babushka specs!" >> content.txt'
+      shell 'mkdir lib'
+      shell 'echo "Here are the rubies." >> lib/rubies.rb'
+      shell 'git add .'
+      shell 'git commit -m "Initial commit, by the spec suite."'
+    end
   end
-  stub_remote(name) if opts[:with_remote]
 end
 
-def stub_remote name
+def stub_repo_with_remote name
+  shell "rm -rf '#{tmp_prefix / 'repos' / "#{name}_remote"}'"
   PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
-    shell 'git init --bare'
+    shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
   end
-  PathSupport.in_dir tmp_prefix / 'repos' / name do
-    shell "git remote add origin ../#{name}_remote"
+
+  shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
+  PathSupport.in_dir tmp_prefix / 'repos' do
+    shell "git clone ./#{name}_remote/remote.git ./#{name}"
   end
 end
 
@@ -86,6 +91,36 @@ describe GitRepo, '#clean? / #dirty?' do
   end
 end
 
+describe GitRepo, '#branches' do
+  before { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return the only branch in a list" do
+    subject.branches.should == ['master']
+  end
+  context "after creating another branch" do
+    before {
+      repo_context('a') { shell "git checkout -b next"}
+    }
+    it "should return both branches" do
+      subject.branches.should == ['master', 'next']
+    end
+    context "after changing back to master" do
+      before {
+        repo_context('a') { shell "git checkout master"}
+      }
+      it "should return both branches" do
+        subject.branches.should == ['master', 'next']
+      end
+    end
+  end
+  context "on a repo with no commits" do
+    before { stub_repo 'a', :empty => true }
+    it "should return no branches" do
+      subject.branches.should == []
+    end
+  end
+end
+
 describe GitRepo, '#current_branch' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -119,8 +154,16 @@ describe GitRepo, '#current_head' do
 end
 
 describe GitRepo, '#ahead?' do
-  before { stub_repo 'a', :with_remote => true }
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "git checkout -b topic"
+    }
+  }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should have a local topic branch" do
+    subject.current_branch.should == 'topic'
+  end
   it "should return true if the current branch has no remote" do
     subject.remote_branch_exists?.should be_false
     subject.should be_ahead
@@ -128,11 +171,14 @@ describe GitRepo, '#ahead?' do
   context "when remote branch exists" do
     before {
       PathSupport.in_dir(tmp_prefix / 'repos/a') {
-        shell "git push origin master"
+        shell "git push origin topic"
         shell 'echo "Ch-ch-ch-changes" >> content.txt'
         shell 'git commit -a -m "Changes!"'
       }
     }
+    it "should have a local topic branch" do
+      subject.current_branch.should == 'topic'
+    end
     it "should return false if there are unpushed commits on the current branch" do
       subject.remote_branch_exists?.should be_true
       subject.should be_ahead
@@ -140,13 +186,59 @@ describe GitRepo, '#ahead?' do
     context "when the branch is fully pushed" do
       before {
         PathSupport.in_dir(tmp_prefix / 'repos/a') {
-          shell "git push origin master"
+          shell "git push origin topic"
         }
       }
-      it "should return true if the current branch is fully pushed" do
+      it "should return true" do
         subject.remote_branch_exists?.should be_true
         subject.should_not be_ahead
       end
+    end
+  end
+
+  describe GitRepo, '#track!' do
+    before { stub_repo_with_remote 'a' }
+    it "should not already have a next branch" do
+      subject.branches.should_not include('next')
+    end
+    context "after tracking" do
+      before { subject.track! "origin/next" }
+      it "should be tracking the next branch now" do
+        subject.branches.should include('next')
+      end
+    end
+  end
+
+  describe GitRepo, '#checkout!' do
+    before {
+      stub_repo_with_remote 'a'
+      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        shell "git checkout -b next"
+      }
+    }
+    it "should already have a next branch" do
+      subject.branches.should =~ %w[master next]
+      subject.current_branch.should == 'next'
+    end
+    context "after checking out" do
+      before { subject.checkout! "master" }
+      it "should be on the master branch now" do
+        subject.current_branch.should == 'master'
+      end
+    end
+  end
+
+  describe GitRepo, '#reset_hard!' do
+    before {
+      stub_repo_with_remote 'a'
+      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        shell "echo 'more rubies' >> lib/rubies.rb"
+      }
+    }
+    it "should make a dirty repo clean" do
+      subject.should be_dirty
+      subject.reset_hard!
+      subject.should be_clean
     end
   end
 end

@@ -21,11 +21,11 @@ module Babushka
       !repo.nil? && repo.exists?
     end
 
-    def repo_shell cmd
+    def repo_shell cmd, opts = {}
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
-        shell cmd, :dir => repo
+        shell cmd, opts.merge(:dir => repo)
       end
     end
 
@@ -35,6 +35,10 @@ module Babushka
 
     def dirty?
       !clean?
+    end
+
+    def branches
+      repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
     end
 
     def current_branch
@@ -54,6 +58,18 @@ module Babushka
     def ahead?
       !remote_branch_exists? ||
       !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
+    end
+
+    def track! branch
+      repo_shell("git checkout -t '#{branch}'")
+    end
+
+    def checkout! branch
+      repo_shell("git checkout '#{branch}'")
+    end
+
+    def reset_hard! refspec = 'HEAD'
+      repo_shell("git reset --hard #{refspec}", :log => true)
     end
 
     def inspect
