@@ -195,50 +195,50 @@ describe GitRepo, '#ahead?' do
       end
     end
   end
+end
 
-  describe GitRepo, '#track!' do
-    before { stub_repo_with_remote 'a' }
-    it "should not already have a next branch" do
-      subject.branches.should_not include('next')
-    end
-    context "after tracking" do
-      before { subject.track! "origin/next" }
-      it "should be tracking the next branch now" do
-        subject.branches.should include('next')
-      end
+describe GitRepo, '#track!' do
+  before { stub_repo_with_remote 'a' }
+  it "should not already have a next branch" do
+    subject.branches.should_not include('next')
+  end
+  context "after tracking" do
+    before { subject.track! "origin/next" }
+    it "should be tracking the next branch now" do
+      subject.branches.should include('next')
     end
   end
+end
 
-  describe GitRepo, '#checkout!' do
-    before {
-      stub_repo_with_remote 'a'
-      PathSupport.in_dir(tmp_prefix / 'repos/a') {
-        shell "git checkout -b next"
-      }
+describe GitRepo, '#checkout!' do
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "git checkout -b next"
     }
-    it "should already have a next branch" do
-      subject.branches.should =~ %w[master next]
-      subject.current_branch.should == 'next'
-    end
-    context "after checking out" do
-      before { subject.checkout! "master" }
-      it "should be on the master branch now" do
-        subject.current_branch.should == 'master'
-      end
+  }
+  it "should already have a next branch" do
+    subject.branches.should =~ %w[master next]
+    subject.current_branch.should == 'next'
+  end
+  context "after checking out" do
+    before { subject.checkout! "master" }
+    it "should be on the master branch now" do
+      subject.current_branch.should == 'master'
     end
   end
+end
 
-  describe GitRepo, '#reset_hard!' do
-    before {
-      stub_repo_with_remote 'a'
-      PathSupport.in_dir(tmp_prefix / 'repos/a') {
-        shell "echo 'more rubies' >> lib/rubies.rb"
-      }
+describe GitRepo, '#reset_hard!' do
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "echo 'more rubies' >> lib/rubies.rb"
     }
-    it "should make a dirty repo clean" do
-      subject.should be_dirty
-      subject.reset_hard!
-      subject.should be_clean
-    end
+  }
+  it "should make a dirty repo clean" do
+    subject.should be_dirty
+    subject.reset_hard!
+    subject.should be_clean
   end
 end
