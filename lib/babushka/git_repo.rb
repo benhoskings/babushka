@@ -60,6 +60,10 @@ module Babushka
       !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
     end
 
+    def track! branch
+      repo_shell("git checkout -t '#{branch}'")
+    end
+
     def inspect
       "#<GitRepo:#{repo} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
     end

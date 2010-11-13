@@ -195,4 +195,17 @@ describe GitRepo, '#ahead?' do
       end
     end
   end
+
+  describe GitRepo, '#track!' do
+    before { stub_repo_with_remote 'a' }
+    it "should not already have a next branch" do
+      subject.branches.should_not include('next')
+    end
+    context "after tracking" do
+      before { subject.track! "origin/next" }
+      it "should be tracking the next branch now" do
+        subject.branches.should include('next')
+      end
+    end
+  end
 end
