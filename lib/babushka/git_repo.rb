@@ -21,11 +21,11 @@ module Babushka
       !repo.nil? && repo.exists?
     end
 
-    def repo_shell cmd
+    def repo_shell cmd, opts = {}
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
-        shell cmd, :dir => repo
+        shell cmd, opts.merge(:dir => repo)
       end
     end
 
