@@ -3,6 +3,7 @@ require 'spec_helper'
 class PathSupport; extend PathHelpers end
 
 def stub_repo name = 'a', opts = {}
+  shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
   PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
     shell 'git init'
     shell 'echo "Hello from the babushka specs!" >> content.txt'
@@ -15,6 +16,7 @@ def stub_repo name = 'a', opts = {}
 end
 
 def stub_remote name
+  shell "rm -rf '#{tmp_prefix / 'repos' / "#{name}_remote"}'"
   PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
     shell 'git init --bare'
   end
