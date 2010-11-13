@@ -147,7 +147,7 @@ describe GitRepo, '#ahead?' do
           shell "git push origin master"
         }
       }
-      it "should return true if the current branch is fully pushed" do
+      it "should return true" do
         subject.remote_branch_exists?.should be_true
         subject.should_not be_ahead
       end
