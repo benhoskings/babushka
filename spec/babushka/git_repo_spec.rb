@@ -179,7 +179,7 @@ describe GitRepo, '#ahead?' do
     it "should have a local topic branch" do
       subject.current_branch.should == 'topic'
     end
-    it "should return false if there are unpushed commits on the current branch" do
+    it "should return true if there are unpushed commits on the current branch" do
       subject.remote_branch_exists?.should be_true
       subject.should be_ahead
     end
