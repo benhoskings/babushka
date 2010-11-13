@@ -189,7 +189,7 @@ describe GitRepo, '#ahead?' do
           shell "git push origin topic"
         }
       }
-      it "should return true" do
+      it "should not be ahead" do
         subject.remote_branch_exists?.should be_true
         subject.should_not be_ahead
       end
