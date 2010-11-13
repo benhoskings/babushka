@@ -90,6 +90,36 @@ describe GitRepo, '#clean? / #dirty?' do
   end
 end
 
+describe GitRepo, '#branches' do
+  before { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return the only branch in a list" do
+    subject.branches.should == ['master']
+  end
+  context "after creating another branch" do
+    before {
+      repo_context('a') { shell "git checkout -b next"}
+    }
+    it "should return both branches" do
+      subject.branches.should == ['master', 'next']
+    end
+    context "after changing back to master" do
+      before {
+        repo_context('a') { shell "git checkout master"}
+      }
+      it "should return both branches" do
+        subject.branches.should == ['master', 'next']
+      end
+    end
+  end
+  context "on a repo with no commits" do
+    before { stub_repo 'a', :empty => true }
+    it "should return no branches" do
+      subject.branches.should == []
+    end
+  end
+end
+
 describe GitRepo, '#current_branch' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }

@@ -37,6 +37,10 @@ module Babushka
       !clean?
     end
 
+    def branches
+      repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+    end
+
     def current_branch
       repo_shell("cat .git/HEAD").strip.sub(/^.*refs\/heads\//, '')
     end
