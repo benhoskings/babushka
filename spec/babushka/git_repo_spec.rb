@@ -199,6 +199,7 @@ end
 
 describe GitRepo, '#track!' do
   before { stub_repo_with_remote 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
   end
