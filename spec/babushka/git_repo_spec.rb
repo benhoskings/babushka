@@ -208,4 +208,23 @@ describe GitRepo, '#ahead?' do
       end
     end
   end
+
+  describe GitRepo, '#checkout!' do
+    before {
+      stub_repo_with_remote 'a'
+      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        shell "git checkout -b next"
+      }
+    }
+    it "should already have a next branch" do
+      subject.branches.should =~ %w[master next]
+      subject.current_branch.should == 'next'
+    end
+    context "after checking out" do
+      before { subject.checkout! "master" }
+      it "should be on the master branch now" do
+        subject.current_branch.should == 'master'
+      end
+    end
+  end
 end
