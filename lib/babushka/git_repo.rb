@@ -1,11 +1,13 @@
 module Babushka
   class GitRepoError < StandardError
   end
+  class GitRepoExists < GitRepoError
+  end
   class GitRepo
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :repo
+    attr_reader :path
 
     def self.repo_for path
       maybe = shell("git rev-parse --git-dir", :dir => path) if path.p.dir?
@@ -13,8 +15,11 @@ module Babushka
     end
 
     def initialize path
-      @path = path
-      @repo = self.class.repo_for(path)
+      @path = path.p
+    end
+
+    def repo
+      @repo ||= self.class.repo_for(path)
     end
 
     def exists?
@@ -60,6 +65,18 @@ module Babushka
       !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
     end
 
+    def behind?
+      remote_branch_exists? &&
+      !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
+    end
+
+    def clone! from
+      raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
+      failable_shell("git clone '#{from}' '#{path.basename}'", :dir => path.parent).tap {|shell|
+        raise GitRepoError, "Couldn't clone to #{path}: #{error_message_for shell.stderr}" unless shell.result
+      }.result
+    end
+
     def track! branch
       repo_shell("git checkout -t '#{branch}'")
     end
@@ -74,6 +91,12 @@ module Babushka
 
     def inspect
       "#<GitRepo:#{repo} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+    end
+
+    private
+
+    def error_message_for git_error
+      git_error.sub(/^fatal\: /, '').sub(/\n.*$/m, '').end_with('.')
     end
   end
 end

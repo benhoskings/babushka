@@ -24,7 +24,7 @@ def stub_repo_with_remote name
 
   shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
   PathSupport.in_dir tmp_prefix / 'repos' do
-    shell "git clone ./#{name}_remote/remote.git ./#{name}"
+    shell "git clone #{name}_remote/remote.git #{name}"
   end
 end
 
@@ -49,6 +49,10 @@ describe GitRepo, 'creation' do
   it "should find the parent when called on the subdir" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').repo.should == tmp_prefix / 'repos/a'
   end
+  it "should store path as a Fancypath" do
+    Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).path.should be_an_instance_of(Fancypath)
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a').path.should be_an_instance_of(Fancypath)
+  end
   it "should return the repo path as a Fancypath" do
     Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).repo.should be_an_instance_of(Fancypath)
     Babushka::GitRepo.new(tmp_prefix / 'repos/a').repo.should be_an_instance_of(Fancypath)
@@ -65,6 +69,16 @@ describe GitRepo, 'without a repo' do
       L{ subject.send(method) }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/nonexistent'}."
     end
   }
+  context "with lazy eval" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy') }
+    it "should fail before the repo is created, but work afterwards" do
+      subject.exists?.should be_false
+      L{ subject.clean? }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy'}."
+      stub_repo 'lazy'
+      subject.exists?.should be_true
+      subject.should be_clean
+    end
+  end
 end
 
 describe GitRepo, "with a repo" do
@@ -179,7 +193,7 @@ describe GitRepo, '#ahead?' do
     it "should have a local topic branch" do
       subject.current_branch.should == 'topic'
     end
-    it "should return false if there are unpushed commits on the current branch" do
+    it "should return true if there are unpushed commits on the current branch" do
       subject.remote_branch_exists?.should be_true
       subject.should be_ahead
     end
@@ -189,56 +203,133 @@ describe GitRepo, '#ahead?' do
           shell "git push origin topic"
         }
       }
-      it "should return true" do
+      it "should not be ahead" do
         subject.remote_branch_exists?.should be_true
         subject.should_not be_ahead
       end
     end
   end
+end
 
-  describe GitRepo, '#track!' do
-    before { stub_repo_with_remote 'a' }
-    it "should not already have a next branch" do
-      subject.branches.should_not include('next')
-    end
-    context "after tracking" do
-      before { subject.track! "origin/next" }
-      it "should be tracking the next branch now" do
-        subject.branches.should include('next')
-      end
-    end
+describe GitRepo, '#behind?' do
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "git checkout -b next"
+      shell "git reset --hard origin/next^"
+    }
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return true if there are new commits on the remote" do
+    subject.remote_branch_exists?.should be_true
+    subject.should be_behind
   end
-
-  describe GitRepo, '#checkout!' do
+  context "when the remote is merged" do
     before {
-      stub_repo_with_remote 'a'
       PathSupport.in_dir(tmp_prefix / 'repos/a') {
-        shell "git checkout -b next"
+        shell "git merge origin/next"
       }
     }
-    it "should already have a next branch" do
-      subject.branches.should =~ %w[master next]
-      subject.current_branch.should == 'next'
-    end
-    context "after checking out" do
-      before { subject.checkout! "master" }
-      it "should be on the master branch now" do
-        subject.current_branch.should == 'master'
-      end
+    it "should not be behind" do
+      subject.remote_branch_exists?.should be_true
+      subject.should_not be_behind
     end
   end
+end
 
-  describe GitRepo, '#reset_hard!' do
-    before {
-      stub_repo_with_remote 'a'
-      PathSupport.in_dir(tmp_prefix / 'repos/a') {
-        shell "echo 'more rubies' >> lib/rubies.rb"
-      }
-    }
-    it "should make a dirty repo clean" do
-      subject.should be_dirty
-      subject.reset_hard!
-      subject.should be_clean
+describe GitRepo, '#clone!' do
+  before { stub_repo_with_remote 'a' }
+  context "for existing repos" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+    it "should raise" do
+      L{
+        subject.clone!('a_remote/remote.git')
+      }.should raise_error GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}."
     end
+  end
+  context "for non-existent repos" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/b') }
+    it "should not exist yet" do
+      subject.exists?.should be_false
+    end
+    context "when the clone fails" do
+      it "should raise" do
+        L{
+          subject.clone! "a_remote/nonexistent.git"
+        }.should raise_error GitRepoError, "Couldn't clone to #{tmp_prefix / 'repos/b'}: '#{tmp_prefix / 'repos/a_remote/nonexistent.git'}' does not appear to be a git repository."
+      end
+    end
+    context "after cloning" do
+      before { subject.clone! "a_remote/remote.git" }
+      it "should exist now" do
+        subject.exists?.should be_true
+      end
+      it "should have the correct remote" do
+        subject.repo_shell("git remote -v").should == %Q{
+origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (fetch)
+origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
+        }.strip
+      end
+      it "should have the remote branch" do
+        subject.repo_shell("git branch -a").should == %Q{
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/next
+        }.strip
+      end
+    end
+    after {
+      shell "rm -rf #{tmp_prefix / 'repos/b'}"
+    }
+  end
+end
+
+describe GitRepo, '#track!' do
+  before { stub_repo_with_remote 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should not already have a next branch" do
+    subject.branches.should_not include('next')
+  end
+  context "after tracking" do
+    before { subject.track! "origin/next" }
+    it "should be tracking the next branch now" do
+      subject.branches.should include('next')
+    end
+  end
+end
+
+describe GitRepo, '#checkout!' do
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "git checkout -b next"
+    }
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should already have a next branch" do
+    subject.branches.should =~ %w[master next]
+    subject.current_branch.should == 'next'
+  end
+  context "after checking out" do
+    before { subject.checkout! "master" }
+    it "should be on the master branch now" do
+      subject.current_branch.should == 'master'
+    end
+  end
+end
+
+describe GitRepo, '#reset_hard!' do
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "echo 'more rubies' >> lib/rubies.rb"
+    }
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should make a dirty repo clean" do
+    subject.should be_dirty
+    subject.reset_hard!
+    subject.should be_clean
   end
 end
