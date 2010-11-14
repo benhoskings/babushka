@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Renderable, '#render_to' do
+describe Renderable, '#render' do
   before { subject.render('spec/renderable/example.conf.erb') }
   subject { Renderable.new(tmp_prefix / 'example.conf') }
   it "should have added the prefix" do
