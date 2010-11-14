@@ -40,6 +40,7 @@ module Babushka
     structs
     cmdline
     base
+    renderable
     system_definitions
     system_profile
     run_reporter
