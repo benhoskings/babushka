@@ -202,7 +202,7 @@ module Babushka
       elsif repo.exists? && repo.ahead?
         log "Not updating #{name} (#{path}) because it's ahead of origin."
       else
-        @updated = git uri, :prefix => prefix, :dir => name, :log => true
+        @updated = git uri, :to => path, :log => true
       end
     end
 
