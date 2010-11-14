@@ -104,13 +104,6 @@ module Babushka
       end
     end
 
-    def git_repo? path
-      real_path = path.p
-      in_dir(real_path) {
-        !shell("git rev-parse --git-dir").blank?
-      } if File.exists?(real_path)
-    end
-
     require 'yaml'
     def yaml path
       YAML.load_file path.p
