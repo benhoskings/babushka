@@ -16,7 +16,9 @@ end
 
 meta :babushka do
   template {
-    run_in L{ var(:install_path) }
+    helper :repo do
+      Babushka::GitRepo.new var(:install_path)
+    end
   }
 end
 
@@ -35,15 +37,15 @@ end
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
   met? {
-    returning shell("git rev-list ..origin/#{var :babushka_branch}").split("\n").empty? do |result|
+    returning !repo.behind? do |result|
       if result
-        log_ok "babushka is up to date at revision #{shell('git rev-parse --short HEAD')}."
+        log_ok "babushka is up to date at revision #{repo.current_head}."
       else
-        log "babushka can be updated: #{shell('git rev-parse --short HEAD')}..#{shell("git rev-parse --short origin/#{var(:babushka_branch)}")}"
+        log "babushka can be updated: #{repo.current_head}..#{shell("git rev-parse --short origin/#{var(:babushka_branch)}")}"
       end
     end
   }
-  meet { shell("git reset --hard origin/#{var :babushka_branch}", :log => true) }
+  meet { repo.reset_hard! "origin/#{var(:babushka_branch)}" }
 end
 
 dep 'update would fast forward.babushka' do
@@ -52,10 +54,9 @@ dep 'update would fast forward.babushka' do
     if !shell('git fetch origin')
       fail_because("Couldn't pull the latest code - check your internet connection.")
     else
-      current_branch = shell("git branch").split("\n").collapse(/^\* /).first
-      if !shell('git branch -a').split("\n").map(&:strip).detect {|b| b[/^(remotes\/)?origin\/#{current_branch}$/] }
+      if !repo.remote_branch_exists?
         fail_because("The current branch, #{current_branch}, isn't pushed to origin/#{current_branch}.")
-      elsif !shell("git rev-list origin/#{current_branch}..").split("\n").empty?
+      elsif repo.ahead?
         fail_because("There are unpushed commits in #{current_branch}.")
       else
         true
@@ -66,21 +67,20 @@ end
 
 dep 'on correct branch.babushka' do
   requires 'repo clean.babushka', 'branch exists.babushka'
-  met? { shell("git branch").split("\n").collapse(/^\* /).first == var(:babushka_branch) }
-  meet { shell("git checkout '#{var(:babushka_branch)}'") }
+  met? { repo.current_branch == var(:babushka_branch) }
+  meet { repo.checkout! var(:babushka_branch) }
 end
 
 dep 'branch exists.babushka' do
   requires 'installed.babushka'
-  met? { !shell("git branch").split("\n").map {|i| i.gsub(/^[* ]+/, '') }.grep(var(:babushka_branch)).empty? }
-  meet { shell("git checkout -t 'origin/#{var(:babushka_branch)}'") }
+  met? { repo.branches.include? var(:babushka_branch) }
+  meet { repo.track! "origin/#{var(:babushka_branch)}" }
 end
 
 dep 'repo clean.babushka' do
   requires 'installed.babushka'
   met? {
-    shell('git ls-files -m').split("\n").empty? or
-    fail_because("There are local changes in #{var(:install_path)}.")
+    repo.clean? or fail_because("There are local changes in #{var(:install_path)}.")
   }
 end
 
@@ -96,10 +96,6 @@ dep 'installed.babushka' do
   requires 'ruby', 'git'
   requires_when_unmet 'writable.install_path'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
-  met? { git_repo?(var(:install_path)) }
-  meet {
-    in_dir var(:install_path).p.parent do |path|
-      log_shell "Installing babushka to #{var(:install_path)}", %Q{git clone "#{var :babushka_source}" "#{var(:install_path).p.basename}"}
-    end
-  }
+  met? { repo.exists? }
+  meet { repo.clone! var(:babushka_source) }
 end
