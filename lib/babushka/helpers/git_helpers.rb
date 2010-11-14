@@ -9,7 +9,7 @@ module Babushka
       end
 
       if update_success
-        repo.touch # so we can tell when it was last updated
+        repo.root.touch # so we can tell when it was last updated
         block.nil? || in_dir(repo) {|path| block.call path }
       end
     end

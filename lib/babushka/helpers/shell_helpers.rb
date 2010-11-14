@@ -34,7 +34,13 @@ module Babushka
     #     progress of a long-running command, like a build or an installer.
     def shell cmd, opts = {}, &block
       if opts[:dir]
-        raise Errno::ENOENT, opts[:dir] unless opts[:dir].p.exists?
+        if !opts[:dir].p.exists?
+          if opts[:create]
+            opts[:dir].p.mkdir
+          else
+            raise Errno::ENOENT, opts[:dir]
+          end
+        end
         cmd = "cd \"#{opts[:dir].to_s.gsub('"', '\"')}\" && #{cmd}"
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd

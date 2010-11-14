@@ -35,6 +35,11 @@ module Babushka
     def self.source_prefix
       tmp_prefix / 'sources'
     end
+    def self.for_remote name
+      Source.new(default_remote_for(name, :github), :name => name).tap {|source|
+        source.stub!(:update!) # don't hit the network to update sources during specs.
+      }
+    end
   end
 end
 

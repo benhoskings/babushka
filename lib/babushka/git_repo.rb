@@ -18,19 +18,19 @@ module Babushka
       @path = path.p
     end
 
-    def repo
-      @repo ||= self.class.repo_for(path)
+    def root
+      @root ||= self.class.repo_for(path)
     end
 
     def exists?
-      !repo.nil? && repo.exists?
+      !root.nil? && root.exists?
     end
 
     def repo_shell cmd, opts = {}
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
-        shell cmd, opts.merge(:dir => repo)
+        shell cmd, opts.merge(:dir => root)
       end
     end
 
@@ -72,7 +72,7 @@ module Babushka
 
     def clone! from
       raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
-      failable_shell("git clone '#{from}' '#{path.basename}'", :dir => path.parent).tap {|shell|
+      failable_shell("git clone '#{from}' '#{path.basename}'", :dir => path.parent, :create => true).tap {|shell|
         raise GitRepoError, "Couldn't clone to #{path}: #{error_message_for shell.stderr}" unless shell.result
       }.result
     end
@@ -90,7 +90,7 @@ module Babushka
     end
 
     def inspect
-      "#<GitRepo:#{repo} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+      "#<GitRepo:#{root} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
     end
 
     private
