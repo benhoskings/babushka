@@ -243,9 +243,45 @@ describe GitRepo, '#clone!' do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
     it "should raise" do
       L{
-        subject.clone!('./a_remote/a')
-      }.should raise_error GitRepoExists, "Can't clone ./a_remote/a to existing path #{tmp_prefix / 'repos/a'}."
+        subject.clone!('a_remote/remote.git')
+      }.should raise_error GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}."
     end
+  end
+  context "for non-existent repos" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/b') }
+    it "should not exist yet" do
+      subject.exists?.should be_false
+    end
+    context "when the clone fails" do
+      it "should raise" do
+        L{
+          subject.clone! "a_remote/nonexistent.git"
+        }.should raise_error GitRepoError, "Couldn't clone to #{tmp_prefix / 'repos/b'}: '#{tmp_prefix / 'repos/a_remote/nonexistent.git'}' does not appear to be a git repository."
+      end
+    end
+    context "after cloning" do
+      before { subject.clone! "a_remote/remote.git" }
+      it "should exist now" do
+        subject.exists?.should be_true
+      end
+      it "should have the correct remote" do
+        subject.repo_shell("git remote -v").should == %Q{
+origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (fetch)
+origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
+        }.strip
+      end
+      it "should have the remote branch" do
+        subject.repo_shell("git branch -a").should == %Q{
+* master
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/master
+  remotes/origin/next
+        }.strip
+      end
+    end
+    after {
+      shell "rm -rf #{tmp_prefix / 'repos/b'}"
+    }
   end
 end
 
