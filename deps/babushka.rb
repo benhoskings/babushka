@@ -21,7 +21,7 @@ meta :babushka do
 end
 
 dep 'set up.babushka' do
-  requires 'up to date.babushka', 'babushka in path'
+  requires 'up to date.babushka', 'in path.babushka'
   define_var :install_path, :default => '/usr/local/babushka', :message => "Where would you like babushka installed"
   define_var :babushka_branch,
     :message => "Which branch would you like to update from?",
@@ -71,20 +71,20 @@ dep 'on correct branch.babushka' do
 end
 
 dep 'branch exists.babushka' do
-  requires 'babushka installed'
+  requires 'installed.babushka'
   met? { !shell("git branch").split("\n").map {|i| i.gsub(/^[* ]+/, '') }.grep(var(:babushka_branch)).empty? }
   meet { shell("git checkout -t 'origin/#{var(:babushka_branch)}'") }
 end
 
 dep 'repo clean.babushka' do
-  requires 'babushka installed'
+  requires 'installed.babushka'
   met? {
     shell('git ls-files -m').split("\n").empty? or
     fail_because("There are local changes in #{var(:install_path)}.")
   }
 end
 
-dep 'babushka in path' do
+dep 'in path.babushka' do
   requires 'up to date.babushka'
   met? { which 'babushka' }
   meet {
@@ -92,7 +92,7 @@ dep 'babushka in path' do
   }
 end
 
-dep 'babushka installed' do
+dep 'installed.babushka' do
   requires 'ruby', 'git'
   requires_when_unmet 'writable.install_path'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
