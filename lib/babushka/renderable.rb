@@ -14,6 +14,10 @@ module Babushka
       }
     end
 
+    def clean?
+      Inkan.legitimate? path
+    end
+
     private
 
     def render_erb source

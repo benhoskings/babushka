@@ -10,4 +10,17 @@ describe Renderable, '#render' do
   it "should have interpolated the erb" do
     (tmp_prefix / 'example.conf').read.should =~ /root #{tmp_prefix};/
   end
+  describe Renderable, "#clean?" do
+    it "should be clean" do
+      subject.should be_clean
+    end
+    context "after shitting up the file" do
+      before {
+        shell "echo lulz >> #{subject.path}"
+      }
+      it "should not be clean" do
+        subject.should_not be_clean
+      end
+    end
+  end
 end
