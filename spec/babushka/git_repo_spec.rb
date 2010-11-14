@@ -24,7 +24,7 @@ def stub_repo_with_remote name
 
   shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
   PathSupport.in_dir tmp_prefix / 'repos' do
-    shell "git clone ./#{name}_remote/remote.git ./#{name}"
+    shell "git clone #{name}_remote/remote.git #{name}"
   end
 end
 
