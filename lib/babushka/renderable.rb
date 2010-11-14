@@ -18,6 +18,10 @@ module Babushka
       Inkan.legitimate? path
     end
 
+    def from? source
+      source_sha == sha_of(source)
+    end
+
     private
 
     def render_erb source
@@ -27,6 +31,12 @@ module Babushka
     require 'digest/sha1'
     def sha_of source
       Digest::SHA1.hexdigest(source.p.read)
+    end
+
+    def source_sha
+      File.open(path.p) {|f|
+        f.gets
+      }.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
   end
 end

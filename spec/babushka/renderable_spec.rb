@@ -23,4 +23,12 @@ describe Renderable, '#render' do
       end
     end
   end
+  describe Renderable, '#from?' do
+    it "should be from the same content" do
+      subject.should be_from('spec/renderable/example.conf.erb')
+    end
+    it "should not be from different content" do
+      subject.should_not be_from('spec/renderable/different_example.conf.erb')
+    end
+  end
 end
