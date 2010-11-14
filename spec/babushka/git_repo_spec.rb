@@ -197,6 +197,32 @@ describe GitRepo, '#ahead?' do
   end
 end
 
+describe GitRepo, '#behind?' do
+  before {
+    stub_repo_with_remote 'a'
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "git checkout -b next"
+      shell "git reset --hard origin/next^"
+    }
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return true if there are new commits on the remote" do
+    subject.remote_branch_exists?.should be_true
+    subject.should be_behind
+  end
+  context "when the remote is merged" do
+    before {
+      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        shell "git merge origin/next"
+      }
+    }
+    it "should not be behind" do
+      subject.remote_branch_exists?.should be_true
+      subject.should_not be_behind
+    end
+  end
+end
+
 describe GitRepo, '#track!' do
   before { stub_repo_with_remote 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }

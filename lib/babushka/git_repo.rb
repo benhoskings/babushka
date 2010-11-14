@@ -60,6 +60,11 @@ module Babushka
       !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
     end
 
+    def behind?
+      remote_branch_exists? &&
+      !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
+    end
+
     def track! branch
       repo_shell("git checkout -t '#{branch}'")
     end
