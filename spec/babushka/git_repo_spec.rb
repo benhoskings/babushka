@@ -65,6 +65,16 @@ describe GitRepo, 'without a repo' do
       L{ subject.send(method) }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/nonexistent'}."
     end
   }
+  context "with lazy eval" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy') }
+    it "should fail before the repo is created, but work afterwards" do
+      subject.exists?.should be_false
+      L{ subject.clean? }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy'}."
+      stub_repo 'lazy'
+      subject.exists?.should be_true
+      subject.should be_clean
+    end
+  end
 end
 
 describe GitRepo, "with a repo" do

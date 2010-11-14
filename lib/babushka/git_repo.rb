@@ -5,7 +5,7 @@ module Babushka
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :repo
+    attr_reader :path
 
     def self.repo_for path
       maybe = shell("git rev-parse --git-dir", :dir => path) if path.p.dir?
@@ -14,7 +14,10 @@ module Babushka
 
     def initialize path
       @path = path
-      @repo = self.class.repo_for(path)
+    end
+
+    def repo
+      @repo ||= self.class.repo_for(path)
     end
 
     def exists?
