@@ -41,6 +41,14 @@ describe "shell" do
         shell("pwd", :dir => (tmp_prefix / 'nonexistent'))
       }.should raise_error Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}"
     end
+    context "with :create option" do
+      it "should run in the specified directory" do
+        shell("pwd", :dir => (tmp_prefix / 'dir_param'), :create => true).should == (tmp_prefix / 'dir_param').to_s
+      end
+      it "should create and run when the path is nonexistent" do
+        shell("pwd", :dir => (tmp_prefix / 'dir_param_with_create'), :create => true).should == (tmp_prefix / 'dir_param_with_create').to_s
+      end
+    end
   end
 end
 
