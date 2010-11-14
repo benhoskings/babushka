@@ -13,7 +13,7 @@ module Babushka
     end
 
     def initialize path
-      @path = path
+      @path = path.p
     end
 
     def repo
