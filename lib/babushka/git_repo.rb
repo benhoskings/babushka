@@ -1,6 +1,8 @@
 module Babushka
   class GitRepoError < StandardError
   end
+  class GitRepoExists < GitRepoError
+  end
   class GitRepo
     include PathHelpers
     extend PathHelpers
@@ -66,6 +68,10 @@ module Babushka
     def behind?
       remote_branch_exists? &&
       !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
+    end
+
+    def clone! from
+      raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
     end
 
     def track! branch

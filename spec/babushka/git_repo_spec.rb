@@ -237,6 +237,18 @@ describe GitRepo, '#behind?' do
   end
 end
 
+describe GitRepo, '#clone!' do
+  before { stub_repo_with_remote 'a' }
+  context "for existing repos" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+    it "should raise" do
+      L{
+        subject.clone!('./a_remote/a')
+      }.should raise_error GitRepoExists, "Can't clone ./a_remote/a to existing path #{tmp_prefix / 'repos/a'}."
+    end
+  end
+end
+
 describe GitRepo, '#track!' do
   before { stub_repo_with_remote 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
