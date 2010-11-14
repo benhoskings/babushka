@@ -1,6 +1,7 @@
 module Babushka
   ExternalComponents = %w[
     fancypath/fancypath
+    inkan/inkan
   ]
 
   Components = %w[
