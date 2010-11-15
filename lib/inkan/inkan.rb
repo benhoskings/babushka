@@ -20,6 +20,12 @@ class Inkan
     inkan.seal
   end
   
+  def self.render
+    inkan = new(nil)
+    yield inkan
+    inkan.render
+  end
+  
   def self.sha(content)
     Digest::SHA1.hexdigest(content)
   end
@@ -43,9 +49,12 @@ class Inkan
   
   def seal
     File.open(@file, 'w') do |f|
-      f.puts "#{comment} #{credit}. #{sha} #{comment_suffix}"
-      f.print file_content
+      f.print render
     end
+  end
+  
+  def render
+    "#{comment} #{credit}. #{sha} #{comment_suffix}\n#{file_content}"
   end
   
   private
