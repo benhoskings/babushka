@@ -18,6 +18,10 @@ module Babushka
       }
     end
 
+    def exists?
+      path.p.exists?
+    end
+
     def clean?
       Inkan.legitimate? path
     end
