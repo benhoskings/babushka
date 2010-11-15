@@ -27,7 +27,7 @@ module Babushka
     end
 
     def from? source
-      source_sha == sha_of(source)
+      exists? && source_sha == sha_of(source)
     end
 
     private
