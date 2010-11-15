@@ -7,10 +7,14 @@ module Babushka
       @path = path
     end
 
-    def render source
-      Inkan.seal(path) {|inkan|
-        inkan.credit = "Generated #{_by_babushka}, from #{sha_of(source)}"
-        inkan.print render_erb(source)
+    def render source, opts = {}
+      shell("cat > '#{path}'",
+        :input => inkan_output_for(source),
+        :sudo => opts[:sudo]
+      ).tap {|result|
+        if result
+          sudo "chmod #{opts[:perms]} '#{path}'" if opts[:perms]
+        end
       }
     end
 
@@ -23,6 +27,13 @@ module Babushka
     end
 
     private
+
+    def inkan_output_for source
+      Inkan.render {|inkan|
+        inkan.credit = "Generated #{_by_babushka}, from #{sha_of(source)}"
+        inkan.print render_erb(source)
+      }
+    end
 
     def render_erb source
       ERB.new(IO.read(source)).result(binding)
