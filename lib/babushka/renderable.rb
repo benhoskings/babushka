@@ -35,6 +35,7 @@ module Babushka
       }
     end
 
+    require 'erb'
     def render_erb source
       ERB.new(IO.read(source)).result(binding)
     end
