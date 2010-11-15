@@ -115,19 +115,13 @@ module Babushka
       elsif !File.exists?(path) && !opts[:optional]
         log_error "Couldn't find erb to render at #{path}."
       elsif File.exists?(path)
-        require 'erb'
-        debug ERB.new(IO.read(path)).result(binding)
-        returning shell("cat > #{opts[:to]}",
-          :input => ERB.new(IO.read(path)).result(binding),
-          :sudo => opts[:sudo]
-        ) do |result|
+        Renderable.new(opts[:to]).render(path, opts).tap {|result|
           if result
             log "Rendered #{opts[:to]}."
-            sudo "chmod #{opts[:perms]} '#{opts[:to]}'" unless opts[:perms].nil?
           else
             log_error "Couldn't render #{opts[:to]}."
           end
-        end
+        }
       end
     end
 
