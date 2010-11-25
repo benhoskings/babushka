@@ -1,36 +1,7 @@
 dep 'rubygems' do
   requires 'rubygems up to date'
-  setup {
-    definer.requires('fake json gem') if shell('ruby --version')['ruby 1.9']
-  }
   after {
     %w[cache ruby specs].each {|name| ('~/.gem' / name).mkdir }
-  }
-end
-
-dep 'fake json gem' do
-  met? { Babushka::GemHelper.has? 'json' }
-  meet {
-    log "json is now included in ruby core, and when gems try to install the"
-    log "gem, it fails to build. So, let's install a fake version of json-1.1.9."
-    in_build_dir {
-      log_block "Generating fake json-1.1.9 gem" do
-        File.open 'fake_json.gemspec', 'w' do |f|
-          f << %Q{
-            spec = Gem::Specification.new do |s|
-              s.name = "json"
-              s.version = "1.1.9"
-              s.summary = "this fakes json (which is now included in stdlib)"
-              s.homepage = "http://gist.github.com/gists/58071"
-              s.has_rdoc = false
-              s.required_ruby_version = '>= 1.9.1'
-            end
-          }
-        end
-        shell "gem build fake_json.gemspec"
-      end
-      Babushka::GemHelper.install! 'json-1.1.9.gem', '--no-ri --no-rdoc'
-    }
   }
 end
 
