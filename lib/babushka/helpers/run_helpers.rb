@@ -39,7 +39,7 @@ module Babushka
       log "Patching #{path}"
       sudo "cat > #{path}", :as => path.owner, :input => path.readlines.map {|l|
         l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
-      }
+      }.join("")
     end
 
     def insert_into_file insert_before, path, lines, opts = {}
