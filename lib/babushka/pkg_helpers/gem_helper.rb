@@ -83,7 +83,7 @@ module Babushka
     end
 
     def should_sudo?
-      super || !File.writable?(gem_root)
+      super || (gem_root.exists? && !gem_root.writable?)
     end
 
     def version
