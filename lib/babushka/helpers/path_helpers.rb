@@ -7,7 +7,7 @@ module Babushka
         yield Dir.pwd.p
       else
         path = dir.p
-        path.mkdir if opts[:create] unless path.exists?
+        shell("mkdir '#{path}'", :sudo => opts[:sudo]) if opts[:create] unless path.exists?
         if Dir.pwd == path
           yield path
         else
