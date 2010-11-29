@@ -1,6 +1,6 @@
 meta :app do
   accepts_list_for :source
-  accepts_list_for :prefix, ['/Applications']
+  accepts_list_for :prefix, %w[~/Applications /Applications]
   accepts_list_for :extra_source
   accepts_list_for :provides, :name
   accepts_block_for :current_version do |path| nil end
@@ -21,6 +21,16 @@ meta :app do
       else
         log "#{name} could be updated from #{current} to #{version}."
       end
+    end
+
+    # TODO what happens if none of the paths exist? Should we create the
+    # first one?
+    helper :prefix_to_use do
+      prefix.map{|pre|
+        pre.to_s.p.expand
+      }.find {|pre|
+        pre.exists? && pre.directory?
+      }.to_s # NOTE to_s shouldn't be required once accepts_list_for is more generic
     end
 
     helper :discover_latest_version do
@@ -48,19 +58,17 @@ meta :app do
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
-          prefix.each {|pre|
-            pre = pre.to_s # TODO shouldn't be required once accepts_list_for is more generic
-            target_path = pre / entry
-            if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
-              if archive.is_a? Babushka::DmgResource
-                log_block("Found #{entry} in the DMG, copying to #{pre}") {
-                  shell "cp -pPR '#{entry}' '#{pre.end_with('/')}'"
-                }
-              else
-                log_block("Found #{entry}, moving to #{pre}") { FileUtils.mv entry, pre.end_with('/') }
-              end
+          pre = prefix_to_use
+          target_path = pre / entry
+          if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
+            if archive.is_a? Babushka::DmgResource
+              log_block("Found #{entry} in the DMG, copying to #{pre}") {
+                shell "cp -pPR '#{entry}' '#{pre.end_with('/')}'"
+              }
+            else
+              log_block("Found #{entry}, moving to #{pre}") { FileUtils.mv entry, pre.end_with('/') }
             end
-          }
+          end
         }
       }
     }
