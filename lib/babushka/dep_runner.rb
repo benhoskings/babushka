@@ -3,7 +3,7 @@ module Babushka
     include PromptHelpers
     include RunHelpers
 
-    delegate :load_path, :name, :definer, :to => :the_dep
+    delegate :load_path, :name, :basename, :definer, :to => :the_dep
 
     def initialize dep
       @dep = dep
