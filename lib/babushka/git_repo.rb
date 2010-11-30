@@ -72,9 +72,11 @@ module Babushka
 
     def clone! from
       raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
-      failable_shell("git clone '#{from}' '#{path.basename}'", :dir => path.parent, :create => true).tap {|shell|
-        raise GitRepoError, "Couldn't clone to #{path}: #{error_message_for shell.stderr}" unless shell.result
-      }.result
+      log_block "Cloning #{from}" do
+        failable_shell("git clone '#{from}' '#{path.basename}'", :dir => path.parent, :create => true).tap {|shell|
+          raise GitRepoError, "Couldn't clone to #{path}: #{error_message_for shell.stderr}" unless shell.result
+        }.result
+      end
     end
 
     def track! branch
