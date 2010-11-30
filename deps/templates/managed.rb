@@ -1,6 +1,14 @@
 managed_template = L{
+  helper :packages do
+    if installs.first.is_a?(Hash)
+      installs.first.map {|(name, version)| ver(name, version) }
+    else
+      installs.map {|pkg| ver(pkg) }
+    end
+  end
+
   helper :packages_present? do
-    installs.all? {|pkg| pkg_manager.has? pkg }
+    packages.all? {|pkg| pkg_manager.has? pkg }
   end
 
   helper :add_cfg_deps do
@@ -36,7 +44,7 @@ managed_template = L{
     pkg_manager.update_pkg_lists_if_required
   }
   meet {
-    pkg_manager.install! installs
+    pkg_manager.install! packages
   }
 }
 
