@@ -16,6 +16,7 @@ describe Babushka::SystemProfile, '.for_host' do
     }
     it "should return DebianSystemProfile on Debian boxes" do
       File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
+      Babushka::AptHelper.stub!(:install!) # so an `lsb_release` install isn't attempted
       Babushka::SystemProfile.for_host.should be_an_instance_of(Babushka::DebianSystemProfile)
     end
     it "should return RedhatSystemProfile on Red Hat boxes" do

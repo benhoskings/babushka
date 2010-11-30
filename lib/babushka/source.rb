@@ -7,7 +7,7 @@ module Babushka
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :name, :uri, :type, :deps, :templates
+    attr_reader :name, :uri, :repo, :type, :deps, :templates
 
     delegate :count, :skipped_count, :uncache!, :to => :deps
 
@@ -35,8 +35,8 @@ module Babushka
       end
     end
 
-    def self.for_name name
-      present.detect {|source| source.name == name } || Source.new(default_remote_for(name, :github), :name => name)
+    def self.for_remote name
+      Source.new(default_remote_for(name, :github), :name => name)
     end
 
     def self.default_remote_for name, from
@@ -98,6 +98,11 @@ module Babushka
         prefix / name
       end
     end
+
+    def repo
+      @repo ||= GitRepo.new(path) if cloneable?
+    end
+
     def updated_at
       Time.now - File.mtime(path)
     end
@@ -141,7 +146,7 @@ module Babushka
       else
         raise_unless_addable!
         log_block "Adding #{name}" do
-          pull!
+          update!
         end
       end
     end
@@ -149,7 +154,7 @@ module Babushka
     def load!
       unless @currently_loading
         @currently_loading = true
-        pull! if cloneable?
+        update! if cloneable?
         load_deps! and define_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
@@ -183,10 +188,8 @@ module Babushka
       "#<Babushka::Source @name=#{name.inspect}, @type=#{type.inspect}, @uri=#{uri.inspect}, @deps.count=#{deps.count}>"
     end
 
-    private
-
-    def pull!
-      if @pulled
+    def update!
+      if @updated
         debug "Already pulled #{name} (#{uri}) this session."
         true
       elsif Base.sources.local_only?
@@ -194,10 +197,16 @@ module Babushka
         true
       elsif path.exists? && (Time.now - path.mtime < 60)
         debug "#{name} (#{uri}) was pulled #{(Time.now - path.mtime).round.xsecs} ago, not pulling now."
+      elsif repo.exists? && repo.dirty?
+        log "Not updating #{name} (#{path}) because there are local changes."
+      elsif repo.exists? && repo.ahead?
+        log "Not updating #{name} (#{path}) because it's ahead of origin."
       else
-        @pulled = git uri, :prefix => prefix, :dir => name, :log => true
+        @updated = git uri, :to => path, :log => true
       end
     end
+
+    private
 
     def raise_unless_addable!
       present_sources = Base.sources.all_present
@@ -209,6 +218,12 @@ module Babushka
 
     def self.source_prefix
       SourcePrefix.p
+    end
+
+    public
+
+    def inspect
+      "#<Source:#{object_id} '#{name}' (#{deps.count} dep#{'s' unless deps.count == 1})>"
     end
   end
 end

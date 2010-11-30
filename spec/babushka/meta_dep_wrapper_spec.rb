@@ -8,6 +8,11 @@ describe "name checks" do
   it "should not allow reserved names" do
     L{ meta(:base) }.should raise_error(ArgumentError, "You can't use 'base' for a template name, because it's reserved.")
   end
+  it "should allow valid names" do
+    L{ meta(:a) }.should_not raise_error
+    L{ meta('b') }.should_not raise_error
+    L{ meta('valid') }.should_not raise_error
+  end
   context "option" do
     it "should allow spaces and numbers" do
       L{ meta('meta dep 2') }.should_not raise_error

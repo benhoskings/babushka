@@ -107,7 +107,7 @@ For example, Babushka ships with a meta dep that knows how to install TextMate b
         before { shell "mkdir -p #{path.parent}" }
         meet {
           source.each {|uri|
-            git uri, :dir => name, :prefix => path.parent
+            git uri, :to => path
           }
         }
         after { shell %Q{osascript -e 'tell app "TextMate" to reload bundles'} }

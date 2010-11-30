@@ -82,7 +82,7 @@ module Babushka
       ].map {|i|
         File.basename i.chomp('/')
       }.reject {|i|
-        i[/\d/].nil? # reject paths that aren't versions, like 'bin' etc
+        i[/\d|HEAD/].nil? # reject paths that aren't versions, like 'bin' etc
       }.map(&:to_version)
     end
 

@@ -25,12 +25,15 @@ module Babushka
     helpers/run_helpers
     helpers/suggest_helpers
     helpers/git_helpers
+    git_repo
     resource
     lambda_chooser
     ip
     version_str
     version_of
-    version_list
+    accepts_list_for
+    accepts_value_for
+    accepts_block_for
     colorizer
     levenshtein
     structs

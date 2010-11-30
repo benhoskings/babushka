@@ -1,6 +1,53 @@
 require 'spec_helper'
-require 'sources_support'
+require 'source_support'
 require 'source_pool_support'
+
+describe SourcePool, '#source_for' do
+  before {
+    @source1 = Source.new nil, :name => 'source_1'
+    @source1.stub!(:load!)
+    @source2 = Source.new nil, :name => 'source_2'
+    @source2.stub!(:load!)
+    Base.sources.stub!(:current).and_return([@source1])
+    Source.stub!(:present).and_return([@source2])
+  }
+  it "should find core sources" do
+    Base.sources.source_for('source_1').should == @source1
+  end
+  it "should find cloned sources" do
+    Base.sources.source_for('source_2').should == @source2
+  end
+end
+
+describe Dep, '#dep_for, disregarding sources' do
+  before {
+    @dep = dep 'Base.sources.dep_for tests'
+  }
+  it "should work for strings" do
+    Base.sources.dep_for('Base.sources.dep_for tests').should == @dep
+  end
+  it "should work for VersionOfs" do
+    Base.sources.dep_for(ver('Base.sources.dep_for tests')).should == @dep
+  end
+  it "should work for deps" do
+    Base.sources.dep_for(@dep).should == @dep
+  end
+  it "should not find the dep with namespacing" do
+    Base.sources.dep_for('namespaced:namespaced Base.sources.dep_for tests').should be_nil
+  end
+  context "with namespaced dep defined" do
+    before {
+      @source = Source.new(nil, :name => 'namespaced')
+      Source.stub!(:present).and_return([@source])
+      Base.sources.load_context :source => @source do
+        @namespaced_dep = dep 'Base.sources.dep_for tests'
+      end
+    }
+    it "should work with namespacing" do
+      Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should == @namespaced_dep
+    end
+  end
+end
 
 describe SourcePool, '#dep_for' do
   before {
@@ -30,6 +77,28 @@ describe SourcePool, '#dep_for' do
   it "should not find the dep when the namespace is wrong" do
     Base.sources.dep_for('source_1:dep 3').should be_nil
     Base.sources.dep_for('source_2:dep 2').should be_nil
+  end
+end
+
+describe SourcePool, '#dep_for core' do
+  before {
+    @core = Source.new nil, :name => 'core'
+    @core.stub!(:load!)
+    Base.sources.load_context :source => @core do
+      @dep1 = dep 'dep 1'
+      @dep2 = dep 'dep 2'
+    end
+    Base.sources.stub!(:current).and_return([@core])
+  }
+  it "should find the correct deps without namespacing" do
+    Base.sources.dep_for('dep 1').should == @dep1
+    Base.sources.dep_for('dep 4').should == @dep4
+  end
+  it "should find the dep when the namespace is correct" do
+    Base.sources.dep_for('core:dep 1').should == @dep1
+  end
+  it "should not find the dep when the namespace is wrong" do
+    Base.sources.dep_for('non_core:dep 1').should be_nil
   end
 end
 

@@ -2,7 +2,7 @@ module Babushka
   class BaseDepRunner < DepRunner
     include GitHelpers
 
-    delegate :pkg_manager, :to => :definer
+    delegate :dependency, :pkg_manager, :to => :definer
 
     private
 
@@ -71,7 +71,7 @@ module Babushka
 
     def parse_uris
       @uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
-      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
+      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if definer.respond_to?(:extra_source)
     end
 
     def uri_processor(method_name)

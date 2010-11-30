@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'sources_support'
+require 'source_support'
 
 standard_vars = {
   "rails_root" => {:default => "~/current", :value => "~/projects/corkboard/current"},

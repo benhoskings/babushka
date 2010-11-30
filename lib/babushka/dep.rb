@@ -22,7 +22,7 @@ module Babushka
       # known sources.
       # If no dep matching +spec+ is found, nil is returned.
       def Dep spec, opts = {}
-        Dep.for spec, opts
+        Base.sources.dep_for spec, opts
       end
 
       # Define and return a dep named +name+, and whose implementation is found
@@ -142,13 +142,6 @@ module Babushka
       end
     end
 
-    def self.for dep_spec, opts = {}
-      Base.sources.dep_for(
-        dep_spec.respond_to?(:name) ? dep_spec.name : dep_spec.to_s,
-        :from => opts[:parent_source]
-      )
-    end
-
     # Look up the dep specified by +dep_name+, yielding it to the block if it
     # was found.
     #
@@ -159,6 +152,8 @@ module Babushka
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         suggestion = suggest_value_for(dep_name, Base.sources.current_names)
         Dep.find_or_suggest suggestion, opts, &block unless suggestion.nil?
+      elsif block.nil?
+        dep
       else
         block.call dep
       end
@@ -300,7 +295,7 @@ module Babushka
 
     def process_deps accessor = :requires
       definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
-        Dep.find_or_suggest dep_name, :parent_source => dep_source do |dep|
+        Dep.find_or_suggest dep_name, :from => dep_source do |dep|
           dep.process
         end
       })
