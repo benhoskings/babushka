@@ -20,7 +20,9 @@ module Babushka
       log_block "Updating #{uri}" do
         if repo.repo_shell('git fetch origin').nil?
           log_error "Couldn't fetch #{uri}."
-        elsif repo.current_branch
+        elsif !repo.behind?
+          true
+        else
           repo.reset_hard! "origin/#{repo.current_branch}"
         end
       end
