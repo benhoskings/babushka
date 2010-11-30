@@ -88,7 +88,7 @@ module Babushka
     end
 
     def reset_hard! refspec = 'HEAD'
-      repo_shell("git reset --hard #{refspec}", :log => true)
+      repo_shell("git reset --hard #{refspec}")
     end
 
     def inspect
