@@ -1,7 +1,13 @@
-class BaseDepDefiner
+class TestDepDefiner < BaseDepDefiner
   def chooser
     :osx # hardcode this for testing
   end
+end
+class TestDepRunner < BaseDepRunner
+end
+class TestTemplate
+  def self.definer_class; TestDepDefiner end
+  def self.runner_class; TestDepRunner end
 end
 
 def setup_test_lambdas
@@ -9,7 +15,7 @@ def setup_test_lambdas
 end
 
 def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
-  DepDefiner.accepts_block_for accepter_name
+  TestDepDefiner.accepts_block_for accepter_name
   dep 'accepts_block_for' do
     send accepter_name, opts, &lambda
   end

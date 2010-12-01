@@ -74,7 +74,7 @@ module Babushka
     end
 
     def self.source_template
-      Dep::BaseTemplate
+      Dep.base_template
     end
 
   end
