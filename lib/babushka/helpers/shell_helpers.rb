@@ -60,6 +60,20 @@ module Babushka
       result
     end
 
+    # Run +cmd+ in a separate interactive shell. This is useful for running
+    # commands that depend on something shell-related that was changed during
+    # this run, like changing the user's shell. It's also useful for running
+    # commands that are only valid on an interactive shell, like rvm-related
+    # commands.
+    # TODO: specs.
+    def login_shell cmd, opts = {}, &block
+      if shell('echo $SHELL').p.basename == 'zsh'
+        shell %Q{zsh -i -c "#{cmd.gsub('"', '\"')}"}, opts, &block
+      else
+        shell %Q{bash -l -c "#{cmd.gsub('"', '\"')}"}, opts, &block
+      end
+    end
+
     # Run +cmd+ via sudo.
     #
     # The return behaviour and block handling of +#sudo+ are identical to that
