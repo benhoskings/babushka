@@ -100,7 +100,13 @@ module Babushka
     # unix, and so it's best to use this method so that the platform variations
     # can be wrapped.
     def which cmd_name, &block
-      result = shell "which #{cmd_name}", &block
+      raw_which cmd_name, shell("which #{cmd_name}", &block)
+    end
+
+    # Run the extra checks required for platform-independent `which`. This is
+    # separated do it can be used separately, like in "zsh -i -c 'which rvm'".
+    # TODO: update this to use `type`, which is cross-platform.
+    def raw_which cmd_name, result
       result unless result.nil? || result["no #{cmd_name} in"]
     end
 
