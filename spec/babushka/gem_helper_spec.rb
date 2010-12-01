@@ -46,30 +46,37 @@ describe Babushka::GemHelper do
   describe '.should_sudo?' do
     before :each do
       Babushka::GemHelper.stub!(
-        :gem_root => '/path/to/gems',
-        :bin_path => '/path/to/bins'
+        :gem_root => '/path/to/gems'.p,
+        :bin_path => '/path/to/bins'.p
       )
     end
     
     it "should return true if the bin dir is not writeable" do
-      # File.should_receive(:writable?).with('/path/to/gems').and_return(true)
       File.should_receive(:writable?).with('/path/to/bins').and_return(false)
-      
       Babushka::GemHelper.should_sudo?.should be_true
     end
-    
-    it "should return true if the gem dir is not writeable" do
-      File.should_receive(:writable?).with('/path/to/gems').and_return(false)
-      File.should_receive(:writable?).with('/path/to/bins').and_return(true)
-      
-      Babushka::GemHelper.should_sudo?.should be_true
-    end
-    
-    it "should return false if both gem and bin dirs are writeable" do
-      File.should_receive(:writable?).with('/path/to/gems').and_return(true)
-      File.should_receive(:writable?).with('/path/to/bins').and_return(true)
-      
-      Babushka::GemHelper.should_sudo?.should be_false
+
+    context "when the bin dir is writable" do
+      before {
+        File.should_receive(:writable?).with('/path/to/bins').and_return(true)
+      }
+      it "should return false if the gem dir does not exist" do
+        Babushka::GemHelper.gem_root.should_receive(:exists?).and_return(false)
+        Babushka::GemHelper.should_sudo?.should be_false
+      end
+      context "when the gem dir exists" do
+        before {
+          Babushka::GemHelper.gem_root.should_receive(:exists?).and_return(true)
+        }
+        it "should return true if the gem dir is not writeable" do
+          Babushka::GemHelper.gem_root.should_receive(:writable?).and_return(false)
+          Babushka::GemHelper.should_sudo?.should be_true
+        end
+        it "should return false if the gem dir is writeable" do
+          Babushka::GemHelper.gem_root.should_receive(:writable?).and_return(true)
+          Babushka::GemHelper.should_sudo?.should be_false
+        end
+      end
     end
   end
 end
