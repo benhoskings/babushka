@@ -136,10 +136,14 @@ module Babushka
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
       else
-        returning Base.sources.template_for(suffix, :from => Base.sources.current_load_source) || BaseTemplate do |t|
+        returning Base.sources.template_for(suffix, :from => Base.sources.current_load_source) || self.class.base_template do |t|
           opts[:suffixed] = (t != BaseTemplate)
         end
       end
+    end
+
+    def self.base_template
+      BaseTemplate
     end
 
     # Look up the dep specified by +dep_name+, yielding it to the block if it
