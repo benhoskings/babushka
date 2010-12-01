@@ -3,18 +3,19 @@ require 'dep_definer_support'
 
 describe "accepts_block_for behaviour" do
   before {
+    Dep.stub!(:base_template).and_return(TestTemplate)
     setup_test_lambdas
     dep 'default'
   }
 
   it "should define a declarer" do
     Dep('default').definer.should_not respond_to(:test_defining)
-    DepDefiner.accepts_block_for :test_defining
+    TestDepDefiner.accepts_block_for :test_defining
     Dep('default').definer.should respond_to(:test_defining)
   end
 
   it "should return lambda" do
-    DepDefiner.accepts_block_for :test_defining
+    TestDepDefiner.accepts_block_for :test_defining
     lambda = L{ 'blah' }
     value_from_block = nil
     dep 'returning test' do
@@ -35,7 +36,7 @@ describe "accepts_block_for behaviour" do
 
   it "should use default blocks when no specific one is specified" do
     lambda = L{ 'default value' }
-    DepDefiner.accepts_block_for :test_defaults, &lambda
+    TestDepDefiner.accepts_block_for :test_defaults, &lambda
     value_from_block = nil
     dep 'default test' do
       value_from_block = test_defaults
@@ -48,7 +49,7 @@ end
 
 describe "source_template" do
   it "should return BaseTemplate" do
-    DepDefiner.source_template.should == Dep::BaseTemplate
+    TestDepDefiner.source_template.should == Dep::BaseTemplate
   end
 end
 
