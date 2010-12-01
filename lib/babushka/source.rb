@@ -195,8 +195,6 @@ module Babushka
       elsif Base.sources.local_only?
         debug "Not pulling #{name} (#{uri}) - in local-only mode."
         true
-      elsif path.exists? && (Time.now - path.mtime < 60)
-        debug "#{name} (#{uri}) was pulled #{(Time.now - path.mtime).round.xsecs} ago, not pulling now."
       elsif repo.exists? && repo.dirty?
         log "Not updating #{name} (#{path}) because there are local changes."
       elsif repo.exists? && repo.ahead?
