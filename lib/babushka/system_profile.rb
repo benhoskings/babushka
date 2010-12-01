@@ -97,7 +97,7 @@ module Babushka
       SystemDefinitions.names[system][flavour].values
     end
     def all_tokens
-      all_systems + all_flavours + all_names
+      all_systems + PkgHelper.all_manager_keys + all_flavours + all_names
     end
 
     def flavour_str_map

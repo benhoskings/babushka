@@ -285,6 +285,27 @@ describe Dep, '#basename' do
   end
 end
 
+describe Dep, 'lambda lists' do
+  before {
+    Babushka::Base.host.stub!(:name).and_return(:test_name)
+    Babushka::Base.host.stub!(:system).and_return(:test_system)
+    Babushka::Base.host.stub!(:pkg_helper_key).and_return(:test_helper)
+
+    Babushka::Base.host.stub!(:all_names).and_return([:test_name, :other_name])
+    Babushka::Base.host.stub!(:all_systems).and_return([:test_system, :other_system])
+    Babushka::PkgHelper.stub!(:all_manager_keys).and_return([:test_helper, :other_helper])
+  }
+  it "should match against the system name" do
+    dep('lambda list name match') { requires { on :test_name, 'awesome' } }.definer.requires.should == ['awesome']
+  end
+  it "should match against the system type" do
+    dep('lambda list system match') { requires { on :test_system, 'awesome' } }.definer.requires.should == ['awesome']
+  end
+  it "should match against the system name" do
+    dep('lambda list pkg_helper_key match') { requires { on :test_helper, 'awesome' } }.definer.requires.should == ['awesome']
+  end
+end
+
 describe "calling met? on a single dep" do
   before {
     setup_yield_counts
