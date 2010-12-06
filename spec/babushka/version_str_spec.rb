@@ -28,6 +28,7 @@ describe "comparing" do
   it "should treat word pieces as less than no piece" do
     (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta')).should be_true
     (VersionStr.new('3.0.0') > VersionStr.new('3.0.0.beta1')).should be_true
+    (VersionStr.new('1.0.0') > VersionStr.new('1.0.0.rc.5')).should be_true
   end
 
   it "should compare word pieces alphabetically" do
