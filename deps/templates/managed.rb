@@ -1,4 +1,5 @@
 managed_template = L{
+  # TODO push this into accepts_*_for somehow
   helper :packages do
     if installs.first.is_a?(Hash)
       installs.first.map {|(name, version)| ver(name, version) }
