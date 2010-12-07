@@ -6,7 +6,7 @@ meta :installer do
 
   template {
     helper :current_version? do
-      provides.all? {|p|
+      (provides & var(:versions).keys).all? {|p|
         shell("#{p} --version").split(/[\s\-]/).include? var(:versions)[p.to_s]
       }
     end
