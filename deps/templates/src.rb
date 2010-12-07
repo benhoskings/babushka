@@ -10,6 +10,7 @@ meta :src do
 
   accepts_block_for :preconfigure
 
+  accepts_block_for(:preconfigure) { './configure'.p.exists? || log_shell("autoconf", "autoconf") }
   accepts_block_for(:configure) { log_shell "configure", default_configure_command }
   accepts_list_for :configure_env
   accepts_list_for :configure_args
