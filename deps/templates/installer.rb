@@ -18,7 +18,7 @@ meta :installer do
     # what you want, specify the name of the pkg to choose from the archive using
     # the +pkg_name+ method when you define your dep:
     #
-    # installer 'blah' do
+    # dep 'blah.installer' do
     #   source 'http://blah.org/blah-latest.dmg
     #   pkg_name 'blah-1.7.0.pkg'
     #   provides 'blah'
