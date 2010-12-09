@@ -30,7 +30,7 @@ meta :src do
       "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join(' ')}"
     end
 
-    requires 'build tools'
+    requires 'build tools', 'curl.managed'
     internal_setup { setup_source_uris }
     met? { provided? }
     meet { process_sources { call_task :process_source } }
