@@ -2,7 +2,6 @@ meta :installer do
   accepts_list_for :source
   accepts_list_for :extra_source
   accepts_list_for :provides, :name, :choose_with => :via
-  accepts_list_for :pkg_name, :name
 
   template {
     helper :current_version? do
@@ -14,13 +13,11 @@ meta :installer do
     prepare { setup_source_uris }
     met? { provided? and current_version? }
 
-    # At the moment, we just try to install every .[m]pkg in the archive. If that's not
-    # what you want, specify the name of the pkg to choose from the archive using
-    # the +pkg_name+ method when you define your dep:
+    # At the moment, we just try to install every .[m]pkg in the archive.
+    # Example:
     #
     # dep 'blah.installer' do
     #   source 'http://blah.org/blah-latest.dmg
-    #   pkg_name 'blah-1.7.0.pkg'
     #   provides 'blah' # Only required if the name isn't 'blah'
     # end
     #
