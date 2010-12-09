@@ -21,7 +21,7 @@ meta :installer do
     # dep 'blah.installer' do
     #   source 'http://blah.org/blah-latest.dmg
     #   pkg_name 'blah-1.7.0.pkg'
-    #   provides 'blah'
+    #   provides 'blah' # Only required if the name isn't 'blah'
     # end
     #
     meet {
