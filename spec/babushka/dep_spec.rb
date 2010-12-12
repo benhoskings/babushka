@@ -331,6 +331,20 @@ describe "calling met? on a single dep" do
   after { Base.sources.anonymous.deps.clear! }
 end
 
+describe "exceptions" do
+  it "should be unmet after an exception in met? {}" do
+    dep 'exception met? test' do
+      met? { raise }
+    end.met?.should be_false
+  end
+  it "should be unmet after an exception in meet {}" do
+    dep 'exception meet test' do
+      met? { false }
+      meet { raise }
+    end.met?.should be_false
+  end
+end
+
 describe "calling meet on a single dep" do
   before {
     setup_yield_counts

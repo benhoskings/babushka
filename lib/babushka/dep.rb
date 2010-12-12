@@ -295,6 +295,7 @@ module Babushka
       process_task(:setup)
       process_deps and process_self
     rescue DepError => ex
+      false
     end
 
     def process_deps accessor = :requires
