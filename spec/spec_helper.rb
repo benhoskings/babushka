@@ -59,4 +59,10 @@ module Babushka
       # Don't log while running specs.
     end
   end
+
+  class BugReporter
+    def self.report dep
+      # Don't report exceptions during tests.
+    end
+  end
 end
