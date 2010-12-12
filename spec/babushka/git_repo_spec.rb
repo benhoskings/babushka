@@ -66,14 +66,14 @@ describe GitRepo, 'without a repo' do
   end
   [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
     it "should raise on #{method}" do
-      L{ subject.send(method) }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/nonexistent'}."
+      L{ subject.send(method) }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/nonexistent'}.")
     end
   }
   context "with lazy eval" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy') }
     it "should fail before the repo is created, but work afterwards" do
       subject.exists?.should be_false
-      L{ subject.clean? }.should raise_error Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy'}."
+      L{ subject.clean? }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy'}.")
       stub_repo 'lazy'
       subject.exists?.should be_true
       subject.should be_clean
@@ -244,7 +244,7 @@ describe GitRepo, '#clone!' do
     it "should raise" do
       L{
         subject.clone!('a_remote/remote.git')
-      }.should raise_error GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}."
+      }.should raise_error(GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}.")
     end
   end
   context "for non-existent repos" do
@@ -256,7 +256,7 @@ describe GitRepo, '#clone!' do
       it "should raise" do
         L{
           subject.clone! "a_remote/nonexistent.git"
-        }.should raise_error GitRepoError, "Couldn't clone to #{tmp_prefix / 'repos/b'}: '#{tmp_prefix / 'repos/a_remote/nonexistent.git'}' does not appear to be a git repository."
+        }.should raise_error(GitRepoError, "Couldn't clone to #{tmp_prefix / 'repos/b'}: '#{tmp_prefix / 'repos/a_remote/nonexistent.git'}' does not appear to be a git repository.")
       end
     end
     context "after cloning" do
