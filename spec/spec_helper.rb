@@ -24,6 +24,7 @@ module Babushka
       tmp_prefix / 'archives'
     end
   end
+
   class Source
     def remove!
       !cloneable? || !File.exists?(path) || FileUtils.rm_r(path)
@@ -41,9 +42,7 @@ module Babushka
       }
     end
   end
-end
 
-module Babushka
   class VersionOf
     # VersionOf#== should return false in testing unless other is also a VersionOf.
     def == other
