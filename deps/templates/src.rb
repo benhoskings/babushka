@@ -2,7 +2,7 @@ meta :src do
   accepts_list_for :source
   accepts_list_for :extra_source
   accepts_list_for :provides, :default_name
-  accepts_list_for :prefix, '/usr/local'
+  accepts_value_for :prefix, '/usr/local'
 
   def default_name
     Babushka::VersionOf.new basename
@@ -35,7 +35,7 @@ meta :src do
 
   template {
     helper :default_configure_command do
-      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix.first} #{configure_args.map(&:to_s).join(' ')}"
+      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix} #{configure_args.map(&:to_s).join(' ')}"
     end
 
     requires 'build tools', 'curl.managed'
