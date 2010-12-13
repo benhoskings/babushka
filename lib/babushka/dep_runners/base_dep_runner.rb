@@ -50,6 +50,12 @@ module Babushka
       end
     end
 
+    def matching_versions?
+      (provides & var(:versions).keys.map(&:to_s)).all? do |p|
+        shell("#{p} --version").split(/[\s\-]/).include? var(:versions)[p.to_s]
+      end
+    end
+
     def app_dir app_name
       prefix.find {|app_path|
         (app_path.to_s / app_name).glob.select {|entry|

@@ -4,14 +4,8 @@ meta :installer do
   accepts_list_for :provides, :name, :choose_with => :via
 
   template {
-    helper :current_version? do
-      (provides & var(:versions).keys.map(&:to_s)).all? {|p|
-        shell("#{p} --version").split(/[\s\-]/).include? var(:versions)[p.to_s]
-      }
-    end
-
     prepare { setup_source_uris }
-    met? { provided? and current_version? }
+    met? { provided? and matching_versions? }
 
     # At the moment, we just try to install every .[m]pkg in the archive.
     # Example:
