@@ -160,3 +160,14 @@ describe "accepts_list_for input processing" do
     end
   end
 end
+
+
+describe "accepts_versions_for input processing" do
+  it "should always return a [VersionOf] list" do
+    test_versions.each_pair {|input, expected|
+      versions = AcceptsForTest.new
+      versions.installs input
+      versions.installs.should == expected
+    }
+  end
+end
