@@ -36,14 +36,6 @@ module Babushka
       end
     end
 
-    def versions_for data
-      if data.nil?
-        []
-      else
-        data.map {|name| name.is_a?(String) ? ver(name) : name }
-      end
-    end
-
     def list_for method_name, default
       if payload.has_key? method_name
         payload[method_name].map {|i| i.respond_to?(:call) ? i.call : i }
