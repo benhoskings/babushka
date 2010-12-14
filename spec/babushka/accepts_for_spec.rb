@@ -103,7 +103,7 @@ end
 
 describe "accepts_list_for input processing" do
   describe "value input" do
-    it "should always return a [VersionOf] list" do
+    it "should always return a list" do
       test_lists.each_pair {|input, expected|
         list = AcceptsForTest.new
         list.records input
@@ -158,5 +158,16 @@ describe "accepts_list_for input processing" do
       list.records &l
       list.records.should == ["haha, excellent"]
     end
+  end
+end
+
+
+describe "accepts_versions_for input processing" do
+  it "should always return a [VersionOf] list" do
+    test_versions.each_pair {|input, expected|
+      versions = AcceptsForTest.new
+      versions.installs input
+      versions.installs.should == expected
+    }
   end
 end
