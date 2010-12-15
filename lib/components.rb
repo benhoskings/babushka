@@ -57,6 +57,7 @@ module Babushka
     task
     source
     source_pool
+    vars
     dep_runner
     dep_runners/base_dep_runner
     dep_definer
