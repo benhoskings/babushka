@@ -19,7 +19,7 @@ module Babushka
             elsif args.blank? && block.nil?
               #{opts[:type]}_for #{method_name.inspect}, #{default.inspect}
             else
-              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
+              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args.compact].flatten, #{opts[:choose_with].inspect}
               self
             end
           end
