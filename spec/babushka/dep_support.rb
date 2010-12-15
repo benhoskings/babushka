@@ -20,7 +20,7 @@ def make_counter_dep opts = {}
     requires_when_unmet opts[:requires_when_unmet] unless opts[:requires_when_unmet].nil?
     BaseDepDefiner.accepted_blocks.each {|dep_method|
       send dep_method do
-        (opts[dep_method] || @dep.definer.default_task(dep_method)).call.tap {
+        (opts[dep_method] || default_task(dep_method)).call.tap {
           incrementers[dep_method].call
         }
       end
