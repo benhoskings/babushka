@@ -43,7 +43,7 @@ module Babushka
     def default_task task_name
       differentiator = Base.host.differentiator_for payload[task_name].keys
       L{
-        debug "'#{dependency.name}' / #{task_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
+        debug "#{task_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
         true
       }
     end
