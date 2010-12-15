@@ -60,8 +60,8 @@ module Babushka
     vars
     dep_runners/base_dep_runner
     dep_definer
+    dep_context
     dep_definers/meta_dep_wrapper
-    dep_definers/base_dep_definer
     dep_definers/meta_dep_definer
   ]
 end
