@@ -1,7 +1,7 @@
 meta :src do
   accepts_list_for :source
   accepts_list_for :extra_source
-  accepts_versions_for :provides, :default_name
+  accepts_list_for :provides, :default_name
   accepts_value_for :prefix, '/usr/local'
 
   def default_name
