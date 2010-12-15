@@ -35,6 +35,19 @@ module Babushka
       end
     end
 
+    def has_task? task_name
+      payload[task_name] ||= {}
+      !!specific_block_for(task_name)
+    end
+
+    def default_task task_name
+      differentiator = Base.host.differentiator_for payload[task_name].keys
+      L{
+        debug "#{task_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
+        true
+      }
+    end
+
     def default_blocks
       self.class.default_blocks
     end
