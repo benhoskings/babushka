@@ -15,7 +15,7 @@ module Babushka
     end
 
     def provided? provided_list = provides
-      apps, commands = provided_list.partition {|i| i.to_s[/\.app\/?$/] }
+      apps, commands = provided_list.partition {|i| i.name[/\.app\/?$/] }
       apps_in_path?(apps) and cmds_in_path?(commands)
     end
 
@@ -32,7 +32,7 @@ module Babushka
     end
 
     def cmds_in_path? commands
-      dir_hash = [*commands].group_by {|cmd_name| cmd_dir(cmd_name) }
+      dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
 
       if dir_hash.keys.compact.length > 1
         log_error "The commands for '#{name}' run from more than one place."
@@ -65,7 +65,7 @@ module Babushka
     end
 
     def cmd_location_str_for cmds
-      "#{cmds.map {|i| "'#{i}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
+      "#{cmds.map {|i| "'#{i.name}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first.name)}"
     end
 
     private
