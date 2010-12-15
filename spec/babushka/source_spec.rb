@@ -235,7 +235,7 @@ describe "finding" do
     @source.deps.deps.include?(@source.find('test dep 1')).should be_true
   end
   it "should find the specified template" do
-    @source.find_template('test meta 1').should be_an_instance_of(MetaDepWrapper)
+    @source.find_template('test meta 1').should be_an_instance_of(MetaDep)
     @source.templates.templates.include?(@source.find_template('test meta 1')).should be_true
   end
 end

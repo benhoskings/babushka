@@ -1,5 +1,5 @@
 module Babushka
-  class MetaDepWrapper
+  class MetaDep
     INVALID_NAMES = %w[base]
 
     VALID_NAME_START_CHARS = /[a-z]/
