@@ -61,6 +61,10 @@ module Babushka
       Base.task.vars
     end
 
+    def pkg_manager
+      BaseHelper
+    end
+
     def on platform, &block
       if platform.in? [*chooser]
         @current_platform = platform
@@ -68,6 +72,14 @@ module Babushka
           @current_platform = nil
         end
       end
+    end
+
+    def chooser
+      Base.host.match_list
+    end
+
+    def chooser_choices
+      Base.host.all_tokens
     end
 
     def self.source_template
