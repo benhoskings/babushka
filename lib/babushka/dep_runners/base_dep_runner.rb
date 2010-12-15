@@ -16,7 +16,7 @@ module Babushka
 
     def provided? provided_list = provides
       apps, commands = provided_list.partition {|i| i.name[/\.app\/?$/] }
-      apps_in_path?(apps) and cmds_in_path?(commands)
+      apps_in_path?(apps) and cmds_in_path?(commands) and matching_versions?(commands)
     end
 
     def apps_in_path? apps
@@ -50,8 +50,8 @@ module Babushka
       end
     end
 
-    def matching_versions?
-      versions = provides.select {|cmd|
+    def matching_versions? commands
+      versions = commands.select {|cmd|
         !cmd.version.nil?
       }.inject({}) {|hsh,cmd|
         hsh[cmd] = shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
