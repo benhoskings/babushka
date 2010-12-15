@@ -57,11 +57,7 @@ module Babushka
         hsh[cmd] = shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
           cmd.matches? piece.to_version
         }
-        if hsh[cmd]
-          log_ok "#{cmd.to_s(' ')} is satisfied by #{ver(cmd.name, hsh[cmd])}."
-        else
-          log "#{cmd.to_s(' ')} isn't satisfied."
-        end
+        log "#{cmd.name} is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
         hsh
       }
       versions.values.all?
