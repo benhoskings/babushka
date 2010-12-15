@@ -91,9 +91,9 @@ class Array
   def versions
     map {|i|
       if i.is_a?(String)
-        VersionOf.new *i.split(' ', 2)
+        Babushka::VersionOf.new *i.split(' ', 2)
       else
-        VersionOf.new i
+        Babushka::VersionOf.new i
       end
     }
   end
