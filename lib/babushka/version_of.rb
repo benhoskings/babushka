@@ -41,8 +41,8 @@ module Babushka
       end
     end
 
-    def to_s
-      [name, version].compact * '-'
+    def to_s joinery = '-'
+      [name, version].compact * joinery
     end
 
     def inspect
