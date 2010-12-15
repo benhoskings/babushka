@@ -18,7 +18,7 @@ describe MetaDepPool, '#for_dep' do
     @pool.for_dep('meta_dep_pool_dep 2.meta_dep_pool_other').should be_nil
   end
   it "should return the meta dep" do
-    @pool.for_dep('meta_dep_pool_dep 3.meta_dep_pool_test').should be_an_instance_of(MetaDepWrapper)
+    @pool.for_dep('meta_dep_pool_dep 3.meta_dep_pool_test').should be_an_instance_of(MetaDep)
   end
   after {
     Base.sources.anonymous.deps.clear!

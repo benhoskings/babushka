@@ -61,7 +61,7 @@ module Babushka
     dep_runners/base_dep_runner
     dep_definer
     dep_context
-    dep_definers/meta_dep_wrapper
-    dep_definers/meta_dep_definer
+    meta_dep
+    meta_dep_context
   ]
 end
