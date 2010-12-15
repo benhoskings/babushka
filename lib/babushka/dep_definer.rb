@@ -21,9 +21,6 @@ module Babushka
       instance_eval &@block unless @block.nil?
     end
 
-    def vars
-      Base.task.vars
-    end
     delegate :var, :set, :merge, :define_var, :to => :vars
 
     def helper name, &block
@@ -59,6 +56,10 @@ module Babushka
 
 
     private
+
+    def vars
+      Base.task.vars
+    end
 
     def on platform, &block
       if platform.in? [*chooser]
