@@ -19,13 +19,8 @@ module Babushka
       @block = block
     end
 
-    def define_and_process
-      process
+    def define!
       instance_eval &@block unless @block.nil?
-    end
-
-    def process
-      true # overridden in subclassed definers
     end
 
     def helper name, &block
@@ -38,27 +33,6 @@ module Babushka
           instance_exec *args[0...(block.arity)], &block
         end
       end
-    end
-
-    def has_task? task_name
-      payload[task_name] ||= {}
-      !!specific_block_for(task_name)
-    end
-
-    def default_task task_name
-      differentiator = Base.host.differentiator_for payload[task_name].keys
-      L{
-        debug([
-          "'#{dependency.name}' / #{task_name} not defined",
-          "#{" for #{differentiator}" unless differentiator.nil?}",
-          {
-            :met? => ", moving on",
-            :meet => " - nothing to do"
-          }[task_name],
-          "."
-        ].join)
-        true
-      }
     end
 
 
