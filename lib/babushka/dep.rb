@@ -114,7 +114,7 @@ module Babushka
     # any other items defined at the top level.
     def define_dep!
       @definer = template.definer_class.new self, &@block
-      definer.define_and_process
+      definer.define!
       @dep_defined = true
     end
 

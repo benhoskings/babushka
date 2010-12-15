@@ -19,13 +19,8 @@ module Babushka
       @block = block
     end
 
-    def define_and_process
-      process
+    def define!
       instance_eval &@block unless @block.nil?
-    end
-
-    def process
-      true # overridden in subclassed definers
     end
 
     def helper name, &block
