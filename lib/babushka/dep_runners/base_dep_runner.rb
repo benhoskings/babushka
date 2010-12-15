@@ -54,7 +54,9 @@ module Babushka
       provides.select {|cmd|
         !cmd.version.nil?
       }.all? {|cmd|
-        shell("#{cmd.name} --version").split(/[\s\-]/).include? cmd.version
+        shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
+          cmd.matches? piece.to_version
+        }
       }
     end
 
