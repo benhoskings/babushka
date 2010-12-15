@@ -95,7 +95,7 @@ describe "loading deps" do
       dep = @source.deps.for('test dep 1')
       dep.dep_defined?.should be_false
       dep.template.should be_nil
-      dep.definer.should be_nil
+      dep.context.should be_nil
     end
     it "should store the source the dep was loaded from" do
       @source.deps.for('test dep 1').dep_source.should == @source
@@ -126,9 +126,9 @@ describe "defining deps" do
     it "should have defined the deps" do
       @dep.dep_defined?.should be_true
     end
-    it "should have the right template and definer" do
+    it "should have the right template and context" do
       @dep.template.should == Dep::BaseTemplate
-      @dep.definer.should be_an_instance_of(BaseDepDefiner)
+      @dep.context.should be_an_instance_of(DepContext)
     end
   end
   context "with errors" do

@@ -170,7 +170,7 @@ describe "dep creation" do
         requires dep('nested dep')
       end
     }.should change(Base.sources.anonymous, :count).by(2)
-    Dep('parent dep').definer.requires.should == [Dep('nested dep')]
+    Dep('parent dep').context.requires.should == [Dep('nested dep')]
   end
   after { Base.sources.anonymous.deps.clear! }
 
@@ -296,13 +296,13 @@ describe Dep, 'lambda lists' do
     Babushka::PkgHelper.stub!(:all_manager_keys).and_return([:test_helper, :other_helper])
   }
   it "should match against the system name" do
-    dep('lambda list name match') { requires { on :test_name, 'awesome' } }.definer.requires.should == ['awesome']
+    dep('lambda list name match') { requires { on :test_name, 'awesome' } }.context.requires.should == ['awesome']
   end
   it "should match against the system type" do
-    dep('lambda list system match') { requires { on :test_system, 'awesome' } }.definer.requires.should == ['awesome']
+    dep('lambda list system match') { requires { on :test_system, 'awesome' } }.context.requires.should == ['awesome']
   end
   it "should match against the system name" do
-    dep('lambda list pkg_helper_key match') { requires { on :test_helper, 'awesome' } }.definer.requires.should == ['awesome']
+    dep('lambda list pkg_helper_key match') { requires { on :test_helper, 'awesome' } }.context.requires.should == ['awesome']
   end
 end
 
