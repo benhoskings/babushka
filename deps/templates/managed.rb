@@ -51,7 +51,7 @@ managed_template = L{
 
 meta :managed do
   accepts_list_for :installs, :default_pkg, :choose_with => :via
-  accepts_list_for :provides, :default_pkg, :choose_with => :via
+  accepts_versions_for :provides, :default_pkg, :choose_with => :via
   accepts_list_for :service_name, :name
   accepts_list_for :cfg
 
@@ -76,7 +76,7 @@ end
 
 meta :gem do
   accepts_list_for :installs, :default_pkg, :choose_with => :via
-  accepts_list_for :provides, :default_pkg, :choose_with => :via
+  accepts_versions_for :provides, :default_pkg, :choose_with => :via
   accepts_list_for :service_name, :name
   accepts_list_for :cfg
 
