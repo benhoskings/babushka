@@ -3,11 +3,8 @@ class TestDepDefiner < BaseDepDefiner
     :osx # hardcode this for testing
   end
 end
-class TestDepRunner < BaseDepRunner
-end
 class TestTemplate
   def self.definer_class; TestDepDefiner end
-  def self.runner_class; TestDepRunner end
 end
 
 def setup_test_lambdas
