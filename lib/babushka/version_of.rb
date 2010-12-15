@@ -45,5 +45,8 @@ module Babushka
       [name, version].compact * '-'
     end
 
+    def inspect
+      "#<VersionOf #{[name, version].compact.join(' | ')}>"
+    end
   end
 end

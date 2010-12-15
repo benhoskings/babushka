@@ -20,13 +20,7 @@ module Babushka
     end
 
     def to_versions data
-      if data.nil?
-        []
-      elsif data.length == 1 && data.first.is_a?(Hash)
-        to_versions data.first
-      else
-        data.to_a.map {|i| ver(*i) }
-      end
+      data.map {|i| ver *i.split(' ', 2) }
     end
   end
 end
