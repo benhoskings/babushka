@@ -59,7 +59,6 @@ module Babushka
     source_pool
     dep_runner
     dep_runners/base_dep_runner
-    dep_runners/meta_dep_runner
     dep_definer
     dep_definers/meta_dep_wrapper
     dep_definers/base_dep_definer

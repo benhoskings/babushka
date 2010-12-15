@@ -1,5 +1,6 @@
 module Babushka
   class BaseDepDefiner < DepDefiner
+    include BaseDepRunner
 
     accepts_list_for :desc
     accepts_list_for :requires
@@ -15,8 +16,6 @@ module Babushka
     accepts_block_for :before
     accepts_block_for :meet
     accepts_block_for :after
-
-    delegate :version, :set_version, :to => :runner
 
     def pkg_manager
       BaseHelper
