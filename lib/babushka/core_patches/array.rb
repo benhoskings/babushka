@@ -83,6 +83,21 @@ class Array
     grep(by).map {|i| i.sub by, '' }
   end
 
+  # Map this array to a new one by creating a VersionOf for each element in
+  # turn.
+  # If the element is a string, it's split at its first space to extract a
+  # version. If the element is any other type, it's passed verbatim to
+  # VersionOf.new (which may well fail).
+  def versions
+    map {|i|
+      if i.is_a?(String)
+        VersionOf.new *i.split(' ', 2)
+      else
+        VersionOf.new i
+      end
+    }
+  end
+
   # Return a string describing this array as an English list. The final two
   # elements are separated with 'and', and all the other elements are separated
   # with commas.
