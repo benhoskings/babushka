@@ -24,7 +24,6 @@ module Babushka
             end
           end
         LOL
-        set_up_delegating_for method_name
       end
     end
 

@@ -73,10 +73,6 @@ module Babushka
       end
     end
 
-    def self.set_up_delegating_for method_name
-      source_template.runner_class.send :delegate, method_name, :to => :definer
-    end
-
     def self.source_template
       Dep.base_template
     end
