@@ -15,7 +15,7 @@ describe "vars" do
   describe "without values" do
     before {
       Dep('runner spec').met? # so setup{} is called
-      @runner = Dep('runner spec').runner
+      @runner = Dep('runner spec').definer
     }
     it "should return a direct value" do
       @runner.var(:nginx_version).should == '0.7.64'
@@ -40,7 +40,7 @@ describe "vars" do
         set :db_name, 'bobs_database'
       }
       Dep('runner spec').met? # so setup{} is called
-      @runner = Dep('runner spec').runner
+      @runner = Dep('runner spec').definer
     }
     it "should return a direct value, overriding default" do
       @runner.var(:username).should == 'bob'
@@ -63,7 +63,7 @@ describe "vars" do
         set :test_user, 'senor_bob'
       }
       Dep('runner spec').met? # so setup{} is called
-      @runner = Dep('runner spec').runner
+      @runner = Dep('runner spec').definer
     }
     it "should return a direct value when there is no default" do
       @runner.var(:db_name).should == 'bobs_database'

@@ -35,14 +35,13 @@ module Babushka
       end
     end
 
-    attr_reader :name, :source, :opts, :definer_class, :runner_class
+    attr_reader :name, :source, :opts, :definer_class
 
     delegate :desc, :to => :definer_class
 
     def initialize name, source, opts, &block
       @name, @source, @opts, @block = name, source, opts, block
       @definer_class = build_definer block
-      @runner_class = build_runner
       source.templates.register self
     end
 
@@ -57,10 +56,6 @@ module Babushka
           shadow
         end
       end
-    end
-
-    def build_runner
-      Class.new(MetaDepRunner)
     end
   end
 end

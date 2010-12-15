@@ -1,8 +1,6 @@
 module Babushka
-  class BaseDepRunner < DepRunner
+  module BaseDepRunner
     include GitHelpers
-
-    delegate :dependency, :pkg_manager, :to => :definer
 
     private
 

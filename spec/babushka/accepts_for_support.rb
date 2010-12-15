@@ -18,9 +18,6 @@ class AcceptsForTest
   def default_format
     "json"
   end
-  def self.set_up_delegating_for method_name
-    # nothing to do
-  end
   accepts_value_for :package, :choose_with => :via
   accepts_value_for :renders, "a default response", :choose_with => :via
   accepts_value_for :format, :default_format, :choose_with => :via

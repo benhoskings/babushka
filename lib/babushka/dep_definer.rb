@@ -1,13 +1,17 @@
 module Babushka
   class DepDefiner
+    include PromptHelpers
+    include RunHelpers
+
+    include DepRunner
+
     include AcceptsListFor
     include AcceptsValueFor
     include AcceptsBlockFor
 
     attr_reader :payload, :dependency
 
-    delegate :name, :basename, :runner, :to => :dependency
-    delegate :merge, :var, :define_var, :to => :runner
+    delegate :name, :basename, :load_path, :to => :dependency
 
     def initialize dep, &block
       @dependency = dep
@@ -25,7 +29,7 @@ module Babushka
     end
 
     def helper name, &block
-      runner.metaclass.send :define_method, name do |*args|
+      metaclass.send :define_method, name do |*args|
         if block.arity == -1
           instance_exec *args, &block
         elsif block.arity != args.length
@@ -67,10 +71,6 @@ module Babushka
           @current_platform = nil
         end
       end
-    end
-
-    def self.set_up_delegating_for method_name
-      source_template.runner_class.send :delegate, method_name, :to => :definer
     end
 
     def self.source_template
