@@ -1,5 +1,5 @@
 module Babushka
-  class BaseDepDefiner < DepDefiner
+  class DepContext < DepDefiner
     include BaseDepRunner
 
     accepts_list_for :desc
@@ -16,20 +16,6 @@ module Babushka
     accepts_block_for :before
     accepts_block_for :meet
     accepts_block_for :after
-
-    def pkg_manager
-      BaseHelper
-    end
-
-    private
-
-    def chooser
-      Base.host.match_list
-    end
-
-    def chooser_choices
-      Base.host.all_tokens
-    end
 
   end
 end

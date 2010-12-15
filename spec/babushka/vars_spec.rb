@@ -34,7 +34,7 @@ describe Vars do
   end
   describe "with values" do
     before {
-      Dep('vars spec').definer.setup {
+      Dep('vars spec').context.setup {
         set :username, 'bob'
         set :db_name, 'bobs_database'
       }
@@ -55,7 +55,7 @@ describe Vars do
   end
   describe "with values" do
     before {
-      Dep('vars spec').definer.setup {
+      Dep('vars spec').context.setup {
         set :username, 'bob'
         set :db_name, 'bobs_database'
         set :test_user, 'senor_bob'
