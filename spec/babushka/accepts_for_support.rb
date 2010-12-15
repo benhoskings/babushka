@@ -28,8 +28,6 @@ class AcceptsForTest
   accepts_list_for :records, :choose_with => :via
   accepts_list_for :produces, "a default response", :choose_with => :via
   accepts_list_for :valid_formats, :default_formats, :choose_with => :via
-
-  accepts_versions_for :installs, :choose_with => :via
 end
 
 def test_lists
