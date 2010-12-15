@@ -75,8 +75,6 @@ module Babushka
       "#{cmds.map {|i| "'#{i.name}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first.name)}"
     end
 
-    private
-
     def setup_source_uris
       parse_uris
       definer.requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
