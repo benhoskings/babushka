@@ -35,13 +35,13 @@ module Babushka
       end
     end
 
-    attr_reader :name, :source, :opts, :definer_class
+    attr_reader :name, :source, :opts, :context_class
 
-    delegate :desc, :to => :definer_class
+    delegate :desc, :to => :context_class
 
     def initialize name, source, opts, &block
       @name, @source, @opts, @block = name, source, opts, block
-      @definer_class = build_definer block
+      @context_class = build_context block
       source.templates.register self
     end
 
@@ -49,10 +49,10 @@ module Babushka
       opts[:suffix]
     end
 
-    def build_definer block
-      returning Class.new(MetaDepDefiner, &block) do |definer|
+    def build_context block
+      returning Class.new(MetaDepContext, &block) do |context|
         shadow = self
-        definer.metaclass.send :define_method, :source_template do
+        context.metaclass.send :define_method, :source_template do
           shadow
         end
       end
