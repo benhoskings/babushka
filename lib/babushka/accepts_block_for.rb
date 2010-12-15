@@ -40,10 +40,10 @@ module Babushka
       !!specific_block_for(block_name)
     end
 
-    def default_task task_name
-      differentiator = Base.host.differentiator_for payload[task_name].keys
+    def default_block_for block_name
+      differentiator = Base.host.differentiator_for payload[block_name].keys
       L{
-        debug "#{task_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
+        debug "#{block_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
         true
       }
     end
@@ -61,7 +61,7 @@ module Babushka
     end
 
     def block_for method_name
-      specific_block_for(method_name) or default_task(method_name)
+      specific_block_for(method_name) or default_block_for(method_name)
     end
 
     def specific_block_for method_name
