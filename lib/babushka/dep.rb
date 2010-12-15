@@ -13,7 +13,6 @@ module Babushka
     class BaseTemplate
       def self.suffixed?; false end
       def self.definer_class; BaseDepDefiner end
-      def self.runner_class; BaseDepRunner end
     end
 
     module Helpers
@@ -57,11 +56,10 @@ module Babushka
       }
     end
 
-    attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source, :load_path
+    attr_reader :name, :opts, :vars, :template, :definer, :dep_source, :load_path
     attr_accessor :unmet_message
 
-    delegate :desc, :to => :definer
-    delegate :set, :merge, :define_var, :to => :runner
+    delegate :desc, :set, :merge, :define_var, :to => :definer
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. This method is used internally by DepPool when a dep is
@@ -108,14 +106,13 @@ module Babushka
       end
     end
 
-    # Create a definer and runner for this dep from its template, and then
-    # process the dep's outer block against the definer.
+    # Create a definer for this dep from its template, and then process the
+    # dep's outer block against the definer.
     #
     # This results in the details of the dep being stored, like the
     # implementation of +met?+ and +meet+, as well as its +requires+ list and
     # any other items defined at the top level.
     def define_dep!
-      @runner = template.runner_class.new self
       @definer = template.definer_class.new self, &@block
       definer.define_and_process
       @dep_defined = true
@@ -362,7 +359,7 @@ module Babushka
     def call_task task_name
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
-      runner.instance_eval &definer.send(task_name)
+      definer.instance_eval &definer.send(task_name)
     rescue StandardError => e
       log "#{e.class} at #{e.backtrace.first}:".colorize('red')
       log e.message.colorize('red')
