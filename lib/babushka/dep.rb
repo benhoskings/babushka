@@ -371,7 +371,7 @@ module Babushka
     end
 
     def track_block_for task_name
-      if definer.has_task?(task_name)
+      if definer.has_block? task_name
         file, line = *definer.send(task_name).inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
         shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
         sleep 2

@@ -35,9 +35,9 @@ module Babushka
       end
     end
 
-    def has_task? task_name
-      payload[task_name] ||= {}
-      !!specific_block_for(task_name)
+    def has_block? block_name
+      payload[block_name] ||= {}
+      !!specific_block_for(block_name)
     end
 
     def default_task task_name
