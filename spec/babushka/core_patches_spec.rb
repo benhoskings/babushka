@@ -106,6 +106,19 @@ tres
   end
 end
 
+describe Array, '#versions' do
+  {
+    'a'       => [ver('a')],
+    %w[a]     => [ver('a')],
+    %w[a b c] => [ver('a'), ver('b'), ver('c')],
+    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [ver('a', '0.1'), ver('b', '>= 0.6.0'), ver('c', '~> 2.2')]
+  }.each_pair {|input, expected|
+    it "should return #{expected.inspect} when passed #{input.inspect}" do
+      input.versions.should == expected
+    end
+  }
+end
+
 describe Hash, '#defaults!' do
   it "should work for empty hashes" do
     {}.defaults!(:a => 'b', :c => 'd').should == {:a => 'b', :c => 'd'}

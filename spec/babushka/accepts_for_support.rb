@@ -42,15 +42,6 @@ def test_lists
   }
 end
 
-def test_versions
-  {
-    'a'       => [ver('a')],
-    %w[a]     => [ver('a')],
-    %w[a b c] => [ver('a'), ver('b'), ver('c')],
-    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [ver('a', '0.1'), ver('b', '>= 0.6.0'), ver('c', '~> 2.2')]
-  }
-end
-
 def test_value_lambdas
   {
     L{ } => nil,
