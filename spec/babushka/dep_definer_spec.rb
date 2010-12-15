@@ -63,11 +63,11 @@ describe "helper" do
     dep 'another test'
   }
   it "should only define the helper on the specified dep" do
-    Dep('helper test').runner.should respond_to(:helper_test)
-    Dep('another test').runner.should_not respond_to(:helper_test)
+    Dep('helper test').definer.should respond_to(:helper_test)
+    Dep('another test').definer.should_not respond_to(:helper_test)
   end
   it "should respond to the helper" do
-    Dep('helper test').runner.helper_test.should == 'hello from the helper!'
+    Dep('helper test').definer.helper_test.should == 'hello from the helper!'
   end
 end
 
@@ -80,11 +80,11 @@ describe "helper with args" do
     end
   }
   it "should respond to the helper including the args" do
-    Dep('helper args test').runner.helper_args_test('salut', ' :)').should == 'salut from the helper :)'
+    Dep('helper args test').definer.helper_args_test('salut', ' :)').should == 'salut from the helper :)'
   end
   it "should fail with the wrong number of args" do
     L{
-      Dep('helper args test').runner.helper_args_test('salut')
+      Dep('helper args test').definer.helper_args_test('salut')
     }.should raise_error(ArgumentError, "wrong number of args to helper_args_test (1 for 2)")
   end
 end
@@ -98,7 +98,7 @@ describe "helper with splatted args" do
     end
   }
   it "should respond to the helper including the args" do
-    Dep('helper splatted args test').runner.helper_splatted_args_test('salut', 'bonjour', "g'day").should == "salut, bonjour, g'day from the helper!"
+    Dep('helper splatted args test').definer.helper_splatted_args_test('salut', 'bonjour', "g'day").should == "salut, bonjour, g'day from the helper!"
   end
 end
 
