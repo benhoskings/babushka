@@ -160,14 +160,3 @@ describe "accepts_list_for input processing" do
     end
   end
 end
-
-
-describe "accepts_versions_for input processing" do
-  test_versions.each_pair {|input, expected|
-    it "should return #{expected.inspect} when passed #{input.inspect}" do
-      versions = AcceptsForTest.new
-      versions.installs input
-      versions.installs.should == expected
-    end
-  }
-end
