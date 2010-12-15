@@ -51,13 +51,20 @@ module Babushka
     end
 
     def matching_versions?
-      provides.select {|cmd|
+      versions = provides.select {|cmd|
         !cmd.version.nil?
-      }.all? {|cmd|
-        shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
+      }.inject({}) {|hsh,cmd|
+        hsh[cmd] = shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
           cmd.matches? piece.to_version
         }
+        if hsh[cmd]
+          log_ok "#{cmd.to_s(' ')} is satisfied by #{ver(cmd.name, hsh[cmd])}."
+        else
+          log "#{cmd.to_s(' ')} isn't satisfied."
+        end
+        hsh
       }
+      versions.values.all?
     end
 
     def app_dir app_name
