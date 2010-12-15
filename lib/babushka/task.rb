@@ -2,12 +2,11 @@ module Babushka
   class Task
     include PathHelpers
 
-    attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
+    attr_reader :base_opts, :run_opts, :vars, :persistent_log
     attr_accessor :verb, :reportable
 
     def initialize
-      @vars = Hashish.hash
-      @saved_vars = Hashish.hash
+      @vars = Vars.new
       @run_opts = default_run_opts
     end
 
@@ -99,11 +98,11 @@ module Babushka
     require 'yaml'
     def load_previous_run_info_for dep
       load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
-        @saved_vars[var_name].update var_data
+        vars.saved_vars[var_name].update var_data
       }
       load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
         debug "Updating sticky var #{var_name}: #{var_data.inspect}"
-        @vars[var_name].update var_data
+        vars.vars[var_name].update var_data
       }
     end
 
@@ -154,7 +153,7 @@ module Babushka
     end
 
     def vars_for_save
-      vars.dup.inject(saved_vars.dup) {|vars_to_save,(var,data)|
+      vars.dup.inject(vars.saved_vars.dup) {|vars_to_save,(var,data)|
         vars_to_save[var].update vars[var]
         save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
         vars_to_save
