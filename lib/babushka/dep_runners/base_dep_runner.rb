@@ -79,12 +79,12 @@ module Babushka
 
     def setup_source_uris
       parse_uris
-      context.requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
+      requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
     end
 
     def parse_uris
       @uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
-      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if context.respond_to?(:extra_source)
+      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if respond_to?(:extra_source)
     end
 
     def uri_processor(method_name)
