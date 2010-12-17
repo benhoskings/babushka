@@ -53,7 +53,11 @@ module Babushka
         !cmd.version.nil?
       }.inject({}) {|hsh,cmd|
         hsh[cmd] = shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
-          cmd.matches? piece.to_version
+          begin
+            cmd.matches? piece.to_version
+          rescue VersionStrError
+            false
+          end
         }
         log "#{cmd.name} is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
         hsh
