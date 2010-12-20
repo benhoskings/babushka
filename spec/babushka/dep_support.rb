@@ -2,12 +2,12 @@ def setup_yield_counts
   @yield_counts = Hash.new {|hsh,k| hsh[k] = Hash.new {|hsh,k| 0 } }
 
   @yield_counts_none = {}
-  @yield_counts_met_run = {:internal_setup => 1, :setup => 1, :met? => 1}
-  @yield_counts_meet_run = {:internal_setup => 1, :setup => 1, :met? => 2, :prepare => 1, :before => 1, :meet => 1, :after => 1}
-  @yield_counts_dep_failed = {:internal_setup => 1, :setup => 1}
-  @yield_counts_failed_meet_run = {:internal_setup => 1, :setup => 1, :met? => 2, :prepare => 1, :before => 1, :meet => 1, :after => 1}
-  @yield_counts_already_met = {:internal_setup => 1, :setup => 1, :met? => 1}
-  @yield_counts_failed_at_before = {:internal_setup => 1, :setup => 1, :met? => 2, :prepare => 1, :before => 1}
+  @yield_counts_met_run = {:setup => 1, :met? => 1}
+  @yield_counts_meet_run = {:setup => 1, :met? => 2, :prepare => 1, :before => 1, :meet => 1, :after => 1}
+  @yield_counts_dep_failed = {:setup => 1}
+  @yield_counts_failed_meet_run = {:setup => 1, :met? => 2, :prepare => 1, :before => 1, :meet => 1, :after => 1}
+  @yield_counts_already_met = {:setup => 1, :met? => 1}
+  @yield_counts_failed_at_before = {:setup => 1, :met? => 2, :prepare => 1, :before => 1}
 end
 
 def make_counter_dep opts = {}

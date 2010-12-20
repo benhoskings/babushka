@@ -288,7 +288,6 @@ module Babushka
     end
 
     def process_this_dep
-      process_task(:internal_setup)
       process_task(:setup)
       process_deps and process_self
     rescue DepError => ex
