@@ -23,12 +23,10 @@ meta :app do
       end
     end
 
-    # TODO what happens if none of the paths exist? Should we create the
-    # first one?
     helper :prefix_to_use do
       prefix.map(&:p).find {|pre|
         pre.directory?
-      }
+      } || '/Applications'.p
     end
 
     helper :discover_latest_version do
