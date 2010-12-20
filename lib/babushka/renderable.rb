@@ -41,7 +41,7 @@ module Babushka
 
     require 'erb'
     def render_erb source
-      ERB.new(IO.read(source)).result(binding)
+      ERB.new(source.p.read).result(binding)
     end
 
     require 'digest/sha1'
