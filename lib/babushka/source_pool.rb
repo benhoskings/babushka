@@ -133,7 +133,7 @@ module Babushka
       current_load_context[:source] || Base.sources.anonymous
     end
     def current_load_path
-      current_load_context[:path]
+      current_load_context[:path].try(:p)
     end
     def current_load_opts
       current_load_context[:opts] || {}
