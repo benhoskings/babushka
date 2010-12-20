@@ -7,7 +7,7 @@ meta :tmbundle, :for => :osx do
       '~/Library/Application Support/TextMate/Bundles' / name
     end
     met? { path.dir? }
-    before { shell "mkdir -p #{path.parent}" }
+    before { shell "mkdir -p '#{path.parent}'" }
     meet {
       source.each {|uri| git uri, :to => path }
     }
