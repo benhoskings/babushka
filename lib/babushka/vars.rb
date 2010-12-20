@@ -1,5 +1,7 @@
 module Babushka
   class Vars
+    include PromptHelpers
+
     attr_reader :vars, :saved_vars
 
     def initialize

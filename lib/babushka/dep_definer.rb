@@ -1,6 +1,5 @@
 module Babushka
   class DepDefiner
-    include PromptHelpers
     include RunHelpers
 
     include AcceptsListFor
