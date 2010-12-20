@@ -26,11 +26,9 @@ meta :app do
     # TODO what happens if none of the paths exist? Should we create the
     # first one?
     helper :prefix_to_use do
-      prefix.map{|pre|
-        pre.to_s.p.expand
-      }.find {|pre|
-        pre.exists? && pre.directory?
-      }.to_s # NOTE to_s shouldn't be required once accepts_list_for is more generic
+      prefix.map(&:p).find {|pre|
+        pre.directory?
+      }
     end
 
     helper :discover_latest_version do
