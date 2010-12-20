@@ -67,13 +67,13 @@ end
 describe "a meetable dep tree" do
   before {
     setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ !@yield_counts['a'][:met?].zero? }
-    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ !@yield_counts['b'][:met?].zero? }
-    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ !@yield_counts['c'][:met?].zero? }, :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ !@yield_counts['d'][:met?].zero? }
-    make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ !@yield_counts['e'][:met?].zero? }
-    make_counter_dep :name => 'f',                         :met? => L{ !@yield_counts['f'][:met?].zero? }
-    make_counter_dep :name => 'g',                         :met? => L{ !@yield_counts['g'][:met?].zero? }
+    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:met?] > 1 }
+    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:met?] > 1 }
+    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:met?] > 1 }, :requires_when_unmet => %w[g]
+    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:met?] > 1 }
+    make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ @yield_counts['e'][:met?] > 1 }
+    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:met?] > 1 }
+    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:met?] > 1 }
   }
   it_should_behave_like "met?"
   describe "meet" do
@@ -88,13 +88,13 @@ end
 describe "a partially meetable dep tree" do
   before {
     setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ !@yield_counts['a'][:met?].zero? }
-    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ !@yield_counts['b'][:met?].zero? }
-    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ !@yield_counts['c'][:met?].zero? }, :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ !@yield_counts['d'][:met?].zero? }
+    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:met?] > 1 }
+    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:met?] > 1 }
+    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:met?] > 1 }, :requires_when_unmet => %w[g]
+    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:met?] > 1 }
     make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ false }
-    make_counter_dep :name => 'f',                         :met? => L{ !@yield_counts['f'][:met?].zero? }
-    make_counter_dep :name => 'g',                         :met? => L{ !@yield_counts['g'][:met?].zero? }
+    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:met?] > 1 }
+    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:met?] > 1 }
   }
   it_should_behave_like "met?"
   describe "meet" do

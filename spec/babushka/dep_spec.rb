@@ -433,7 +433,7 @@ describe "calling meet on a single dep" do
   end
   it "should fail, run meet, and then succeed on unmet deps" do
     make_counter_dep(
-      :name => 'unmet', :met? => L{ !@yield_counts['unmet'][:met?].zero? }
+      :name => 'unmet', :met? => L{ @yield_counts['unmet'][:met?] > 1 }
     ).meet.should == true
     @yield_counts['unmet'].should == @yield_counts_meet_run
   end
@@ -445,7 +445,7 @@ describe "calling meet on a single dep" do
   end
   it "should fail, run meet, and then succeed on unmet deps where after fails" do
     make_counter_dep(
-      :name => 'unmet, #after fails', :met? => L{ !@yield_counts['unmet, #after fails'][:met?].zero? }, :after => L{ false }
+      :name => 'unmet, #after fails', :met? => L{ @yield_counts['unmet, #after fails'][:met?] > 1 }, :after => L{ false }
     ).meet.should == true
     @yield_counts['unmet, #after fails'].should == @yield_counts_meet_run
   end
