@@ -1,5 +1,5 @@
 meta :tmbundle, :for => :osx do
-  accepts_list_for :source
+  accepts_value_for :source
 
   template {
     requires 'benhoskings:TextMate.app'
@@ -8,9 +8,7 @@ meta :tmbundle, :for => :osx do
     end
     met? { path.dir? }
     before { shell "mkdir -p '#{path.parent}'" }
-    meet {
-      source.each {|uri| git uri, :to => path }
-    }
+    meet { git source, :to => path }
     after { shell %Q{osascript -e 'tell app "TextMate" to reload bundles'} }
   }
 end
