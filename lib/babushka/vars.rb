@@ -96,7 +96,7 @@ module Babushka
 
     def message_for key
       printable_key = key.to_s.gsub '_', ' '
-      vars[key][:message] || "#{printable_key}#{" for #{name}" unless printable_key == name}"
+      vars[key][:message] || printable_key
     end
 
     def save_referenced_default_for var, vars_to_save
