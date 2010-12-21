@@ -7,6 +7,24 @@ describe "source_template" do
   end
 end
 
+describe "methods in deps" do
+  before {
+    dep 'helper method test' do
+      def helper_test
+        'hello from the helper method!'
+      end
+    end
+    dep 'without helper method'
+  }
+  it "should only be defined on the specified dep" do
+    Dep('helper method test').context.should respond_to(:helper_test)
+    Dep('without helper method').context.should_not respond_to(:helper_test)
+  end
+  it "should return the right value" do
+    Dep('helper method test').context.helper_test.should == 'hello from the helper method!'
+  end
+end
+
 describe "helper" do
   before {
     dep 'helper test' do
@@ -14,11 +32,11 @@ describe "helper" do
         'hello from the helper!'
       end
     end
-    dep 'another test'
+    dep 'without helper'
   }
   it "should only define the helper on the specified dep" do
     Dep('helper test').context.should respond_to(:helper_test)
-    Dep('another test').context.should_not respond_to(:helper_test)
+    Dep('without helper').context.should_not respond_to(:helper_test)
   end
   it "should respond to the helper" do
     Dep('helper test').context.helper_test.should == 'hello from the helper!'
