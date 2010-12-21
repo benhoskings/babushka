@@ -6,39 +6,39 @@ meta :app do
   accepts_block_for :current_version do |path| nil end
   accepts_block_for :latest_version
 
+  def app_name_match
+    provides.first.to_s.sub(/\.app$/, '*.app')
+  end
+
+  def check_version path
+    current = current_version.call(path)
+    if current.nil? || version.nil?
+      debug "Can't check versions without both current and latest."
+      true
+    elsif current >= version
+      log_ok "#{name} is up to date at #{current}."
+    else
+      log "#{name} could be updated from #{current} to #{version}."
+    end
+  end
+
+  # TODO what happens if none of the paths exist? Should we create the
+  # first one?
+  def prefix_to_use
+    prefix.map{|pre|
+      pre.to_s.p.expand
+    }.find {|pre|
+      pre.exists? && pre.directory?
+    }.to_s # NOTE to_s shouldn't be required once accepts_list_for is more generic
+  end
+
+  def discover_latest_version
+    latest_value = latest_version.call
+    # TODO this is just to detect the default block and ignore it. Yuck :)
+    set_version latest_value unless latest_value == true
+  end
+
   template {
-    helper :app_name_match do
-      provides.first.to_s.sub(/\.app$/, '*.app')
-    end
-
-    helper :check_version do |path|
-      current = current_version.call(path)
-      if current.nil? || version.nil?
-        debug "Can't check versions without both current and latest."
-        true
-      elsif current >= version
-        log_ok "#{name} is up to date at #{current}."
-      else
-        log "#{name} could be updated from #{current} to #{version}."
-      end
-    end
-
-    # TODO what happens if none of the paths exist? Should we create the
-    # first one?
-    helper :prefix_to_use do
-      prefix.map{|pre|
-        pre.to_s.p.expand
-      }.find {|pre|
-        pre.exists? && pre.directory?
-      }.to_s # NOTE to_s shouldn't be required once accepts_list_for is more generic
-    end
-
-    helper :discover_latest_version do
-      latest_value = latest_version.call
-      # TODO this is just to detect the default block and ignore it. Yuck :)
-      set_version latest_value unless latest_value == true
-    end
-
     prepare {
       setup_source_uris
     }

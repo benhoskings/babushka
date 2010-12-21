@@ -79,6 +79,9 @@ describe "using" do
   describe "with template" do
     before {
       @meta = meta 'template_test' do
+        def a_helper_method
+          'hello from the helper method!'
+        end
         template {
           helper :a_helper do
             'hello from the helper!'
@@ -93,6 +96,9 @@ describe "using" do
       @meta.context_class.respond_to?(:a_helper).should be_false
       @meta.context_class.new(nil).respond_to?(:a_helper).should be_false
       dep('dep1.template_test').context.respond_to?(:a_helper).should be_true
+    end
+    it "should correctly define the helper method" do
+      dep('dep2.template_test').context.a_helper_method.should == 'hello from the helper method!'
     end
     it "should correctly define the helper" do
       dep('dep2.template_test').context.a_helper.should == 'hello from the helper!'

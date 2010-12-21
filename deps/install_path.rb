@@ -1,14 +1,12 @@
 meta :install_path do
-  template {
-    helper :subpaths do
-      %w[. bin etc include lib sbin share share/doc var].concat(
-        (1..9).map {|i| "share/man/man#{i}" }
-      )
-    end
-    helper :install_prefix do
-      var(:install_path).p.parent
-    end
-  }
+  def subpaths
+    %w[. bin etc include lib sbin share share/doc var].concat(
+      (1..9).map {|i| "share/man/man#{i}" }
+    )
+  end
+  def install_prefix
+    var(:install_path).p.parent
+  end
 end
 
 dep 'writable.install_path' do

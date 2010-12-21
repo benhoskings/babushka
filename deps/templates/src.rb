@@ -35,11 +35,11 @@ meta :src do
     call_task(:postinstall)
   }
 
-  template {
-    helper :default_configure_command do
-      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix} #{configure_args.map(&:to_s).join(' ')}"
-    end
+  def default_configure_command
+    "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix} #{configure_args.map(&:to_s).join(' ')}"
+  end
 
+  template {
     requires 'build tools', 'curl.managed'
     internal_setup { setup_source_uris }
     met? { provided? }

@@ -1,6 +1,6 @@
 managed_template = L{
-  # TODO push this into accepts_*_for somehow
-  helper :packages do
+  def packages
+    # TODO push this into accepts_*_for somehow
     if installs.first.is_a?(Hash)
       installs.first.map {|(name, version)| ver(name, version) }
     else
@@ -8,11 +8,11 @@ managed_template = L{
     end
   end
 
-  helper :packages_present? do
+  def packages_present?
     packages.all? {|pkg| pkg_manager.has? pkg }
   end
 
-  helper :add_cfg_deps do
+  def add_cfg_deps
     cfg.all? {|target|
       target_file = target.to_s
       source_file = load_path.dirname / name / "#{File.basename(target_file)}.erb"

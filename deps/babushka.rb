@@ -15,11 +15,9 @@ dep 'babushka next' do
 end
 
 meta :babushka do
-  template {
-    helper :repo do
-      Babushka::GitRepo.new var(:install_path)
-    end
-  }
+  def repo
+    Babushka::GitRepo.new var(:install_path)
+  end
 end
 
 dep 'set up.babushka' do
