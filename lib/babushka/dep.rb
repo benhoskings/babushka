@@ -420,7 +420,7 @@ module Babushka
 
     def defined_info
       if dep_defined?
-        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{context.requires.map(&:name).join(', ')}]"
+        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{context.requires.join(', ')}]"
       else
         "(not defined yet)"
       end
