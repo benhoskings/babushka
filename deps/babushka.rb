@@ -55,9 +55,9 @@ dep 'update would fast forward.babushka' do
       fail_because("Couldn't pull the latest code - check your internet connection.")
     else
       if !repo.remote_branch_exists?
-        fail_because("The current branch, #{current_branch}, isn't pushed to origin/#{current_branch}.")
+        fail_because("The current branch, #{repo.current_branch}, isn't pushed to origin/#{repo.current_branch}.")
       elsif repo.ahead?
-        fail_because("There are unpushed commits in #{current_branch}.")
+        fail_because("There are unpushed commits in #{repo.current_branch}.")
       else
         true
       end
