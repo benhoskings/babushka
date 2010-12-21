@@ -79,10 +79,10 @@ describe "using" do
   describe "with template" do
     before {
       @meta = meta 'template_test' do
+        def a_helper
+          'hello from the helper method!'
+        end
         template {
-          helper :a_helper do
-            'hello from the helper!'
-          end
           met? {
             'this dep is met.'
           }
@@ -95,7 +95,7 @@ describe "using" do
       dep('dep1.template_test').context.respond_to?(:a_helper).should be_true
     end
     it "should correctly define the helper" do
-      dep('dep2.template_test').context.a_helper.should == 'hello from the helper!'
+      dep('dep2.template_test').context.a_helper.should == 'hello from the helper method!'
     end
     it "should correctly define the met? block" do
       dep('dep3.template_test').send(:call_task, :met?).should == 'this dep is met.'
