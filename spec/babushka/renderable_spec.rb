@@ -39,4 +39,32 @@ describe Renderable do
       end
     end
   end
+  describe "binding handling" do
+    context "when no explicit binding is passed" do
+      before {
+        subject.instance_eval {
+          def custom_renderable_path
+            "from implicit binding"
+          end
+        }
+        subject.render('spec/renderable/with_binding.conf.erb')
+      }
+      it "should render using the implicit binding" do
+        (tmp_prefix / 'example.conf').read.should =~ /from implicit binding/
+      end
+    end
+    context "when an explicit binding is passed" do
+      before {
+        dep 'renderable binding spec' do
+          def custom_renderable_path
+            "from explicit binding"
+          end
+        end
+        subject.render('spec/renderable/with_binding.conf.erb', :context => Dep('renderable binding spec').context)
+      }
+      it "should render using the given binding" do
+        (tmp_prefix / 'example.conf').read.should =~ /from explicit binding/
+      end
+    end
+  end
 end

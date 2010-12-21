@@ -9,7 +9,7 @@ module Babushka
 
     def render source, opts = {}
       shell("cat > '#{path}'",
-        :input => inkan_output_for(source),
+        :input => inkan_output_for(source, opts[:context]),
         :sudo => opts[:sudo]
       ).tap {|result|
         if result
@@ -32,16 +32,18 @@ module Babushka
 
     private
 
-    def inkan_output_for source
+    def inkan_output_for source, custom_context
       Inkan.render {|inkan|
         inkan.credit = "Generated #{_by_babushka}, from #{sha_of(source)}"
-        inkan.print render_erb(source)
+        inkan.print render_erb(source, custom_context)
       }
     end
 
     require 'erb'
-    def render_erb source
-      ERB.new(source.p.read).result(binding)
+    def render_erb source, custom_context
+      (custom_context || self).instance_exec {
+        ERB.new(source.p.read).result(binding)
+      }
     end
 
     require 'digest/sha1'
