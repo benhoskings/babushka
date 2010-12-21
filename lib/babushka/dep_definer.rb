@@ -44,7 +44,7 @@ module Babushka
 
     def result message, opts = {}
       returning opts[:result] do
-        @dep.unmet_message = message
+        dependency.unmet_message = message
       end
     end
 
