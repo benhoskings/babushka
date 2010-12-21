@@ -115,7 +115,7 @@ module Babushka
       elsif !File.exists?(path) && !opts[:optional]
         log_error "Couldn't find erb to render at #{path}."
       elsif File.exists?(path)
-        Renderable.new(opts[:to]).render(path, opts).tap {|result|
+        Renderable.new(opts[:to]).render(path, opts.merge(:context => self)).tap {|result|
           if result
             log "Rendered #{opts[:to]}."
           else
