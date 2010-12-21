@@ -1,11 +1,6 @@
 managed_template = L{
   def packages
-    # TODO push this into accepts_*_for somehow
-    if installs.first.is_a?(Hash)
-      installs.first.map {|(name, version)| ver(name, version) }
-    else
-      installs.map {|pkg| ver(pkg) }
-    end
+    installs.versions
   end
 
   def packages_present?
