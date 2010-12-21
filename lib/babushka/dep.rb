@@ -228,11 +228,9 @@ module Babushka
     # - Next, the dep's dependencies (i.e. the contents of +requires+) are
     #   run recursively by calling +#process+ on each; this dep's +#process+
     #   early-exits if any of the subdeps fail.
-    # - Next, the +met?+ block is run. If +met?+ returns:
-    #   - +true+, or any true-like value, the dep is already met and there is
-    #     nothing to do.
-    #   - +:fail+, the dep is considered unmeetable and the run fails.
-    #   - Otherwise, the dep is unmet, and the following happens:
+    # - Next, the +met?+ block is run. If +met?+ returns +true+, or any
+    #   true-like value, the dep is already met and there is nothing to do.
+    #   Otherwise, the dep is unmet, and the following happens:
     #     - The +prepare+ task is run
     #     - The +before+ task is run
     #     - If +before+ returned a true-like value, the +meet+ task is run.
@@ -247,18 +245,26 @@ module Babushka
     # always taken from its +met?+ block, whether it was already met,
     # unmeetable, or met during the run.
     #
-    # Specifically, the following describes the return values of a few
-    # components, and of the dep itself.
+    # Sometimes there are conditions under which a dep can't be met. For
+    # example, if a dep detects that the existing version of a package is
+    # broken in some way that requires manual intervention, then there's no
+    # use running the +meet+ block. In this circumstance, you can raise the
+    # +UnmeetableDep+ exception within the +met?+ block. Babushka will rescue
+    # it and consider the dep unmeetable (that is, it will just allow the dep
+    # to fail without attempting to meet it).
+    #
+    # The following describes the return values of a few components, and of
+    # the dep itself.
     # - A '-' means the corresponding block wouldn't be run at all.
     # - An 'X' means the corresponding return value doesn't matter, and is
     #   discarded.
     #
-    #     Initial state   | initial +met?+ | meet  | subsequent +met?+ | dep returns
-    #     ----------------+----------------+-------+-------------------+------------
-    #     already met     | true           | -     | -                 | true
-    #     unmeetable      | :fail          | -     | -                 | false
-    #     couldn't be met | false          | X     | false             | false
-    #     met during run  | false          | X     | true              | true
+    #     Initial state   | initial +met?+       | meet  | subsequent +met?+ | dep returns
+    #     ----------------+----------------------+-------+-------------------+------------
+    #     already met     | true                 | -     | -                 | true
+    #     unmeetable      | UnmeetableDep raised | -     | -                 | false
+    #     couldn't be met | false                | X     | false             | false
+    #     met during run  | false                | X     | true              | true
     #
     # Wherever possible, the +met?+ test shouldn't directly test that the
     # +meet+ block performed specific tasks; only that its overall purpose has
