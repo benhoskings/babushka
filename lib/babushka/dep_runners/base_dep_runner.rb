@@ -4,6 +4,7 @@ module Babushka
 
     private
 
+    # TODO: remove these two once the new version handling is done.
     def version
       var(:versions)[name]
     end
