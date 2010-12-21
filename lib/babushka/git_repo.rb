@@ -79,6 +79,10 @@ module Babushka
       end
     end
 
+    def branch! branch
+      repo_shell("git branch '#{branch}'")
+    end
+
     def track! branch
       repo_shell("git checkout -t '#{branch}'")
     end
