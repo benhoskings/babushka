@@ -25,12 +25,14 @@ meta :src do
 
   accepts_block_for(:build) { log_shell "build", "make" }
   accepts_block_for(:install) { Babushka::SrcHelper.install_src! 'make install' }
+  accepts_block_for(:postinstall)
 
   accepts_block_for(:process_source) {
     call_task(:preconfigure) and
     call_task(:configure) and
     call_task(:build) and
-    call_task(:install)
+    call_task(:install) and
+    call_task(:postinstall)
   }
 
   template {
