@@ -38,7 +38,7 @@ managed_template = L{
     if installs.blank?
       log_ok "Not required on #{pkg_manager.manager_key}-based systems."
     else
-      provided?
+      packages_present? and provided?
     end
   }
   before {
