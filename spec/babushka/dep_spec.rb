@@ -431,6 +431,12 @@ describe "calling meet on a single dep" do
     ).meet.should == false
     @yield_counts['unmeetable'].should == @yield_counts_meet_run
   end
+  it "should fail fast on explicitly unmeetable deps" do
+    make_counter_dep(
+      :name => 'explicitly unmeetable', :met? => L{ raise UnmeetableDep }
+    ).meet.should == false
+    @yield_counts['explicitly unmeetable'].should == @yield_counts_met_run
+  end
   it "should fail, run meet, and then succeed on unmet deps" do
     make_counter_dep(
       :name => 'unmet', :met? => L{ @yield_counts['unmet'][:met?] > 1 }
@@ -442,6 +448,12 @@ describe "calling meet on a single dep" do
       :name => 'unmet, #before fails', :met? => L{ false }, :before => L{ false }
     ).meet.should == false
     @yield_counts['unmet, #before fails'].should == @yield_counts_failed_at_before
+  end
+  it "should fail, not run meet, and fail again on unmet deps where meet raises UnmeetableDep" do
+    make_counter_dep(
+      :name => 'unmet, #before fails', :met? => L{ false }, :meet => L{ raise UnmeetableDep }
+    ).meet.should == false
+    @yield_counts['unmet, #before fails'].should == @yield_counts_early_exit_meet_run
   end
   it "should fail, run meet, and then succeed on unmet deps where after fails" do
     make_counter_dep(
