@@ -293,8 +293,11 @@ describe GitRepo, '#track!' do
   end
   context "after tracking" do
     before { subject.track! "origin/next" }
-    it "should be tracking the next branch now" do
+    it "should have created a next branch" do
       subject.branches.should include('next')
+    end
+    it "should be tracking origin/next" do
+      subject.repo_shell('git config branch.next.remote').should == 'origin'
     end
   end
 end
