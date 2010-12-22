@@ -19,6 +19,18 @@ describe Task, "process" do
       Base.task.process ['task spec']
     end
   end
+  describe "with_vars" do
+    it "should set the values in with_vars as vars" do
+      var_value = nil
+      dep 'task spec with_vars' do
+        met? {
+          var_value = var(:task_var)
+        }
+      end
+      Base.task.process ['task spec with_vars'], {'task_var' => {:value => 'something tasky'}}
+      var_value.should == 'something tasky'
+    end
+  end
   after {
     Base.task.vars.saved_vars.clear
   }
