@@ -71,10 +71,10 @@ module Babushka
       if args.empty?
         fail_with handle_help
       elsif (verb = validate_verb(args.first)).nil?
-        PassedVerb.new verb_for('meet'), [], []
+        PassedVerb.new verb_for('meet'), [], [], {}
       elsif verb != false
         args.shift
-        PassedVerb.new verb_for(verb_abbrevs[verb]), [], []
+        PassedVerb.new verb_for(verb_abbrevs[verb]), [], [], {}
       end
     end
 
@@ -121,7 +121,7 @@ module Babushka
       help_verb = verb_for('help')
       handle_help PassedVerb.new(help_verb, [], [
         PassedArg.new(help_verb.args.detect {|arg| arg.name == :verb }, verb.name.to_s)
-      ]), error_message
+      ], {}), error_message
     end
 
     def print_version opts = {}
