@@ -10,7 +10,7 @@ module Babushka
       @run_opts = default_run_opts
     end
 
-    def process dep_names, with_vars
+    def process dep_names, with_vars = {}
       raise "A task is already running." if running?
       @running = true
       Base.in_thread { RunReporter.post_reports }
