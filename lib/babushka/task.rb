@@ -31,7 +31,7 @@ module Babushka
 
     def run_dep dep
       log_dep dep do
-        load_previous_run_info_for dep
+        load_run_info_for dep
         returning dep.process(:top_level => true) do |result|
           save_run_info_for dep, result
         end
@@ -96,7 +96,7 @@ module Babushka
     end
 
     require 'yaml'
-    def load_previous_run_info_for dep
+    def load_run_info_for dep
       load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
         vars.saved_vars[var_name].update var_data
       }
