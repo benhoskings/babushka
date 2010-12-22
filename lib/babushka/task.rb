@@ -10,18 +10,18 @@ module Babushka
       @run_opts = default_run_opts
     end
 
-    def process dep_names
+    def process dep_names, with_vars = {}
       raise "A task is already running." if running?
       @running = true
       Base.in_thread { RunReporter.post_reports }
-      dep_names.all? {|dep_name| process_dep dep_name }
+      dep_names.all? {|dep_name| process_dep dep_name, with_vars }
     ensure
       @running = false
     end
 
-    def process_dep dep_name
+    def process_dep dep_name, with_vars
       Dep.find_or_suggest dep_name do |dep|
-        returning run_dep(dep) do |result|
+        returning run_dep(dep, with_vars) do |result|
           log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
@@ -29,9 +29,9 @@ module Babushka
       end
     end
 
-    def run_dep dep
+    def run_dep dep, with_vars
       log_dep dep do
-        load_previous_run_info_for dep
+        load_run_info_for dep, with_vars
         returning dep.process(:top_level => true) do |result|
           save_run_info_for dep, result
         end
@@ -96,12 +96,15 @@ module Babushka
     end
 
     require 'yaml'
-    def load_previous_run_info_for dep
+    def load_run_info_for dep, with_vars
       load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
         vars.saved_vars[var_name].update var_data
       }
       load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
         debug "Updating sticky var #{var_name}: #{var_data.inspect}"
+        vars.vars[var_name].update var_data
+      }
+      with_vars.each_pair {|var_name,var_data|
         vars.vars[var_name].update var_data
       }
     end
