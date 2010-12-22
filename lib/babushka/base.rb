@@ -89,11 +89,11 @@ module Babushka
 
     def parse_cmdline_token verb, args
       detected_opt = detect_option_in(verb.def.opts, args) || detect_option_in(Opts, args)
-      if detected_opt.nil?
-        verb.args = parse_cmdline_args(verb, verb.def.args, args)
-      else
+      if !detected_opt.nil?
         args.shift
         verb.opts << parse_cmdline_opt(detected_opt, args)
+      else
+        verb.args = parse_cmdline_args(verb, verb.def.args, args)
       end
     end
 
