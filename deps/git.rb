@@ -16,10 +16,9 @@ dep 'git.managed' do
 end
 
 dep 'git.installer' do
-  merge :versions, 'git' => '1.7.3.1'
   requires_when_unmet 'usr-local.install_path'
-  source "http://git-osx-installer.googlecode.com/files/git-#{var(:versions)['git']}-intel-leopard.dmg"
-  provides 'git'
+  source "http://git-osx-installer.googlecode.com/files/git-1.7.3.3-x86_64-leopard.dmg"
+  provides 'git >= 1.7.3'
   after {
     in_dir '/usr/local/bin' do
       sudo "ln -sf /usr/local/git/bin/git* ."
