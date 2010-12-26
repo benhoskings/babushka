@@ -39,7 +39,7 @@ dep 'up to date.babushka' do
       if result
         log_ok "babushka is up to date at revision #{repo.current_head}."
       else
-        log "babushka can be updated: #{repo.current_head}..#{shell("git rev-parse --short origin/#{var(:babushka_branch)}")}"
+        log "babushka can be updated: #{repo.current_head}..#{repo.repo_shell("git rev-parse --short origin/#{var(:babushka_branch)}")}"
       end
     end
   }
