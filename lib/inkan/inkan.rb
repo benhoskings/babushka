@@ -4,14 +4,10 @@ class Inkan
   attr_accessor :credit, :comment, :comment_suffix
   
   def self.legitimate?(file)
-    legit = false
-    
     File.open(file) do |file|
       first_line = file.gets
-      legit = !first_line[/\s#{sha(file.read)}\s*\n$/].nil?
+      !first_line[/\s#{sha(file.read)}\s*\n$/].nil?
     end
-    
-    legit
   end
   
   def self.seal(file)
