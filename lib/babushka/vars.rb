@@ -1,38 +1,12 @@
 module Babushka
-  class DepRunner
+  class Vars
     include PromptHelpers
-    include RunHelpers
 
-    delegate :load_path, :name, :basename, :definer, :to => :the_dep
+    attr_reader :vars, :saved_vars
 
-    def initialize dep
-      @dep = dep
-    end
-
-    def the_dep
-      @dep
-    end
-    def vars
-      Base.task.vars
-    end
-    def saved_vars
-      Base.task.saved_vars
-    end
-
-    def result message, opts = {}
-      returning opts[:result] do
-        @dep.unmet_message = message
-      end
-    end
-    def met message
-      result message, :result => true
-    end
-    def unmet message
-      result message, :result => false
-    end
-    def fail_because message
-      log message
-      :fail
+    def initialize
+      @vars = Hashish.hash
+      @saved_vars = Hashish.hash
     end
 
     def set key, value
@@ -70,21 +44,23 @@ module Babushka
       vars[name.to_s]
     end
 
-    def ask_for_var key, opts
-      set key, send("prompt_for_#{vars[key][:type] || 'value'}",
-        message_for(key),
-        vars[key].dragnet(:choices, :choice_descriptions).merge(
-          opts
-        ).merge(
-          :default => default_for(key),
-          :dynamic => vars[key][:default].respond_to?(:call)
-        )
-      )
+    def for_save
+      vars.dup.inject(saved_vars.dup) {|vars_to_save,(var,data)|
+        vars_to_save[var].update vars[var]
+        save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
+        vars_to_save
+      }.reject_r {|var,data|
+        !data.class.in?([String, Symbol, Hash, Numeric, TrueClass, FalseClass]) ||
+        var.to_s['password']
+      }
     end
 
-    def message_for key
-      printable_key = key.to_s.gsub '_', ' '
-      vars[key][:message] || "#{printable_key}#{" for #{name}" unless printable_key == name}"
+    def sticky_for_save
+      vars.reject {|var,data|
+        !data[:sticky]
+      }.map_values {|k,v|
+        v.reject {|k,v| k != :value }
+      }
     end
 
     def default_for key
@@ -101,6 +77,33 @@ module Babushka
         # Otherwise, use a saved literal value, or the default.
         saved_vars[key.to_s][:value] || vars[key.to_s][:default]
       end
+    end
+
+
+    private
+
+    def ask_for_var key, opts
+      set key, send("prompt_for_#{vars[key][:type] || 'value'}",
+        message_for(key),
+        vars[key].dragnet(:choices, :choice_descriptions).merge(
+          opts
+        ).merge(
+          :default => default_for(key),
+          :dynamic => vars[key][:default].respond_to?(:call)
+        )
+      )
+    end
+
+    def message_for key
+      printable_key = key.to_s.gsub '_', ' '
+      vars[key][:message] || printable_key
+    end
+
+    def save_referenced_default_for var, vars_to_save
+      vars_to_save[var][:values] ||= {}
+      vars_to_save[var][:values][ # set the saved value of this var
+        vars[vars[var][:default].to_s][:value] # for this var's current default reference
+      ] = vars_to_save[var].delete(:value) # to the referenced var's value
     end
 
   end

@@ -2,27 +2,26 @@ module Babushka
   class Task
     include PathHelpers
 
-    attr_reader :base_opts, :run_opts, :vars, :saved_vars, :persistent_log
+    attr_reader :base_opts, :run_opts, :vars, :persistent_log
     attr_accessor :verb, :reportable
 
     def initialize
-      @vars = Hashish.hash
-      @saved_vars = Hashish.hash
+      @vars = Vars.new
       @run_opts = default_run_opts
     end
 
-    def process dep_names
+    def process dep_names, with_vars = {}
       raise "A task is already running." if running?
       @running = true
       Base.in_thread { RunReporter.post_reports }
-      dep_names.all? {|dep_name| process_dep dep_name }
+      dep_names.all? {|dep_name| process_dep dep_name, with_vars }
     ensure
       @running = false
     end
 
-    def process_dep dep_name
+    def process_dep dep_name, with_vars
       Dep.find_or_suggest dep_name do |dep|
-        returning run_dep(dep) do |result|
+        returning run_dep(dep, with_vars) do |result|
           log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
@@ -30,9 +29,9 @@ module Babushka
       end
     end
 
-    def run_dep dep
+    def run_dep dep, with_vars
       log_dep dep do
-        load_previous_run_info_for dep
+        load_run_info_for dep, with_vars
         returning dep.process(:top_level => true) do |result|
           save_run_info_for dep, result
         end
@@ -97,21 +96,24 @@ module Babushka
     end
 
     require 'yaml'
-    def load_previous_run_info_for dep
+    def load_run_info_for dep, with_vars
       load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
-        @saved_vars[var_name].update var_data
+        vars.saved_vars[var_name].update var_data
       }
       load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
         debug "Updating sticky var #{var_name}: #{var_data.inspect}"
-        @vars[var_name].update var_data
+        vars.vars[var_name].update var_data
+      }
+      with_vars.each_pair {|var_name,var_data|
+        vars.vars[var_name].update var_data
       }
     end
 
     def save_run_info_for dep, result
-      save_var_log_for sticky_var_path, :vars => sticky_vars_for_save
+      save_var_log_for sticky_var_path, :vars => vars.sticky_for_save
       save_var_log_for var_path_for(dep), {
         :info => task_info(dep, result),
-        :vars => vars_for_save
+        :vars => vars.for_save
       }
     end
 
@@ -143,32 +145,6 @@ module Babushka
 
     def dump_yaml_to filename, data
       File.open(filename, 'w') {|f| YAML.dump data, f }
-    end
-
-    def sticky_vars_for_save
-      vars.reject {|var,data|
-        !data[:sticky]
-      }.map_values {|k,v|
-        v.reject {|k,v| k != :value }
-      }
-    end
-
-    def vars_for_save
-      vars.dup.inject(saved_vars.dup) {|vars_to_save,(var,data)|
-        vars_to_save[var].update vars[var]
-        save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
-        vars_to_save
-      }.reject_r {|var,data|
-        !data.class.in?([String, Symbol, Hash, Numeric, TrueClass, FalseClass]) ||
-        var.to_s['password']
-      }
-    end
-
-    def save_referenced_default_for var, vars_to_save
-      vars_to_save[var][:values] ||= {}
-      vars_to_save[var][:values][ # set the saved value of this var
-        vars[vars[var][:default].to_s][:value] # for this var's current default reference
-      ] = vars_to_save[var].delete(:value) # to the referenced var's value
     end
 
   end

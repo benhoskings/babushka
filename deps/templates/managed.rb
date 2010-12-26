@@ -1,21 +1,16 @@
 managed_template = L{
-  # TODO push this into accepts_*_for somehow
-  helper :packages do
-    if installs.first.is_a?(Hash)
-      installs.first.map {|(name, version)| ver(name, version) }
-    else
-      installs.map {|pkg| ver(pkg) }
-    end
+  def packages
+    installs.versions
   end
 
-  helper :packages_present? do
+  def packages_present?
     packages.all? {|pkg| pkg_manager.has? pkg }
   end
 
-  helper :add_cfg_deps do
+  def add_cfg_deps
     cfg.all? {|target|
       target_file = target.to_s
-      source_file = File.dirname(load_path) / name / "#{File.basename(target_file)}.erb"
+      source_file = load_path.dirname / name / "#{File.basename(target_file)}.erb"
       requires(dep("#{File.basename(target_file)} for #{name}") {
         met? { babushka_config? target_file }
         before {

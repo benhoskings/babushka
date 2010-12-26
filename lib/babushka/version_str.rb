@@ -1,4 +1,8 @@
 module Babushka
+  class VersionStrError < StandardError; end
+  class InvalidVersionOperator < VersionStrError; end
+  class InvalidVersionStr < VersionStrError; end
+
   class VersionStr
     include Comparable
     attr_reader :pieces, :operator, :version
@@ -17,9 +21,9 @@ module Babushka
       @operator, @version = str.strip.scan(/^([^\s\w\-\.]+)?\s*([\w\-\.]+)$/).first
 
       if !(@operator.nil? || GemVersionOperators.include?(@operator))
-        raise ArgumentError, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
+        raise InvalidVersionOperator, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
       elsif @version.nil?
-        raise ArgumentError, "VersionStr.new('#{str}'): couldn't parse a version number."
+        raise InvalidVersionStr, "VersionStr.new('#{str}'): couldn't parse a version number."
       else
         @pieces = @version.strip.scan(/\d+|[a-zA-Z]+|\w+/).map {|piece|
           piece[/^\d+$/] ? piece.to_i : piece

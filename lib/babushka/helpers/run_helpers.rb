@@ -80,9 +80,6 @@ module Babushka
     def _by_babushka
       "by babushka-#{Babushka::VERSION} at #{Time.now}"
     end
-    def generated_by_babushka
-      "Generated #{_by_babushka}"
-    end
     def edited_by_babushka
       "This line edited #{_by_babushka}"
     end
@@ -115,19 +112,13 @@ module Babushka
       elsif !File.exists?(path) && !opts[:optional]
         log_error "Couldn't find erb to render at #{path}."
       elsif File.exists?(path)
-        require 'erb'
-        debug ERB.new(IO.read(path)).result(binding)
-        returning shell("cat > #{opts[:to]}",
-          :input => ERB.new(IO.read(path)).result(binding),
-          :sudo => opts[:sudo]
-        ) do |result|
+        Renderable.new(opts[:to]).render(path, opts.merge(:context => self)).tap {|result|
           if result
             log "Rendered #{opts[:to]}."
-            sudo "chmod #{opts[:perms]} '#{opts[:to]}'" unless opts[:perms].nil?
           else
             log_error "Couldn't render #{opts[:to]}."
           end
-        end
+        }
       end
     end
 

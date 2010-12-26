@@ -19,12 +19,11 @@ module Babushka
             elsif args.blank? && block.nil?
               #{opts[:type]}_for #{method_name.inspect}, #{default.inspect}
             else
-              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
+              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args.compact].flatten, #{opts[:choose_with].inspect}
               self
             end
           end
         LOL
-        set_up_delegating_for method_name
       end
     end
 
@@ -33,14 +32,6 @@ module Babushka
         store_list_for method_name, LambdaChooser.new(self, *chooser_choices, &data).choose(chooser, choose_with), choose_with
       else
         (payload[method_name] ||= []).concat(data || [])
-      end
-    end
-
-    def versions_for data
-      if data.nil?
-        []
-      else
-        data.map {|name| name.is_a?(String) ? ver(name) : name }
       end
     end
 

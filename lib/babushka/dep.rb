@@ -9,11 +9,10 @@ module Babushka
     # this class with the default values it contains means that the code below
     # can be simpler, because at the code level everything is defined against
     # a 'template' of some sort; some are just BaseTemplate, and some are
-    # actual meta deps..
+    # actual meta deps.
     class BaseTemplate
       def self.suffixed?; false end
-      def self.definer_class; BaseDepDefiner end
-      def self.runner_class; BaseDepRunner end
+      def self.context_class; DepContext end
     end
 
     module Helpers
@@ -57,11 +56,10 @@ module Babushka
       }
     end
 
-    attr_reader :name, :opts, :vars, :template, :definer, :runner, :dep_source, :load_path
+    attr_reader :name, :opts, :vars, :template, :context, :dep_source, :load_path
     attr_accessor :unmet_message
 
-    delegate :desc, :to => :definer
-    delegate :set, :merge, :define_var, :to => :runner
+    delegate :desc, :set, :merge, :define_var, :to => :context
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. This method is used internally by DepPool when a dep is
@@ -108,16 +106,15 @@ module Babushka
       end
     end
 
-    # Create a definer and runner for this dep from its template, and then
-    # process the dep's outer block against the definer.
+    # Create a context for this dep from its template, and then process the
+    # dep's outer block in that context.
     #
     # This results in the details of the dep being stored, like the
     # implementation of +met?+ and +meet+, as well as its +requires+ list and
     # any other items defined at the top level.
     def define_dep!
-      @runner = template.runner_class.new self
-      @definer = template.definer_class.new self, &@block
-      definer.define_and_process
+      @context = template.context_class.new self, &@block
+      context.define!
       @dep_defined = true
     end
 
@@ -195,7 +192,7 @@ module Babushka
     # suffix, if any. Unlike +#basename+, this method will return anything that
     # looks like a template suffix, even if it doesn't match a template.
     def suffix
-      name.scan(MetaDepWrapper::TEMPLATE_SUFFIX).flatten.first
+      name.scan(MetaDep::TEMPLATE_SUFFIX).flatten.first
     end
 
     # Entry point for a dry +#process+ run, where only +met?+ blocks will be
@@ -299,7 +296,7 @@ module Babushka
     end
 
     def process_deps accessor = :requires
-      definer.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
+      context.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
         Dep.find_or_suggest dep_name, :from => dep_source do |dep|
           dep.process
         end
@@ -307,7 +304,7 @@ module Babushka
     end
 
     def process_self
-      path = definer.run_in.empty? ? nil : definer.run_in.first.to_s
+      path = context.run_in.empty? ? nil : context.run_in.first.to_s
       in_dir path do
         process_met_task(:initial => true) {
           if task.opt(:dry_run)
@@ -362,7 +359,7 @@ module Babushka
     def call_task task_name
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
-      runner.instance_eval &definer.send(task_name)
+      context.instance_eval &context.send(task_name)
     rescue StandardError => e
       log "#{e.class} at #{e.backtrace.first}:".colorize('red')
       log e.message.colorize('red')
@@ -374,8 +371,8 @@ module Babushka
     end
 
     def track_block_for task_name
-      if definer.has_task?(task_name)
-        file, line = *definer.send(task_name).inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
+      if context.has_block? task_name
+        file, line = *context.send(task_name).inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
         shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
         sleep 2
       end
@@ -408,7 +405,7 @@ module Babushka
     end
 
     def payload
-      definer.payload
+      context.payload
     end
 
     def task
@@ -423,7 +420,7 @@ module Babushka
 
     def defined_info
       if dep_defined?
-        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{definer.requires.map(&:name).join(', ')}]"
+        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{context.requires.join(', ')}]"
       else
         "(not defined yet)"
       end

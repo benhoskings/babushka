@@ -25,19 +25,21 @@ meta :src do
 
   accepts_block_for(:build) { log_shell "build", "make" }
   accepts_block_for(:install) { Babushka::SrcHelper.install_src! 'make install' }
+  accepts_block_for(:postinstall)
 
   accepts_block_for(:process_source) {
     call_task(:preconfigure) and
     call_task(:configure) and
     call_task(:build) and
-    call_task(:install)
+    call_task(:install) and
+    call_task(:postinstall)
   }
 
-  template {
-    helper :default_configure_command do
-      "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix} #{configure_args.map(&:to_s).join(' ')}"
-    end
+  def default_configure_command
+    "#{configure_env.map(&:to_s).join} ./configure --prefix=#{prefix} #{configure_args.map(&:to_s).join(' ')}"
+  end
 
+  template {
     requires 'build tools', 'curl.managed'
     internal_setup { setup_source_uris }
     met? { provided? }

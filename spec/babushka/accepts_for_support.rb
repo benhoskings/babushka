@@ -18,9 +18,6 @@ class AcceptsForTest
   def default_format
     "json"
   end
-  def self.set_up_delegating_for method_name
-    # nothing to do
-  end
   accepts_value_for :package, :choose_with => :via
   accepts_value_for :renders, "a default response", :choose_with => :via
   accepts_value_for :format, :default_format, :choose_with => :via
@@ -32,10 +29,11 @@ end
 
 def test_lists
   {
-    'a'       => ['a'],
-    %w[a]     => ['a'],
-    %w[a b c] => ['a', 'b', 'c'],
-    # {'a' => '0.1', 'b' => '0.2.3'} => [ver('a', '0.1'), ver('b', '0.2.3')],
+    nil         => [],
+    []          => [],
+    'a'         => ['a'],
+    %w[a]       => ['a'],
+    %w[a b c]   => ['a', 'b', 'c']
   }
 end
 

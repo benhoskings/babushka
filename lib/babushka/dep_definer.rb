@@ -1,13 +1,14 @@
 module Babushka
   class DepDefiner
+    include RunHelpers
+
     include AcceptsListFor
     include AcceptsValueFor
     include AcceptsBlockFor
 
     attr_reader :payload, :dependency
 
-    delegate :name, :basename, :runner, :to => :dependency
-    delegate :merge, :var, :define_var, :to => :runner
+    delegate :name, :basename, :load_path, :to => :dependency
 
     def initialize dep, &block
       @dependency = dep
@@ -15,17 +16,22 @@ module Babushka
       @block = block
     end
 
-    def define_and_process
-      process
+    def define!
       instance_eval &@block unless @block.nil?
     end
 
-    def process
-      true # overridden in subclassed definers
-    end
+    delegate :var, :set, :merge, :define_var, :to => :vars
 
     def helper name, &block
-      runner.metaclass.send :define_method, name do |*args|
+      file, line = caller.first.split(':', 2)
+      line = line.to_i
+      metaclass.send :define_method, name do |*args|
+        log_error "#helper is deprecated. Design improvements mean that it's not required; you\n" +
+          "can just use a standard method instead, like so:\n" +
+          "  (at #{file}:#{line})\n" +
+          "  def #{name} #{('a'..'z').to_a[0...(block.arity)].join(', ')}\n" +
+          "    ...\n" +
+          "  end"
         if block.arity == -1
           instance_exec *args, &block
         elsif block.arity != args.length
@@ -36,29 +42,35 @@ module Babushka
       end
     end
 
-    def has_task? task_name
-      payload[task_name] ||= {}
-      !!specific_block_for(task_name)
+    def result message, opts = {}
+      returning opts[:result] do
+        dependency.unmet_message = message
+      end
     end
 
-    def default_task task_name
-      differentiator = Base.host.differentiator_for payload[task_name].keys
-      L{
-        debug([
-          "'#{dependency.name}' / #{task_name} not defined",
-          "#{" for #{differentiator}" unless differentiator.nil?}",
-          {
-            :met? => ", moving on",
-            :meet => " - nothing to do"
-          }[task_name],
-          "."
-        ].join)
-        true
-      }
+    def met message
+      result message, :result => true
+    end
+
+    def unmet message
+      result message, :result => false
+    end
+
+    def fail_because message
+      log message
+      :fail
     end
 
 
     private
+
+    def vars
+      Base.task.vars
+    end
+
+    def pkg_manager
+      BaseHelper
+    end
 
     def on platform, &block
       if platform.in? [*chooser]
@@ -69,8 +81,12 @@ module Babushka
       end
     end
 
-    def self.set_up_delegating_for method_name
-      source_template.runner_class.send :delegate, method_name, :to => :definer
+    def chooser
+      Base.host.match_list
+    end
+
+    def chooser_choices
+      Base.host.all_tokens
     end
 
     def self.source_template

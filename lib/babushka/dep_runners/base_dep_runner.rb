@@ -1,11 +1,10 @@
 module Babushka
-  class BaseDepRunner < DepRunner
+  module BaseDepRunner
     include GitHelpers
-
-    delegate :dependency, :pkg_manager, :to => :definer
 
     private
 
+    # TODO: remove these two once the new version handling is done.
     def version
       var(:versions)[name]
     end
@@ -15,8 +14,8 @@ module Babushka
     end
 
     def provided? provided_list = provides
-      apps, commands = provided_list.partition {|i| i.to_s[/\.app\/?$/] }
-      apps_in_path?(apps) and cmds_in_path?(commands)
+      apps, commands = [*provided_list].versions.partition {|i| i.name[/\.app\/?$/] }
+      apps_in_path?(apps) and cmds_in_path?(commands) and matching_versions?(commands)
     end
 
     def apps_in_path? apps
@@ -32,7 +31,7 @@ module Babushka
     end
 
     def cmds_in_path? commands
-      dir_hash = [*commands].group_by {|cmd_name| cmd_dir(cmd_name) }
+      dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
 
       if dir_hash.keys.compact.length > 1
         log_error "The commands for '#{name}' run from more than one place."
@@ -50,10 +49,21 @@ module Babushka
       end
     end
 
-    def matching_versions?
-      (provides & var(:versions).keys.map(&:to_s)).all? do |p|
-        shell("#{p} --version").split(/[\s\-]/).include? var(:versions)[p.to_s]
-      end
+    def matching_versions? commands
+      versions = commands.select {|cmd|
+        !cmd.version.nil?
+      }.inject({}) {|hsh,cmd|
+        hsh[cmd] = shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
+          begin
+            cmd.matches? piece.to_version
+          rescue VersionStrError
+            false
+          end
+        }
+        log "#{cmd.name} is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+        hsh
+      }
+      versions.values.all?
     end
 
     def app_dir app_name
@@ -65,19 +75,17 @@ module Babushka
     end
 
     def cmd_location_str_for cmds
-      "#{cmds.map {|i| "'#{i}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first)}"
+      "#{cmds.map {|i| "'#{i.name}'" }.to_list(:conj => '&')} run#{'s' if cmds.length == 1} from #{cmd_dir(cmds.first.name)}"
     end
-
-    private
 
     def setup_source_uris
       parse_uris
-      definer.requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
+      requires_when_unmet(@uris.map(&:scheme).uniq & %w[ git ])
     end
 
     def parse_uris
       @uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
-      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if definer.respond_to?(:extra_source)
+      @extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if respond_to?(:extra_source)
     end
 
     def uri_processor(method_name)

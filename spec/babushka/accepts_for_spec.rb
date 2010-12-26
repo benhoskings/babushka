@@ -103,13 +103,13 @@ end
 
 describe "accepts_list_for input processing" do
   describe "value input" do
-    it "should always return a [VersionOf] list" do
-      test_lists.each_pair {|input, expected|
+    test_lists.each_pair {|input, expected|
+      it "should return #{expected.inspect} when passed #{input.inspect}" do
         list = AcceptsForTest.new
         list.records input
         list.records.should == expected
-      }
-    end
+      end
+    }
   end
 
   describe "lambda input" do
@@ -130,16 +130,16 @@ describe "accepts_list_for input processing" do
   end
 
   describe "lambda and value input" do
-    it "should return the correct data" do
-      test_lists.each_pair {|input, expected|
+    test_lists.each_pair {|input, expected|
+      it "should return #{expected.inspect} when passed #{input.inspect} within a lambda" do
         l = L{
           via :macports, input
         }
         list = AcceptsForTest.new
         list.records &l
         list.records.should == expected
-      }
-    end
+      end
+    }
   end
 
   describe "nested lambdas" do

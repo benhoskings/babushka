@@ -11,16 +11,16 @@ def setup_yield_counts
 end
 
 def make_counter_dep opts = {}
-  incrementers = BaseDepDefiner.accepted_blocks.inject({}) {|lambdas,key|
+  incrementers = DepContext.accepted_blocks.inject({}) {|lambdas,key|
     lambdas[key] = L{ @yield_counts[opts[:name]][key] += 1 }
     lambdas
   }
   dep opts[:name] do
     requires opts[:requires] unless opts[:requires].nil?
     requires_when_unmet opts[:requires_when_unmet] unless opts[:requires_when_unmet].nil?
-    BaseDepDefiner.accepted_blocks.each {|dep_method|
+    DepContext.accepted_blocks.each {|dep_method|
       send dep_method do
-        (opts[dep_method] || @dep.definer.default_task(dep_method)).call.tap {
+        (opts[dep_method] || default_block_for(dep_method)).call.tap {
           incrementers[dep_method].call
         }
       end

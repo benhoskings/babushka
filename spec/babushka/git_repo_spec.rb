@@ -285,6 +285,23 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
   end
 end
 
+describe GitRepo, '#branch!' do
+  before { stub_repo_with_remote 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should not already have a next branch" do
+    subject.branches.should_not include('next')
+  end
+  context "after tracking" do
+    before { subject.branch! "next" }
+    it "should have created a next branch" do
+      subject.branches.should include('next')
+    end
+    it "should not be tracking anything" do
+      subject.repo_shell('git config branch.next.remote').should be_nil
+    end
+  end
+end
+
 describe GitRepo, '#track!' do
   before { stub_repo_with_remote 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -293,8 +310,11 @@ describe GitRepo, '#track!' do
   end
   context "after tracking" do
     before { subject.track! "origin/next" }
-    it "should be tracking the next branch now" do
+    it "should have created a next branch" do
       subject.branches.should include('next')
+    end
+    it "should be tracking origin/next" do
+      subject.repo_shell('git config branch.next.remote').should == 'origin'
     end
   end
 end

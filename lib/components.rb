@@ -1,6 +1,7 @@
 module Babushka
   ExternalComponents = %w[
     fancypath/fancypath
+    inkan/inkan
   ]
 
   Components = %w[
@@ -39,6 +40,7 @@ module Babushka
     structs
     cmdline
     base
+    renderable
     system_definitions
     system_profile
     run_reporter
@@ -57,12 +59,11 @@ module Babushka
     task
     source
     source_pool
-    dep_runner
+    vars
     dep_runners/base_dep_runner
-    dep_runners/meta_dep_runner
     dep_definer
-    dep_definers/meta_dep_wrapper
-    dep_definers/base_dep_definer
-    dep_definers/meta_dep_definer
+    dep_context
+    meta_dep
+    meta_dep_context
   ]
 end
