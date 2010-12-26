@@ -5,8 +5,15 @@ class Inkan
   
   def self.legitimate?(file)
     File.open(file) do |file|
-      first_line = file.gets
-      !first_line[/\s#{sha(file.read)}\s*\n$/].nil?
+      file_content = file.read
+      seal, content = if file_content[/\A#!/]
+        hashbang, seal, remaining_content = file_content.split("\n", 3)
+        [seal, "#{hashbang}\n#{remaining_content}"]
+      else
+        file_content.split("\n", 2)
+      end
+
+      !seal[/\s#{sha(content || '')}\s*$/].nil?
     end
   end
   
