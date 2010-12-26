@@ -15,15 +15,11 @@ class Inkan
   end
   
   def self.seal(file)
-    inkan = new(file)
-    yield inkan
-    inkan.seal
+    new(file).tap {|inkan| yield inkan }.seal
   end
   
   def self.render
-    inkan = new(nil)
-    yield inkan
-    inkan.render
+    new(nil).tap {|inkan| yield inkan }.render
   end
   
   def self.sha(content)
