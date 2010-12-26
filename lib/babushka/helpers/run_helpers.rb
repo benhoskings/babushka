@@ -80,9 +80,6 @@ module Babushka
     def _by_babushka
       "by babushka-#{Babushka::VERSION} at #{Time.now}"
     end
-    def generated_by_babushka
-      "Generated #{_by_babushka}"
-    end
     def edited_by_babushka
       "This line edited #{_by_babushka}"
     end

@@ -4,26 +4,25 @@ class Inkan
   attr_accessor :credit, :comment, :comment_suffix
   
   def self.legitimate?(file)
-    legit = false
-    
     File.open(file) do |file|
-      first_line = file.gets
-      legit = !first_line[/\s#{sha(file.read)}\s*\n$/].nil?
+      file_content = file.read
+      seal, content = if file_content[/\A#!/]
+        hashbang, seal, remaining_content = file_content.split("\n", 3)
+        [seal, "#{hashbang}\n#{remaining_content}"]
+      else
+        file_content.split("\n", 2)
+      end
+
+      !seal[/\s#{sha(content || '')}\s*$/].nil?
     end
-    
-    legit
   end
   
   def self.seal(file)
-    inkan = new(file)
-    yield inkan
-    inkan.seal
+    new(file).tap {|inkan| yield inkan }.seal
   end
   
   def self.render
-    inkan = new(nil)
-    yield inkan
-    inkan.render
+    new(nil).tap {|inkan| yield inkan }.render
   end
   
   def self.sha(content)
@@ -54,10 +53,19 @@ class Inkan
   end
   
   def render
-    "#{comment} #{credit}. #{sha} #{comment_suffix}\n#{file_content}"
+    if file_content[/\A#!/]
+      hashbang, remaining_content = file_content.split("\n", 2)
+      "#{hashbang}\n#{render_seal}\n#{remaining_content}"
+    else
+      "#{render_seal}\n#{file_content}"
+    end
   end
   
   private
+  
+  def render_seal
+    "#{comment} #{credit}. #{sha} #{comment_suffix}"
+  end
   
   def sha
     self.class.sha(file_content)
