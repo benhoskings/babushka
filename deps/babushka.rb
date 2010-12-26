@@ -49,7 +49,7 @@ end
 dep 'update would fast forward.babushka' do
   requires 'on correct branch.babushka'
   met? {
-    if !shell('git fetch origin', :dir => var(:install_path))
+    if !repo.repo_shell('git fetch origin')
       fail_because("Couldn't pull the latest code - check your internet connection.")
     else
       if !repo.remote_branch_exists?
