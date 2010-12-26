@@ -43,7 +43,10 @@ dep 'up to date.babushka' do
       end
     end
   }
-  meet { repo.reset_hard! "origin/#{var(:babushka_branch)}" }
+  meet {
+    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..origin/#{var(:babushka_branch)}")}"
+    repo.reset_hard! "origin/#{var(:babushka_branch)}"
+  }
 end
 
 dep 'update would fast forward.babushka' do
