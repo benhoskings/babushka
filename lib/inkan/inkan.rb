@@ -46,10 +46,19 @@ class Inkan
   end
   
   def render
-    "#{comment} #{credit}. #{sha} #{comment_suffix}\n#{file_content}"
+    if file_content[/\A#!/]
+      hashbang, remaining_content = file_content.split("\n", 2)
+      "#{hashbang}\n#{render_seal}\n#{remaining_content}"
+    else
+      "#{render_seal}\n#{file_content}"
+    end
   end
   
   private
+  
+  def render_seal
+    "#{comment} #{credit}. #{sha} #{comment_suffix}"
+  end
   
   def sha
     self.class.sha(file_content)
