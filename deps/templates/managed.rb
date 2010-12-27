@@ -26,7 +26,7 @@ managed_template = L{
   end
 
   requires pkg_manager.manager_dep
-  internal_setup {
+  prepare {
     add_cfg_deps
   }
   met? {

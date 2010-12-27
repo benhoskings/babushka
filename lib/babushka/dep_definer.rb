@@ -61,6 +61,17 @@ module Babushka
       :fail
     end
 
+    def file_and_line
+      get_file_and_line_for(@block)
+    end
+
+    def file_and_line_for block_name
+      get_file_and_line_for send(block_name) if has_block? block_name
+    end
+
+    def get_file_and_line_for block
+      block.inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
+    end
 
     private
 
