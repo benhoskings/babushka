@@ -3,7 +3,7 @@ dep 'ruby' do
     provided? 'ruby >= 1.8.6'
   }
   requires_when_unmet {
-    on :osx, 'os x ruby'
+    on :osx, 'ruby.external'
     on :ubuntu, 'ruby.managed'
   }
 end
@@ -16,8 +16,7 @@ dep 'ruby.managed' do
   provides %w[ruby irb]
 end
 
-dep 'os x ruby' do
-  met? {
-    provided? %w[ruby irb]
-  }
+dep 'ruby.external' do
+  expects 'ruby >= 1.8.6', 'irb'
+  otherwise { log_error "This system should already have ruby on it." }
 end
