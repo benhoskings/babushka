@@ -77,8 +77,9 @@ dep 'ncurses.managed' do
   provides []
 end
 
-# as well as pkg{} you can use gem{} to write deps that understand rubygems. For example, to
-# install the image_science gem, which needs the 'freeimage' library and installs no commands:
+# as well as pkg{} you can use gem{} to write deps that understand rubygems.
+# For example, to install the image_science gem, which needs the 'freeimage'
+# library and installs no commands:
 dep 'image_science.gem' do
   requires 'freeimage'
   provides []
@@ -114,8 +115,8 @@ dep 'fish.src' do
   #   fetch / reset to update.
   source "git://github.com/benhoskings/fish.git"
 
-  # The 'provides' setting is just the same as in pkg{} and gem{} - it performs all the
-  # same checks, and defaults to the package name.
+  # The 'provides' setting is just the same as in pkg{} and gem{} - it performs
+  # all the same checks, and defaults to the package name.
   # provides 'fish'
 
   # For generating the --prefix configure arg; defaults to /usr/local.
