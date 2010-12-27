@@ -1,5 +1,8 @@
 dep 'ruby' do
-  requires {
+  met? {
+    provided? 'ruby >= 1.8.6'
+  }
+  requires_when_unmet {
     on :osx, 'os x ruby'
     on :ubuntu, 'ruby.managed'
   }
