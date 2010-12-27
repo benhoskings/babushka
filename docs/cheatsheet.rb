@@ -57,7 +57,7 @@ end
 dep 'ruby.managed' do
   # You can split it any of these lists per-system with a block, like so:
   installs {
-    via :brew 'ruby'
+    via :brew, 'ruby'
     via :apt, %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
   }
   # Use 'provides' to specify the executeables this package should add to the
