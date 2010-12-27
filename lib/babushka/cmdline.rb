@@ -36,6 +36,9 @@ module Babushka
       Verb.new(:search, nil, nil, "Search for deps in the community database", [], [
         Arg.new(:q, "The keyword to search for", true, false, 'ruby')
       ]),
+      Verb.new(:edit, nil, nil, "Load the file containing the specified dep in $EDITOR", [], [
+        Arg.new(:name, "The name of the dep to load", true, false, 'ruby')
+      ]),
       Verb.new(:help, '-h', '--help', "Print usage information", [], [
         Arg.new(:verb, "Print command-specific usage info", true)
       ]),
@@ -125,6 +128,27 @@ module Babushka
           end
         end
         !results.empty?
+      end
+    end
+
+    def handle_edit verb
+      if verb.args.length != 1
+        fail_with "'edit' requires a single argument."
+      elsif (dep = Dep.find_or_suggest(verb.args.first.value)).nil?
+        fail_with "Can't find '#{verb.args.first.value}' to edit."
+      elsif dep.load_path.nil?
+        fail_with "Can't edit '#{dep.name}, since it wasn't loaded from a file."
+      else
+        file, line = dep.context.file_and_line
+        editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('mate') || which('vim') || which('vi')
+        case editor_var
+        when /^mate/
+          exec "mate -l#{line} '#{file}'"
+        when /^vim?/, /^nano/, /^pico/, /^emacs/
+          exec "#{editor_var} +#{line} '#{file}'"
+        else
+          exec "#{editor_var} '#{file}'"
+        end
       end
     end
 
