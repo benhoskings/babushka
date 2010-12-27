@@ -109,8 +109,8 @@ dep 'fish.src' do
   # Babushka will pull the source from here, and save it in ~/.babushka/src for
   # later (i.e. it only ever downloads once).
   # It can handle the following:
-  # http://, https://, ftp:// - Babushka downloads the URL and attempts to
-  #   extract it as a tarball
+  # http://, https://, ftp:// - Babushka downloads the URL, and attempts to
+  #   extract it if it's an archive of some sort.
   # git:// - Babushka clones the URL, or if it is already cloned, does a
   #   fetch / reset to update.
   source "git://github.com/benhoskings/fish.git"
