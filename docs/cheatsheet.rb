@@ -116,8 +116,11 @@ dep 'fish.src' do
   source "git://github.com/benhoskings/fish.git"
 
   # The 'provides' setting is just the same as in pkg{} and gem{} - it performs
-  # all the same checks, and defaults to the package name.
+  # all the same checks, and defaults to the package name:
   # provides 'fish'
+  #
+  # As above though, you can use version operators to do a more specific check:
+  provides 'fish >= 1.23.1'
 
   # For generating the --prefix configure arg; defaults to /usr/local.
   # prefix '/usr/local'
