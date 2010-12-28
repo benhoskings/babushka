@@ -241,12 +241,12 @@ describe Dep, "defining" do
       requires 'another dep'
     end.should be_dep_defined
   end
-  context "with delayed defining" do
+  context "lazily" do
     it "should not define the dep when called without a block" do
-      dep('delayed defining test', :delay_defining => true).should_not be_dep_defined
+      dep('delayed defining test', :lazy => true).should_not be_dep_defined
     end
     it "should not define the dep when called with a block" do
-      dep('delayed defining test with block', :delay_defining => true) do
+      dep('delayed defining test with block', :lazy => true) do
         requires 'another dep'
       end.should_not be_dep_defined
     end
