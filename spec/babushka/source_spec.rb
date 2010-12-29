@@ -84,6 +84,7 @@ describe "loading deps" do
   context "with a good source" do
     before {
       @source = Source.new('spec/deps/good')
+      Base.task.verb = Babushka::Base::PassedVerb.new nil, {}, [], {}
       @source.stub!(:define_deps!)
       @source.load!
     }
