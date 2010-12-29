@@ -135,11 +135,11 @@ module Babushka
     # and the core sources.
     def assign_template
       @template = if opts[:template]
-        returning Base.sources.template_for(opts[:template], :from => Base.sources.current_load_source) do |t|
+        returning Base.sources.template_for(opts[:template], :from => dep_source) do |t|
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
       else
-        returning Base.sources.template_for(suffix, :from => Base.sources.current_load_source) || self.class.base_template do |t|
+        returning Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template do |t|
           opts[:suffixed] = (t != BaseTemplate)
         end
       end
