@@ -278,6 +278,7 @@ module Babushka
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
+        define!
         if !dep_defined?
           log_error "This dep isn't defined. Perhaps there was a load error?"
         elsif task.callstack.include? self
