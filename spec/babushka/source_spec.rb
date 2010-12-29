@@ -84,6 +84,7 @@ describe "loading deps" do
   context "with a good source" do
     before {
       @source = Source.new('spec/deps/good')
+      Base.task.verb = Babushka::Base::PassedVerb.new nil, {}, [], {}
       @source.stub!(:define_deps!)
       @source.load!
     }
@@ -123,24 +124,8 @@ describe "defining deps" do
     before {
       @dep = @source.deps.for('test dep 1')
     }
-    it "should have defined the deps" do
-      @dep.dep_defined?.should be_true
-    end
-    it "should have the right template and context" do
-      @dep.template.should == Dep::BaseTemplate
-      @dep.context.should be_an_instance_of(DepContext)
-    end
-  end
-  context "with errors" do
-    before {
-      @source = Source.new('spec/deps/bad')
-      @source.load!
-    }
-    it "should have defined the good deps" do
-      @source.deps.for('test dep 1').should be_dep_defined
-    end
-    it "should not have defined the bad deps" do
-      @source.deps.for('broken test dep 1').should_not be_dep_defined
+    it "should not have defined the deps" do
+      @dep.dep_defined?.should == nil
     end
   end
 end
