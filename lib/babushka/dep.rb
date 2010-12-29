@@ -96,8 +96,15 @@ module Babushka
     # it. If an error occurs, the backtrace point within the dep from which the
     # exception was triggered is logged, as well as the actual exception point.
     def define!
-      assign_template
-      define_dep!
+      if dep_defined?
+        debug "#{name}: already defined."
+      elsif dep_defined? == false
+        debug "#{name}: defining already failed."
+      else
+        debug "(defining #{name})"
+        assign_template
+        define_dep!
+      end
     end
 
     # Create a context for this dep from its template, and then process the
