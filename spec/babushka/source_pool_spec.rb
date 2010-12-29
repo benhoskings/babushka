@@ -188,6 +188,9 @@ describe SourcePool, '#load_context' do
       the_dep.met?
       the_dep.template.should == template
     end
+    after {
+      source.remove!
+    }
   end
   context "with nesting" do
     before {
