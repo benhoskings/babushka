@@ -167,6 +167,28 @@ describe SourcePool, '#load_context' do
       end
     end
   end
+  context "with a template" do
+    let(:source) {
+      Source.new *test_dep_source('lazy_load_context')
+    }
+    let!(:template) {
+      Base.sources.load_context :source => source, :opts => {:lazy => true} do
+        meta 'lazy_defining_template'
+      end
+    }
+    let!(:the_dep) {
+      Base.sources.load_context :source => source, :opts => {:lazy => true} do
+        dep 'lazy defining test with template.lazy_defining_template'
+      end
+    }
+    it "should use the template" do
+      the_dep.template.should be_nil
+      # This triggers dep.define!, but the load_context is gone.
+      # That's what we're testing.
+      the_dep.met?
+      the_dep.template.should == template
+    end
+  end
   context "with nesting" do
     before {
       @source1, @source2 = Source.new(nil), Source.new(nil)
