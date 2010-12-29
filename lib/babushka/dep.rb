@@ -97,13 +97,7 @@ module Babushka
     # exception was triggered is logged, as well as the actual exception point.
     def define!
       assign_template
-      begin
-        define_dep!
-      rescue Exception => e
-        log_error "#{e.backtrace.first}: #{e.message}"
-        log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-        debug e.backtrace * "\n"
-      end
+      define_dep!
     end
 
     # Create a context for this dep from its template, and then process the
@@ -116,6 +110,10 @@ module Babushka
       @context = template.context_class.new self, &@block
       context.define!
       @dep_defined = true
+    rescue Exception => e
+      log_error "#{e.backtrace.first}: #{e.message}"
+      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      debug e.backtrace * "\n"
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
