@@ -256,6 +256,15 @@ describe Dep, "defining" do
           dep.met?
         }.dep_defined?.should == true
       end
+      context "with a template" do
+        let!(:template) { meta 'lazy_defining_template' }
+        it "should use the template" do
+          dep('lazy defining test with template.lazy_defining_template', :lazy => true).tap {|dep|
+            dep.met?
+            dep.template.should == template
+          }
+        end
+      end
     end
   end
   context "after errors" do
