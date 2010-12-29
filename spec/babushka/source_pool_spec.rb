@@ -149,21 +149,21 @@ describe SourcePool, '#template_for' do
 end
 
 describe SourcePool, '#load_context' do
-  context "without delayed defining" do
+  context "eagerly" do
     before {
-      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
+      Dep.should_receive(:new).with('eager load_context', Base.sources.anonymous, {}, nil)
     }
     it "should pass the correct options" do
-      dep 'load_context without delay'
+      dep 'eager load_context'
     end
   end
   context "lazily" do
     before {
-      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:lazy => true}, nil)
+      Dep.should_receive(:new).with('lazy load_context', Base.sources.anonymous, {:lazy => true}, nil)
     }
     it "should pass the correct options" do
       Base.sources.load_context :opts => {:lazy => true} do
-        dep 'load_context with delay'
+        dep 'lazy load_context'
       end
     end
   end
