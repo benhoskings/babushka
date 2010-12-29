@@ -155,7 +155,7 @@ module Babushka
       unless @currently_loading
         @currently_loading = true
         update! if cloneable?
-        load_deps! and define_deps! unless implicit? # implicit sources can't be loaded.
+        load_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
     end
