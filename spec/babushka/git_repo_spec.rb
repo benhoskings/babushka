@@ -103,6 +103,14 @@ describe GitRepo, '#clean? / #dirty?' do
     subject.should_not be_clean
     subject.should be_dirty
   end
+  it "should return true when there are staged changes" do
+    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      shell "echo dirt >> content.txt"
+      shell "git add --update ."
+    }
+    subject.should_not be_clean
+    subject.should be_dirty
+  end
 end
 
 describe GitRepo, '#branches' do
