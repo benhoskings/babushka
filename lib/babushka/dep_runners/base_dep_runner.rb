@@ -1,6 +1,7 @@
 module Babushka
   module BaseDepRunner
     include GitHelpers
+    include PromptHelpers
 
     private
 
