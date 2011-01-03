@@ -225,8 +225,8 @@ module Babushka
       Verbs.map {|v| [v.name.to_s, v.short, v.long] }.flatten.compact
     end
 
-    require 'abbrev'
     def verb_abbrevs
+      require 'abbrev'
       # Accept abbreviated verb names, but only accept full short & long options
       @verb_abbrevs ||= Verbs.map {|v|
         [v.short, v.long]
