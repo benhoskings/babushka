@@ -1,5 +1,3 @@
-require 'fileutils'
-
 module Babushka
   module PathHelpers
     def in_dir dir, opts = {}, &block

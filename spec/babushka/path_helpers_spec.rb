@@ -2,7 +2,6 @@ require 'spec_helper'
 
 class PathTester; extend PathHelpers end
 
-require 'fileutils'
 describe "in_dir" do
   before do
     @tmp_dir = tmp_prefix
