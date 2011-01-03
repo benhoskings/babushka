@@ -41,8 +41,8 @@ module Babushka
       }
     end
 
-    require 'erb'
     def render_erb source, custom_context
+      require 'erb'
       (custom_context || self).instance_exec {
         ERB.new(source.p.read).result(binding)
       }
