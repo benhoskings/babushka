@@ -95,7 +95,6 @@ module Babushka
       LogPrefix.p
     end
 
-    require 'yaml'
     def load_run_info_for dep, with_vars
       load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
         vars.saved_vars[var_name].update var_data
@@ -124,6 +123,7 @@ module Babushka
     end
 
     def load_var_log_for path
+      require 'yaml'
       unless File.exists? path
         debug "No log to load for '#{path}'."
       else
@@ -144,6 +144,7 @@ module Babushka
     end
 
     def dump_yaml_to filename, data
+      require 'yaml'
       File.open(filename, 'w') {|f| YAML.dump data, f }
     end
 
