@@ -7,7 +7,7 @@ end
 
 dep 'rubygems up to date' do
   requires 'rubygems installed'
-  met? { Babushka::GemHelper.version >= var(:versions)[:rubygems] }
+  met? { Babushka::GemHelper.version >= '1.3.7' }
   meet {
     log_block "Updating the rubygems install in #{which('gem').p.parent}" do
       Babushka::GemHelper.update!
@@ -18,7 +18,6 @@ end
 dep 'rubygems installed' do
   requires 'ruby'
   requires_when_unmet 'curl.managed'
-  merge :versions, :rubygems => '1.3.7'
   met? { provided? %w[gem ruby] }
   meet {
     handle_source "http://rubyforge.org/frs/download.php/70696/rubygems-1.3.7.tgz" do
