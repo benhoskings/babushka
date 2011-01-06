@@ -66,7 +66,9 @@ module Babushka
     # added to the pool. To define deps yourself, you should call +dep+ (which
     # is +DepHelpers#dep+).
     def self.make name, source, opts, block
-      if /\A[[:print:]]+\z/i !~ name
+      if name.empty?
+        raise DepError, "Deps can't have empty names."
+      elsif /\A[[:print:]]+\z/i !~ name
         raise DepError, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."

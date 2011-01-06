@@ -2,6 +2,12 @@ require 'spec_helper'
 require 'dep_support'
 
 describe "Dep.make" do
+  it "should reject deps with empty names" do
+    L{
+      Dep.make "", Base.sources.anonymous, {}, nil
+    }.should raise_error(DepError, "Deps can't have empty names.")
+    Dep("carriage\rreturn").should be_nil
+  end
   it "should reject deps with nonprintable characters in their names" do
     L{
       Dep.make "carriage\rreturn", Base.sources.anonymous, {}, nil
