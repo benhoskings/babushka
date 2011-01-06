@@ -305,8 +305,7 @@ module Babushka
     end
 
     def process_self
-      path = context.run_in.empty? ? nil : context.run_in.to_s
-      in_dir path do
+      in_dir context.run_in do
         process_met_task(:initial => true) {
           if task.opt(:dry_run)
             false # unmet
