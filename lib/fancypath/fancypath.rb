@@ -52,7 +52,7 @@ class Fancypath < Pathname
 
   # make file
   def touch
-    FileUtils.touch self.to_s
+    `touch '#{self}'`
     self
   end
 
@@ -64,7 +64,7 @@ class Fancypath < Pathname
   alias_method :create, :create_dir
 
   def copy(dest)
-    FileUtils.cp(self, dest)
+    `cp -pPR '#{self}' '#{dest}'`
     self
   end
 
@@ -91,8 +91,7 @@ class Fancypath < Pathname
   end
 
   def mkdir
-    require 'fileutils'
-    FileUtils.mkdir_p self
+    `mkdir -p '#{self}'`
     self
   end
 
