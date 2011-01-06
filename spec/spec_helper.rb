@@ -15,8 +15,8 @@ def tmp_prefix
   "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
 end
 
-FileUtils.rm_r tmp_prefix if File.exists? tmp_prefix
-FileUtils.mkdir_p tmp_prefix unless File.exists? tmp_prefix
+`rm -rf '#{tmp_prefix}'` if File.exists? tmp_prefix
+`mkdir -p '#{tmp_prefix}'` unless File.exists? tmp_prefix
 
 module Babushka
   class Resource
@@ -27,7 +27,7 @@ module Babushka
 
   class Source
     def remove!
-      !cloneable? || !File.exists?(path) || FileUtils.rm_r(path)
+      !cloneable? || !File.exists?(path) || `rm -rf '#{path}'`
     end
     private
     def self.sources_yml

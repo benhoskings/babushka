@@ -6,9 +6,9 @@ require 'fileutils'
 describe "in_dir" do
   before do
     @tmp_dir = tmp_prefix
-    FileUtils.mkdir_p @tmp_dir
+    `mkdir -p '#{@tmp_dir}'`
     @tmp_dir_2 = File.join(tmp_prefix, '2')
-    FileUtils.mkdir_p @tmp_dir_2
+    `mkdir -p '#{@tmp_dir_2}'`
 
     @original_pwd = Dir.pwd
 
