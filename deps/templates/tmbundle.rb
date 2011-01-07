@@ -10,6 +10,6 @@ meta :tmbundle, :for => :osx do
     met? { path.dir? }
     before { shell "mkdir -p '#{path.parent}'" }
     meet { git source, :to => path }
-    after { shell %Q{osascript -e 'tell app "TextMate" to reload bundles'} }
+    after { log_shell "Telling TextMate to reload bundles", %Q{osascript -e 'tell app "TextMate" to reload bundles'} }
   }
 end
