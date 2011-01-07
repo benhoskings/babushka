@@ -90,7 +90,7 @@ module Babushka
       @dep_source = source
       @load_path = Base.sources.current_load_path
       @dep_source.deps.register self
-      define! unless opts[:delay_defining]
+      define! unless opts[:lazy]
     end
 
     # Attempt to look up the template this dep was defined against (or if no
@@ -98,13 +98,14 @@ module Babushka
     # it. If an error occurs, the backtrace point within the dep from which the
     # exception was triggered is logged, as well as the actual exception point.
     def define!
-      assign_template
-      begin
+      if dep_defined?
+        debug "#{name}: already defined."
+      elsif dep_defined? == false
+        debug "#{name}: defining already failed."
+      else
+        debug "(defining #{name})"
+        assign_template
         define_dep!
-      rescue Exception => e
-        log_error "#{e.backtrace.first}: #{e.message}"
-        log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-        debug e.backtrace * "\n"
       end
     end
 
@@ -118,6 +119,11 @@ module Babushka
       @context = template.context_class.new self, &@block
       context.define!
       @dep_defined = true
+    rescue Exception => e
+      log_error "#{e.backtrace.first}: #{e.message}"
+      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      debug e.backtrace * "\n"
+      @dep_defined = false
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
@@ -131,11 +137,11 @@ module Babushka
     # and the core sources.
     def assign_template
       @template = if opts[:template]
-        returning Base.sources.template_for(opts[:template], :from => Base.sources.current_load_source) do |t|
+        returning Base.sources.template_for(opts[:template], :from => dep_source) do |t|
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         end
       else
-        returning Base.sources.template_for(suffix, :from => Base.sources.current_load_source) || self.class.base_template do |t|
+        returning Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template do |t|
           opts[:suffixed] = (t != BaseTemplate)
         end
       end
@@ -274,6 +280,7 @@ module Babushka
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
+        define!
         if !dep_defined?
           log_error "This dep isn't defined. Perhaps there was a load error?"
         elsif task.callstack.include? self

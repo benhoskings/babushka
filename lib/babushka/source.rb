@@ -155,7 +155,7 @@ module Babushka
       unless @currently_loading
         @currently_loading = true
         update! if cloneable?
-        load_deps! and define_deps! unless implicit? # implicit sources can't be loaded.
+        load_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
     end
@@ -163,7 +163,7 @@ module Babushka
     def load_deps!
       unless @loaded
         path.p.glob('**/*.rb').each {|f|
-          Base.sources.load_context :source => self, :path => f, :opts => {:delay_defining => true} do
+          Base.sources.load_context :source => self, :path => f, :opts => {:lazy => Base.task.verb} do
             begin
               load f
             rescue Exception => e

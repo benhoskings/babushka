@@ -240,21 +240,91 @@ end
 
 describe Dep, "defining" do
   it "should define the dep when called without a block" do
-    dep('defining test').should be_dep_defined
+    dep('defining test').dep_defined?.should == true
   end
   it "should define the dep when called with a block" do
     dep('defining test with block') do
       requires 'another dep'
-    end.should be_dep_defined
+    end.dep_defined?.should == true
   end
-  context "with delayed defining" do
+  context "lazily" do
     it "should not define the dep when called without a block" do
-      dep('delayed defining test', :delay_defining => true).should_not be_dep_defined
+      dep('lazy defining test', :lazy => true).dep_defined?.should == nil
     end
     it "should not define the dep when called with a block" do
-      dep('delayed defining test with block', :delay_defining => true) do
+      dep('lazy defining test with block', :lazy => true) do
         requires 'another dep'
-      end.should_not be_dep_defined
+      end.dep_defined?.should == nil
+    end
+    context "after running" do
+      it "should be defined" do
+        dep('lazy defining test with run', :lazy => true).tap {|dep|
+          dep.met?
+        }.dep_defined?.should == true
+      end
+      context "with a template" do
+        let!(:template) { meta 'lazy_defining_template' }
+        it "should use the template" do
+          dep('lazy defining test with template.lazy_defining_template', :lazy => true).tap {|dep|
+            dep.met?
+            dep.template.should == template
+          }
+        end
+      end
+    end
+  end
+  context "after errors" do
+    it "should not be defined, returning false to represent load errors" do
+      dep('defining test with errors') do
+        nonexistent_method
+      end.dep_defined?.should == false
+    end
+    context "lazily" do
+      it "should not be defined, and then have failed defining after a run" do
+        dep('lazy defining test with errors', :lazy => true) do
+          nonexistent_method
+        end.tap {|dep|
+          dep.dep_defined?.should == nil
+          dep.met?
+        }.dep_defined?.should == false
+      end
+    end
+  end
+  context "repeatedly" do
+    it "should only ever define the dep once" do
+      dep('defining test with repetition').tap {|dep|
+        dep.context.should_receive(:define!).never
+        dep.met?
+      }
+    end
+    it "should not overwrite custom blocks" do
+      dep('defining test with block overwriting') do
+        setup { true }
+      end.tap {|dep|
+        dep.define!
+        dep.context.setup { 'custom' }
+        dep.define!
+        dep.send(:call_task, :setup).should == 'custom'
+      }
+    end
+    context "lazily" do
+      it "should only ever define the dep once" do
+        dep('lazy defining test with repetition', :lazy => true).tap {|dep|
+          dep.met?
+          dep.context.should_receive(:define!).never
+          dep.met?
+        }
+      end
+      it "should not overwrite custom blocks" do
+        dep('lazy defining test with block overwriting', :lazy => true) do
+          setup { true }
+        end.tap {|dep|
+          dep.define!
+          dep.context.setup { 'custom' }
+          dep.define!
+          dep.send(:call_task, :setup).should == 'custom'
+        }
+      end
     end
   end
 end

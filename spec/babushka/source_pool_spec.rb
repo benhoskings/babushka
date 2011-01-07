@@ -149,23 +149,48 @@ describe SourcePool, '#template_for' do
 end
 
 describe SourcePool, '#load_context' do
-  context "without delayed defining" do
+  context "eagerly" do
     before {
-      Dep.should_receive(:new).with('load_context without delay', Base.sources.anonymous, {}, nil)
+      Dep.should_receive(:new).with('eager load_context', Base.sources.anonymous, {}, nil)
     }
     it "should pass the correct options" do
-      dep 'load_context without delay'
+      dep 'eager load_context'
     end
   end
-  context "with delayed defining" do
+  context "lazily" do
     before {
-      Dep.should_receive(:new).with('load_context with delay', Base.sources.anonymous, {:delay_defining => true}, nil)
+      Dep.should_receive(:new).with('lazy load_context', Base.sources.anonymous, {:lazy => true}, nil)
     }
     it "should pass the correct options" do
-      Base.sources.load_context :opts => {:delay_defining => true} do
-        dep 'load_context with delay'
+      Base.sources.load_context :opts => {:lazy => true} do
+        dep 'lazy load_context'
       end
     end
+  end
+  context "with a template" do
+    let(:source) {
+      Source.new *test_dep_source('lazy_load_context')
+    }
+    let!(:template) {
+      Base.sources.load_context :source => source, :opts => {:lazy => true} do
+        meta 'lazy_defining_template'
+      end
+    }
+    let!(:the_dep) {
+      Base.sources.load_context :source => source, :opts => {:lazy => true} do
+        dep 'lazy defining test with template.lazy_defining_template'
+      end
+    }
+    it "should use the template" do
+      the_dep.template.should be_nil
+      # This triggers dep.define!, but the load_context is gone.
+      # That's what we're testing.
+      the_dep.met?
+      the_dep.template.should == template
+    end
+    after {
+      source.remove!
+    }
   end
   context "with nesting" do
     before {
