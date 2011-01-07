@@ -57,7 +57,7 @@ module Babushka
     end
 
     attr_reader :name, :opts, :vars, :template, :context, :dep_source, :load_path
-    attr_accessor :unmet_message
+    attr_accessor :result_message
 
     delegate :desc, :set, :merge, :define_var, :to => :context
 
@@ -314,7 +314,9 @@ module Babushka
             if !process_deps(:requires_when_unmet)
               false # install-time deps unmet
             else
-              process_task(:before) and process_task(:meet) and process_task(:after)
+              log 'meet' do
+                process_task(:before) and process_task(:meet) and process_task(:after)
+              end
               process_met_task
             end
           end
@@ -340,14 +342,8 @@ module Babushka
       returning cache_process(call_task(:met?)) do |result|
         if :fail == result
           log "I don't know how to fix that, so it's up to you. :)"
-        elsif !result && !Base.task.opt(:dry_run)
-          if task_opts[:initial]
-            log "not already met#{unmet_message_for(result)}."
-          else
-            log_error "couldn't meet#{unmet_message_for(result)}."
-          end
-        elsif result && !task_opts[:initial]
-          log "#{name} met.".colorize('green')
+        else
+          log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
         end
       end
     end
@@ -376,10 +372,6 @@ module Babushka
         shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
         sleep 2
       end
-    end
-
-    def unmet_message_for result
-      unmet_message.nil? || result ? '' : " - #{unmet_message}"
     end
 
     def cached_result
