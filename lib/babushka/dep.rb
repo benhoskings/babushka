@@ -314,7 +314,9 @@ module Babushka
             if !process_deps(:requires_when_unmet)
               false # install-time deps unmet
             else
-              process_task(:before) and process_task(:meet) and process_task(:after)
+              log 'meet' do
+                process_task(:before) and process_task(:meet) and process_task(:after)
+              end
               process_met_task
             end
           end
