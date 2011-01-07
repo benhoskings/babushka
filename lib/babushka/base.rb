@@ -104,8 +104,8 @@ module Babushka
     end
 
     def detect_var_in args
-      detected_var = args.first.scan(/([a-z]\w+)\=(.*)/).flatten
-      {detected_var.first => {:value => detected_var.last}} unless detected_var.empty?
+      detected_var = args.first.scan(/([a-z]\w+)\=(.*)/).flatten unless args.empty?
+      {detected_var.first => {:value => detected_var.last}} unless detected_var.blank?
     end
 
     def detect_option_in opts, args
