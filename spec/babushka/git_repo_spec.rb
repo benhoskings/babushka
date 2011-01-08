@@ -33,7 +33,7 @@ def repo_context name, &block
 end
 
 describe GitRepo, 'creation' do
-  before { stub_repo 'a' }
+  before(:all) { stub_repo 'a' }
   it "should return nil on nonexistent paths" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/nonexistent').root.should == nil
   end
@@ -82,7 +82,7 @@ describe GitRepo, 'without a repo' do
 end
 
 describe GitRepo, "with a repo" do
-  before { stub_repo 'a' }
+  before(:all) { stub_repo 'a' }
   it "should exist with string path" do
     Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).exists?.should be_true
   end
@@ -92,7 +92,7 @@ describe GitRepo, "with a repo" do
 end
 
 describe GitRepo, '#clean? / #dirty?' do
-  before { stub_repo 'a' }
+  before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return false for clean repos" do
     subject.should be_clean
@@ -149,7 +149,7 @@ describe GitRepo, '#branches' do
 end
 
 describe GitRepo, '#current_branch' do
-  before { stub_repo 'a' }
+  before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return 'master'" do
     subject.current_branch.should == 'master'
@@ -181,7 +181,7 @@ describe GitRepo, '#current_head' do
 end
 
 describe GitRepo, '#ahead?' do
-  before {
+  before(:all) {
     stub_repo_with_remote 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "git checkout -b topic"
@@ -196,7 +196,7 @@ describe GitRepo, '#ahead?' do
     subject.should be_ahead
   end
   context "when remote branch exists" do
-    before {
+    before(:all) {
       PathSupport.in_dir(tmp_prefix / 'repos/a') {
         shell "git push origin topic"
         shell 'echo "Ch-ch-ch-changes" >> content.txt'
@@ -225,7 +225,7 @@ describe GitRepo, '#ahead?' do
 end
 
 describe GitRepo, '#behind?' do
-  before {
+  before(:all) {
     stub_repo_with_remote 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "git checkout -b next"
@@ -251,7 +251,7 @@ describe GitRepo, '#behind?' do
 end
 
 describe GitRepo, '#clone!' do
-  before { stub_repo_with_remote 'a' }
+  before(:all) { stub_repo_with_remote 'a' }
   context "for existing repos" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
     it "should raise" do
@@ -299,7 +299,7 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
 end
 
 describe GitRepo, '#branch!' do
-  before { stub_repo_with_remote 'a' }
+  before(:all) { stub_repo_with_remote 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
@@ -316,7 +316,7 @@ describe GitRepo, '#branch!' do
 end
 
 describe GitRepo, '#track!' do
-  before { stub_repo_with_remote 'a' }
+  before(:all) { stub_repo_with_remote 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
@@ -333,7 +333,7 @@ describe GitRepo, '#track!' do
 end
 
 describe GitRepo, '#checkout!' do
-  before {
+  before(:all) {
     stub_repo_with_remote 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "git checkout -b next"
