@@ -2,21 +2,7 @@ require 'spec_helper'
 
 class PathSupport; extend PathHelpers end
 
-def stub_repo name = 'a', opts = {}
-  shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
-  PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
-    shell 'git init'
-    unless opts[:empty]
-      shell 'echo "Hello from the babushka specs!" >> content.txt'
-      shell 'mkdir lib'
-      shell 'echo "Here are the rubies." >> lib/rubies.rb'
-      shell 'git add .'
-      shell 'git commit -m "Initial commit, by the spec suite."'
-    end
-  end
-end
-
-def stub_repo_with_remote name
+def stub_repo name
   (tmp_prefix / 'repos' / "#{name}_remote").rm
   PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
     shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
@@ -189,7 +175,7 @@ end
 
 describe GitRepo, '#ahead?' do
   before(:all) {
-    stub_repo_with_remote 'a'
+    stub_repo 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "git checkout -b topic"
     }
@@ -233,7 +219,7 @@ end
 
 describe GitRepo, '#behind?' do
   before(:all) {
-    stub_repo_with_remote 'a'
+    stub_repo 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "git checkout -b next"
       shell "git reset --hard origin/next^"
@@ -258,7 +244,7 @@ describe GitRepo, '#behind?' do
 end
 
 describe GitRepo, '#clone!' do
-  before(:all) { stub_repo_with_remote 'a' }
+  before(:all) { stub_repo 'a' }
   context "for existing repos" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
     it "should raise" do
@@ -306,7 +292,7 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
 end
 
 describe GitRepo, '#branch!' do
-  before(:all) { stub_repo_with_remote 'a' }
+  before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
@@ -323,7 +309,7 @@ describe GitRepo, '#branch!' do
 end
 
 describe GitRepo, '#track!' do
-  before(:all) { stub_repo_with_remote 'a' }
+  before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
@@ -341,7 +327,7 @@ end
 
 describe GitRepo, '#checkout!' do
   before(:all) {
-    stub_repo_with_remote 'a'
+    stub_repo 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "git checkout -b next"
     }
@@ -361,7 +347,7 @@ end
 
 describe GitRepo, '#reset_hard!' do
   before {
-    stub_repo_with_remote 'a'
+    stub_repo 'a'
     PathSupport.in_dir(tmp_prefix / 'repos/a') {
       shell "echo 'more rubies' >> lib/rubies.rb"
     }
