@@ -98,18 +98,23 @@ describe GitRepo, '#clean? / #dirty?' do
     subject.should be_clean
     subject.should_not be_dirty
   end
-  it "should return true when there are changes" do
-    PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
-    subject.should_not be_clean
-    subject.should be_dirty
-  end
-  it "should return true when there are staged changes" do
-    PathSupport.in_dir(tmp_prefix / 'repos/a') {
-      shell "echo dirt >> content.txt"
-      shell "git add --update ."
+  context "when there are changes" do
+    before {
+      PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
     }
-    subject.should_not be_clean
-    subject.should be_dirty
+    it "should return true" do
+      subject.should_not be_clean
+      subject.should be_dirty
+    end
+    context "when the changes are staged" do
+      before {
+        PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "git add --update ." }
+      }
+      it "should return true" do
+        subject.should_not be_clean
+        subject.should be_dirty
+      end
+    end
   end
 end
 
