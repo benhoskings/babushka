@@ -17,12 +17,12 @@ def stub_repo name = 'a', opts = {}
 end
 
 def stub_repo_with_remote name
-  shell "rm -rf '#{tmp_prefix / 'repos' / "#{name}_remote"}'"
+  (tmp_prefix / 'repos' / "#{name}_remote").rm
   PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
     shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
   end
 
-  shell "rm -rf '#{tmp_prefix / 'repos' / name}'"
+  (tmp_prefix / 'repos' / name).rm
   PathSupport.in_dir tmp_prefix / 'repos' do
     shell "git clone #{name}_remote/remote.git #{name}"
   end
