@@ -121,14 +121,14 @@ describe GitRepo, '#branches' do
   end
   context "after creating another branch" do
     before {
-      repo_context('a') { shell "git checkout -b next"}
+      repo_context('a') { shell "git checkout -b next" }
     }
     it "should return both branches" do
       subject.branches.should == ['master', 'next']
     end
     context "after changing back to master" do
       before {
-        repo_context('a') { shell "git checkout master"}
+        repo_context('a') { shell "git checkout master" }
       }
       it "should return both branches" do
         subject.branches.should == ['master', 'next']
@@ -151,14 +151,14 @@ describe GitRepo, '#current_branch' do
   end
   context "after creating another branch" do
     before {
-      repo_context('a') { shell "git checkout -b next"}
+      repo_context('a') { shell "git checkout -b next" }
     }
     it "should return 'next'" do
       subject.current_branch.should == 'next'
     end
     context "after changing back to master" do
       before {
-        repo_context('a') { shell "git checkout master"}
+        repo_context('a') { shell "git checkout master" }
       }
       it "should return 'next'" do
         subject.current_branch.should == 'master'
