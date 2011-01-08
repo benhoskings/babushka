@@ -59,7 +59,7 @@ module Babushka
     attr_reader :name, :opts, :vars, :template, :context, :dep_source, :load_path
     attr_accessor :result_message
 
-    delegate :desc, :set, :merge, :define_var, :to => :context
+    delegate :set, :merge, :define_var, :to => :context
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. This method is used internally by DepPool when a dep is

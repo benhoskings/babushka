@@ -200,7 +200,7 @@ module Babushka
         log "# #{source.name} (#{source.type})#{" - #{source.uri}" unless source.implicit?}"
         log "# #{items.length} #{to_list.to_s.chomp(items.length == 1 ? 's' : '')}#{" matching '#{filter_str}'" unless filter_str.nil?}:"
         items.each {|dep|
-          log "#{context} #{"'#{source.name}:#{dep.name}'".ljust(indent)} #{"# #{dep.desc}" unless dep.desc.blank?}"
+          log "#{context} #{"'#{source.name}:#{dep.name}'".ljust(indent)}"
         }
       }
     end
