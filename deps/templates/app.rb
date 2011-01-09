@@ -56,13 +56,13 @@ meta :app do
         }.map {|entry|
           pre = prefix_to_use
           target_path = pre / entry
-          if !target_path.exists? || confirm("Overwrite #{target_path}?") { FileUtils.rm_r target_path }
+          if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
             if archive.is_a? Babushka::DmgResource
               log_block("Found #{entry} in the DMG, copying to #{pre}") {
-                shell "cp -pPR '#{entry}' '#{pre.end_with('/')}'"
+                entry.copy pre.end_with('/')
               }
             else
-              log_block("Found #{entry}, moving to #{pre}") { FileUtils.mv entry, pre.end_with('/') }
+              log_block("Found #{entry}, moving to #{pre}") { entry.move pre.end_with('/') }
             end
           end
         }

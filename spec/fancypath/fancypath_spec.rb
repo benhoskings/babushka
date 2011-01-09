@@ -119,6 +119,21 @@ describe Fancypath do
     it('copies the contents') { @file.copy(TMP_DIR/'foo').read.should == @file.read }
   end
 
+  describe '#copy on a directory' do
+    before {
+      @dir.mkdir
+      (@dir / 'testfile').touch
+    }
+    it('returns a Fancypath') { @dir.copy(TMP_DIR/'foo').should be_instance_of(Fancypath) }
+    it('creates a new dir with a file in it') {
+      @dir.copy(TMP_DIR/'foo')
+      (TMP_DIR/'foo').should exist
+      (TMP_DIR/'foo/testfile').should exist
+    }
+    it('keeps the original') { @dir.copy(TMP_DIR/'foo'); @dir.should exist }
+    it('copies the contents') { @dir.copy(TMP_DIR/'foo'); (TMP_DIR/'foo/testfile').read.should == (@dir/'testfile').read }
+  end
+
   describe '#set_extension' do
     example "file without extension" do
       Fancypath('/tmp/foo').set_extension('rb').should == Fancypath('/tmp/foo.rb')
