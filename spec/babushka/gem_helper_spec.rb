@@ -1,5 +1,12 @@
 require 'spec_helper'
 
+def stub_env_info
+  GemHelper.stub!(:env_info).and_return(%q{
+RubyGems Environment:
+  - INSTALLATION DIRECTORY: /Library/Ruby/Gems/1.8
+})
+end
+
 def stub_versions_of
   GemHelper.stub!(:versions_of).and_return([
     VersionStr.new('0.2.11'),
@@ -31,8 +38,9 @@ end
 
 describe "gem_path_for" do
   before {
+    stub_env_info
     stub_versions_of
-    @prefix = `gem env gemdir`.chomp / 'gems'
+    @prefix = '/Library/Ruby/Gems/1.8/gems'
   }
   it "should return the correct path" do
     GemHelper.gem_path_for('hammock').should == @prefix / 'hammock-0.3.9'
