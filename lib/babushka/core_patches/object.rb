@@ -58,8 +58,8 @@ class Object
   def taph
     tap { puts("#{File.basename caller[4]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') + "<br />") }
   end
-  require 'pp'
   def tappp
+    require 'pp'
     tap { pp self }
   end
   def tap_log

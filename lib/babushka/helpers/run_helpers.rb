@@ -101,8 +101,8 @@ module Babushka
       end
     end
 
-    require 'yaml'
     def yaml path
+      require 'yaml'
       YAML.load_file path.p
     end
 
