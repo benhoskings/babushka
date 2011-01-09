@@ -15,52 +15,24 @@ module Babushka
     def self.lib() File.join(path, 'lib') end
     def self.run_from_path?() ENV['PATH'].split(':').include? File.dirname($0) end
   end
-
-  class Tick
-    @ticker = Time.now
-    @ticks = []
-    class << self
-      def ticks
-        @ticks
-      end
-      def tick message
-        now = Time.now
-        @ticks.push [(now - @ticker), message]
-        @ticker = now
-      end
-    end
-  end
 end
-
-def tick message
-  Babushka::Tick.tick message
-end
-
 
 # First, load the component lists.
 require File.join(Babushka::Path.path, 'lib', 'components')
 
 # Load external components that babushka depends on.
-Babushka::ExternalComponents.each {|c| require File.join(Babushka::Path.path, 'lib', c); tick "external: #{c}" }
+Babushka::ExternalComponents.each {|c| require File.join(Babushka::Path.path, 'lib', c) }
 
 # Next, load babushka itself.
-Babushka::Components.each {|c| require File.join(Babushka::Path.path, 'lib/babushka', c); tick "component: #{c}" }
+Babushka::Components.each {|c| require File.join(Babushka::Path.path, 'lib/babushka', c) }
 
 # Finally, mix in some top-level helper methods:
 Object.class_eval {
   # Dep helpers like #Dep, #dep & #meta;
   include Babushka::Dep::Helpers
-  tick "Dep::Helpers"
   # Logging helpers like #log, #log_ok, #log_error & #debug.
   include Babushka::LogHelpers
-  tick "LogHelpers"
   # Shell helpers like #shell, #failable_shell & #sudo.
   include Babushka::ShellHelpers
-  tick "ShellHelpers"
   include Babushka::VersionOf::Helpers
-  tick "VersionOf::Helpers"
-}
-
-Babushka::Tick.ticks.sort_by {|t| -t.first }[0..10].each {|l|
-  log l.inspect
 }
