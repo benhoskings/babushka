@@ -2,9 +2,7 @@ require 'rake'
 require 'rspec/core/rake_task'
 
 desc 'Run the spec suite'
-RSpec::Core::RakeTask.new('spec') {|t|
-  t.rspec_opts = %w[--profile]
-}
+RSpec::Core::RakeTask.new('spec')
 
 desc 'Run code coverage'
 RSpec::Core::RakeTask.new('rcov') {|t|
