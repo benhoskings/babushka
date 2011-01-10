@@ -137,7 +137,7 @@ module Babushka
 
     def print_version opts = {}
       if opts[:full]
-        log "Babushka v#{Babushka::VERSION}, (c) 2009 Ben Hoskings <ben@hoskings.net>"
+        log "Babushka v#{Babushka::VERSION}, (c) 2011 Ben Hoskings <ben@hoskings.net>"
       else
         log Babushka::VERSION
       end
