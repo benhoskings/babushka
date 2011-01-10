@@ -1,7 +1,7 @@
 module Babushka
   module GitHelpers
     def git uri, opts = {}, &block
-      repo = GitRepo.new(opts[:to] || (BuildPrefix / File.basename(uri.to_s)))
+      repo = GitRepo.new(opts[:to] || (BuildPrefix / File.basename(uri.to_s).chomp('.git')))
       update_success = if repo.exists?
         git_update uri, repo
       else
