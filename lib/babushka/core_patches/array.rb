@@ -36,7 +36,7 @@ class Array
     if (cut_at = index {|i| yield i }).nil?
       [self, nil]
     else
-      [self[0...cut_at], self[cut_at..-1]]
+      [self[0..cut_at], self[cut_at+1..-1]]
     end
   end
   # Return two arrays in the same manner as +cut+, but check for element

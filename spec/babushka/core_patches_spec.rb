@@ -119,6 +119,29 @@ describe Array, '#versions' do
   }
 end
 
+describe Array, '#cut' do
+  it "should work for empty arrays" do
+    first, second = [].cut  { true }
+    first.should == []
+    second.should be_nil
+  end
+  it "should do nothing with no condition" do
+    first,second = %w[cat badger narwahl pug].cut { false }
+    first.should == %w[cat badger narwahl pug]
+    second.should be_nil
+  end
+  it "should split the array at the match" do
+    first,second = %w[cat badger narwahl pug].cut {|i| i == "narwahl" }
+    first.should ==%w[cat badger narwahl]
+    second.should == %w[pug]
+  end
+  it "should work the same when called from cut_at" do
+    first, second = %w[cat badger narwahl pug].cut_at "narwahl"
+    first.should ==%w[cat badger narwahl]
+    second.should == %w[pug]
+  end
+end
+
 describe Hash, '#defaults!' do
   it "should work for empty hashes" do
     {}.defaults!(:a => 'b', :c => 'd').should == {:a => 'b', :c => 'd'}
