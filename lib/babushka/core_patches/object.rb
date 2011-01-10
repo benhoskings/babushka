@@ -58,13 +58,6 @@ class Object
   def taph
     tap { puts("#{File.basename caller[4]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') + "<br />") }
   end
-  def tappp
-    require 'pp'
-    tap { pp self }
-  end
-  def tap_log
-    returning(self) { log_verbose self }
-  end
 end
 
 unless Object.new.respond_to? :instance_exec
