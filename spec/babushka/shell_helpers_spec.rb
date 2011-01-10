@@ -36,6 +36,9 @@ describe "shell" do
     it "should run in the specified directory" do
       shell("pwd", :dir => (tmp_prefix / 'dir_param')).should == (tmp_prefix / 'dir_param').to_s
     end
+    it "should expand the path" do
+      shell("pwd", :dir => '~').should == ENV['HOME']
+    end
     it "should raise when the path is nonexistent" do
       L{
         shell("pwd", :dir => (tmp_prefix / 'nonexistent'))
