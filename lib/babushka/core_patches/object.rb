@@ -42,7 +42,8 @@ class Object
   # You can easily insert logging like so:
   #   values.map(&:name).tap {|i| log i }.join(', ')
   def tap &block
-    returning(self) { yield self }
+    yield self
+    self
   end
 
   # Return self unmodified after logging the output of #inspect, along with
