@@ -21,9 +21,12 @@ module Babushka
     #   <tt>:sudo => 'user'</tt> is a shortcut that has the same effect as
     #     <tt>:sudo => true, :as => 'user'</tt>
     #   <tt>:dir</tt> specifies the directory in which the command should run.
-    #     If the path doesn't exist or isn't a directory, an error is raised.
-    #     Internally, the command is updated to something like
-    #     `cd #{dir} && #{cmd}`.
+    #     If the path doesn't exist or isn't a directory, an error is raised
+    #     unless the <tt>:create</tt> option is also set.
+    #     To achieve the directory change, the command is internally updated
+    #     to something like `cd #{dir} && #{cmd}`.
+    #   <tt>:create</tt> causes the directory specified by the <tt>:dir</tt>
+    #     option to be created if it doesn't already exist.
     #   <tt>:input</tt> can be used to supply input for the shell command. It
     #     be any object that can be written to an IO with <tt>io << obj</tt>.
     #     If it is passed, it will be written to the command's stdin pipe
