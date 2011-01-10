@@ -44,7 +44,7 @@ module Babushka
             raise Errno::ENOENT, opts[:dir]
           end
         end
-        cmd = "cd \"#{opts[:dir].to_s.gsub('"', '\"')}\" && #{cmd}"
+        cmd = "cd \"#{opts[:dir].p.to_s.gsub('"', '\"')}\" && #{cmd}"
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block
