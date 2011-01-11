@@ -342,7 +342,9 @@ module Babushka
     end
 
     def process_met_task task_opts = {}, &block
-      run_met_task(task_opts) || block.try(:call)
+      # Explicitly return false to distinguish unmet deps from failed
+      # ones -- those return nil.
+      run_met_task(task_opts) || block.try(:call) || false
     end
 
     def run_met_task task_opts = {}
