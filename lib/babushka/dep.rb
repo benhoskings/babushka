@@ -347,8 +347,6 @@ module Babushka
         else
           block.call
         end
-      elsif :fail == met_result
-        false # can't be met
       else
         true # already met
       end
