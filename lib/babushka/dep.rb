@@ -307,6 +307,7 @@ module Babushka
       process_deps and process_self
     rescue DepContext::UnmeetableDep => ex
       log_error ex.message
+      log "I don't know how to fix that, so it's up to you. :)"
     rescue DepError => ex
       false
     end
@@ -355,11 +356,7 @@ module Babushka
 
     def run_met_task task_opts = {}
       returning cache_process(process_task(:met?)) do |result|
-        if :fail == result
-          log "I don't know how to fix that, so it's up to you. :)"
-        else
-          log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
-        end
+        log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
       end
     end
 
