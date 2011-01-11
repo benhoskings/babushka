@@ -104,12 +104,12 @@ describe "using" do
       dep('dep2.template_test').context.a_helper.should == 'hello from the helper!'
     end
     it "should correctly define the met? block" do
-      dep('dep3.template_test').send(:call_task, :met?).should == 'this dep is met.'
+      dep('dep3.template_test').send(:process_task, :met?).should == 'this dep is met.'
     end
     it "should override the template correctly" do
       dep('dep4.template_test') {
         met? { 'overridden met? block.' }
-      }.send(:call_task, :met?).should == 'overridden met? block.'
+      }.send(:process_task, :met?).should == 'overridden met? block.'
     end
     after { Base.sources.anonymous.templates.clear! }
   end

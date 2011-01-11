@@ -352,7 +352,7 @@ module Babushka
     end
 
     def run_met_task task_opts = {}
-      returning cache_process(call_task(:met?)) do |result|
+      returning cache_process(process_task(:met?)) do |result|
         if :fail == result
           log "I don't know how to fix that, so it's up to you. :)"
         else
@@ -362,10 +362,6 @@ module Babushka
     end
 
     def process_task task_name
-      call_task(task_name)
-    end
-
-    def call_task task_name
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.instance_eval &context.send(task_name)

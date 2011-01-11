@@ -304,7 +304,7 @@ describe Dep, "defining" do
         dep.define!
         dep.context.setup { 'custom' }
         dep.define!
-        dep.send(:call_task, :setup).should == 'custom'
+        dep.send(:process_task, :setup).should == 'custom'
       }
     end
     context "lazily" do
@@ -322,7 +322,7 @@ describe Dep, "defining" do
           dep.define!
           dep.context.setup { 'custom' }
           dep.define!
-          dep.send(:call_task, :setup).should == 'custom'
+          dep.send(:process_task, :setup).should == 'custom'
         }
       end
     end
