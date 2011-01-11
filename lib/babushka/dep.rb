@@ -341,14 +341,12 @@ module Babushka
     end
 
     def process_met_task task_opts = {}, &block
-      if !(met_result = run_met_task(task_opts))
-        if block.nil?
-          false # unmet
-        else
-          block.call
-        end
-      else
+      if met_result = run_met_task(task_opts)
         true # already met
+      elsif block.nil?
+        false # unmet
+      else
+        block.call
       end
     end
 
