@@ -362,7 +362,7 @@ module Babushka
     end
 
     def process_task task_name
-      !call_task(task_name).in? [nil, false, :fail]
+      call_task(task_name)
     end
 
     def call_task task_name
