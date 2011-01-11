@@ -1,5 +1,8 @@
 module Babushka
   module BaseDepRunner
+    class UnmeetableDep < DepError
+    end
+
     include GitHelpers
     include PromptHelpers
     include UriHelpers
@@ -36,9 +39,10 @@ module Babushka
       dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
 
       if dir_hash.keys.compact.length > 1
-        log_error "The commands for '#{name}' run from more than one place."
-        log dir_hash.values.map {|cmds| cmd_location_str_for cmds }.to_list(:oxford => true, :conj => 'but').end_with('.')
-        :fail
+        raise UnmeetableDep, "The commands for '#{name}' run from more than one place.\n" +
+          dir_hash.values.map {|cmds|
+            cmd_location_str_for cmds
+          }.to_list(:oxford => true, :conj => 'but').end_with('.')
       else
         cmds = dir_hash.values.first
         returning dir_hash[nil].blank? do |result|

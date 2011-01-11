@@ -304,7 +304,7 @@ describe Dep, "defining" do
         dep.define!
         dep.context.setup { 'custom' }
         dep.define!
-        dep.send(:call_task, :setup).should == 'custom'
+        dep.send(:process_task, :setup).should == 'custom'
       }
     end
     context "lazily" do
@@ -322,7 +322,7 @@ describe Dep, "defining" do
           dep.define!
           dep.context.setup { 'custom' }
           dep.define!
-          dep.send(:call_task, :setup).should == 'custom'
+          dep.send(:process_task, :setup).should == 'custom'
         }
       end
     end
@@ -425,15 +425,21 @@ describe "calling meet on a single dep" do
   before {
     setup_yield_counts
   }
-  it "should fail twice on unmeetable deps" do
+  it "should fail twice and return false on unmeetable deps" do
     make_counter_dep(
       :name => 'unmeetable', :met? => L{ false }
     ).meet.should == false
     @yield_counts['unmeetable'].should == @yield_counts_meet_run
   end
+  it "should fail fast and return nil on explicitly unmeetable deps" do
+    make_counter_dep(
+      :name => 'explicitly unmeetable', :met? => L{ raise UnmeetableDep }
+    ).meet.should == nil
+    @yield_counts['explicitly unmeetable'].should == @yield_counts_met_run
+  end
   it "should fail, run meet, and then succeed on unmet deps" do
     make_counter_dep(
-      :name => 'unmet', :met? => L{ !@yield_counts['unmet'][:met?].zero? }
+      :name => 'unmet', :met? => L{ @yield_counts['unmet'][:met?] > 1 }
     ).meet.should == true
     @yield_counts['unmet'].should == @yield_counts_meet_run
   end
@@ -443,9 +449,15 @@ describe "calling meet on a single dep" do
     ).meet.should == false
     @yield_counts['unmet, #before fails'].should == @yield_counts_failed_at_before
   end
+  it "should fail, not run meet, and fail again on unmet deps where meet raises UnmeetableDep" do
+    make_counter_dep(
+      :name => 'unmet, #before fails', :met? => L{ false }, :meet => L{ raise UnmeetableDep }
+    ).meet.should == nil
+    @yield_counts['unmet, #before fails'].should == @yield_counts_early_exit_meet_run
+  end
   it "should fail, run meet, and then succeed on unmet deps where after fails" do
     make_counter_dep(
-      :name => 'unmet, #after fails', :met? => L{ !@yield_counts['unmet, #after fails'][:met?].zero? }, :after => L{ false }
+      :name => 'unmet, #after fails', :met? => L{ @yield_counts['unmet, #after fails'][:met?] > 1 }, :after => L{ false }
     ).meet.should == true
     @yield_counts['unmet, #after fails'].should == @yield_counts_meet_run
   end
