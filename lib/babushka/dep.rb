@@ -308,8 +308,9 @@ module Babushka
     rescue DepContext::UnmeetableDep => ex
       log_error ex.message
       log "I don't know how to fix that, so it's up to you. :)"
+      nil
     rescue DepError => ex
-      false
+      nil
     end
 
     def process_deps accessor = :requires
