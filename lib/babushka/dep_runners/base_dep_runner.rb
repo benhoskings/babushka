@@ -1,5 +1,8 @@
 module Babushka
   module BaseDepRunner
+    class UnmeetableDep < DepError
+    end
+
     include GitHelpers
     include PromptHelpers
     include UriHelpers
