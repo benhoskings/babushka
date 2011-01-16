@@ -19,7 +19,7 @@ module Babushka
             elsif args.blank? && block.nil?
               #{opts[:type]}_for #{method_name.inspect}, #{default.inspect}
             else
-              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args.compact].flatten, #{opts[:choose_with].inspect}
+              store_#{opts[:type]}_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
               self
             end
           end
@@ -37,7 +37,7 @@ module Babushka
 
     def list_for method_name, default
       if payload.has_key? method_name
-        payload[method_name].map {|i| i.respond_to?(:call) ? i.call : i }
+        payload[method_name].map {|i| i.respond_to?(:call) ? i.call : i }.compact
       else
         [*(default.is_a?(Symbol) ? send(default) : (default || []))]
       end
