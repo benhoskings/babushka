@@ -28,10 +28,9 @@ class Array
   end
   alias_method :group_by, :local_group_by unless [].respond_to?(:group_by)
 
-  # Return two arrays, the first being the portion of this array up to and
-  # including the first element for which the block returned true, and the
-  # second being the rest of this array (or +nil+ if the block didn't
-  # return true for any elements).
+  # Return two arrays, the first being the portion of this array preceding the
+  # first element for which the block returs true, and the second being the
+  # remainder (or +nil+ if the block didn't return true for any elements).
   def cut &block
     if (cut_at = index {|i| yield i }).nil?
       [self, nil]
