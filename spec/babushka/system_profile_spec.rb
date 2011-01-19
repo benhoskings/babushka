@@ -28,7 +28,6 @@ describe Babushka::SystemProfile, '.for_host' do
       Babushka::SystemProfile.for_host.should be_nil
     end
   end
-  
 end
 
 describe Babushka::SystemProfile, "#matches?" do
