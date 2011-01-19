@@ -66,6 +66,8 @@ module Babushka
         nil
       elsif spec.in? all_systems
         spec == system ? nil : :system
+      elsif spec.in? PkgHelper.all_manager_keys
+        spec == pkg_helper_key ? nil : :pkg_helper
       elsif spec.in? our_flavours
         spec == flavour ? nil : :flavour
       elsif spec.in? our_flavour_names
