@@ -30,3 +30,21 @@ describe Babushka::SystemProfile, '.for_host' do
   end
   
 end
+
+describe Babushka::SystemProfile, "#matches?" do
+  # TODO: these specs will only pass on Snow Leopard. It requires refactoring
+  # SystemProfile#initialize; no time to do that right now.
+  subject { Babushka::SystemProfile.for_host }
+  it "should match against only this system" do
+    subject.matches?(:osx).should be_true
+    subject.matches?(:linux).should be_false
+  end
+  it "should match against the name" do
+    subject.matches?(:snow_leopard).should be_true
+    subject.matches?(:leopard).should be_false
+  end
+  it "should match against the package manager" do
+    subject.matches?(:brew).should be_true
+    subject.matches?(:apt).should be_false
+  end
+end
