@@ -168,8 +168,16 @@ end
 describe GitRepo, '#current_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should return a commit id" do
+  it "should return a short commit id" do
     subject.current_head.should =~ /^[0-9a-f]{7}$/
+  end
+end
+
+describe GitRepo, '#current_full_head' do
+  before { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return a full commit id" do
+    subject.current_full_head.should =~ /^[0-9a-f]{40}$/
   end
 end
 
