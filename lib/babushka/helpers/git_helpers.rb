@@ -21,7 +21,7 @@ module Babushka
         if repo.repo_shell('git fetch origin').nil?
           log_error "Couldn't fetch #{uri}."
         elsif !repo.behind?
-          log " Already up-to-date,", :newline => false
+          log " Already up-to-date at #{repo.current_head.colorize('yellow')},", :newline => false
           true
         else
           log " #{repo.current_head.colorize('yellow')}..#{repo.repo_shell("git rev-parse --short origin/#{repo.current_branch}").colorize('yellow')} (#{repo.repo_shell("git log -1 --pretty=format:%s origin/#{repo.current_branch}").chomp('.')}),", :newline => false
