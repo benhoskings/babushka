@@ -2,6 +2,9 @@ module Babushka
   class DepContext < DepDefiner
     include BaseDepRunner
 
+    class UnmeetableDep < DepError
+    end
+
     accepts_list_for :desc
     accepts_list_for :requires
     accepts_list_for :requires_when_unmet
