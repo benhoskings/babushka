@@ -55,7 +55,8 @@ module Babushka
 
     def source_sha
       File.open(path.p) {|f|
-        f.gets
+        first_line = f.gets
+        first_line[/\A#!/] ? f.gets : first_line
       }.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
   end
