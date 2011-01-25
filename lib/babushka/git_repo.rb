@@ -35,7 +35,7 @@ module Babushka
     end
 
     def clean?
-      repo_shell("git diff-index --name-status HEAD").empty?
+      repo_shell("git diff-index --name-status HEAD").blank?
     end
 
     def dirty?
