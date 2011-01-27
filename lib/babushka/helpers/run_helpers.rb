@@ -12,7 +12,7 @@ module Babushka
 
     def bundle_rake cmd, &block
       in_dir var(:rails_root) do
-        log_shell "bundle exec rake #{cmd} RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
+        log_shell "bundle exec rake #{cmd} --trace RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
       end
     end
 
