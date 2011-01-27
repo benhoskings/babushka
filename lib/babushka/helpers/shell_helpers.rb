@@ -87,7 +87,7 @@ module Babushka
     # well. The :sudo and :as options can be ommitted, though, which will cause
     # the command to be run as root. Hence, this sudo call:
     #   sudo('ls')
-    # is equivalent to this shell call:
+    # is equivalent to these two shell calls:
     #   shell('ls', :sudo => true)
     #   shell('ls', :as => 'root')
     #
