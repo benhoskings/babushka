@@ -22,7 +22,7 @@ module Babushka
     end
 
     def apps_in_path? apps
-      present, missing = [*apps].partition {|app_name| app_dir(app_name).parent }
+      present, missing = [*apps].partition {|app_name| app_dir(app_name) }
 
       returning missing.empty? do |result|
         if result
