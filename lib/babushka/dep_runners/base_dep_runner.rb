@@ -16,7 +16,8 @@ module Babushka
     end
 
     def provided? provided_list = provides
-      apps, commands = [*provided_list].versions.partition {|i| i.name[/\.app\/?$/] }
+      apps, command_names = [*provided_list].partition {|i| i.name[/\.app\/?$/] }
+      commands = command_names.versions
       apps_in_path?(apps) and cmds_in_path?(commands) and matching_versions?(commands)
     end
 
