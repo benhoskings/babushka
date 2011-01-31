@@ -27,6 +27,7 @@ module Babushka
       uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
       ({
         'http' => L{ Resource.extract(uri, &block) },
+        'https' => L{ Resource.extract(uri, &block) },
         'ftp' => L{ Resource.extract(uri, &block) },
         'git' => L{ git(uri, &block) }
       }[uri.scheme] || L{ unsupported_scheme(uri) }).call
