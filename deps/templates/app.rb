@@ -54,6 +54,8 @@ meta :app do
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
+          entry.p
+        }.map {|entry|
           pre = prefix_to_use
           target_path = pre / entry
           if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
