@@ -54,18 +54,16 @@ meta :app do
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
-          entry.p
-        }.map {|entry|
           pre = prefix_to_use
           target_path = pre / entry
           if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
             if archive.is_a? Babushka::DmgResource
               log_block("Found #{entry} in the DMG, copying to #{pre}") {
-                entry.copy target_path
+                entry.p.copy target_path
               }
             else
               log_block("Found #{entry}, moving to #{pre}") {
-                entry.move target_path
+                entry.p.move target_path
               }
             end
           end
