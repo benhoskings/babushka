@@ -20,7 +20,7 @@ dep 'rubygems installed' do
   requires_when_unmet 'curl.managed'
   met? { provided? %w[gem ruby] }
   meet {
-    handle_source "http://rubyforge.org/frs/download.php/70696/rubygems-1.3.7.tgz" do
+    handle_source "http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz" do
       shell "ruby setup.rb", :sudo => !File.writable?(which('ruby'))
     end
   }
