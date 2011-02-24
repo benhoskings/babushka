@@ -2,6 +2,13 @@ require 'spec_helper'
 
 class PathSupport; extend PathHelpers end
 
+def stub_commitless_repo name
+  (tmp_prefix / 'repos' / name).rm
+  PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
+    shell "git init"
+  end
+end
+
 def stub_repo name
   (tmp_prefix / 'repos' / "#{name}_remote").rm
   PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
