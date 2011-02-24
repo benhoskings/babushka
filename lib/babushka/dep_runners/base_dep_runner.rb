@@ -65,7 +65,7 @@ module Babushka
             false
           end
         }
-        log "#{cmd.name} is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+        log "#{cmd.name} is #{hsh[cmd]}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
         hsh
       }
       versions.values.all?
