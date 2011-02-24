@@ -2,8 +2,8 @@
 
 module Babushka
   module LogHelpers
-    TickChar = '√'
-    CrossChar = '×'
+    TickChar = '✓'
+    CrossChar = '✗'
     @@indentation_level = 0
 
     # Log +message+ as an error. This is a shortcut for
