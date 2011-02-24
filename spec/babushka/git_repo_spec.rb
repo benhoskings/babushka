@@ -85,27 +85,37 @@ describe GitRepo, "with a repo" do
 end
 
 describe GitRepo, '#clean? / #dirty?' do
-  before(:all) { stub_repo 'a' }
-  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should return false for clean repos" do
-    subject.should be_clean
-    subject.should_not be_dirty
-  end
-  context "when there are changes" do
-    before {
-      PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
-    }
-    it "should return true" do
-      subject.should_not be_clean
-      subject.should be_dirty
+  context "on commitless repos" do
+    before(:all) { stub_commitless_repo 'a' }
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+    it "should be clean" do
+      subject.should be_clean
+      subject.should_not be_dirty
     end
-    context "when the changes are staged" do
+  end
+  context "on normal repos" do
+    before(:all) { stub_repo 'a' }
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+    it "should be clean" do
+      subject.should be_clean
+      subject.should_not be_dirty
+    end
+    context "when there are changes" do
       before {
-        PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "git add --update ." }
+        PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
       }
-      it "should return true" do
+      it "should be dirty" do
         subject.should_not be_clean
         subject.should be_dirty
+      end
+      context "when the changes are staged" do
+        before {
+          PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "git add --update ." }
+        }
+        it "should be dirty" do
+          subject.should_not be_clean
+          subject.should be_dirty
+        end
       end
     end
   end
