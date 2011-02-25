@@ -1,5 +1,8 @@
 module Babushka
   class DepDefiner
+    class UnmeetableDep < DepError
+    end
+
     include RunHelpers
 
     include AcceptsListFor
