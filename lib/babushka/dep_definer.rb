@@ -60,8 +60,7 @@ module Babushka
     end
 
     def fail_because message
-      log message
-      :fail
+      raise UnmeetableDep, message
     end
 
     def file_and_line
