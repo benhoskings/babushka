@@ -146,12 +146,7 @@ describe GitRepo, '#branches' do
     end
   end
   context "on a repo with no commits" do
-    before {
-      (tmp_prefix / 'repos/a').rm
-      PathSupport.in_dir tmp_prefix / 'repos/a', :create => true do
-        shell 'git init'
-      end
-    }
+    before { stub_commitless_repo 'a' }
     it "should return no branches" do
       subject.branches.should == []
     end
