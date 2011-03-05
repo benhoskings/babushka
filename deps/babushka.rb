@@ -30,6 +30,9 @@ dep 'set up.babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
+  setup {
+    raise UnmeetableDep, "The current user, #{shell('whoami')}, can't write to #{var(:install_path)}." unless var(:install_path).p.writable?
+  }
 end
 
 dep 'up to date.babushka' do
