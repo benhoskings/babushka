@@ -35,6 +35,27 @@ describe "lambda choosing" do
     }.choose([:ours, :yours], :on).should == ["this is ours"]
   end
 
+  it "should reject :otherwise as a choice name" do
+    L{
+      LambdaChooser.new(nil, :ours, :yours, :otherwise)
+    }.should raise_error ArgumentError, "You can't use :otherwise as a choice name, because it's reserved."
+  end
+
+  it "should pick 'otherwise' if no choices match" do
+    LambdaChooser.new(nil, :ours, :yours, :theirs) {
+      on :ours, "this is ours"
+      on :yours, "this is yours"
+      otherwise "this is the default"
+    }.choose(:theirs, :on).should == ["this is the default"]
+  end
+
+  it "should return 'nil' if no choices match and there's no 'otherwise'" do
+    LambdaChooser.new(nil, :ours, :yours, :theirs) {
+      on :yours, "this is yours"
+      on :ours, "this is ours"
+    }.choose(:theirs, :on).should == nil
+  end
+
   it "should not join lists from multiple choices" do
     LambdaChooser.new(
       nil,
