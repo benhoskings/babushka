@@ -7,8 +7,9 @@ dep 'git' do
 end
 
 dep 'apt git.managed' do
+  requires 'git.ppa'
   installs 'git-core'
-  provides 'git'
+  provides 'git >= 1.7.4.1'
 end
 
 dep 'git.managed' do
@@ -17,6 +18,10 @@ dep 'git.managed' do
     otherwise 'git'
   }
   provides 'git'
+end
+
+dep 'git.ppa' do
+  adds 'ppa:git-core/ppa'
 end
 
 dep 'git.installer' do
