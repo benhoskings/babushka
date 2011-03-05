@@ -10,7 +10,7 @@ end
 
 dep 'apt git.managed' do
   requires 'git.ppa'
-  installs 'git-core'
+  installs 'git'
   provides 'git >= 1.7.4.1'
 end
 
