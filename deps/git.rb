@@ -1,16 +1,20 @@
 dep 'git' do
   requires {
     on :osx, 'git.installer'
-    on :linux, 'git.managed'
+    on :apt, 'apt git.managed'
+    otherwise 'git.managed'
   }
+end
+
+dep 'apt git.managed' do
+  installs 'git-core'
+  provides 'git'
 end
 
 dep 'git.managed' do
   installs {
-    via :apt, 'git-core'
-    via :yum, 'git'
-    via :brew, 'git'
     via :macports, 'git-core +svn +bash_completion'
+    otherwise 'git'
   }
   provides 'git'
 end
