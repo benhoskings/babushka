@@ -1,5 +1,7 @@
 dep 'git' do
   requires {
+    # Use the binary installer on OS X, so installing babushka
+    # (which pulls in git) doesn't require a compiler.
     on :osx, 'git.installer'
     on :apt, 'apt git.managed'
     otherwise 'git.managed'
