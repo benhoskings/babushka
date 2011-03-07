@@ -14,16 +14,16 @@ dep 'apt git.managed' do
   provides 'git >= 1.7.4.1'
 end
 
+dep 'git.ppa' do
+  adds 'ppa:git-core/ppa'
+end
+
 dep 'git.managed' do
   installs {
     via :macports, 'git-core +svn +bash_completion'
     otherwise 'git'
   }
   provides 'git'
-end
-
-dep 'git.ppa' do
-  adds 'ppa:git-core/ppa'
 end
 
 dep 'git.installer' do
