@@ -248,10 +248,10 @@ module Babushka
     # Sometimes there are conditions under which a dep can't be met. For
     # example, if a dep detects that the existing version of a package is
     # broken in some way that requires manual intervention, then there's no
-    # use running the +meet+ block. In this circumstance, you can raise the
-    # +UnmeetableDep+ exception within the +met?+ block. Babushka will rescue
-    # it and consider the dep unmeetable (that is, it will just allow the dep
-    # to fail without attempting to meet it).
+    # use running the +meet+ block. In this circumstance, you can call
+    # +#unmeetable+, which raises an +UnmeetableDep+ exception. Babushka will
+    # rescue it and consider the dep unmeetable (that is, it will just allow
+    # the dep to fail without attempting to meet it).
     #
     # The following describes the return values of a few components, and of
     # the dep itself.
