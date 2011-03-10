@@ -31,7 +31,7 @@ dep 'set up.babushka' do
       'next' => 'The development head -- slight risk of explosions'
     }
   setup {
-    raise UnmeetableDep, "The current user, #{shell('whoami')}, can't write to #{var(:install_path)}." unless var(:install_path).p.writable?
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{var(:install_path)}." unless var(:install_path).p.writable?
   }
 end
 

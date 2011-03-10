@@ -38,7 +38,7 @@ module Babushka
       dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
 
       if dir_hash.keys.compact.length > 1
-        raise UnmeetableDep, "The commands for '#{name}' run from more than one place.\n" +
+        unmeetable "The commands for '#{name}' run from more than one place.\n" +
           dir_hash.values.map {|cmds|
             cmd_location_str_for cmds
           }.to_list(:oxford => true, :conj => 'but').end_with('.')
