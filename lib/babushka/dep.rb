@@ -305,7 +305,7 @@ module Babushka
     def process_this_dep
       process_task(:setup)
       process_deps and process_self
-    rescue DepContext::UnmeetableDep => ex
+    rescue DepDefiner::UnmeetableDep => ex
       log_error ex.message
       log "I don't know how to fix that, so it's up to you. :)"
       nil
@@ -357,7 +357,7 @@ module Babushka
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.instance_eval &context.send(task_name)
-    rescue DepContext::UnmeetableDep => ex
+    rescue DepDefiner::UnmeetableDep => ex
       raise ex
     rescue StandardError => e
       log "#{e.class} at #{e.backtrace.first}:".colorize('red')
