@@ -30,6 +30,9 @@ dep 'set up.babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
+  setup {
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{var(:install_path)}." if var(:install_path).p.exists? unless var(:install_path).p.writable?
+  }
 end
 
 dep 'up to date.babushka' do
@@ -53,12 +56,12 @@ dep 'update would fast forward.babushka' do
   requires 'on correct branch.babushka'
   met? {
     if !repo.repo_shell('git fetch origin')
-      fail_because("Couldn't pull the latest code - check your internet connection.")
+      unmeetable "Couldn't pull the latest code - check your internet connection."
     else
       if !repo.remote_branch_exists?
-        fail_because("The current branch, #{repo.current_branch}, isn't pushed to origin/#{repo.current_branch}.")
+        unmeetable "The current branch, #{repo.current_branch}, isn't pushed to origin/#{repo.current_branch}."
       elsif repo.ahead?
-        fail_because("There are unpushed commits in #{repo.current_branch}.")
+        unmeetable "There are unpushed commits in #{repo.current_branch}."
       else
         true
       end
@@ -81,7 +84,7 @@ end
 dep 'repo clean.babushka' do
   requires 'installed.babushka'
   met? {
-    repo.clean? or fail_because("There are local changes in #{var(:install_path)}.")
+    repo.clean? or unmeetable("There are local changes in #{var(:install_path)}.")
   }
 end
 

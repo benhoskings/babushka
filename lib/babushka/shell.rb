@@ -27,7 +27,7 @@ module Babushka
       debug "$ #{[*@cmd].join(' ')}".colorize('grey')
       @stdout, @stderr = '', ''
 
-      @result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
+      popen3_result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
         unless opts[:input].nil?
           stdin << opts[:input]
           stdin.close
@@ -70,8 +70,9 @@ module Babushka
           end
         end
         print "\b\b" if should_spin unless spinner_offset == -1
-      end.zero?
+      end
 
+      @result = popen3_result == 0
       ShellResult.new(self, opts, &block).render
     end
   end

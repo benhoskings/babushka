@@ -59,7 +59,7 @@ module Babushka
       result message, :result => false
     end
 
-    def fail_because message
+    def unmeetable message
       raise UnmeetableDep, message
     end
 

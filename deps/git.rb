@@ -1,16 +1,21 @@
 dep 'git' do
   requires {
+    # Use the binary installer on OS X, so installing babushka
+    # (which pulls in git) doesn't require a compiler.
     on :osx, 'git.installer'
-    on :linux, 'git.managed'
+    otherwise 'git.managed'
   }
+end
+
+dep 'git.ppa' do
+  adds 'ppa:git-core/ppa'
 end
 
 dep 'git.managed' do
   installs {
-    via :apt, 'git-core'
-    via :yum, 'git'
-    via :brew, 'git'
     via :macports, 'git-core +svn +bash_completion'
+    via :apt, 'git-core'
+    otherwise 'git'
   }
   provides 'git'
 end

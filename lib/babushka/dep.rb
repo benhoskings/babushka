@@ -248,10 +248,10 @@ module Babushka
     # Sometimes there are conditions under which a dep can't be met. For
     # example, if a dep detects that the existing version of a package is
     # broken in some way that requires manual intervention, then there's no
-    # use running the +meet+ block. In this circumstance, you can raise the
-    # +UnmeetableDep+ exception within the +met?+ block. Babushka will rescue
-    # it and consider the dep unmeetable (that is, it will just allow the dep
-    # to fail without attempting to meet it).
+    # use running the +meet+ block. In this circumstance, you can call
+    # +#unmeetable+, which raises an +UnmeetableDep+ exception. Babushka will
+    # rescue it and consider the dep unmeetable (that is, it will just allow
+    # the dep to fail without attempting to meet it).
     #
     # The following describes the return values of a few components, and of
     # the dep itself.
@@ -305,7 +305,7 @@ module Babushka
     def process_this_dep
       process_task(:setup)
       process_deps and process_self
-    rescue DepContext::UnmeetableDep => ex
+    rescue DepDefiner::UnmeetableDep => ex
       log_error ex.message
       log "I don't know how to fix that, so it's up to you. :)"
       nil
@@ -357,7 +357,7 @@ module Babushka
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.instance_eval &context.send(task_name)
-    rescue DepContext::UnmeetableDep => ex
+    rescue DepDefiner::UnmeetableDep => ex
       raise ex
     rescue StandardError => e
       log "#{e.class} at #{e.backtrace.first}:".colorize('red')
