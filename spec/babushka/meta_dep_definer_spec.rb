@@ -80,11 +80,11 @@ describe "using" do
     before {
       @meta = meta 'template_test' do
         def a_helper_method
-          'hello from the helper method!'
+          'hello from the helper!'
         end
         template {
-          helper :a_helper do
-            'hello from the helper!'
+          def a_helper
+            'hello from the helper in the template!'
           end
           met? {
             'this dep is met.'
@@ -98,10 +98,10 @@ describe "using" do
       dep('dep1.template_test').context.respond_to?(:a_helper).should be_true
     end
     it "should correctly define the helper method" do
-      dep('dep2.template_test').context.a_helper_method.should == 'hello from the helper method!'
+      dep('dep2.template_test').context.a_helper_method.should == 'hello from the helper!'
     end
     it "should correctly define the helper" do
-      dep('dep2.template_test').context.a_helper.should == 'hello from the helper!'
+      dep('dep2.template_test').context.a_helper.should == 'hello from the helper in the template!'
     end
     it "should correctly define the met? block" do
       dep('dep3.template_test').send(:process_task, :met?).should == 'this dep is met.'
