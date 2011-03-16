@@ -56,3 +56,9 @@ dep 'yum', :template => 'external' do
     log "Your system doesn't seem to have Yum installed. Is it Redhat-based?"
   }
 end
+
+dep 'npm' do
+  requires 'nodejs.src'
+  met? { which 'npm' }
+  meet { shell 'curl http://npmjs.org/install.sh | sh' }
+end
