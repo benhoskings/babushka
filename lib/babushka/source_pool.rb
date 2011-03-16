@@ -78,14 +78,6 @@ module Babushka
       end
     end
 
-    def load_all! opts = {}
-      if opts[:first]
-        # load_deps_from core_dep_locations.concat([*dep_locations]).concat(Source.all).uniq
-      else
-        current.map &:load!
-      end
-    end
-
     def update!
       all_present.select {|source|
         source.cloneable?
