@@ -60,7 +60,9 @@ end
 dep 'npm' do
   requires 'nodejs.src'
   met? { which 'npm' }
-  meet { shell "curl http://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh" }
+  meet {
+    log_shell "Installing npm", "curl http://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh"
+  }
 end
 
 dep 'nodejs.src' do
@@ -82,6 +84,6 @@ end
 dep 'pip.src' do
   source 'http://pypi.python.org/packages/source/p/pip/pip-0.8.3.tar.gz'
   process_source {
-    shell "python setup.py install", :sudo => !which('python').p.writable?
+    log_shell "Installing pip", "python setup.py install", :sudo => !which('python').p.writable?
   }
 end
