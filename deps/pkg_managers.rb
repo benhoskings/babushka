@@ -60,7 +60,7 @@ end
 dep 'npm' do
   requires 'nodejs.src'
   met? { which 'npm' }
-  meet { shell 'curl http://npmjs.org/install.sh | sh' }
+  meet { shell "curl http://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh" }
 end
 
 dep 'nodejs.src' do
