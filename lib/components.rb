@@ -54,6 +54,7 @@ module Babushka
     pkg_helpers/gem_helper
     pkg_helpers/macports_helper
     pkg_helpers/src_helper
+    pkg_helpers/npm_helper
     dep
     dep_pool
     meta_dep_pool

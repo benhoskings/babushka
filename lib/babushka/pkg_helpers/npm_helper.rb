@@ -1,0 +1,44 @@
+module Babushka
+  class NpmHelper < PkgHelper
+  class << self
+    def pkg_type; :npm end
+    def pkg_cmd; "#{pkg_binary} --color false" end
+    def pkg_binary; "npm" end
+    def manager_key; :npm end
+
+    private
+
+    def _install! pkgs, opts
+      log_shell "Installing #{pkgs.to_list} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
+    end
+
+    def _has? pkg
+      # Some example output:
+      #   socket.io@0.6.15      =rauchg active installed remote
+      shell("#{pkg_cmd} ls '#{pkg.name}'").split("\n").select {|l|
+        # npm mistakenly includes \e[m in here even with --color false.
+        l[/^#{Regexp.escape(pkg.name)}(\e\[m)?\@.*\=.*\binstalled\b/]
+      }.map {|installed|
+        installed.sub(/\s+=.*$/, '')
+      }.any? {|match|
+        pkg.matches? match.scan(/\@(.*)$/).flatten.first
+      }
+    end
+
+    def cmdline_spec_for pkg
+      if pkg.version.blank?
+        # e.g. 'socket.io'
+        "'#{pkg.name}'"
+      else
+        # e.g. 'socket.io ==0.12.0'
+        "'#{pkg.name} #{pkg.version.operator}#{pkg.version.version}'"
+      end
+    end
+
+    def should_sudo?
+      !File.writable?(bin_path / pkg_binary)
+    end
+
+  end
+  end
+end
