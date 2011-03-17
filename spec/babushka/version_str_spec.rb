@@ -82,6 +82,15 @@ describe "parsing" do
     v.pieces.should == [0, 2]
     v.operator.should == '=='
   end
+  it "should ignore a leading 'v' for 'version'" do
+    v = VersionStr.new('V0.5.0')
+    v.pieces.should == [0, 5, 0]
+    v.operator.should == '=='
+
+    v = VersionStr.new('>= v1.9.2p180')
+    v.pieces.should == [1, 9, 2, 'p', 180]
+    v.operator.should == '>='
+  end
   it "should reject invalid operators" do
     L{
       VersionStr.new('~ 0.2')
