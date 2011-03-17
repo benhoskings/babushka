@@ -82,6 +82,6 @@ end
 dep 'pip.src' do
   source 'http://pypi.python.org/packages/source/p/pip/pip-0.8.3.tar.gz'
   process_source {
-    shell "python setup.py install", :sudo => !which('python').writable?
+    shell "python setup.py install", :sudo => !which('python').p.writable?
   }
 end
