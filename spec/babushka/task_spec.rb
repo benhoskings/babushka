@@ -36,6 +36,21 @@ describe Task, "process" do
   }
 end
 
+describe Task, "saved vars" do
+  before {
+    Base.task.vars.stub!(:saved_vars).and_return(Hashish.hash.merge(
+      'domain' => {:value => "lol.org"}
+    ))
+    Base.task.vars.stub!(:vars).and_return(Hashish.hash.merge(
+      'domain' => {:default => :username},
+      'username' => {:default => 'ben'}
+    ))
+  }
+  it "should return the saved value over the set default" do
+    Base.task.vars.var(:domain, :ask => false).should == 'lol.org'
+  end
+end
+
 describe Task, "vars_for_save" do
   before {
     Base.task.vars.stub!(:vars).and_return(standard_vars)

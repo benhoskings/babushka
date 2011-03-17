@@ -67,15 +67,21 @@ module Babushka
       if vars[key.to_s][:default].respond_to? :call
         # If the default is a proc, re-evaluate it every time.
         instance_eval { vars[key.to_s][:default].call }
+
+      elsif saved_vars[key.to_s].has_key? :value
+        # Otherwise, if there's a saved value, use that.
+        saved_vars[key.to_s][:value]
+
       # Symbol defaults are references to other vars.
       elsif vars[key.to_s][:default].is_a? Symbol
         # Look up the current value of the referenced var.
         referenced_val = var vars[key.to_s][:default], :ask => false
         # Use the corresponding saved value if there is one, otherwise use the reference.
         (saved_vars[key.to_s][:values] ||= {})[referenced_val] || referenced_val
+
       else
-        # Otherwise, use a saved literal value, or the default.
-        saved_vars[key.to_s][:value] || vars[key.to_s][:default]
+        # Otherwise, use the default.
+        vars[key.to_s][:default]
       end
     end
 
