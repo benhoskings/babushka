@@ -9,7 +9,11 @@ module Babushka
     private
 
     def _install! pkgs, opts
-      log_shell "Installing #{pkgs.to_list} via #{manager_key}", "#{pkg_cmd} install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
+      pkgs.each {|pkg|
+        log_shell "Installing #{pkg} via #{manager_key}",
+          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
+          :sudo => should_sudo?
+      }
     end
 
     def _has? pkg
