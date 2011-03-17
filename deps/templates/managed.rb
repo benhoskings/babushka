@@ -78,6 +78,19 @@ meta :gem do
   template &managed_template
 end
 
+meta :pip do
+  accepts_list_for :installs, :basename, :choose_with => :via
+  accepts_list_for :provides, :basename, :choose_with => :via
+  accepts_list_for :service_name, :name
+  accepts_list_for :cfg
+
+  def pkg_manager
+    Babushka::PipHelper
+  end
+
+  template &managed_template
+end
+
 meta :npm do
   accepts_list_for :installs, :basename, :choose_with => :via
   accepts_list_for :provides, :basename, :choose_with => :via

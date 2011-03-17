@@ -62,3 +62,21 @@ dep 'npm' do
   met? { which 'npm' }
   meet { shell 'curl http://npmjs.org/install.sh | sh' }
 end
+
+dep 'pip' do
+  requires {
+    on :osx, 'pip.src'
+    otherwise 'pip.managed'
+  }
+end
+
+dep 'pip.managed' do
+  installs 'python-pip'
+end
+
+dep 'pip.src' do
+  source 'http://pypi.python.org/packages/source/p/pip/pip-0.8.3.tar.gz'
+  process_source {
+    shell "python setup.py install", :sudo => !which('python').writable?
+  }
+end
