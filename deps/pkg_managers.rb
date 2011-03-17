@@ -63,6 +63,11 @@ dep 'npm' do
   meet { shell 'curl http://npmjs.org/install.sh | sh' }
 end
 
+dep 'nodejs.src' do
+  source 'git://github.com/joyent/node.git'
+  provides 'node', 'node-waf'
+end
+
 dep 'pip' do
   requires {
     on :osx, 'pip.src'
