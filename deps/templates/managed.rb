@@ -93,7 +93,7 @@ end
 
 meta :npm do
   accepts_list_for :installs, :basename, :choose_with => :via
-  accepts_list_for :provides, :basename, :choose_with => :via
+  accepts_list_for :provides, [], :choose_with => :via
   accepts_list_for :service_name, :name
   accepts_list_for :cfg
 
