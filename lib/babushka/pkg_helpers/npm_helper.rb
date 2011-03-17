@@ -34,8 +34,8 @@ module Babushka
         # e.g. 'socket.io'
         "'#{pkg.name}'"
       else
-        # e.g. 'socket.io ==0.12.0'
-        "'#{pkg.name} #{pkg.version.operator}#{pkg.version.version}'"
+        # e.g. 'socket.io@==0.12.0'
+        "'#{pkg.name}@#{pkg.version.operator}#{pkg.version.version}'"
       end
     end
 
