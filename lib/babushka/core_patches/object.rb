@@ -57,7 +57,11 @@ class Object
   # becomes
   #   #&lt;Object:0x00000100bda208><br />
   def taph
-    tap { puts("#{File.basename caller[4]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') + "<br />") }
+    tap {
+      puts "<pre>" +
+        "#{File.basename caller[2]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') +
+        "</pre>"
+    }
   end
 end
 
