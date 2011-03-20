@@ -149,36 +149,26 @@ describe SourcePool, '#template_for' do
 end
 
 describe SourcePool, '#load_context' do
-  context "eagerly" do
+  context "without a template" do
     before {
-      Dep.should_receive(:new).with('eager load_context', Base.sources.anonymous, {}, nil)
+      Dep.should_receive(:new).with('load_context', Base.sources.anonymous, {}, nil)
     }
     it "should pass the correct options" do
-      dep 'eager load_context'
-    end
-  end
-  context "lazily" do
-    before {
-      Dep.should_receive(:new).with('lazy load_context', Base.sources.anonymous, {:lazy => true}, nil)
-    }
-    it "should pass the correct options" do
-      Base.sources.load_context :opts => {:lazy => true} do
-        dep 'lazy load_context'
-      end
+      dep 'load_context'
     end
   end
   context "with a template" do
     let(:source) {
-      Source.new *test_dep_source('lazy_load_context')
+      Source.new *test_dep_source('load_context')
     }
     let!(:template) {
-      Base.sources.load_context :source => source, :opts => {:lazy => true} do
-        meta 'lazy_defining_template'
+      Base.sources.load_context :source => source do
+        meta 'load_context_template'
       end
     }
     let!(:the_dep) {
-      Base.sources.load_context :source => source, :opts => {:lazy => true} do
-        dep 'lazy defining test with template.lazy_defining_template'
+      Base.sources.load_context :source => source do
+        dep 'defining test with template.load_context_template'
       end
     }
     it "should use the template" do
