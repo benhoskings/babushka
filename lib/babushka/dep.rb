@@ -56,8 +56,18 @@ module Babushka
       }
     end
 
-    attr_reader :name, :opts, :vars, :template, :context, :dep_source, :load_path
+    attr_reader :name, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
+
+    def context
+      define! if @context.nil?
+      @context
+    end
+
+    def template
+      define! if @template.nil?
+      @template
+    end
 
     delegate :set, :merge, :define_var, :to => :context
 
@@ -90,7 +100,7 @@ module Babushka
       @dep_source = source
       @load_path = Base.sources.current_load_path
       @dep_source.deps.register self
-      define! unless opts[:lazy]
+      define! if Base.sources.current_real_load_source.nil?
     end
 
     # Attempt to look up the template this dep was defined against (or if no
