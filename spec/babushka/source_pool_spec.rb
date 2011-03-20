@@ -277,7 +277,7 @@ describe "nested source loads" do
     Source.stub!(:present).and_return([@outer_source, @nested_source])
     @outer_source.load!
   }
-  it "should have loaded deps" do
+  it "should have loaded outer deps" do
     @outer_source.deps.names.should =~ [
       'test dep 1',
       'externally templated',
@@ -286,23 +286,35 @@ describe "nested source loads" do
       'separate file',
       'separate file.another_local_template'
     ]
-    @nested_source.deps.names.should =~ [
-      'test dep 1',
-      'test dep 2',
-      'option-templated dep',
-      'suffix-templated dep.test_template'
-    ]
+    @nested_source.deps.names.should == []
   end
-  it "should have loaded templates" do
+  it "should have loaded outer templates" do
     @outer_source.templates.names.should =~ [
       'local_template',
       'another_local_template'
     ]
-    @nested_source.templates.names.should =~ [
-      'test_template',
-      'test meta 1'
-    ]
+    @nested_source.templates.names.should == []
   end
+  context "after defining external deps" do
+    before {
+      @outer_source.find('externally templated').define!
+    }
+    it "should have loaded the nested deps" do
+      @nested_source.deps.names.should =~ [
+        'test dep 1',
+        'test dep 2',
+        'option-templated dep',
+        'suffix-templated dep.test_template'
+      ]
+    end
+    it "should have loaded the nested templates" do
+      @nested_source.templates.names.should =~ [
+        'test_template',
+        'test meta 1'
+      ]
+    end
+  end
+
   it "should have defined deps against the correct template" do
     @outer_source.find('test dep 1').template.should == Dep::BaseTemplate
     @outer_source.find('externally templated').template.should == @nested_source.find_template('test_template')
