@@ -163,7 +163,7 @@ module Babushka
     def load_deps!
       unless @loaded
         path.p.glob('**/*.rb').each {|f|
-          Base.sources.load_context :source => self, :path => f, :opts => {:lazy => Base.task.verb} do
+          Base.sources.load_context :source => self, :path => f do
             begin
               load f
             rescue Exception => e
