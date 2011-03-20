@@ -121,8 +121,11 @@ module Babushka
       @load_contexts.pop
     end
 
+    def current_real_load_source
+      current_load_context[:source]
+    end
     def current_load_source
-      current_load_context[:source] || Base.sources.anonymous
+      current_real_load_source || Base.sources.anonymous
     end
     def current_load_path
       current_load_context[:path].try(:p)
