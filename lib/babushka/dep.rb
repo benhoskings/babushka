@@ -56,8 +56,18 @@ module Babushka
       }
     end
 
-    attr_reader :name, :opts, :vars, :template, :context, :dep_source, :load_path
+    attr_reader :name, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
+
+    def context
+      define! if @context.nil?
+      @context
+    end
+
+    def template
+      define! if @template.nil?
+      @template
+    end
 
     delegate :set, :merge, :define_var, :to => :context
 
