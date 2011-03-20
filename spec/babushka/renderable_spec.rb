@@ -50,7 +50,7 @@ describe Renderable do
   context "with a script containing a shebang" do
     let(:source_file) { "spec/renderable/example.sh" }
     let(:dest_file) { tmp_prefix / 'example.sh' }
-    let(:content) { %r{babushka 'benhoskings:ready for update.deploy_repo'} }
+    let(:content) { %r{babushka 'benhoskings:up to date.repo'} }
     subject { Renderable.new(dest_file) }
     it_should_behave_like 'renderable'
   end
