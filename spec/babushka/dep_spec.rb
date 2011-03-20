@@ -248,6 +248,9 @@ describe Dep, "defining" do
     end.dep_defined?.should == true
   end
   context "lazily" do
+    before {
+      Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
+    }
     it "should not define the dep when called without a block" do
       dep('lazy defining test').dep_defined?.should == nil
     end
@@ -280,6 +283,9 @@ describe Dep, "defining" do
       end.dep_defined?.should == false
     end
     context "lazily" do
+      before {
+        Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
+      }
       it "should not be defined, and then have failed defining after a run" do
         dep('lazy defining test with errors') do
           nonexistent_method

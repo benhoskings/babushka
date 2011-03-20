@@ -172,10 +172,6 @@ describe SourcePool, '#load_context' do
       end
     }
     it "should use the template" do
-      the_dep.template.should be_nil
-      # This triggers dep.define!, but the load_context is gone.
-      # That's what we're testing.
-      the_dep.met?
       the_dep.template.should == template
     end
     after {
@@ -219,8 +215,8 @@ describe "template selection during defining" do
       end
       it "should not find a template in the wrong source, and raise" do
         L{
-          mock_dep('template selection 4', :template => 'meta_3', :in => @source1)
-          }.should raise_error(DepError, "There is no template named 'meta_3' to define 'template selection 4' against.")
+          mock_dep('template selection 4', :template => 'meta_3', :in => @source1).template
+        }.should raise_error(DepError, "There is no template named 'meta_3' to define 'template selection 4' against.")
       end
     end
     context "with suffixes" do
