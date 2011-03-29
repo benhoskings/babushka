@@ -50,6 +50,7 @@ module Babushka
 
     require 'digest/sha1'
     def sha_of source
+      raise "Source doesn't exist: #{source.p}" unless source.p.exists?
       Digest::SHA1.hexdigest(source.p.read)
     end
 
