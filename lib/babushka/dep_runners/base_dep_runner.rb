@@ -15,8 +15,14 @@ module Babushka
       merge :versions, name => version_str
     end
 
-    # TODO: solve cmd/app and string/version handling better.
+    # deprecated
     def provided? provided_list = provides
+      log_error "#{caller.first}: #provided? has been renamed to #in_path?."
+      in_path? provided_list
+    end
+
+    # TODO: solve cmd/app and string/version handling better.
+    def in_path? provided_list = provides
       apps, command_names = [*provided_list].partition {|i| i.to_s[/\.app\/?$/] }
       commands = command_names.versions
       apps_in_path?(apps) and cmds_in_path?(commands) and matching_versions?(commands)
