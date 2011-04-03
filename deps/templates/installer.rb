@@ -1,7 +1,7 @@
 meta :installer do
   accepts_list_for :source
   accepts_list_for :extra_source
-  accepts_list_for :provides, :name, :choose_with => :via
+  accepts_list_for :provides, :basename, :choose_with => :via
   accepts_list_for :prefix, %w[~/Applications /Applications]
 
   template {
