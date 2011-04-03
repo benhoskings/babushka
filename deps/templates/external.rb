@@ -4,7 +4,7 @@ meta :external do
 
   template {
     met? {
-      returning provided?(expects) || :fail do |result|
+      returning in_path?(expects) || :fail do |result|
         otherwise.call if result == :fail
       end
     }

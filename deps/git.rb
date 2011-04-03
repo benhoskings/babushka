@@ -5,7 +5,7 @@ dep 'git' do
     on :osx, 'git.installer'
     otherwise 'git.managed'
   }
-  met? { provided? 'git >= 1.7' }
+  met? { in_path? 'git >= 1.7' }
 end
 
 dep 'git.managed' do
