@@ -8,10 +8,6 @@ dep 'git' do
   met? { provided? 'git >= 1.7' }
 end
 
-dep 'git.ppa' do
-  adds 'ppa:git-core/ppa'
-end
-
 dep 'git.managed' do
   installs {
     via :macports, 'git-core +svn +bash_completion'
