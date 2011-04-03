@@ -28,28 +28,28 @@ describe "shell" do
   it "should accept :input parameter" do
     shell('cat', :input => 'lol').should == "lol"
   end
-  context ":dir parameter" do
+  context ":cd parameter" do
     before { (tmp_prefix / 'dir_param').mkdir }
-    it "should run in the current directory when :dir isn't specified" do
+    it "should run in the current directory when :cd isn't specified" do
       shell("pwd").should == Dir.pwd
     end
     it "should run in the specified directory" do
-      shell("pwd", :dir => (tmp_prefix / 'dir_param')).should == (tmp_prefix / 'dir_param').to_s
+      shell("pwd", :cd => (tmp_prefix / 'dir_param')).should == (tmp_prefix / 'dir_param').to_s
     end
     it "should expand the path" do
-      shell("pwd", :dir => '~').should == ENV['HOME']
+      shell("pwd", :cd => '~').should == ENV['HOME']
     end
     it "should raise when the path is nonexistent" do
       L{
-        shell("pwd", :dir => (tmp_prefix / 'nonexistent'))
+        shell("pwd", :cd => (tmp_prefix / 'nonexistent'))
       }.should raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}")
     end
     context "with :create option" do
       it "should run in the specified directory" do
-        shell("pwd", :dir => (tmp_prefix / 'dir_param'), :create => true).should == (tmp_prefix / 'dir_param').to_s
+        shell("pwd", :cd => (tmp_prefix / 'dir_param'), :create => true).should == (tmp_prefix / 'dir_param').to_s
       end
       it "should create and run when the path is nonexistent" do
-        shell("pwd", :dir => (tmp_prefix / 'dir_param_with_create'), :create => true).should == (tmp_prefix / 'dir_param_with_create').to_s
+        shell("pwd", :cd => (tmp_prefix / 'dir_param_with_create'), :create => true).should == (tmp_prefix / 'dir_param_with_create').to_s
       end
     end
   end

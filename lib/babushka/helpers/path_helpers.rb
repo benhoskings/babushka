@@ -1,6 +1,6 @@
 module Babushka
   module PathHelpers
-    def in_dir dir, opts = {}, &block
+    def cd dir, opts = {}, &block
       if dir.nil?
         yield Dir.pwd.p
       else
@@ -18,12 +18,19 @@ module Babushka
       end
     end
 
+    def in_dir dir, opts = {}, &block
+      log_error "#{caller.first}: #in_dir has been renamed to #cd."
+      cd dir, opts, &block
+    end
+
     def in_build_dir path = '', &block
-      in_dir Babushka::BuildPrefix / path, :create => true, &block
+      log_error "#{caller.first}: #in_build_dir is deprecated. Instead, use cd(Babushka::BuildPrefix)."
+      cd Babushka::BuildPrefix / path, :create => true, &block
     end
 
     def in_download_dir path = '', &block
-      in_dir Babushka::DownloadPrefix / path, :create => true, &block
+      log_error "#{caller.first}: #in_download_dir is deprecated. Instead, use cd(Babushka::DownloadPrefix)."
+      cd Babushka::DownloadPrefix / path, :create => true, &block
     end
   end
 end

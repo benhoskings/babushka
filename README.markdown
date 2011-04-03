@@ -74,7 +74,7 @@ Right, here's one I prepared earlier. Given you're on a Mac with Xcode installed
       requires 'xcode tools'
       met? { which 'llvm-gcc-4.2' }
       meet {
-        in_dir('/usr/local/bin') {|path|
+        cd('/usr/local/bin') {|path|
           shell "ln -s /Developer/usr/llvm-gcc-4.2/bin/llvm* .", :sudo => !path.writable?
         }
       }

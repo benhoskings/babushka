@@ -20,12 +20,12 @@ module Babushka
     #     of root.
     #   <tt>:sudo => 'user'</tt> is a shortcut that has the same effect as
     #     <tt>:sudo => true, :as => 'user'</tt>
-    #   <tt>:dir</tt> specifies the directory in which the command should run.
+    #   <tt>:cd</tt> specifies the directory in which the command should run.
     #     If the path doesn't exist or isn't a directory, an error is raised
     #     unless the <tt>:create</tt> option is also set.
     #     To achieve the directory change, the command is internally updated
     #     to something like `cd #{dir} && #{cmd}`.
-    #   <tt>:create</tt> causes the directory specified by the <tt>:dir</tt>
+    #   <tt>:create</tt> causes the directory specified by the <tt>:cd</tt>
     #     option to be created if it doesn't already exist.
     #   <tt>:input</tt> can be used to supply input for the shell command. It
     #     be any object that can be written to an IO with <tt>io << obj</tt>.
@@ -37,14 +37,18 @@ module Babushka
     #     progress of a long-running command, like a build or an installer.
     def shell cmd, opts = {}, &block
       if opts[:dir]
-        if !opts[:dir].p.exists?
+        log_error "#{caller.first}: #shell's :dir option has been renamed to :cd."
+        opts[:cd] = opts[:dir]
+      end
+      if opts[:cd]
+        if !opts[:cd].p.exists?
           if opts[:create]
-            opts[:dir].p.mkdir
+            opts[:cd].p.mkdir
           else
-            raise Errno::ENOENT, opts[:dir]
+            raise Errno::ENOENT, opts[:cd]
           end
         end
-        cmd = "cd \"#{opts[:dir].p.to_s.gsub('"', '\"')}\" && #{cmd}"
+        cmd = "cd \"#{opts[:cd].p.to_s.gsub('"', '\"')}\" && #{cmd}"
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
       send shell_method, cmd, opts, &block

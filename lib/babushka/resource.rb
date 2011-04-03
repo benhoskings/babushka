@@ -20,7 +20,9 @@ module Babushka
 
     def self.extract url, &block
       get url do |download_path|
-        in_build_dir { Resource.for(download_path).extract(&block) }
+        cd Babushka::BuildPrefix do
+          Resource.for(download_path).extract(&block)
+        end
       end
     end
 
@@ -93,17 +95,17 @@ module Babushka
     end
 
     def extract &block
-      in_dir(archive_prefix, :create => true) { process_extract &block }
+      cd(archive_prefix, :create => true) { process_extract &block }
     end
 
     def process_extract &block
       shell("mkdir -p '#{name}'") and
-      in_dir(name) {
+      cd(name) {
         unless log_shell("Extracting #{filename}", extract_command)
           log_error "Couldn't extract #{path}."
           log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
         else
-          in_dir(content_subdir) {
+          cd(content_subdir) {
             block.nil? or block.call(self)
           }
         end
@@ -167,7 +169,7 @@ module Babushka
         elsif (path = mountpoint_for(output)).nil?
           raise "Couldn't find where `hdiutil` mounted #{filename.p}."
         else
-          returning(in_dir(path) { block.call(self) }) do
+          returning(cd(path) { block.call(self) }) do
             log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
           end
         end
