@@ -137,7 +137,7 @@ module Babushka
     end
 
     def save_var_log_for var_path, data
-      in_dir File.dirname(var_path), :create => true do |path|
+      cd File.dirname(var_path), :create => true do |path|
         debug "Saving #{var_path}"
         dump_yaml_to File.basename(var_path), data
       end

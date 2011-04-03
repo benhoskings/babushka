@@ -332,7 +332,7 @@ module Babushka
     end
 
     def process_self
-      in_dir context.run_in do
+      cd context.run_in do
         process_met_task(:initial => true) {
           if task.opt(:dry_run)
             false # unmet

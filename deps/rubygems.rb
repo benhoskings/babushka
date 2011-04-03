@@ -25,7 +25,7 @@ dep 'rubygems installed' do
     end
   }
   after {
-    in_dir cmd_dir('ruby') do
+    cd cmd_dir('ruby') do
       if File.exists? 'gem1.8'
         shell "ln -sf gem1.8 gem", :sudo => !File.writable?(which('ruby'))
       end

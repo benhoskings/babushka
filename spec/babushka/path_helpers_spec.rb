@@ -2,7 +2,7 @@ require 'spec_helper'
 
 class PathTester; extend PathHelpers end
 
-describe "in_dir" do
+describe "cd" do
   before do
     @tmp_dir = tmp_prefix
     `mkdir -p '#{@tmp_dir}'`
@@ -17,7 +17,7 @@ describe "in_dir" do
 
   it "should yield if no dir is given" do
     has_yielded = false
-    PathTester.in_dir(nil) {|path|
+    PathTester.cd(nil) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
@@ -27,7 +27,7 @@ describe "in_dir" do
 
   it "should yield if no chdir is required" do
     has_yielded = false
-    PathTester.in_dir(@original_pwd) {|path|
+    PathTester.cd(@original_pwd) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
@@ -36,7 +36,7 @@ describe "in_dir" do
   end
   it "should change dir for the duration of the block" do
     has_yielded = false
-    PathTester.in_dir(@tmp_dir) {
+    PathTester.cd(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
       has_yielded = true
     }
@@ -44,9 +44,9 @@ describe "in_dir" do
     Dir.pwd.should == @original_pwd
   end
   it "should work recursively" do
-    PathTester.in_dir(@tmp_dir) {
+    PathTester.cd(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
-      PathTester.in_dir(@tmp_dir_2) {
+      PathTester.cd(@tmp_dir_2) {
         Dir.pwd.should == @tmp_dir_2
       }
       Dir.pwd.should == @tmp_dir
@@ -54,10 +54,10 @@ describe "in_dir" do
     Dir.pwd.should == @original_pwd
   end
   it "should fail on nonexistent dirs" do
-    L{ PathTester.in_dir(@nonexistent_dir) }.should raise_error(Errno::ENOENT)
+    L{ PathTester.cd(@nonexistent_dir) }.should raise_error(Errno::ENOENT)
   end
   it "should create nonexistent dirs if :create => true is specified" do
-    PathTester.in_dir(@nonexistent_dir, :create => true) {
+    PathTester.cd(@nonexistent_dir, :create => true) {
       Dir.pwd.should == @nonexistent_dir
     }
     Dir.pwd.should == @original_pwd

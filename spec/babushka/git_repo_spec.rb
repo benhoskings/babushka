@@ -4,25 +4,25 @@ class PathSupport; extend PathHelpers end
 
 def stub_commitless_repo name
   (tmp_prefix / 'repos' / name).rm
-  PathSupport.in_dir tmp_prefix / 'repos' / name, :create => true do
+  PathSupport.cd tmp_prefix / 'repos' / name, :create => true do
     shell "git init"
   end
 end
 
 def stub_repo name
   (tmp_prefix / 'repos' / "#{name}_remote").rm
-  PathSupport.in_dir tmp_prefix / 'repos' / "#{name}_remote", :create => true do
+  PathSupport.cd tmp_prefix / 'repos' / "#{name}_remote", :create => true do
     shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
   end
 
   (tmp_prefix / 'repos' / name).rm
-  PathSupport.in_dir tmp_prefix / 'repos' do
+  PathSupport.cd tmp_prefix / 'repos' do
     shell "git clone #{name}_remote/remote.git #{name}"
   end
 end
 
 def repo_context name, &block
-  PathSupport.in_dir(tmp_prefix / 'repos'/ name, &block)
+  PathSupport.cd(tmp_prefix / 'repos'/ name, &block)
 end
 
 describe GitRepo, 'creation' do
@@ -102,7 +102,7 @@ describe GitRepo, '#clean? / #dirty?' do
     end
     context "when there are changes" do
       before {
-        PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
+        PathSupport.cd(tmp_prefix / 'repos/a') { shell "echo dirt >> content.txt" }
       }
       it "should be dirty" do
         subject.should_not be_clean
@@ -110,7 +110,7 @@ describe GitRepo, '#clean? / #dirty?' do
       end
       context "when the changes are staged" do
         before {
-          PathSupport.in_dir(tmp_prefix / 'repos/a') { shell "git add --update ." }
+          PathSupport.cd(tmp_prefix / 'repos/a') { shell "git add --update ." }
         }
         it "should be dirty" do
           subject.should_not be_clean
@@ -196,7 +196,7 @@ end
 describe GitRepo, '#ahead?' do
   before(:all) {
     stub_repo 'a'
-    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+    PathSupport.cd(tmp_prefix / 'repos/a') {
       shell "git checkout -b topic"
     }
   }
@@ -210,7 +210,7 @@ describe GitRepo, '#ahead?' do
   end
   context "when remote branch exists" do
     before(:all) {
-      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      PathSupport.cd(tmp_prefix / 'repos/a') {
         shell "git push origin topic"
         shell 'echo "Ch-ch-ch-changes" >> content.txt'
         shell 'git commit -a -m "Changes!"'
@@ -225,7 +225,7 @@ describe GitRepo, '#ahead?' do
     end
     context "when the branch is fully pushed" do
       before {
-        PathSupport.in_dir(tmp_prefix / 'repos/a') {
+        PathSupport.cd(tmp_prefix / 'repos/a') {
           shell "git push origin topic"
         }
       }
@@ -240,7 +240,7 @@ end
 describe GitRepo, '#behind?' do
   before(:all) {
     stub_repo 'a'
-    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+    PathSupport.cd(tmp_prefix / 'repos/a') {
       shell "git checkout -b next"
       shell "git reset --hard origin/next^"
     }
@@ -252,7 +252,7 @@ describe GitRepo, '#behind?' do
   end
   context "when the remote is merged" do
     before {
-      PathSupport.in_dir(tmp_prefix / 'repos/a') {
+      PathSupport.cd(tmp_prefix / 'repos/a') {
         shell "git merge origin/next"
       }
     }
@@ -348,7 +348,7 @@ end
 describe GitRepo, '#checkout!' do
   before(:all) {
     stub_repo 'a'
-    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+    PathSupport.cd(tmp_prefix / 'repos/a') {
       shell "git checkout -b next"
     }
   }
@@ -368,7 +368,7 @@ end
 describe GitRepo, '#reset_hard!' do
   before {
     stub_repo 'a'
-    PathSupport.in_dir(tmp_prefix / 'repos/a') {
+    PathSupport.cd(tmp_prefix / 'repos/a') {
       shell "echo 'more rubies' >> lib/rubies.rb"
     }
   }
