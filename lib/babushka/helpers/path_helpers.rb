@@ -1,6 +1,6 @@
 module Babushka
   module PathHelpers
-    def in_dir dir, opts = {}, &block
+    def cd dir, opts = {}, &block
       if dir.nil?
         yield Dir.pwd.p
       else
@@ -16,6 +16,11 @@ module Babushka
           end
         end
       end
+    end
+
+    def in_dir dir, opts = {}, &block
+      log_error "#{caller.first}: #in_dir has been renamed to #cd."
+      cd dir, opts, &block
     end
 
     def in_build_dir path = '', &block
