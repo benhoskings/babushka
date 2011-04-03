@@ -36,7 +36,7 @@ module Babushka
     #     command's stdout or stderr pipes. This is useful for monitoring the
     #     progress of a long-running command, like a build or an installer.
     def shell cmd, opts = {}, &block
-      if opts[:dir]
+      if opts[:dir] # deprecated
         log_error "#{caller.first}: #shell's :dir option has been renamed to :cd."
         opts[:cd] = opts[:dir]
       end

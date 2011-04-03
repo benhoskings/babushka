@@ -19,17 +19,17 @@ module Babushka
     end
 
     def in_dir dir, opts = {}, &block
-      log_error "#{caller.first}: #in_dir has been renamed to #cd."
+      log_error "#{caller.first}: #in_dir has been renamed to #cd." # deprecated
       cd dir, opts, &block
     end
 
     def in_build_dir path = '', &block
-      log_error "#{caller.first}: #in_build_dir is deprecated. Instead, use cd(Babushka::BuildPrefix)."
+      log_error "#{caller.first}: #in_build_dir is deprecated. Instead, use cd(Babushka::BuildPrefix)." # deprecated
       cd Babushka::BuildPrefix / path, :create => true, &block
     end
 
     def in_download_dir path = '', &block
-      log_error "#{caller.first}: #in_download_dir is deprecated. Instead, use cd(Babushka::DownloadPrefix)."
+      log_error "#{caller.first}: #in_download_dir is deprecated. Instead, use cd(Babushka::DownloadPrefix)." # deprecated
       cd Babushka::DownloadPrefix / path, :create => true, &block
     end
   end

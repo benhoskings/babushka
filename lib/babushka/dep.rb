@@ -39,9 +39,7 @@ module Babushka
         Base.sources.current_load_source.templates.add name, opts, block
       end
 
-      # TODO remove this after a while. These methods are here to catch calls
-      # against the old version of the template DSL, and suggest how they
-      # should be upgraded.
+      # deprecated
       %w[pkg managed src app font installer tmbundle dl nginx apache2 vim_plugin lighttpd_module gem_source security_apt_source plist_default pathogen_plugin_source pathogen_link_exists].each {|meta|
         define_method meta do |*args|
           name = args.first
