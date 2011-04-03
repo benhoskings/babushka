@@ -19,11 +19,6 @@ module Babushka
     end
 
     def in_build_dir path = '', &block
-      # TODO This shouldn't be here forever
-      # Rename ~/.babushka/src to ~/.babushka/build
-      if (Babushka::WorkingPrefix / 'src').p.exists? && !Babushka::BuildPrefix.p.exists?
-        shell "mv ~/.babushka/src ~/.babushka/build"
-      end
       in_dir Babushka::BuildPrefix / path, :create => true, &block
     end
 
