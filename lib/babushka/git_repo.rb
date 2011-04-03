@@ -10,7 +10,7 @@ module Babushka
     attr_reader :path
 
     def self.repo_for path
-      maybe = shell("git rev-parse --git-dir", :dir => path) if path.p.dir?
+      maybe = shell("git rev-parse --git-dir", :cd => path) if path.p.dir?
       maybe == '.git' ? path.p : maybe / '..' unless maybe.nil?
     end
 
@@ -30,7 +30,7 @@ module Babushka
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
-        shell cmd, opts.merge(:dir => root)
+        shell cmd, opts.merge(:cd => root)
       end
     end
 
@@ -78,7 +78,7 @@ module Babushka
     def clone! from
       raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
       log_block "Cloning #{from}" do
-        failable_shell("git clone '#{from}' '#{path.basename}'", :dir => path.parent, :create => true).tap {|shell|
+        failable_shell("git clone '#{from}' '#{path.basename}'", :cd => path.parent, :create => true).tap {|shell|
           raise GitRepoError, "Couldn't clone to #{path}: #{error_message_for shell.stderr}" unless shell.result
         }.result
       end
