@@ -25,26 +25,6 @@ module Babushka
 
     delegate :var, :set, :merge, :define_var, :to => :vars
 
-    def helper name, &block
-      file, line = caller.first.split(':', 2)
-      line = line.to_i
-      metaclass.send :define_method, name do |*args|
-        log_error "#helper is deprecated. Design improvements mean that it's not required; you\n" +
-          "can just use a standard method instead, like so:\n" +
-          "  (at #{file}:#{line})\n" +
-          "  def #{name} #{('a'..'z').to_a[0...(block.arity)].join(', ')}\n" +
-          "    ...\n" +
-          "  end"
-        if block.arity == -1
-          instance_exec *args, &block
-        elsif block.arity != args.length
-          raise ArgumentError, "wrong number of args to #{name} (#{args.length} for #{block.arity})"
-        else
-          instance_exec *args[0...(block.arity)], &block
-        end
-      end
-    end
-
     def result message, opts = {}
       returning opts[:result] do
         dependency.result_message = message

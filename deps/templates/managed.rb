@@ -45,14 +45,10 @@ managed_template = L{
 }
 
 meta :managed do
-  accepts_list_for :installs, :default_pkg, :choose_with => :via
-  accepts_list_for :provides, :default_pkg, :choose_with => :via
+  accepts_list_for :installs, :basename, :choose_with => :via
+  accepts_list_for :provides, :basename, :choose_with => :via
   accepts_list_for :service_name, :name
   accepts_list_for :cfg
-
-  def default_pkg
-    Babushka::VersionOf.new basename
-  end
 
   def pkg_manager
     Babushka::Base.host.pkg_helper
@@ -70,17 +66,39 @@ meta :managed do
 end
 
 meta :gem do
-  accepts_list_for :installs, :default_pkg, :choose_with => :via
-  accepts_list_for :provides, :default_pkg, :choose_with => :via
+  accepts_list_for :installs, :basename, :choose_with => :via
+  accepts_list_for :provides, :basename, :choose_with => :via
   accepts_list_for :service_name, :name
   accepts_list_for :cfg
 
-  def default_pkg
-    Babushka::VersionOf.new basename
-  end
-
   def pkg_manager
     Babushka::GemHelper
+  end
+
+  template &managed_template
+end
+
+meta :pip do
+  accepts_list_for :installs, :basename, :choose_with => :via
+  accepts_list_for :provides, :basename, :choose_with => :via
+  accepts_list_for :service_name, :name
+  accepts_list_for :cfg
+
+  def pkg_manager
+    Babushka::PipHelper
+  end
+
+  template &managed_template
+end
+
+meta :npm do
+  accepts_list_for :installs, :basename, :choose_with => :via
+  accepts_list_for :provides, [], :choose_with => :via
+  accepts_list_for :service_name, :name
+  accepts_list_for :cfg
+
+  def pkg_manager
+    Babushka::NpmHelper
   end
 
   template &managed_template

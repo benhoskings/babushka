@@ -56,3 +56,34 @@ dep 'yum', :template => 'external' do
     log "Your system doesn't seem to have Yum installed. Is it Redhat-based?"
   }
 end
+
+dep 'npm' do
+  requires 'nodejs.src'
+  met? { which 'npm' }
+  meet {
+    log_shell "Installing npm", "curl http://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh"
+  }
+end
+
+dep 'nodejs.src' do
+  source 'git://github.com/joyent/node.git'
+  provides 'node >= 0.4', 'node-waf'
+end
+
+dep 'pip' do
+  requires {
+    on :osx, 'pip.src'
+    otherwise 'pip.managed'
+  }
+end
+
+dep 'pip.managed' do
+  installs 'python-pip'
+end
+
+dep 'pip.src' do
+  source 'http://pypi.python.org/packages/source/p/pip/pip-0.8.3.tar.gz'
+  process_source {
+    log_shell "Installing pip", "python setup.py install", :sudo => !which('python').p.writable?
+  }
+end

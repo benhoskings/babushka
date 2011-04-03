@@ -100,7 +100,7 @@ For example, Babushka ships with a meta dep that knows how to install TextMate b
 
       template {
         requires 'TextMate.app'
-        helper :path do
+        def path
           '~/Library/Application Support/TextMate/Bundles' / name
         end
         met? { path.dir? }

@@ -95,8 +95,6 @@ describe "loading deps" do
     it "should not have defined the deps" do
       dep = @source.deps.for('test dep 1')
       dep.dep_defined?.should be_false
-      dep.template.should be_nil
-      dep.context.should be_nil
     end
     it "should store the source the dep was loaded from" do
       @source.deps.for('test dep 1').dep_source.should == @source

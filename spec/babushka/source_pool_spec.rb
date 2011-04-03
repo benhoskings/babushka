@@ -149,43 +149,29 @@ describe SourcePool, '#template_for' do
 end
 
 describe SourcePool, '#load_context' do
-  context "eagerly" do
+  context "without a template" do
     before {
-      Dep.should_receive(:new).with('eager load_context', Base.sources.anonymous, {}, nil)
+      Dep.should_receive(:new).with('load_context', Base.sources.anonymous, {}, nil)
     }
     it "should pass the correct options" do
-      dep 'eager load_context'
-    end
-  end
-  context "lazily" do
-    before {
-      Dep.should_receive(:new).with('lazy load_context', Base.sources.anonymous, {:lazy => true}, nil)
-    }
-    it "should pass the correct options" do
-      Base.sources.load_context :opts => {:lazy => true} do
-        dep 'lazy load_context'
-      end
+      dep 'load_context'
     end
   end
   context "with a template" do
     let(:source) {
-      Source.new *test_dep_source('lazy_load_context')
+      Source.new *test_dep_source('load_context')
     }
     let!(:template) {
-      Base.sources.load_context :source => source, :opts => {:lazy => true} do
-        meta 'lazy_defining_template'
+      Base.sources.load_context :source => source do
+        meta 'load_context_template'
       end
     }
     let!(:the_dep) {
-      Base.sources.load_context :source => source, :opts => {:lazy => true} do
-        dep 'lazy defining test with template.lazy_defining_template'
+      Base.sources.load_context :source => source do
+        dep 'defining test with template.load_context_template'
       end
     }
     it "should use the template" do
-      the_dep.template.should be_nil
-      # This triggers dep.define!, but the load_context is gone.
-      # That's what we're testing.
-      the_dep.met?
       the_dep.template.should == template
     end
     after {
@@ -229,8 +215,8 @@ describe "template selection during defining" do
       end
       it "should not find a template in the wrong source, and raise" do
         L{
-          mock_dep('template selection 4', :template => 'meta_3', :in => @source1)
-          }.should raise_error(DepError, "There is no template named 'meta_3' to define 'template selection 4' against.")
+          mock_dep('template selection 4', :template => 'meta_3', :in => @source1).template
+        }.should raise_error(DepError, "There is no template named 'meta_3' to define 'template selection 4' against.")
       end
     end
     context "with suffixes" do
@@ -287,7 +273,7 @@ describe "nested source loads" do
     Source.stub!(:present).and_return([@outer_source, @nested_source])
     @outer_source.load!
   }
-  it "should have loaded deps" do
+  it "should have loaded outer deps" do
     @outer_source.deps.names.should =~ [
       'test dep 1',
       'externally templated',
@@ -296,23 +282,35 @@ describe "nested source loads" do
       'separate file',
       'separate file.another_local_template'
     ]
-    @nested_source.deps.names.should =~ [
-      'test dep 1',
-      'test dep 2',
-      'option-templated dep',
-      'suffix-templated dep.test_template'
-    ]
+    @nested_source.deps.names.should == []
   end
-  it "should have loaded templates" do
+  it "should have loaded outer templates" do
     @outer_source.templates.names.should =~ [
       'local_template',
       'another_local_template'
     ]
-    @nested_source.templates.names.should =~ [
-      'test_template',
-      'test meta 1'
-    ]
+    @nested_source.templates.names.should == []
   end
+  context "after defining external deps" do
+    before {
+      @outer_source.find('externally templated').define!
+    }
+    it "should have loaded the nested deps" do
+      @nested_source.deps.names.should =~ [
+        'test dep 1',
+        'test dep 2',
+        'option-templated dep',
+        'suffix-templated dep.test_template'
+      ]
+    end
+    it "should have loaded the nested templates" do
+      @nested_source.templates.names.should =~ [
+        'test_template',
+        'test meta 1'
+      ]
+    end
+  end
+
   it "should have defined deps against the correct template" do
     @outer_source.find('test dep 1').template.should == Dep::BaseTemplate
     @outer_source.find('externally templated').template.should == @nested_source.find_template('test_template')
