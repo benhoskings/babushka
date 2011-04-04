@@ -37,6 +37,10 @@ module Babushka
       }
     end
 
+    def total_memory
+      raise "#{self.class}#total_memory is unimplemented."
+    end
+
     def description
       [
         (flavour_str unless flavour_str == system_str),
@@ -129,6 +133,7 @@ module Babushka
     def release; version.match(/^\d+\.\d+/).to_s end
     def get_version_info; shell 'sw_vers' end
     def pkg_helper; BrewHelper end
+    def total_memory; shell("sysctl -a").val_for("hw.memsize").to_i end
   end
   
   class LinuxSystemProfile < SystemProfile
@@ -172,6 +177,7 @@ module Babushka
     end
     def get_version_info; shell 'lsb_release -a' end
     def pkg_helper; AptHelper end
+    def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).to_i end
   end
 
   class RedhatSystemProfile < LinuxSystemProfile
