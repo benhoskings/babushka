@@ -20,9 +20,9 @@ module Babushka
     end
 
     def update_pkg_lists_if_required
-      returning super do |result|
+      super.tap {|result|
         pkg_list_dir.touch if result
-      end
+      }
     end
 
     def brew_path_for pkg_name
@@ -51,9 +51,9 @@ module Babushka
 
     def check_for_formulas pkgs
       pkgs.all? {|pkg|
-        returning has_formula_for?(pkg) do |result|
+        has_formula_for?(pkg).tap {|result|
           log_error "There is no formula for '#{pkg}' in #{formulas_path}." unless result
-        end
+        }
       }
     end
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 def test_dep_source name = 'test'
-  returning ["file:/#{tmp_prefix / 'source_remotes' / name}", {:name => name}] do |source|
+  ["file:/#{tmp_prefix / 'source_remotes' / name}", {:name => name}].tap {|source|
     source_path = source.first.gsub(/^file:\//, '')
     unless File.exists? source_path / '.git'
       shell %Q{
@@ -13,5 +13,5 @@ def test_dep_source name = 'test'
         git commit -m "committed during test run"
       }
     end
-  end
+  }
 end

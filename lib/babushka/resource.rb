@@ -169,9 +169,11 @@ module Babushka
         elsif (path = mountpoint_for(output)).nil?
           raise "Couldn't find where `hdiutil` mounted #{filename.p}."
         else
-          returning(cd(path) { block.call(self) }) do
+          cd(path) {
+            block.call(self)
+          }.tap {
             log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
-          end
+          }
         end
       }
     end

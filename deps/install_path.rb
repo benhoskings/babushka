@@ -13,9 +13,9 @@ dep 'writable.install_path' do
   requires 'existing.install_path', 'admins can sudo'
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable_real?(install_prefix / path) }
-    returning nonwritable.empty? do |result|
+    nonwritable.empty?.tap {|result|
       log "Some directories within #{install_prefix} aren't writable by #{shell 'whoami'}." unless result
-    end
+    }
   }
   meet {
     confirm "About to enable write access to #{install_prefix} for admin users - is that OK?" do

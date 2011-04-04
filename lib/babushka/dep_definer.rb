@@ -26,9 +26,9 @@ module Babushka
     delegate :var, :set, :merge, :define_var, :to => :vars
 
     def result message, opts = {}
-      returning opts[:result] do
+      opts[:result].tap {
         dependency.result_message = message
-      end
+      }
     end
 
     def met message
@@ -68,9 +68,9 @@ module Babushka
     def on platform, &block
       if platform.in? [*chooser]
         @current_platform = platform
-        returning block.call do
+        block.call.tap {
           @current_platform = nil
-        end
+        }
       end
     end
 

@@ -13,12 +13,12 @@ module Babushka
 
     def has? pkg, opts = {}
       pkg = ver(pkg)
-      returning _has?(pkg) do |matching_version|
+      _has?(pkg).tap {|matching_version|
         matching_pkg = ver(pkg.name, (matching_version if matching_version.is_a?(VersionStr)))
         unless opts[:log] == false
           log "system #{matching_version ? "has" : "doesn't have"} #{matching_pkg} #{pkg_type}", :as => (:ok if matching_version)
         end
-      end
+      }
     end
     def install! pkgs, opts = nil
       _install! [*pkgs].map {|pkg| ver pkg }, opts

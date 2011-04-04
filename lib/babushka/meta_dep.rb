@@ -50,12 +50,12 @@ module Babushka
     end
 
     def build_context block
-      returning Class.new(MetaDepContext, &block) do |context|
+      Class.new(MetaDepContext, &block).tap {|context|
         shadow = self
         context.metaclass.send :define_method, :source_template do
           shadow
         end
-      end
+      }
     end
   end
 end

@@ -145,13 +145,13 @@ module Babushka
     # and the core sources.
     def assign_template
       @template = if opts[:template]
-        returning Base.sources.template_for(opts[:template], :from => dep_source) do |t|
+        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-        end
+        }
       else
-        returning Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template do |t|
+        (Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template).tap {|t|
           opts[:suffixed] = (t != BaseTemplate)
-        end
+        }
       end
     end
 
@@ -285,9 +285,9 @@ module Babushka
     # something is listening on port 80.
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
-      returning cached? ? cached_result : process_and_cache do
+      (cached? ? cached_result : process_and_cache).tap {
         Base.sources.uncache! if with_run_opts[:top_level]
-      end
+      }
     end
 
     private
@@ -303,9 +303,9 @@ module Babushka
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
-          returning process_this_dep do
+          process_this_dep.tap {
             task.callstack.pop
-          end
+          }
         end
       end
     end
@@ -356,9 +356,9 @@ module Babushka
     end
 
     def run_met_task task_opts = {}
-      returning cache_process(process_task(:met?)) do |result|
+      cache_process(process_task(:met?)).tap {|result|
         log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
-      end
+      }
     end
 
     def process_task task_name
@@ -386,9 +386,9 @@ module Babushka
     end
 
     def cached_result
-      returning cached_process do |result|
+      cached_process.tap {|result|
         log_result "#{name} (cached)", :result => result, :as_bypass => task.opt(:dry_run)
-      end
+      }
     end
     def cached?
       !@_cached_process.nil?
