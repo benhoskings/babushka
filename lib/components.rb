@@ -12,6 +12,7 @@ module Babushka
     core_patches/io
     core_patches/module
     core_patches/numeric
+    core_patches/bytes
     core_patches/object
     core_patches/string
     core_patches/symbol
