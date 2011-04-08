@@ -27,6 +27,8 @@ end
 
 describe "#on for scoping accepters" do
   before {
+    Base.stub!(:host).and_return OSXSystemProfile.for_flavour
+    Base.host.stub!(:version).and_return '10.6.7'
     @lambda = lambda = L{ 'hello from the lambda' }
     @other_lambda = other_lambda = L{ 'hello from the other lambda' }
     dep 'scoping' do
@@ -39,6 +41,7 @@ describe "#on for scoping accepters" do
     end
   }
   it "should only allow choices that match" do
+    p Base.host.match_list
     Dep('scoping').send(:payload)[:met?].should == {:osx => @lambda}
   end
 end
