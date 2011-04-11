@@ -40,11 +40,11 @@ module Babushka
           end
           read_from stderr, @stderr, :stderr
 
-          # We sleep here because otherwise babushka itself would peg the CPU
-          # while waiting for output from long-running shell commands.
           if stdout.closed? && stderr.closed?
             break
           else
+            # We sleep here because otherwise babushka itself would peg the CPU
+            # while waiting for output from long-running shell commands.
             sleep 0.05
           end
         }
