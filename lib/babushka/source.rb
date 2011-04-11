@@ -145,7 +145,7 @@ module Babushka
         log "Nothing to add for #{name}."
       else
         raise_unless_addable!
-        log_block "Adding #{name}" do
+        log_block "Adding #{name} from #{uri}" do
           update!
         end
       end
