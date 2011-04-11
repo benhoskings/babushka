@@ -376,7 +376,7 @@ module Babushka
 
     def rescuing_errors &block
       yield
-    rescue Exception => e
+    rescue StandardError => e
       log_error "#{e.backtrace.first}: #{e.message}"
       log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
       debug e.backtrace * "\n"
