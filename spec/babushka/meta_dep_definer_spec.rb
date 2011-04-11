@@ -62,7 +62,7 @@ describe "using" do
       }.should raise_error(DepError, "There is no template named 'undefined' to define 'something undefined' against.")
     end
     it "should define deps as options" do
-      dep('something.undefined').should be_an_instance_of(Dep)
+      dep('something.undefined').dep_defined?.should be_true
     end
   end
 

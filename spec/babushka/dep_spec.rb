@@ -28,16 +28,16 @@ describe "Dep.make" do
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", Base.sources.anonymous, {}, nil).should be_an_instance_of(Dep)
+      Dep.make("valid dep name", Base.sources.anonymous, {}, nil).dep_defined?.should be_true
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep("valid dep name").should be_an_instance_of(Dep)
+    Dep("valid dep name").dep_defined?.should be_true
   end
   context "without template" do
     before {
       @dep = Dep.make("valid base dep", Base.sources.anonymous, {}, nil)
     }
     it "should work" do
-      @dep.should be_an_instance_of(Dep)
+      @dep.dep_defined?.should be_true
       @dep.template.should == Dep::BaseTemplate
     end
   end
@@ -53,7 +53,7 @@ describe "Dep.make" do
         @dep = Dep.make("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
       }
       it "should work" do
-        @dep.should be_an_instance_of(Dep)
+        @dep.dep_defined?.should be_true
         @dep.template.should == @meta
       end
     end
@@ -63,7 +63,7 @@ describe "Dep.make" do
         @dep = Dep.make("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
       }
       it "should work" do
-        @dep.should be_an_instance_of(Dep)
+        @dep.dep_defined?.should be_true
         @dep.template.should == @meta
       end
     end
@@ -156,7 +156,7 @@ describe "dep creation" do
     L{
       dep "blank"
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep('blank').should be_an_instance_of(Dep)
+    Dep('blank').dep_defined?.should be_true
   end
   it "should work for filled in deps" do
     L{
@@ -168,7 +168,7 @@ describe "dep creation" do
         after { }
       end
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep('standard').should be_an_instance_of(Dep)
+    Dep('standard').dep_defined?.should be_true
   end
   it "should accept deps as dep names" do
     L{
