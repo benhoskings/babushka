@@ -276,11 +276,13 @@ describe Dep, "defining" do
       end
     end
   end
-  context "after errors" do
-    it "should not be defined, returning false to represent load errors" do
-      dep('defining test with errors') do
-        nonexistent_method
-      end.dep_defined?.should == false
+  context "with errors" do
+    it "should raise an exception" do
+      L{
+        dep('defining test with errors') do
+          nonexistent_method
+        end
+      }.should raise_error(NameError)
     end
     context "lazily" do
       before {
