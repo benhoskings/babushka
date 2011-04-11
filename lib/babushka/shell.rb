@@ -36,10 +36,7 @@ module Babushka
 
         loop {
           read_from stdout, @stdout do
-            if should_spin
-              print '  ' if spinner_offset == -1
-              print "\b\b #{%w[| / - \\][spinner_offset = ((spinner_offset + 1) % 4)]}"
-            end
+            print " #{%w[| / - \\][spinner_offset = ((spinner_offset + 1) % 4)]}\b\b" if should_spin
           end
           read_from stderr, @stderr, :stderr
 
@@ -51,8 +48,6 @@ module Babushka
             sleep 0.05
           end
         }
-
-        print "\b\b" if should_spin unless spinner_offset == -1
       end
     end
 
