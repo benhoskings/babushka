@@ -5,7 +5,7 @@ meta :src do
   accepts_value_for :prefix, '/usr/local'
 
   def default_name
-    VersionOf basename
+    Babushka::VersionOf basename
   end
 
   accepts_block_for :preconfigure
