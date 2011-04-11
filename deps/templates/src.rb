@@ -42,7 +42,7 @@ meta :src do
   template {
     requires 'build tools', 'curl.managed'
     prepare { setup_source_uris }
-    met? { provided? }
+    met? { in_path? }
     meet { process_sources { call_task :process_source } }
   }
 end
