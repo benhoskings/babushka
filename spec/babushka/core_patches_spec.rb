@@ -157,7 +157,7 @@ describe String, "val_for" do
   it "non-word leading characters" do
     '*key: value'.val_for('*key').should == 'value'
     '-key: value'.val_for('-key').should == 'value'
-    '-key: value'.val_for('key').should == ''
+    '-key: value'.val_for('key').should == nil
   end
   it "non-word leading tokens" do
     '* key: value'.val_for('key').should == 'value'
