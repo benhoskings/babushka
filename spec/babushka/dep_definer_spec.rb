@@ -41,7 +41,6 @@ describe "#on for scoping accepters" do
     end
   }
   it "should only allow choices that match" do
-    p Base.host.match_list
     Dep('scoping').send(:payload)[:met?].should == {:osx => @lambda}
   end
 end
