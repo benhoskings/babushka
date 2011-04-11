@@ -60,6 +60,7 @@ class String
         strip
     }.first || ''
   end
+
   def / other
     (empty? ? other.p : (p / other))
   end
