@@ -252,7 +252,7 @@ describe "template selection during defining from a real source" do
     ]
   end
   it "should have loaded templates" do
-    @source.templates.names.should == [
+    @source.templates.names.should =~ [
       'test_template',
       'test meta 1'
     ]
