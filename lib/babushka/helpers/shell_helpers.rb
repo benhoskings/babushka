@@ -63,7 +63,7 @@ module Babushka
     #   failable_shell('grep rails Gemfile').stdout.empty?
     def failable_shell cmd, opts = {}
       result = nil
-      shell(cmd, opts.merge(:fail_ok => true)) {|s| result = s }
+      shell(cmd, opts) {|s| result = s }
       result
     end
 
