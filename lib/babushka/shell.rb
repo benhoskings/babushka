@@ -1,41 +1,25 @@
 module Babushka
   class Shell
     attr_reader :cmd, :result, :stdout, :stderr
-    class ShellResult
-      attr_reader :shell
 
-      def initialize shell, opts, &block
-        @shell, @opts, @block = shell, opts, block
-      end
-
-      def render
-        if @block.nil?
-          shell.stdout.chomp if shell.ok?
-        else
-          @block.call shell
-        end
-      end
-    end
-
-    def initialize first, *rest
-      @cmd = first.is_a?(Array) ? first : [first].concat(rest)
+    def initialize cmd, opts
+      @cmd, @opts = cmd, opts
     end
 
     def ok?; result end
 
-    def run opts = {}, &block
-      debug "$ #{[*@cmd].join(' ')}".colorize('grey')
+    def run &block
+      debug "$ #{@cmd}".colorize('grey')
       @stdout, @stderr = '', ''
-      @opts = opts
 
       popen3_result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
-        unless opts[:input].nil?
-          stdin << opts[:input]
+        unless @opts[:input].nil?
+          stdin << @opts[:input]
           stdin.close
         end
 
         spinner_offset = -1
-        should_spin = opts[:spinner] && !Base.task.opt(:debug)
+        should_spin = @opts[:spinner] && !Base.task.opt(:debug)
 
         # For very short-running commands, check for output in a tight loop.
         # The sleep below would at least halve the speed of quick #shell calls.
@@ -66,7 +50,8 @@ module Babushka
       end
 
       @result = popen3_result == 0
-      ShellResult.new(self, opts, &block).render
+
+      block_given? ? yield(self) : (stdout.chomp if ok?)
     end
 
     private

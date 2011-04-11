@@ -172,7 +172,7 @@ module Babushka
     private
 
     def shell_cmd cmd, opts = {}, &block
-      Shell.new(cmd).run opts, &block
+      Shell.new(cmd, opts).run(&block)
     end
   end
 end
