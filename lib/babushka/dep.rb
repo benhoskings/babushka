@@ -294,8 +294,11 @@ module Babushka
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
-        if !define!
+        if dep_defined? == false
+          # Only log about define errors if the define previously failed...
           log_error "This dep isn't defined. Perhaps there was a load error?"
+        elsif !define!
+          # ... not if it failed as part of this process, since that should log anyway.
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !Base.host.matches?(opts[:for])
