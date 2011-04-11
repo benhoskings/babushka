@@ -3,6 +3,7 @@ module Babushka
     attr_reader :cmd, :result, :stdout, :stderr
 
     def initialize cmd, opts
+      raise "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
       @cmd, @opts = cmd, opts
     end
 
@@ -11,6 +12,7 @@ module Babushka
     def run &block
       @stdout, @stderr = '', ''
       @result = invoke == 0
+      print "#{" " * (@progress.length + 1)}#{"\b" * (@progress.length + 1)}" unless @progress.nil?
       block_given? ? yield(self) : (stdout.chomp if ok?)
     end
 
@@ -54,12 +56,15 @@ module Babushka
     def read_from io, buf, log_as = nil
       if !io.closed? && io.ready_for_read?
         loop {
-          if (output = io.gets).nil?
+          if (output = (io.gets("\r") || io.gets)).nil?
             io.close
             break
           else
             debug output.chomp, :log => @opts[:log], :as => log_as
             buf << output
+            if @opts[:progress] && (@progress = output[@opts[:progress]])
+              print " #{@progress}#{"\b" * (@progress.length + 1)}"
+            end
             yield if block_given?
           end
         }
