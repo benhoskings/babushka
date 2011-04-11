@@ -9,7 +9,14 @@ describe "creation" do
     ver('ruby', '1.8').version.to_s.should == '1.8'
     ver('ruby', '1.8'.to_version).version.to_s.should == '1.8'
   end
-  it "should accept existing VersionOf instances" do
+  it "should accept name & version in one string" do
+    ver('ruby 1.8').version.to_s.should == '1.8'
+    ver('ruby >= 1.9').version.to_s.should == '>= 1.9'
+  end
+  it "should handle array args" do
+    ver(['ruby', '1.8']).version.to_s.should == '1.8'
+  end
+  it "should accept existing ver instances" do
     ver(ver('ruby')).should == ver('ruby')
     ver(ver('ruby', '1.8')).should == ver('ruby', '1.8')
     ver(ver('ruby', '1.8'), '1.9').should == ver('ruby', '1.9')
