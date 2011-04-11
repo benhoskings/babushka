@@ -110,11 +110,11 @@ module Babushka
         debug "#{name}: already defined."
       elsif dep_defined? == false
         debug "#{name}: defining already failed."
-      else
-        assign_template
+      elsif assign_template
         debug "(defining #{name} against #{template.name})"
         define_dep!
       end
+      dep_defined?
     end
 
     # Create a context for this dep from its template, and then process the
@@ -127,11 +127,6 @@ module Babushka
       @context = template.context_class.new self, &@block
       context.define!
       @dep_defined = true
-    rescue Exception => e
-      log_error "#{e.backtrace.first}: #{e.message}"
-      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-      debug e.backtrace * "\n"
-      @dep_defined = false
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
@@ -294,9 +289,11 @@ module Babushka
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
-        define!
-        if !dep_defined?
+        if dep_defined? == false
+          # Only log about define errors if the define previously failed...
           log_error "This dep isn't defined. Perhaps there was a load error?"
+        elsif !rescuing_errors { define! }
+          # ... not if it failed as part of this process, since that should log anyway.
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !Base.host.matches?(opts[:for])
@@ -375,6 +372,15 @@ module Babushka
       debug e.backtrace * "\n"
       Base.task.reportable = true
       raise DepError, e.message
+    end
+
+    def rescuing_errors &block
+      yield
+    rescue StandardError => e
+      log_error "#{e.backtrace.first}: #{e.message}"
+      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      debug e.backtrace * "\n"
+      @dep_defined = false
     end
 
     def track_block_for task_name
