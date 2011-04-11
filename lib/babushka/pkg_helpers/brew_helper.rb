@@ -71,7 +71,7 @@ module Babushka
       }.flatten.select {|i|
         i[/\d/] # For it to be a version, it has to have at least 1 digit.
       }.map {|i|
-        Babushka::VersionOf.new *i.split('/', 2)
+        VersionOf i.split('/', 2)
       }.max.version
     end
 
