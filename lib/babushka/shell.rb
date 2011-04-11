@@ -26,6 +26,7 @@ module Babushka
     def run opts = {}, &block
       debug "$ #{[*@cmd].join(' ')}".colorize('grey')
       @stdout, @stderr = '', ''
+      @opts = opts
 
       popen3_result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
         unless opts[:input].nil?
@@ -33,47 +34,56 @@ module Babushka
           stdin.close
         end
 
-        stdout_done = stderr_done = false
-
         spinner_offset = -1
         should_spin = opts[:spinner] && !Base.task.opt(:debug)
-        spinner_updated_at = Time.now - 1
 
-        until stdout_done && stderr_done
-          stdout_ready = stdout.ready_for_read?
-          stderr_ready = stderr.ready_for_read?
+        # For very short-running commands, check for output in a tight loop.
+        # The sleep below would at least halve the speed of quick #shell calls.
+        # This means really quick calls (e.g. `whoami`, `pwd`, etc) aren't
+        # delayed, but the CPU is only pegged for a fraction of a second on
+        # slower calls (e.g. `gem env`, `make`, etc).
+        1_000.times { break if stdout.ready_for_read? || stderr.ready_for_read? }
 
-          if !stdout_ready && !stderr_ready
-            sleep 0.01 #if stdout_done || stderr_done
-          else
-            if should_spin && (Time.now - spinner_updated_at > 0.05)
+        loop {
+          read_from stdout, @stdout do
+            if should_spin
               print '  ' if spinner_offset == -1
               print "\b\b #{%w[| / - \\][spinner_offset = ((spinner_offset + 1) % 4)]}"
-              spinner_updated_at = Time.now
-            end
-            if stdout_ready
-              if (buf = stdout.gets).nil?
-                stdout_done = true
-              else
-                debug buf.chomp, :log => opts[:log]
-                @stdout << buf
-              end
-            end
-            if stderr_ready
-              if (buf = stderr.gets).nil?
-                stderr_done = true
-              else
-                debug buf.chomp, :log => opts[:log], :as => :stderr
-                @stderr << buf
-              end
             end
           end
-        end
+          read_from stderr, @stderr, :stderr
+
+          # We sleep here because otherwise babushka itself would peg the CPU
+          # while waiting for output from long-running shell commands.
+          if stdout.closed? && stderr.closed?
+            break
+          else
+            sleep 0.05
+          end
+        }
+
         print "\b\b" if should_spin unless spinner_offset == -1
       end
 
       @result = popen3_result == 0
       ShellResult.new(self, opts, &block).render
+    end
+
+    private
+
+    def read_from io, buf, log_as = nil
+      if !io.closed? && io.ready_for_read?
+        loop {
+          if (output = io.gets).nil?
+            io.close
+            break
+          else
+            debug output.chomp, :log => @opts[:log], :as => log_as
+            buf << output
+            yield if block_given?
+          end
+        }
+      end
     end
   end
 end
