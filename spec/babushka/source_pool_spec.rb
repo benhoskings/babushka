@@ -26,9 +26,6 @@ describe Dep, '#dep_for, disregarding sources' do
   it "should work for strings" do
     Base.sources.dep_for('Base.sources.dep_for tests').should == @dep
   end
-  it "should work for VersionOfs" do
-    Base.sources.dep_for(ver('Base.sources.dep_for tests')).should == @dep
-  end
   it "should work for deps" do
     Base.sources.dep_for(@dep).should == @dep
   end
