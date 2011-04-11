@@ -110,8 +110,7 @@ module Babushka
         debug "#{name}: already defined."
       elsif dep_defined? == false
         debug "#{name}: defining already failed."
-      else
-        assign_template
+      elsif assign_template
         debug "(defining #{name} against #{template.name})"
         define_dep!
       end
