@@ -39,7 +39,7 @@ module Babushka
         download location, location.p.basename
       else
         success = log_block "Downloading #{url}" do
-          shell %Q{curl -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}
+          shell %Q{curl -# -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}, :progress => /[\d\.]+%/
         end
         filename if success
       end
