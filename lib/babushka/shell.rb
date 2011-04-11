@@ -9,10 +9,16 @@ module Babushka
     def ok?; result end
 
     def run &block
-      debug "$ #{@cmd}".colorize('grey')
       @stdout, @stderr = '', ''
+      @result = invoke == 0
+      block_given? ? yield(self) : (stdout.chomp if ok?)
+    end
 
-      popen3_result = Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
+    private
+
+    def invoke
+      debug "$ #{@cmd}".colorize('grey')
+      Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
         unless @opts[:input].nil?
           stdin << @opts[:input]
           stdin.close
@@ -48,13 +54,7 @@ module Babushka
 
         print "\b\b" if should_spin unless spinner_offset == -1
       end
-
-      @result = popen3_result == 0
-
-      block_given? ? yield(self) : (stdout.chomp if ok?)
     end
-
-    private
 
     def read_from io, buf, log_as = nil
       if !io.closed? && io.ready_for_read?
