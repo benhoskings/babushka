@@ -55,7 +55,7 @@ meta :app do
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
           pre = prefix_to_use
-          target_path = pre / entry
+          target_path = pre / File.basename(entry)
           if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
             if archive.is_a? Babushka::DmgResource
               log_block("Found #{entry} in the DMG, copying to #{pre}") {
