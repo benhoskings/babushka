@@ -127,11 +127,6 @@ module Babushka
       @context = template.context_class.new self, &@block
       context.define!
       @dep_defined = true
-    rescue Exception => e
-      log_error "#{e.backtrace.first}: #{e.message}"
-      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-      debug e.backtrace * "\n"
-      @dep_defined = false
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
@@ -377,6 +372,15 @@ module Babushka
       debug e.backtrace * "\n"
       Base.task.reportable = true
       raise DepError, e.message
+    end
+
+    def rescuing_errors &block
+      yield
+    rescue Exception => e
+      log_error "#{e.backtrace.first}: #{e.message}"
+      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      debug e.backtrace * "\n"
+      @dep_defined = false
     end
 
     def track_block_for task_name
