@@ -16,12 +16,6 @@ module Babushka
   module_function :VersionOf
 
   class VersionOf
-    module Helpers
-      def ver name, version = nil
-        VersionOf.new name, version
-      end
-    end
-
     attr_accessor :name, :version
 
     def initialize name, version = nil
