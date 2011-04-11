@@ -10,19 +10,19 @@ module Babushka
       if filename.to_s.blank?
         log_error "Not a valid URL to download: #{url}"
       else
-        download_path = cd Babushka::DownloadPrefix do |path|
+        download_path = in_download_dir {|path|
           downloaded_file = download(url, filename)
           path / downloaded_file if downloaded_file
-        end
+        }
         block.call download_path unless download_path.nil?
       end
     end
 
     def self.extract url, &block
       get url do |download_path|
-        cd Babushka::BuildPrefix do
+        in_build_dir {
           Resource.for(download_path).extract(&block)
-        end
+        }
       end
     end
 
