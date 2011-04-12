@@ -50,9 +50,9 @@ module Babushka
       if path.nil?
         [nil, :implicit]
       elsif path.to_s[/^(git|http|file):\/\//]
-        [URI.parse(path.to_s), :public]
+        [path.to_s, :public]
       elsif path.to_s[/^(\w+@)?[a-zA-Z0-9.\-]+:/]
-        [path, :private]
+        [path.to_s, :private]
       else
         [path.p, :local]
       end

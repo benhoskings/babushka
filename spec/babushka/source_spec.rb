@@ -19,7 +19,7 @@ describe Source, '.discover_uri_and_type' do
       'http://github.com/benhoskings/babushka-deps.git',
       'file:///Users/ben/babushka/deps'
     ].each {|uri|
-      Source.discover_uri_and_type(uri).should == [URI.parse(uri), :public]
+      Source.discover_uri_and_type(uri).should == [uri, :public]
     }
   end
   it "should work for private uris" do
@@ -342,7 +342,7 @@ describe "classification" do
   before { @source = test_dep_source 'classification_test' }
   it "should treat file:// as public" do
     (source = Source.new(*@source)).add!
-    [source.uri, source.name, source.type].should == [URI.parse(@source.first), 'classification_test', :public]
+    [source.uri, source.name, source.type].should == [@source.first, 'classification_test', :public]
   end
   it "should treat local paths as local" do
     (source = Source.new(@source.first.gsub(/^file:\/\//, ''), @source.last)).add!
