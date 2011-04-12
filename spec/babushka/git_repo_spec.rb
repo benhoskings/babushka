@@ -282,7 +282,7 @@ describe GitRepo, '#clone!' do
       it "should raise" do
         L{
           subject.clone!(tmp_prefix / 'repos/a_remote/nonexistent.git')
-        }.should raise_error(GitRepoError, "Couldn't clone to #{tmp_prefix / 'repos/b'}: repository '#{tmp_prefix / 'repos/a_remote/nonexistent.git'}' does not exist.")
+        }.should raise_error(GitRepoError)
       end
     end
     context "after cloning" do
