@@ -8,6 +8,13 @@ module Babushka
 
     private
 
+    # NOTE By default, Arch has sudo's `tty_tickets` option enabled. This will
+    # result in sudo asking for your password every single time it's run from
+    # Babushka. If you find this annoying, please refer to
+    # https://wiki.archlinux.org/index.php/Sudo#Disable_per-terminal_sudo
+    #
+    # tl;dr - Add the following line to /etc/sudoers:
+    #         Defaults !tty_tickets
     def _install! pkgs, opts
       log_shell "Downloading", "#{pkg_cmd} -S --noconfirm #{pkgs.join(' ')}", :sudo => should_sudo?
     end
