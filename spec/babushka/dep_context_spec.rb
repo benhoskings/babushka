@@ -49,6 +49,7 @@ end
 
 describe "accepts_list_for behaviour" do
   before {
+    Babushka::Base.stub!(:host).and_return FakeOSXSystemProfile.new
     make_test_deps
   }
   it "should choose requires for the correct system" do
