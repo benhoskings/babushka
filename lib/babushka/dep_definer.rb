@@ -79,7 +79,7 @@ module Babushka
     end
 
     def chooser_choices
-      Base.host.all_tokens
+      SystemDefinitions.all_tokens
     end
 
     def self.source_template
