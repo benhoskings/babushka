@@ -204,7 +204,7 @@ describe Source, '.present' do
     @source_3 = Source.new(*test_dep_source('present_remote_3_test'))
   }
   it "should return the sources that are present" do
-    Source.present.should == [@source_1, @source_2]
+    Source.present.should =~ [@source_1, @source_2]
   end
 end
 
