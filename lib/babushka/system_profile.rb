@@ -68,13 +68,13 @@ module Babushka
     def first_nonmatch_for spec
       if spec == :all
         nil
-      elsif spec.in? all_systems
+      elsif spec.in? SystemDefinitions.all_systems
         spec == system ? nil : :system
       elsif spec.in? PkgHelper.all_manager_keys
         spec == pkg_helper_key ? nil : :pkg_helper
-      elsif spec.in? our_flavours
+      elsif spec.in? SystemDefinitions.our_flavours
         spec == flavour ? nil : :flavour
-      elsif spec.in? our_flavour_names
+      elsif spec.in? SystemDefinitions.our_flavour_names
         spec == name ? nil : :name
       else
         :system
@@ -88,25 +88,6 @@ module Babushka
         [:system, :flavour, :name].index spec
       }.compact
       send "#{nonmatches.last}_str" unless nonmatches.empty?
-    end
-
-    def all_systems
-      SystemDefinitions.names.keys
-    end
-    def all_flavours
-      SystemDefinitions.names.values.map(&:keys).flatten
-    end
-    def all_names
-      SystemDefinitions.names.values.map(&:values).map {|s| s.map(&:values) }.flatten
-    end
-    def our_flavours
-      SystemDefinitions.names[system].keys
-    end
-    def our_flavour_names
-      SystemDefinitions.names[system][flavour].values
-    end
-    def all_tokens
-      all_systems + PkgHelper.all_manager_keys + all_flavours + all_names
     end
 
     def flavour_str_map
@@ -144,25 +125,21 @@ module Babushka
     def release; version end
 
     def self.for_flavour
-      unless (detected_flavour = detect_using_release_file).nil?
-        Babushka.const_get("#{detected_flavour.capitalize}SystemProfile").new
-      end
+      (detect_using_release_file || LinuxSystemProfile).new
     end
 
     private
 
     def self.detect_using_release_file
-      %w[
-        debian_version
-        redhat-release
-        gentoo-release
-        SuSE-release
-        arch-release
-      ].select {|release_file|
+      {
+        'debian_version' => DebianSystemProfile,
+        'redhat-release' => RedhatSystemProfile,
+        # 'gentoo-release' =>
+        # 'SuSE-release'   =>
+        # 'arch-release'   =>
+      }.selekt {|release_file, system_profile|
         File.exists? "/etc/#{release_file}"
-      }.map {|release_file|
-        release_file.sub(/[_\-](version|release)$/, '')
-      }.first
+      }.values.first
     end
   end
 

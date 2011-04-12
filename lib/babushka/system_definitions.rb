@@ -1,5 +1,24 @@
 module Babushka
   class SystemDefinitions
+    def self.all_systems
+      names.keys
+    end
+    def self.all_flavours
+      names.values.map(&:keys).flatten
+    end
+    def self.all_names
+      names.values.map(&:values).map {|s| s.map(&:values) }.flatten
+    end
+    def self.our_flavours
+      names[system].keys
+    end
+    def self.our_flavour_names
+      names[system][flavour].values
+    end
+    def self.all_tokens
+      all_systems + PkgHelper.all_manager_keys + all_flavours + all_names
+    end
+
     def self.names
       {
         :osx => {
