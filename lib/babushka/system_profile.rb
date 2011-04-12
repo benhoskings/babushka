@@ -136,9 +136,9 @@ module Babushka
       %w[
         debian_version
         redhat-release
-        gentoo-release
-        SuSE-release
-        arch-release
+        # gentoo-release
+        # SuSE-release
+        # arch-release
       ].select {|release_file|
         File.exists? "/etc/#{release_file}"
       }.map {|release_file|
