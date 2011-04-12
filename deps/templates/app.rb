@@ -63,7 +63,12 @@ meta :app do
               }
             else
               log_block("Found #{entry}, moving to #{pre}") {
-                entry.p.move target_path
+                begin
+                  entry.p.move target_path
+                rescue SystemCallError
+                  # fix for https://github.com/benhoskings/babushka/issues/113
+                  entry.p.copy target_path
+                end
               }
             end
           end
