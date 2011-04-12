@@ -21,7 +21,6 @@ describe Babushka::SystemProfile, '.for_host' do
     end
     it "should return RedhatSystemProfile on Red Hat boxes" do
       File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
-      File.should_receive(:read).with("/etc/redhat-release").and_return("Fedora release 13 (Goddard)\n")
       Babushka::SystemProfile.for_host.should be_an_instance_of(Babushka::RedhatSystemProfile)
     end
     it "should return nil on unknown Linux boxes" do
