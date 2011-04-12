@@ -125,25 +125,21 @@ module Babushka
     def release; version end
 
     def self.for_flavour
-      unless (detected_flavour = detect_using_release_file).nil?
-        Babushka.const_get("#{detected_flavour.capitalize}SystemProfile").new
-      end
+      (detect_using_release_file || LinuxSystemProfile).new
     end
 
     private
 
     def self.detect_using_release_file
-      %w[
-        debian_version
-        redhat-release
-        # gentoo-release
-        # SuSE-release
-        # arch-release
-      ].select {|release_file|
+      {
+        'debian_version' => DebianSystemProfile,
+        'redhat-release' => RedhatSystemProfile,
+        # 'gentoo-release' =>
+        # 'SuSE-release'   =>
+        # 'arch-release'   =>
+      }.selekt {|release_file, system_profile|
         File.exists? "/etc/#{release_file}"
-      }.map {|release_file|
-        release_file.sub(/[_\-](version|release)$/, '')
-      }.first
+      }.values.first
     end
   end
 
