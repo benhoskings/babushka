@@ -10,7 +10,6 @@ module Babushka
 
     def _install! pkgs, opts
       log_shell "Downloading", "#{pkg_cmd} -S --noconfirm #{pkgs.join(' ')}", :sudo => should_sudo?
-      super
     end
 
     def _has? pkg_name
