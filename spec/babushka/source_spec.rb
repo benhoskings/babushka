@@ -130,8 +130,8 @@ end
 
 describe "equality" do
   before {
-    @remote_1 = test_dep_source 'equality_1'
-    @remote_2 = test_dep_source 'equality_2'
+    @remote_1 = make_source_remote 'equality_1'
+    @remote_2 = make_source_remote 'equality_2'
   }
   it "should be equal when uri, name and type are the same" do
     (Source.new(*@remote_1) == Source.new(*@remote_1)).should be_true
@@ -169,7 +169,7 @@ describe Source, ".for_path" do
   end
   context "on a git repo" do
     before {
-      remote = test_dep_source 'path_remote_test'
+      remote = make_source_remote 'path_remote_test'
       Source.new(remote.first).add!
       @source = Source.for_path(Source.source_prefix / 'path_remote_test')
     }
@@ -182,7 +182,7 @@ describe Source, ".for_path" do
   end
   context "on a git repo with a custom name" do
     before {
-      remote = test_dep_source 'custom_path_remote_test'
+      remote = make_source_remote 'custom_path_remote_test'
       Source.new(remote.first, :name => 'custom_name_test').add!
       @source = Source.for_path(Source.source_prefix / 'custom_name_test')
     }
@@ -197,11 +197,11 @@ end
 
 describe Source, '.present' do
   before {
-    @source_1 = Source.new(*test_dep_source('present_remote_1_test'))
+    @source_1 = Source.new(*make_source_remote('present_remote_1_test'))
     @source_1.add!
-    @source_2 = Source.new(*test_dep_source('present_remote_2_test'))
+    @source_2 = Source.new(*make_source_remote('present_remote_2_test'))
     @source_2.add!
-    @source_3 = Source.new(*test_dep_source('present_remote_3_test'))
+    @source_3 = Source.new(*make_source_remote('present_remote_3_test'))
   }
   it "should return the sources that are present" do
     Source.present.should =~ [@source_1, @source_2]
@@ -233,7 +233,7 @@ describe Source, "#present?" do
     end
   end
   context "for remote repos" do
-    before { @present_source = test_dep_source 'present_test' }
+    before { @present_source = make_source_remote 'present_test' }
     it "should be false" do
       Source.new(@present_source.first).should_not be_present
     end
@@ -259,7 +259,7 @@ describe "cloning" do
 
   context "readable sources" do
     before {
-      @source = Source.new(*test_dep_source('clone_test'))
+      @source = Source.new(*make_source_remote('clone_test'))
     }
     it "should clone a git repo" do
       @source.path.should_not be_exists
@@ -275,7 +275,7 @@ describe "cloning" do
 
     context "without a name" do
       before {
-        @nameless = Source.new(test_dep_source('nameless_test').first)
+        @nameless = Source.new(make_source_remote('nameless_test').first)
         @nameless.add!
       }
       it "should use the basename as the name" do
@@ -288,7 +288,7 @@ describe "cloning" do
     context "with a name" do
       before {
         @fancypath_name = 'aliased_source_test'.p.basename
-        @aliased = Source.new(test_dep_source('aliased').first, :name => @fancypath_name)
+        @aliased = Source.new(make_source_remote('aliased').first, :name => @fancypath_name)
         @aliased.add!
       }
       it "should override the name" do
@@ -304,8 +304,8 @@ describe "cloning" do
     end
     context "duplication" do
       before {
-        @remote = test_dep_source 'duplicate_test'
-        @dup_remote = test_dep_source 'duplicate_dup'
+        @remote = make_source_remote 'duplicate_test'
+        @dup_remote = make_source_remote 'duplicate_dup'
         @source = Source.new @remote.first
         @source.add!
       }
@@ -339,7 +339,7 @@ describe "cloning" do
 end
 
 describe "classification" do
-  before { @source = test_dep_source 'classification_test' }
+  before { @source = make_source_remote 'classification_test' }
   it "should treat file:// as public" do
     (source = Source.new(*@source)).add!
     [source.uri, source.name, source.type].should == [@source.first, 'classification_test', :public]

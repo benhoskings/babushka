@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-def test_dep_source name = 'test'
+def make_source_remote name = 'test'
   ["file://#{tmp_prefix / 'source_remotes' / name}", {:name => name}].tap {|source|
     source_path = source.first.gsub(/^file:\/\//, '')
     unless File.exists? source_path / '.git'
