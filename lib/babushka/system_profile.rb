@@ -1,7 +1,5 @@
 module Babushka
   class SystemProfile
-    attr_reader :version_info
-
     def self.for_host
       {
         'Linux' => LinuxSystemProfile,
@@ -15,7 +13,10 @@ module Babushka
 
     def initialize
       setup
-      @version_info = get_version_info
+    end
+
+    def version_info
+      @_version_info ||= get_version_info
     end
 
     def linux?; false end
