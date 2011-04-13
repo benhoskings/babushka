@@ -258,7 +258,7 @@ describe "cloning" do
   end
 
   context "readable sources" do
-    before {
+    before(:all) {
       @source = Source.new(*make_source_remote('clone_test'))
     }
     it "should clone a git repo" do
@@ -303,7 +303,7 @@ describe "cloning" do
       end
     end
     context "duplication" do
-      before {
+      before(:all) {
         @remote = make_source_remote 'duplicate_test'
         @dup_remote = make_source_remote 'duplicate_dup'
         @source = Source.new @remote.first
