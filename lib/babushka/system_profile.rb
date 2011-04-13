@@ -170,4 +170,11 @@ module Babushka
     def get_version_info; File.read '/etc/redhat-release' end
     def pkg_helper; YumHelper end
   end
+
+  class ArchSystemProfile < LinuxSystemProfile
+    def get_version_info; 'rolling' end
+    def pkg_helper; PacmanHelper end
+    def flavour; :arch end
+    def version; ''; end
+  end
 end
