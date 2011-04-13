@@ -1,13 +1,10 @@
 module Babushka
   class SystemProfile
-    attr_reader :version_info
-
     def self.for_host
-      system = {
+      {
         'Linux' => LinuxSystemProfile,
         'Darwin' => OSXSystemProfile
-      }[shell('uname -s')]
-      system.for_flavour unless system.nil?
+      }[shell('uname -s')].try(:for_flavour)
     end
 
     def self.for_flavour
@@ -16,14 +13,17 @@ module Babushka
 
     def initialize
       setup
-      @version_info = get_version_info
+    end
+
+    def version_info
+      @_version_info ||= get_version_info
     end
 
     def linux?; false end
     def osx?; false end
     def pkg_helper; nil end
     def setup; true end
-    def pkg_helper_key; pkg_helper.manager_key unless pkg_helper.nil? end
+    def pkg_helper_key; pkg_helper.try(:manager_key) end
     # The extension that dynamic libraries are given on this system. On linux
     # libraries are named like 'libssl.so'; on OS X, 'libssl.bundle'.
     def library_ext; 'so' end
@@ -72,9 +72,9 @@ module Babushka
         spec == system ? nil : :system
       elsif spec.in? PkgHelper.all_manager_keys
         spec == pkg_helper_key ? nil : :pkg_helper
-      elsif spec.in? SystemDefinitions.our_flavours
+      elsif spec.in? our_flavours
         spec == flavour ? nil : :flavour
-      elsif spec.in? SystemDefinitions.our_flavour_names
+      elsif spec.in? our_flavour_names
         spec == name ? nil : :name
       else
         :system
@@ -88,6 +88,13 @@ module Babushka
         [:system, :flavour, :name].index spec
       }.compact
       send "#{nonmatches.last}_str" unless nonmatches.empty?
+    end
+
+    def our_flavours
+      SystemDefinitions.names[system].keys
+    end
+    def our_flavour_names
+      SystemDefinitions.names[system][flavour].values
     end
 
     def flavour_str_map
