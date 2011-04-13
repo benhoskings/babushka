@@ -23,8 +23,8 @@ describe Babushka::SystemProfile, '.for_host' do
       File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
       Babushka::SystemProfile.for_host.should be_an_instance_of(Babushka::RedhatSystemProfile)
     end
-    it "should return nil on unknown Linux boxes" do
-      Babushka::SystemProfile.for_host.should be_nil
+    it "should return LinuxSystemProfile on unknown Linux boxes" do
+      Babushka::SystemProfile.for_host.class.should == Babushka::LinuxSystemProfile
     end
   end
 end
