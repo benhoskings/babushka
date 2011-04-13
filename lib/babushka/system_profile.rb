@@ -71,9 +71,9 @@ module Babushka
         spec == system ? nil : :system
       elsif spec.in? PkgHelper.all_manager_keys
         spec == pkg_helper_key ? nil : :pkg_helper
-      elsif spec.in? SystemDefinitions.our_flavours
+      elsif spec.in? our_flavours
         spec == flavour ? nil : :flavour
-      elsif spec.in? SystemDefinitions.our_flavour_names
+      elsif spec.in? our_flavour_names
         spec == name ? nil : :name
       else
         :system
@@ -87,6 +87,13 @@ module Babushka
         [:system, :flavour, :name].index spec
       }.compact
       send "#{nonmatches.last}_str" unless nonmatches.empty?
+    end
+
+    def our_flavours
+      SystemDefinitions.names[system].keys
+    end
+    def our_flavour_names
+      SystemDefinitions.names[system][flavour].values
     end
 
     def flavour_str_map
