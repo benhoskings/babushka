@@ -195,18 +195,6 @@ describe Source do
     end
   end
 
-  describe Source, '.present' do
-    before {
-      @source_1 = Source.new(*@remote_1)
-      @source_1.add!
-      @source_2 = Source.new(*@remote_2)
-    }
-    it "should return the sources that are present" do
-      Source.present.should =~ [@source_1]
-    end
-    after { @source_1.remove! }
-  end
-
   describe "finding" do
     before {
       @source = Source.new('spec/deps/good')
@@ -232,18 +220,25 @@ describe Source do
       end
     end
     context "for remote repos" do
+      before {
+        @source_1 = Source.new(*@remote_1)
+        @source_2 = Source.new(*@remote_2)
+      }
       it "should be false" do
-        Source.new(@remote_1.first).should_not be_present
+        @source_1.should_not be_present
+        Source.present.should == []
       end
       context "after cloning" do
         before {
-          @source = Source.new(@remote_1.first)
-          @source.add!
+          @source_1.add!
         }
         it "should be true" do
-          Source.new(@remote_1.first).should be_present
+          @source_1.should be_present
+          Source.present.should == [@source_1]
         end
-        after { @source.remove! }
+        after {
+          @source_1.remove!
+        }
       end
     end
   end
