@@ -141,9 +141,9 @@ module Babushka
       {
         'debian_version' => DebianSystemProfile,
         'redhat-release' => RedhatSystemProfile,
+        'arch-release'   => ArchSystemProfile,
         # 'gentoo-release' =>
         # 'SuSE-release'   =>
-        # 'arch-release'   =>
       }.selekt {|release_file, system_profile|
         File.exists? "/etc/#{release_file}"
       }.values.first
