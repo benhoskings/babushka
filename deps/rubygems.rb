@@ -7,7 +7,7 @@ end
 
 dep 'rubygems up to date' do
   requires 'rubygems installed'
-  met? { Babushka::GemHelper.version >= '1.7.2' }
+  met? { in_path? 'gem >= 1.7.2' }
   meet {
     log_block "Updating the rubygems install in #{which('gem').p.parent}" do
       Babushka::GemHelper.update!
