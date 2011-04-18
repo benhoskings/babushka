@@ -149,7 +149,7 @@ module Babushka
     def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
-    def name; version_info.val_for 'Codename' end
+    def name; version_info.val_for('Codename').to_sym end
     def get_version_info; ensure_lsb_release and shell('lsb_release -a') end
     def ensure_lsb_release
       which('lsb_release') or log("Babushka uses `lsb_release` to learn about debian-based systems.") {
