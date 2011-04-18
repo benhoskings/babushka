@@ -40,7 +40,10 @@ module Babushka
             '10.10' => :maverick
           },
           :debian => {
-            '5.0.4' => :lenny
+            '4.0' => :etch,
+            '5.0' => :lenny,
+            '6.0' => :squeeze,
+            '7.0' => :wheezy
           }
         }
       }
