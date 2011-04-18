@@ -17,6 +17,13 @@ dep 'apt', :template => 'external' do
   }
 end
 
+dep 'pacman', :template => 'external' do
+  expects 'pacman'
+  otherwise {
+    log "You seem to be running Arch Linux, but are missing the Pacman package manager. Something is very, very wrong here."
+  }
+end
+
 meta :apt_source do
   accepts_list_for :source_name
   template {

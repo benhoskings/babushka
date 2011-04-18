@@ -6,6 +6,11 @@ end
 class TestTemplate
   def self.context_class; TestDepContext end
 end
+class FakeOSXSystemProfile < OSXSystemProfile
+  def version; '10.6.7' end
+  def get_version_info; '' end
+  def total_memory; 16_000_000_000 end
+end
 
 def setup_test_lambdas
   @lambda_hello = L{ "hello world!" }

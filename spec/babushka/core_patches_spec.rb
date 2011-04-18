@@ -108,10 +108,10 @@ end
 
 describe Array, '#versions' do
   {
-    %w[a]     => [ver('a')],
-    %w[a b c] => [ver('a'), ver('b'), ver('c')],
-    [ver('a')] => [ver('a')],
-    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [ver('a', '0.1'), ver('b', '>= 0.6.0'), ver('c', '~> 2.2')]
+    %w[a]     => [VersionOf('a')],
+    %w[a b c] => [VersionOf('a'), VersionOf('b'), VersionOf('c')],
+    [VersionOf('a')] => [VersionOf('a')],
+    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [VersionOf('a', '0.1'), VersionOf('b', '>= 0.6.0'), VersionOf('c', '~> 2.2')]
   }.each_pair {|input, expected|
     it "should return #{expected.inspect} when passed #{input.inspect}" do
       input.versions.should == expected
@@ -157,7 +157,7 @@ describe String, "val_for" do
   it "non-word leading characters" do
     '*key: value'.val_for('*key').should == 'value'
     '-key: value'.val_for('-key').should == 'value'
-    '-key: value'.val_for('key').should == ''
+    '-key: value'.val_for('key').should == nil
   end
   it "non-word leading tokens" do
     '* key: value'.val_for('key').should == 'value'

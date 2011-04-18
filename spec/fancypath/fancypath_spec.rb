@@ -181,7 +181,7 @@ describe Fancypath do
     example 'with regex' do
       @dir.create_dir
       %W(a.jpg b.jpg c.gif 1.jpg).each { |f| (@dir/f).touch }
-      @dir.select(/[^\d]\.(jpg|gif)$/).should == [@dir/'a.jpg', @dir/'b.jpg', @dir/'c.gif']
+      @dir.select(/[^\d]\.(jpg|gif)$/).should =~ [@dir/'a.jpg', @dir/'b.jpg', @dir/'c.gif']
     end
 
     example 'with multiple args' do

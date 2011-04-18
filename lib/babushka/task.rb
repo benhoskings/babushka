@@ -21,20 +21,20 @@ module Babushka
 
     def process_dep dep_name, with_vars
       Dep.find_or_suggest dep_name do |dep|
-        returning run_dep(dep, with_vars) do |result|
+        run_dep(dep, with_vars).tap {|result|
           log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
-        end
+        }
       end
     end
 
     def run_dep dep, with_vars
       log_dep dep do
         load_run_info_for dep, with_vars
-        returning dep.process(:top_level => true) do |result|
+        dep.process(:top_level => true).tap {|result|
           save_run_info_for dep, result
-        end
+        }
       end
     end
 
@@ -87,7 +87,7 @@ module Babushka
       log_prefix.mkdir
       log_path_for(dep).open('w') {|f|
         @persistent_log = f
-        returning(yield) { @persistent_log = nil }
+        yield.tap { @persistent_log = nil }
       }
     end
 

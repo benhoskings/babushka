@@ -54,7 +54,7 @@ module Babushka
   end
 
   module LogHelpers
-    def print_log message, opts
+    def print_log message, printable
       # Don't log while running specs.
     end
   end

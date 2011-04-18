@@ -1,8 +1,19 @@
 module Babushka
   class VersionOf
     module Helpers
-      def ver name, version = nil
-        VersionOf.new name, version
+      def VersionOf first, *rest
+        # Convert the arguments into a VersionOf. If a single string argument is
+        # passed, try splitting it on space to separate name and version. Otherwise,
+        # pass the arguments as-is, splatting if required.
+        if rest.any?
+          Babushka::VersionOf.new *[first].concat(rest)
+        elsif first.is_a?(String)
+          Babushka::VersionOf.new *first.split(' ', 2)
+        elsif first.is_a?(Array)
+          Babushka::VersionOf.new *first
+        else
+          Babushka::VersionOf.new first
+        end
       end
     end
 

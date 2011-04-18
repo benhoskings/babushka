@@ -36,7 +36,7 @@ class String
   # Leading non-word characters form part of the key:
   #   '*key: value'.val_for('*key') #=> 'value'
   #   '-key: value'.val_for('-key') #=> 'value'
-  #   '-key: value'.val_for('key')  #=> ''
+  #   '-key: value'.val_for('key')  #=> nil
   #
   # But not if they're separated from the key:
   #   '* key: value'.val_for('key') #=> 'value'
@@ -58,8 +58,9 @@ class String
         sub(key.is_a?(Regexp) ? key : /^#{Regexp.escape(key)}\b\s*[:=]?/, '').
         sub(/[;,]\s*$/, '').
         strip
-    }.first || ''
+    }.first
   end
+
   def / other
     (empty? ? other.p : (p / other))
   end

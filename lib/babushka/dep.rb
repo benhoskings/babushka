@@ -110,11 +110,11 @@ module Babushka
         debug "#{name}: already defined."
       elsif dep_defined? == false
         debug "#{name}: defining already failed."
-      else
-        assign_template
+      elsif assign_template
         debug "(defining #{name} against #{template.name})"
         define_dep!
       end
+      dep_defined?
     end
 
     # Create a context for this dep from its template, and then process the
@@ -127,11 +127,6 @@ module Babushka
       @context = template.context_class.new self, &@block
       context.define!
       @dep_defined = true
-    rescue Exception => e
-      log_error "#{e.backtrace.first}: #{e.message}"
-      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-      debug e.backtrace * "\n"
-      @dep_defined = false
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
@@ -145,13 +140,13 @@ module Babushka
     # and the core sources.
     def assign_template
       @template = if opts[:template]
-        returning Base.sources.template_for(opts[:template], :from => dep_source) do |t|
+        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
           raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-        end
+        }
       else
-        returning Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template do |t|
+        (Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template).tap {|t|
           opts[:suffixed] = (t != BaseTemplate)
-        end
+        }
       end
     end
 
@@ -285,27 +280,29 @@ module Babushka
     # something is listening on port 80.
     def process with_run_opts = {}
       task.run_opts.update with_run_opts
-      returning cached? ? cached_result : process_and_cache do
+      (cached? ? cached_result : process_and_cache).tap {
         Base.sources.uncache! if with_run_opts[:top_level]
-      end
+      }
     end
 
     private
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
-        define!
-        if !dep_defined?
+        if dep_defined? == false
+          # Only log about define errors if the define previously failed...
           log_error "This dep isn't defined. Perhaps there was a load error?"
+        elsif !rescuing_errors { define! }
+          # ... not if it failed as part of this process, since that should log anyway.
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !Base.host.matches?(opts[:for])
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
-          returning process_this_dep do
+          process_this_dep.tap {
             task.callstack.pop
-          end
+          }
         end
       end
     end
@@ -356,9 +353,9 @@ module Babushka
     end
 
     def run_met_task task_opts = {}
-      returning cache_process(process_task(:met?)) do |result|
+      cache_process(process_task(:met?)).tap {|result|
         log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
-      end
+      }
     end
 
     def process_task task_name
@@ -377,6 +374,15 @@ module Babushka
       raise DepError, e.message
     end
 
+    def rescuing_errors &block
+      yield
+    rescue StandardError => e
+      log_error "#{e.backtrace.first}: #{e.message}"
+      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      debug e.backtrace * "\n"
+      @dep_defined = false
+    end
+
     def track_block_for task_name
       if context.has_block? task_name
         file, line = *context.file_and_line_for(task_name)
@@ -386,9 +392,9 @@ module Babushka
     end
 
     def cached_result
-      returning cached_process do |result|
+      cached_process.tap {|result|
         log_result "#{name} (cached)", :result => result, :as_bypass => task.opt(:dry_run)
-      end
+      }
     end
     def cached?
       !@_cached_process.nil?

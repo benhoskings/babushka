@@ -48,9 +48,9 @@ module Babushka
     #   Sleeping for a bit... done.
     def log_block message, opts = {}, &block
       log "#{message}...", :newline => false
-      returning block.call do |result|
+      block.call.tap {|result|
         log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
-      end
+      }
     end
 
     # Write +message+ to the debug log, prefixed with +TickChar+.
@@ -107,10 +107,10 @@ module Babushka
       if block_given?
         print_log "#{message} {\n".colorize('grey'), printable
         @@indentation_level += 1 if printable
-        returning yield do |result|
+        yield.tap {|result|
           @@indentation_level -= 1 if printable
           log closing_log_message(message, result, opts), opts
-        end
+        }
       else
         message = message.to_s.rstrip.gsub "\n", "\n#{indentation}"
         message = "#{TickChar.colorize('grey')} #{message}" if opts[:as] == :ok

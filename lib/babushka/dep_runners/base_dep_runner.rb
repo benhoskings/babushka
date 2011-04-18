@@ -31,13 +31,13 @@ module Babushka
     def apps_in_path? apps
       present, missing = [*apps].partition {|app_name| app_dir(app_name) }
 
-      returning missing.empty? do |result|
+      missing.empty?.tap {|result|
         if result
           log "#{present.map {|i| "'#{i}'" }.to_list} #{present.length == 1 ? 'is' : 'are'} present." unless present.empty?
         else
           log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'} missing."
         end
-      end
+      }
     end
 
     def cmds_in_path? commands
@@ -50,13 +50,13 @@ module Babushka
           }.to_list(:oxford => true, :conj => 'but').end_with('.')
       else
         cmds = dir_hash.values.first
-        returning dir_hash[nil].blank? do |result|
+        dir_hash[nil].blank?.tap {|result|
           if result
             log cmd_location_str_for(cmds).end_with('.') unless cmds.blank?
           else
             log "#{dir_hash[nil].map {|i| "'#{i}'" }.to_list} #{dir_hash[nil].length == 1 ? 'is' : 'are'} missing."
           end
-        end
+        }
       end
     end
 

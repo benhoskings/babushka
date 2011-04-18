@@ -42,9 +42,9 @@ meta :app do
     met? {
       discover_latest_version
       installed = app_dir app_name_match
-      returning installed && check_version(installed) do |result|
+      (installed && check_version(installed)).tap {|result|
         log "Found at #{installed}." if result
-      end
+      }
     }
 
     meet {

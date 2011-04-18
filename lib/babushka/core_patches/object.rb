@@ -49,7 +49,7 @@ class Object
   # Return self unmodified after logging the output of #inspect, along with
   # the point at which +tapp+ was called.
   def tapp
-    tap { puts "#{File.basename caller[4]}: #{self.inspect}" }
+    tap { puts "#{File.basename caller[2]}: #{self.inspect}" }
   end
   # Log and return unmodified in the same manner as #tapp, but escape the
   # output to be HTML safe and easily readable. For example,

@@ -23,16 +23,15 @@ module Babushka
       require 'net/http'
       require 'uri'
 
-      returning(Net::HTTP.post_form(
-        URI.parse('http://gist.github.com/api/v1/xml/new'),
-        {
+      Net::HTTP.post_form(
+        URI.parse('http://gist.github.com/api/v1/xml/new'), {
           "files[from]" => user,
           "files[vars.yml]" => vars,
           "files[#{dep.contextual_name}.log]" => log.decolorize
         }
-      )) do |response|
+      ).tap {|response|
         report_report_result dep, response
-      end.is_a? Net::HTTPSuccess
+      }.is_a? Net::HTTPSuccess
     end
 
     def self.report_report_result dep, response

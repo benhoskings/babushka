@@ -21,9 +21,9 @@ module Babushka
     private
 
     def post_report report
-      returning submit_report_to_webservice(report.p.read) do |result|
+      submit_report_to_webservice(report.p.read).tap {|result|
         report.p.rm if result
-      end
+      }
     end
 
     require 'net/http'

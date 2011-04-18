@@ -38,13 +38,13 @@ end
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
   met? {
-    returning !repo.behind? do |result|
+    !repo.behind?.tap {|result|
       if result
         log_ok "babushka is up to date at revision #{repo.current_head}."
       else
         log "babushka can be updated: #{repo.current_head}..#{repo.repo_shell("git rev-parse --short origin/#{var(:babushka_branch)}")}"
       end
-    end
+    }
   }
   meet {
     log "#{repo.repo_shell("git diff --stat #{repo.current_head}..origin/#{var(:babushka_branch)}")}"

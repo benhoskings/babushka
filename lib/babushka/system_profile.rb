@@ -1,29 +1,24 @@
 module Babushka
   class SystemProfile
-    attr_reader :version_info
-
     def self.for_host
-      system = {
+      {
         'Linux' => LinuxSystemProfile,
         'Darwin' => OSXSystemProfile
-      }[shell('uname -s')]
-      system.for_flavour unless system.nil?
+      }[shell('uname -s')].try(:for_flavour)
     end
 
     def self.for_flavour
       new
     end
 
-    def initialize
-      setup
-      @version_info = get_version_info
+    def version_info
+      @_version_info ||= get_version_info
     end
 
     def linux?; false end
     def osx?; false end
     def pkg_helper; nil end
-    def setup; true end
-    def pkg_helper_key; pkg_helper.manager_key unless pkg_helper.nil? end
+    def pkg_helper_key; pkg_helper.try(:manager_key) end
     # The extension that dynamic libraries are given on this system. On linux
     # libraries are named like 'libssl.so'; on OS X, 'libssl.bundle'.
     def library_ext; 'so' end
@@ -68,7 +63,7 @@ module Babushka
     def first_nonmatch_for spec
       if spec == :all
         nil
-      elsif spec.in? all_systems
+      elsif spec.in? SystemDefinitions.all_systems
         spec == system ? nil : :system
       elsif spec.in? PkgHelper.all_manager_keys
         spec == pkg_helper_key ? nil : :pkg_helper
@@ -90,23 +85,11 @@ module Babushka
       send "#{nonmatches.last}_str" unless nonmatches.empty?
     end
 
-    def all_systems
-      SystemDefinitions.names.keys
-    end
-    def all_flavours
-      SystemDefinitions.names.values.map(&:keys).flatten
-    end
-    def all_names
-      SystemDefinitions.names.values.map(&:values).map {|s| s.map(&:values) }.flatten
-    end
     def our_flavours
       SystemDefinitions.names[system].keys
     end
     def our_flavour_names
       SystemDefinitions.names[system][flavour].values
-    end
-    def all_tokens
-      all_systems + PkgHelper.all_manager_keys + all_flavours + all_names
     end
 
     def flavour_str_map
@@ -144,25 +127,21 @@ module Babushka
     def release; version end
 
     def self.for_flavour
-      unless (detected_flavour = detect_using_release_file).nil?
-        Babushka.const_get("#{detected_flavour.capitalize}SystemProfile").new
-      end
+      (detect_using_release_file || LinuxSystemProfile).new
     end
 
     private
 
     def self.detect_using_release_file
-      %w[
-        debian_version
-        redhat-release
-        gentoo-release
-        SuSE-release
-        arch-release
-      ].select {|release_file|
+      {
+        'debian_version' => DebianSystemProfile,
+        'redhat-release' => RedhatSystemProfile,
+        'arch-release'   => ArchSystemProfile,
+        # 'gentoo-release' =>
+        # 'SuSE-release'   =>
+      }.selekt {|release_file, system_profile|
         File.exists? "/etc/#{release_file}"
-      }.map {|release_file|
-        release_file.sub(/[_\-](version|release)$/, '')
-      }.first
+      }.values.first
     end
   end
 
@@ -170,14 +149,15 @@ module Babushka
     def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
-    def setup
+    def name; version_info.val_for('Codename').to_sym end
+    def get_version_info; ensure_lsb_release and shell('lsb_release -a') end
+    def ensure_lsb_release
       which('lsb_release') or log("Babushka uses `lsb_release` to learn about debian-based systems.") {
         AptHelper.install!('lsb-release')
       }
     end
-    def get_version_info; shell 'lsb_release -a' end
     def pkg_helper; AptHelper end
-    def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).to_i end
+    def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).first.to_i end
   end
 
   class RedhatSystemProfile < LinuxSystemProfile
@@ -185,5 +165,12 @@ module Babushka
     def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
     def get_version_info; File.read '/etc/redhat-release' end
     def pkg_helper; YumHelper end
+  end
+
+  class ArchSystemProfile < LinuxSystemProfile
+    def get_version_info; 'rolling' end
+    def pkg_helper; PacmanHelper end
+    def flavour; :arch end
+    def version; ''; end
   end
 end

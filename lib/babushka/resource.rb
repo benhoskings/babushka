@@ -30,18 +30,18 @@ module Babushka
       if filename.p.exists? && !filename.p.empty?
         log_ok "Already downloaded #{filename}."
         filename
+      elsif (result = shell(%Q{curl -I "#{url}"})).nil?
+        log_error "Couldn't download #{url}: `curl` exited with non-zero status."
+      elsif (response_code = result.val_for("HTTP/1.1"))[/^[23]/].nil?
+        log_error "Couldn't download #{url}: #{response_code}."
+      elsif !(location = result.val_for('Location')).nil?
+        log "Following redirect from #{url}"
+        download location, location.p.basename
       else
-        location = shell(%Q{curl -I "#{url}"}).val_for('Location')
-        if !location.blank?
-          log "Following redirect from #{url}"
-          download location, location.p.basename
-        else
-          success = log_block "Downloading #{url}" do
-            shell %Q{curl -o "#{filename}.tmp" "#{url}"} and
-            shell %Q{mv -f "#{filename}.tmp" "#{filename}"}
-          end
-          filename if success
+        success = log_block "Downloading #{url}" do
+          shell %Q{curl -# -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}, :progress => /[\d\.]+%/
         end
+        filename if success
       end
     end
     
@@ -169,9 +169,11 @@ module Babushka
         elsif (path = mountpoint_for(output)).nil?
           raise "Couldn't find where `hdiutil` mounted #{filename.p}."
         else
-          returning(cd(path) { block.call(self) }) do
+          cd(path) {
+            block.call(self)
+          }.tap {
             log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
-          end
+          }
         end
       }
     end
