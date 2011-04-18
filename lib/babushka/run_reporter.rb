@@ -33,7 +33,7 @@ module Babushka
         http.open_timeout = http.read_timeout = 5
         http.post '/runs.json', data
       }.is_a?(Net::HTTPSuccess)
-    rescue SocketError
+    rescue Errno::ECONNREFUSED, SocketError
       log_error "Couldn't connect to the babushka webservice." unless Base.task.running?
     rescue Timeout::Error
       debug "Timeout while submitting run report."
