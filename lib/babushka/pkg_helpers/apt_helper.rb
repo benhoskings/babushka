@@ -30,7 +30,8 @@ module Babushka
 
     private
     def _has? pkg_name
-      failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status').split(' ').include?('installed')
+      status = failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status')
+      status && status.split(' ').include?('installed')
     end
 
     def pkg_update_timeout
