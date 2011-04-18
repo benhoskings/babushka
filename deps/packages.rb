@@ -4,3 +4,4 @@ dep 'curl.managed' do
     via :yum, 'curl'
   }
 end
+dep 'sudo.managed'
