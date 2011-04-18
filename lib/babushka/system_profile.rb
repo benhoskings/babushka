@@ -155,12 +155,12 @@ module Babushka
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
     def name; version_info.val_for 'Codename' end
-    def setup
+    def get_version_info; ensure_lsb_release and shell('lsb_release -a') end
+    def ensure_lsb_release
       which('lsb_release') or log("Babushka uses `lsb_release` to learn about debian-based systems.") {
         AptHelper.install!('lsb-release')
       }
     end
-    def get_version_info; shell 'lsb_release -a' end
     def pkg_helper; AptHelper end
     def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).first.to_i end
   end
