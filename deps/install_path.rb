@@ -10,7 +10,8 @@ meta :install_path do
 end
 
 dep 'writable.install_path' do
-  requires 'existing.install_path', 'admins can sudo'
+  requires 'existing.install_path'
+  requires_when_unmet 'admins can sudo'
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable_real?(install_prefix / path) }
     nonwritable.empty?.tap {|result|
