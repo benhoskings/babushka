@@ -30,7 +30,7 @@ module Babushka
       if filename.p.exists? && !filename.p.empty?
         log_ok "Already downloaded #{filename}."
         filename
-      elsif (result = shell(%Q{curl -I "#{url}"})).nil?
+      elsif (result = shell(%Q{curl -I -X GET "#{url}"})).nil?
         log_error "Couldn't download #{url}: `curl` exited with non-zero status."
       elsif (response_code = result.val_for("HTTP/1.1"))[/^[23]/].nil?
         log_error "Couldn't download #{url}: #{response_code}."
