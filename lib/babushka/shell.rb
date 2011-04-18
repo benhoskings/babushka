@@ -56,7 +56,11 @@ module Babushka
     def read_from io, buf, log_as = nil
       if !io.closed? && io.ready_for_read?
         loop {
-          if (output = (io.gets("\r") || io.gets)).nil?
+          # Only try reading up to a backspace if we're looking for progress output.
+          output = io.gets("\r") if @opts[:progress]
+          output = io.gets if output.nil?
+
+          if output.nil?
             io.close
             break
           else
