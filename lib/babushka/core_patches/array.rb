@@ -77,7 +77,7 @@ class Array
   #   * next
   #     topic
   # You can use +#collapse+ to retrieve the current branch like this:
-  #   shell('git branch').split("\n").collapse(/\* /) #=> ["docs"]
+  #   shell('git branch').split("\n").collapse(/\* /) #=> ["next"]
   def collapse by
     grep(by).map {|i| i.sub by, '' }
   end
