@@ -38,7 +38,7 @@ end
 dep 'up to date.babushka' do
   requires 'repo clean.babushka', 'update would fast forward.babushka'
   met? {
-    !repo.behind?.tap {|result|
+    (!repo.behind?).tap {|result|
       if result
         log_ok "babushka is up to date at revision #{repo.current_head}."
       else
