@@ -26,9 +26,8 @@ module Babushka
       end
     end
 
+    require 'net/http'
     def submit_report_to_webservice data
-      require 'net/http'
-
       Net::HTTP.start('babushka.me') {|http|
         http.open_timeout = http.read_timeout = 5
         http.post '/runs.json', data
