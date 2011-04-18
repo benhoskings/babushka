@@ -4,4 +4,19 @@ dep 'curl.managed' do
     via :yum, 'curl'
   }
 end
+
+dep 'sudo' do
+  requires {
+    on :osx, 'sudo.external'
+    otherwise 'sudo.managed'
+  }
+end
+
+dep 'sudo.external' do
+  expects 'sudo'
+  otherwise {
+    log_error "Your system seems to be missing sudo."
+  }
+end
+
 dep 'sudo.managed'
