@@ -34,7 +34,7 @@ module Babushka
       }.is_a?(Net::HTTPSuccess)
     rescue Errno::ECONNREFUSED, SocketError
       log_error "Couldn't connect to the babushka webservice." unless Base.task.running?
-    rescue Timeout::Error
+    rescue Timeout::Error, Errno::ETIMEDOUT
       debug "Timeout while submitting run report."
     end
 
