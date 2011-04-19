@@ -14,6 +14,10 @@ class VM
   include Singleton
   SERVER_NAME = 'babushka-specs'
 
+  def babushka task
+    run "babushka '#{task}' --defaults"
+  end
+
   def run cmd, user = 'root'
     log "Running on #{user}@#{host}: #{cmd}" do
       shell "ssh #{user}@#{host} '#{cmd}'", :log => true
