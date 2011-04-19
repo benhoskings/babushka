@@ -59,9 +59,11 @@ module Babushka
         print_choices_for 'options', (help_verb.opts + help_verb.args)
       end
       log "\n"
+      true
     end
     def handle_version verb
       print_version
+      true
     end
     def handle_list verb
       to_list = verb.opts.empty? ? :deps : verb.opts.first.def.name
