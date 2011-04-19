@@ -6,6 +6,12 @@ RSpec::Core::RakeTask.new('spec') {|t|
   t.rspec_opts = ['--colour', '--format Fuubar']
 }
 
+desc 'Run the acceptance suite'
+RSpec::Core::RakeTask.new('acceptance') {|t|
+  t.pattern = "./spec/acceptance/*.rb"
+  t.rspec_opts = ['--colour']
+}
+
 desc 'Profile the spec suite'
 RSpec::Core::RakeTask.new('profile') {|t|
   t.rspec_opts = %w[--color --profile]
