@@ -94,5 +94,3 @@ class VM
     Dir.glob(File.expand_path("~/.ssh/id_[dr]sa.pub")).first
   end
 end
-
-VM.instance.run "ls /"
