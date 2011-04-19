@@ -1,34 +1,16 @@
-require 'spec_helper'
-
-module LogHelpers
-  def print_log message, printable
-    print message if printable
-  end
-end
-
-vmrun = "/Library/Application Support/VMware Fusion/vmrun"
-vm_path = "/Volumes/Michael Optibay/Virtual Machines.localized/Snow Leopard.vmwarevm/Snow Leopard.vmx"
-snapshot_name = "sshd"
-
-def vm_shell cmd, vm_user = 'root'
-  vm_host = '192.168.153.141'
-  log "Running on #{vm_user}@#{vm_host}: #{cmd}" do
-    shell "ssh #{vm_user}@#{vm_host} '#{cmd}'", :log => true
-  end
-end
+require 'acceptance_helper'
 
 describe "babushka" do
   before(:all) {
-    # `"#{vmrun}" revertToSnapshot "#{vm_path}" "#{snapshot_name}"`
-    # `"#{vmrun}" start "#{vm_path}"`
+    @vm = VM.instance
+    @vm.run 'apt-get install -qqy curl'
   }
   context "bootstrapping" do
     before(:all) {
-      vm_shell 'pacman -S --noconfirm curl'
-      vm_shell 'bash -c "`curl babushka.me/up/hard`"'
+      @vm.run 'bash -c "`curl babushka.me/up/hard`"'
     }
     it "should have installed babushka" do
-      vm_shell('babushka').should =~ /Babushka/
+      @vm.run('babushka').should =~ /Babushka v[\d.]+, \(c\) \d+ Ben Hoskings/
     end
   end
 end
