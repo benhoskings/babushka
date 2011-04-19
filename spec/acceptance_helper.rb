@@ -21,7 +21,9 @@ class VM
   end
 
   def server
-    @_server || existing_server || create_server
+    @_server || (existing_server || create_server).tap {|s|
+      wait_for_server
+    }
   end
 
   private
@@ -30,10 +32,7 @@ class VM
     server_detail = connection.list_servers_detail.detect {|s| s[:name] == SERVER_NAME }
     unless server_detail.nil?
       log "A server is already running."
-      connection.get_server(server_detail[:id]).tap {|s|
-        @_server = s
-        wait_for_server
-      }
+      @_server = connection.get_server(server_detail[:id])
     end
   end
 
@@ -41,7 +40,6 @@ class VM
     log_block "Creating a #{flavor[:ram]}MB #{image[:name]} rackspace instance" do
       @_server = connection.create_server(image_args)
     end
-    wait_for_server
   end
 
   def wait_for_server
@@ -89,7 +87,7 @@ class VM
     @_cfg ||= YAML.load_file(Babushka::Path.path / 'conf/rackspace.yml')
   end
   def public_key
-    Dir.glob(File.expand_path("~/.ssh/id_[dr]sa")).first
+    Dir.glob(File.expand_path("~/.ssh/id_[dr]sa.pub")).first
   end
 end
 
