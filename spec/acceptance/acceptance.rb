@@ -10,9 +10,8 @@ vmrun = "/Library/Application Support/VMware Fusion/vmrun"
 vm_path = "/Volumes/Michael Optibay/Virtual Machines.localized/Snow Leopard.vmwarevm/Snow Leopard.vmx"
 snapshot_name = "sshd"
 
-def vm_shell cmd
-  vm_user = 'test'
-  vm_host = '192.168.153.140'
+def vm_shell cmd, vm_user = 'root'
+  vm_host = '192.168.153.141'
   log "Running on #{vm_user}@#{vm_host}: #{cmd}" do
     shell "ssh #{vm_user}@#{vm_host} '#{cmd}'", :log => true
   end
@@ -25,6 +24,7 @@ describe "babushka" do
   }
   context "bootstrapping" do
     before(:all) {
+      vm_shell 'pacman -S --noconfirm curl'
       vm_shell 'bash -c "`curl babushka.me/up/hard`"'
     }
     it "should have installed babushka" do
