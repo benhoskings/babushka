@@ -4,36 +4,72 @@ require 'cloudservers'
 
 require 'spec_helper'
 
+module LogHelpers
+  def print_log message, printable
+    print message if printable
+  end
+end
+
 class VM
   include Singleton
+  SERVER_NAME = 'babushka-specs'
 
-  def shell cmd, user = 'root'
-    log "Running on #{user}@#{vm_host}: #{cmd}" do
-      shell "ssh #{user}@#{vm_host} '#{cmd}'", :log => true
+  def run cmd, user = 'root'
+    log "Running on #{user}@#{host}: #{cmd}" do
+      shell "ssh #{user}@#{host} '#{cmd}'", :log => true
     end
   end
 
-  def start
-    raise "Already created a server." unless @server.nil?
-
-    log_block "Creating a #{flavor[:ram]}MB #{image[:name]} rackspace instance." do
-      @server = connection.create_server(image_args)
-    end
-    log_block "Waiting for the server to come online" do
-      until server.status == 'ACTIVE'
-        print '.'
-        sleep 2
-        server.refresh
-      end
-    end
+  def server
+    @_server || existing_server || create_server
   end
 
   private
 
-  def server; @server end
+  def existing_server
+    server_detail = connection.list_servers_detail.detect {|s| s[:name] == SERVER_NAME }
+    unless server_detail.nil?
+      log "A server is already running."
+      connection.get_server(server_detail[:id]).tap {|s|
+        @_server = s
+        wait_for_server
+      }
+    end
+  end
+
+  def create_server
+    log_block "Creating a #{flavor[:ram]}MB #{image[:name]} rackspace instance" do
+      @_server = connection.create_server(image_args)
+    end
+    wait_for_server
+  end
+
+  def wait_for_server
+    if server.status != 'ACTIVE'
+      log_block "Waiting for the server to come online" do
+        until server.status == 'ACTIVE'
+          sleep 3
+          print '.'
+          server.refresh
+        end
+        server.status == 'ACTIVE'
+      end
+    end
+  end
+
+  def host
+    server.addresses[:public].first
+  end
 
   def image_args
-    {:name => "babushka", :imageId => image[:id], :flavorId => flavor[:id]}
+    {
+      :name => SERVER_NAME,
+      :imageId => image[:id],
+      :flavorId => flavor[:id],
+      :personality => {
+        public_key => '/root/.ssh/authorized_keys'
+      }
+    }
   end
 
   def image
@@ -52,6 +88,9 @@ class VM
   def cfg
     @_cfg ||= YAML.load_file(Babushka::Path.path / 'conf/rackspace.yml')
   end
+  def public_key
+    Dir.glob(File.expand_path("~/.ssh/id_[dr]sa")).first
+  end
 end
 
-VM.instance.start
+VM.instance.run "ls /"
