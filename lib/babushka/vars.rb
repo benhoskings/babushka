@@ -34,12 +34,8 @@ module Babushka
       end
     end
 
-    def sticky_var name, opts = {}
-      var name, opts.merge(:sticky => true)
-    end
-
     def define_var name, opts = {}
-      vars[name.to_s].update opts.dragnet(:default, :type, :sticky, :message, :choices, :choice_descriptions)
+      vars[name.to_s].update opts.dragnet(:default, :type, :message, :choices, :choice_descriptions)
       vars[name.to_s][:choices] ||= vars[name.to_s][:choice_descriptions].keys unless vars[name.to_s][:choice_descriptions].nil?
       vars[name.to_s]
     end
@@ -52,14 +48,6 @@ module Babushka
       }.reject_r {|var,data|
         !data.class.in?([String, Symbol, Hash, Numeric, TrueClass, FalseClass]) ||
         var.to_s['password']
-      }
-    end
-
-    def sticky_for_save
-      vars.reject {|var,data|
-        !data[:sticky]
-      }.map_values {|k,v|
-        v.reject {|k,v| k != :value }
       }
     end
 

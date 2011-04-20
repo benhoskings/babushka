@@ -78,10 +78,6 @@ module Babushka
       VarsPrefix.p / dep.contextual_name
     end
 
-    def sticky_var_path
-      WorkingPrefix.p / 'sticky_vars'
-    end
-
     private
 
     def log_dep dep
@@ -100,17 +96,12 @@ module Babushka
       load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
         vars.saved_vars[var_name].update var_data
       }
-      load_var_log_for(sticky_var_path).each_pair {|var_name,var_data|
-        debug "Updating sticky var #{var_name}: #{var_data.inspect}"
-        vars.vars[var_name].update var_data
-      }
       with_vars.each_pair {|var_name,var_value|
         vars.vars[var_name].update :value => var_value
       }
     end
 
     def save_run_info_for dep, result
-      save_var_log_for sticky_var_path, :vars => vars.sticky_for_save
       save_var_log_for var_path_for(dep), {
         :info => task_info(dep, result),
         :vars => vars.for_save
