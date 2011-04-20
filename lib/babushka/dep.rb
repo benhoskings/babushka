@@ -63,7 +63,7 @@ module Babushka
     end
 
     def template
-      define! if @template.nil?
+      assign_template if @template.nil?
       @template
     end
 
