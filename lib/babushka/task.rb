@@ -22,19 +22,15 @@ module Babushka
 
     def process_dep dep_name, with_vars
       Dep.find_or_suggest dep_name do |dep|
-        run_dep(dep, with_vars).tap {|result|
+        log_dep(dep) {
+          load_run_info_for dep, with_vars
+          dep.process(:top_level => true).tap {|result|
+            save_run_info_for dep, result
+          }
+        }.tap {|result|
           log "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
-        }
-      end
-    end
-
-    def run_dep dep, with_vars
-      log_dep dep do
-        load_run_info_for dep, with_vars
-        dep.process(:top_level => true).tap {|result|
-          save_run_info_for dep, result
         }
       end
     end
