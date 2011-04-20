@@ -98,7 +98,7 @@ module Babushka
       @dep_source = source
       @load_path = Base.sources.current_load_path
       @dep_source.deps.register self
-      define! if Base.sources.current_real_load_source.nil?
+      assign_template if Base.sources.current_real_load_source.nil?
     end
 
     # Attempt to look up the template this dep was defined against (or if no
