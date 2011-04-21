@@ -32,7 +32,7 @@ module Babushka
         filename
       elsif (result = shell(%Q{curl -I -X GET "#{url}"})).nil?
         log_error "Couldn't download #{url}: `curl` exited with non-zero status."
-      elsif (response_code = result.val_for("HTTP/1.1"))[/^[23]/].nil?
+      elsif (response_code = result.val_for(/HTTP\/1\.\d/))[/^[23]/].nil?
         log_error "Couldn't download #{url}: #{response_code}."
       elsif !(location = result.val_for('Location')).nil?
         log "Following redirect from #{url}"
