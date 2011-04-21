@@ -112,7 +112,15 @@ module Babushka
       Readline.completion_append_character = nil
 
       if choices.nil?
-        Readline.completion_proc = L{|str| Dir["#{str}*"] }
+        Readline.completion_proc = L{|str|
+          Dir["#{str}*"].map {|path|
+            path.end_with(if File.directory?(path)
+              using_libedit ? '' : '/' # libedit adds its own trailing slash to dirs
+            else
+              ' ' # Add a trailing space to files
+            end)
+          }
+        }
       else
         Readline.completion_proc = L{|choice| choices.select {|i| i.starts_with? choice } }
       end
