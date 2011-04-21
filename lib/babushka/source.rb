@@ -192,6 +192,8 @@ module Babushka
       if @updated
         debug "Already pulled #{name} (#{uri}) this session."
         true
+      elsif @updated == false
+        debug "Not updating #{name} (#{uri}) - it's offline."
       elsif Base.sources.local_only?
         debug "Not pulling #{name} (#{uri}) - in local-only mode."
         true
@@ -200,7 +202,10 @@ module Babushka
       elsif repo.exists? && repo.ahead?
         log "Not updating #{name} (#{path}) because it's ahead of origin."
       else
-        @updated = git uri, :to => path, :log => true
+        git(uri, :to => path, :log => true).tap {|result|
+          log "Marking #{uri} as offline for this run." unless result
+          @updated = result || false
+        }
       end
     end
 
