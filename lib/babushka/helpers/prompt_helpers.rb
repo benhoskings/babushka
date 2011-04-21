@@ -128,14 +128,14 @@ module Babushka
         # interrupts to work during Readline calls.
         Base.exit_on_interrupt!
 
-        Readline.readline(prompt, true).strip
+        Readline.readline(prompt, true).try(:strip)
       end
     end
 
     module GetsPrompt
       def read_from_prompt prompt, choices = nil
         print prompt
-        $stdin.gets.strip
+        $stdin.gets.try(:strip)
       end
     end
 
