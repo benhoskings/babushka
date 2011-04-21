@@ -1,5 +1,6 @@
 module Babushka
   class Task
+    include Singleton
     include PathHelpers
 
     attr_reader :base_opts, :run_opts, :vars, :persistent_log

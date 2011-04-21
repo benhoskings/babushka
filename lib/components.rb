@@ -1,3 +1,5 @@
+require 'singleton'
+
 module Babushka
   ExternalComponents = %w[
     fancypath/fancypath

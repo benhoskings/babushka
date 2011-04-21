@@ -6,7 +6,7 @@ module Babushka
     # are external to running the corresponding dep tree itself - logging, and
     # var loading and saving in particular.
     def task
-      @task ||= Task.new
+      Task.instance
     end
 
     # +host+ is an instance of Babushka::SystemProfile for the system the command
@@ -25,7 +25,7 @@ module Babushka
     #   - current dir (the contents of ./babushka-deps)
     #   - personal (the contents of ~/.babushka/deps)
     def sources
-      @sources ||= SourcePool.new
+      SourcePool.instance
     end
 
     def threads

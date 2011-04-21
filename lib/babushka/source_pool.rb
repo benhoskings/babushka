@@ -1,5 +1,7 @@
 module Babushka
   class SourcePool
+    include Singleton
+
     SOURCE_DEP_SEPARATOR = ':'
 
     def current
