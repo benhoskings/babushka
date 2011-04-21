@@ -109,6 +109,7 @@ module Babushka
       require 'readline'
 
       using_libedit = !Readline.respond_to?(:vi_editing_mode)
+      Readline.completion_append_character = nil
 
       if choices.nil?
         Readline.completion_proc = L{|str| Dir["#{str}*"] }
