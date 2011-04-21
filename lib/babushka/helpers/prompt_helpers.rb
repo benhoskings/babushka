@@ -108,6 +108,8 @@ module Babushka
     def read_from_prompt prompt, choices = nil
       require 'readline'
 
+      using_libedit = !Readline.respond_to?(:vi_editing_mode)
+
       if choices.nil?
         Readline.completion_proc = L{|str| Dir["#{str}*"] }
       else
