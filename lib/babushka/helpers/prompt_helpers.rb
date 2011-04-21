@@ -111,8 +111,10 @@ module Babushka
       using_libedit = !Readline.respond_to?(:vi_editing_mode)
       Readline.completion_append_character = nil
 
-      if choices.nil?
-        Readline.completion_proc = L{|str|
+      Readline.completion_proc = if !choices.nil?
+        L{|str| choices.select {|i| i.starts_with? choice } }
+      else
+        L{|str|
           Dir["#{str}*"].map {|path|
             path.end_with(if File.directory?(path)
               using_libedit ? '' : '/' # libedit adds its own trailing slash to dirs
@@ -121,8 +123,6 @@ module Babushka
             end)
           }
         }
-      else
-        Readline.completion_proc = L{|choice| choices.select {|i| i.starts_with? choice } }
       end
 
       # This is required in addition to the call in bin/babushka.rb for
