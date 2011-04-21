@@ -355,6 +355,7 @@ module Babushka
     def run_met_task task_opts = {}
       cache_process(process_task(:met?)).tap {|result|
         log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
+        self.result_message = nil
       }
     end
 
