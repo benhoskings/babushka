@@ -57,15 +57,9 @@ meta :app do
           pre = prefix_to_use
           target_path = pre / File.basename(entry)
           if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
-            if archive.is_a? Babushka::DmgResource
-              log_block("Found #{entry} in the DMG, copying to #{pre}") {
-                entry.p.copy target_path
-              }
-            else
-              log_block("Found #{entry}, moving to #{pre}") {
-                entry.p.move target_path
-              }
-            end
+            log_block("Found #{entry}, copying to #{pre}") {
+              entry.p.copy target_path
+            }
           end
         }
       }
