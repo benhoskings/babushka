@@ -118,10 +118,10 @@ module Babushka
       # interrupts to work during Readline calls.
       Base.exit_on_interrupt!
 
-      Readline.readline prompt, true
+      Readline.readline(prompt, true).strip
     rescue LoadError => e
       print prompt
-      $stdin.gets
+      $stdin.gets.strip
     end
   end
 end
