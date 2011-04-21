@@ -19,7 +19,7 @@ module Babushka
     def git_update uri, repo
       log_block "Updating #{uri}" do
         if repo.repo_shell('git fetch origin').nil?
-          log_error "Couldn't fetch #{uri}."
+          log_error " Couldn't fetch,", :newline => false
         elsif !repo.behind?
           log " Already up-to-date at #{repo.current_head.colorize('yellow')},", :newline => false
           true
