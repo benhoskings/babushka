@@ -83,7 +83,7 @@ module Babushka
     def read_value_from_prompt message, opts, &block
       value = nil
       10.times do
-        value = read_from_prompt(opts[:prompt].end_with(' '), opts[:choices]).chomp
+        value = read_from_prompt(opts[:prompt].end_with(' '), opts[:choices]).try(:chomp)
         value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].to_s.empty?)
 
         error_message = if opts[:choices] && !value.in?(opts[:choices])
