@@ -105,34 +105,45 @@ module Babushka
       value
     end
 
-    def read_from_prompt prompt, choices = nil
-      require 'readline'
+    module ReadlinePrompt
+      def read_from_prompt prompt, choices = nil
+        using_libedit = !Readline.respond_to?(:vi_editing_mode)
+        Readline.completion_append_character = nil
 
-      using_libedit = !Readline.respond_to?(:vi_editing_mode)
-      Readline.completion_append_character = nil
-
-      Readline.completion_proc = if !choices.nil?
-        L{|str| choices.select {|i| i.starts_with? choice } }
-      else
-        L{|str|
-          Dir["#{str}*"].map {|path|
-            path.end_with(if File.directory?(path)
-              using_libedit ? '' : '/' # libedit adds its own trailing slash to dirs
-            else
-              ' ' # Add a trailing space to files
-            end)
+        Readline.completion_proc = if !choices.nil?
+          L{|str| choices.select {|i| i.starts_with? choice } }
+        else
+          L{|str|
+            Dir["#{str}*"].map {|path|
+              path.end_with(if File.directory?(path)
+                using_libedit ? '' : '/' # libedit adds its own trailing slash to dirs
+              else
+                ' ' # Add a trailing space to files
+              end)
+            }
           }
-        }
+        end
+
+        # This is required in addition to the call in bin/babushka.rb for
+        # interrupts to work during Readline calls.
+        Base.exit_on_interrupt!
+
+        Readline.readline(prompt, true).strip
       end
+    end
 
-      # This is required in addition to the call in bin/babushka.rb for
-      # interrupts to work during Readline calls.
-      Base.exit_on_interrupt!
+    module GetsPrompt
+      def read_from_prompt prompt, choices = nil
+        print prompt
+        $stdin.gets.strip
+      end
+    end
 
-      Readline.readline(prompt, true).strip
-    rescue LoadError => e
-      print prompt
-      $stdin.gets.strip
+    begin
+      require 'readline'
+      include ReadlinePrompt
+    rescue LoadError
+      include GetsPrompt
     end
   end
 end
