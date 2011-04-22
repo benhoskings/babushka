@@ -20,7 +20,7 @@ module Babushka
     private
 
     def invoke
-      debug "$ #{@cmd}".colorize('grey')
+      debug "$ #{@cmd.join(' ')}".colorize('grey')
       Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
         unless @opts[:input].nil?
           stdin << @opts[:input]
