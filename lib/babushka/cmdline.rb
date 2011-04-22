@@ -98,11 +98,11 @@ module Babushka
       end
     }
 
-    handle('edit', "Load the file containing the specified dep in $EDITOR").run {
-      if verb.args.length != 1
+    handle('edit', "Load the file containing the specified dep in $EDITOR").run {|cmd|
+      if cmd.argv.length != 1
         fail_with "'edit' requires a single argument."
-      elsif (dep = Dep.find_or_suggest(verb.args.first.value)).nil?
-        fail_with "Can't find '#{verb.args.first.value}' to edit."
+      elsif (dep = Dep.find_or_suggest(cmd.argv.first)).nil?
+        fail_with "Can't find '#{cmd.argv.first}' to edit."
       elsif dep.load_path.nil?
         fail_with "Can't edit '#{dep.name}, since it wasn't loaded from a file."
       else
