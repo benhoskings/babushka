@@ -23,7 +23,7 @@ module Babushka
 
       def run
         parser.parse! argv
-        Handler.for(verb).handler.call argv
+        Handler.for(verb).handler.call self
       end
 
       def print_usage
