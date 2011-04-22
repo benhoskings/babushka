@@ -30,7 +30,7 @@ class String
     }
 
     def colorize text, description
-      return text if Babushka::Base.task.opt(:no_color)
+      return text if Babushka::Base.task.opts.has_key?(:no_color)
 
       terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
       bg = terms.detect {|i| /on_#{ColorRegex}/ =~ i }
