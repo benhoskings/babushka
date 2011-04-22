@@ -1,48 +1,6 @@
 # -*- coding: utf-8 -*-
 
 module Babushka
-  class Base
-  class << self
-
-    # Check structs.rb for the definitions of Verb, Opt and Arg.
-    Opts = [
-      Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, [])
-    ]
-    Verbs = [
-      Verb.new(:meet, nil, nil, "The main one: run a dep and all its dependencies.", [
-        Opt.new(:track_blocks, nil, '--track-blocks', "Track deps' blocks in TextMate as they're run", true, []),
-        Opt.new(:dry_run, '-n', '--dry-run', "Discover the curent state without making any changes", true, []),
-        Opt.new(:defaults, '-y', '--defaults', "Assume the default value for all vars without prompting, where possible", true, []),
-        Opt.new(:no_color, '--no-color', '--no-colour', "Disable color in the output", true, [])
-      ], [
-        Arg.new(:dep_names, "The name of the dep to run", false, true)
-      ]),
-      Verb.new(:list, '-T', '--tasks', "List the available deps", [
-        Opt.new(:templates, '-t', '--templates', "List templates instead of deps", true, [])
-      ], [
-        Arg.new(:filter, "Only list deps matching a substring", true, false, 'ruby')
-      ]),
-      Verb.new(:sources, nil, nil, "Manage dep sources", [
-        Opt.new(:add, '-a', '--add', "Add dep source", false, [
-          Arg.new(:name, "A name for this source", false, false, 'benhoskings'),
-          Arg.new(:uri, "The URI of the source to add", false, false, 'git://github.com/benhoskings/babushka-deps')
-        ]),
-        Opt.new(:update, '-u', '--update', "Update all known sources", false, []),
-        Opt.new(:list, '-l', '--list', "List dep sources", false, [])
-      ], []),
-      Verb.new(:console, nil, nil, "Start an interactive (irb-based) babushka session", [], []),
-      Verb.new(:search, nil, nil, "Search for deps in the community database", [], [
-        Arg.new(:q, "The keyword to search for", true, false, 'ruby')
-      ]),
-      Verb.new(:edit, nil, nil, "Load the file containing the specified dep in $EDITOR", [], [
-        Arg.new(:name, "The name of the dep to load", true, false, 'ruby')
-      ]),
-      Verb.new(:help, '-h', '--help', "Print usage information", [], [
-        Arg.new(:verb, "Print command-specific usage info", true)
-      ]),
-      Verb.new(:version, nil, '--version', "Print the current version", [], [])
-    ]
-
   module Cmdline
 
     handle('global', "Options that are valid for any handler") {
