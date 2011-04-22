@@ -59,10 +59,12 @@ module Babushka
       log "\n"
       true
     end
+
     def handle_version verb
       print_version
       true
     end
+
     def handle_list verb
       to_list = verb.opts.empty? ? :deps : verb.opts.first.def.name
       filter_str = verb.args.first.value unless verb.args.first.nil?
@@ -80,6 +82,7 @@ module Babushka
         task.process dep_names, verb.vars
       end
     end
+
     def handle_sources verb
       if verb.opts.empty?
         fail_with help_for(verb.def, "'sources' requires an option.")
