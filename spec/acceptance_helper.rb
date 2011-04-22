@@ -19,7 +19,7 @@ class VM
   end
 
   def run cmd, user = 'root'
-    log "Running on #{user}@#{host}: #{cmd}" do
+    log "\nRunning on #{user}@#{host}: #{cmd}" do
       shell "ssh #{user}@#{host} '#{cmd}'", :log => true
     end
   end
