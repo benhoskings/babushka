@@ -29,6 +29,13 @@ module Babushka
         log "  #{Base.program_name} babushka        # Update babushka itself (what babushka.me/up does)"
       end
 
+      def print_handlers
+        log "\nCommands:"
+        Handler.all.each {|handler|
+          log "  #{handler.name.ljust(10)} #{handler.description}"
+        }
+      end
+
       def print_examples
         log "\nExamples:"
         log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
