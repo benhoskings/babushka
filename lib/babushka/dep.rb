@@ -232,13 +232,13 @@ module Babushka
     # +met?+ check.
     #
     # TODO: In future, there will be support for specifying that in the DSL.
-    def met?
-      process :dry_run => true, :top_level => true
+    def met? *args
+      with(*args).process :dry_run => true, :top_level => true
     end
 
     # Entry point for a full met?/meet +#process+ run.
-    def meet
-      process :dry_run => false, :top_level => true
+    def meet *args
+      with(*args).process :dry_run => false, :top_level => true
     end
 
     # Trigger a dep run with this dep at the top of the tree.
