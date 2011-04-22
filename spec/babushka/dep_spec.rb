@@ -455,6 +455,37 @@ describe "calling meet on a single dep" do
   after { Base.sources.anonymous.deps.clear! }
 end
 
+describe "args" do
+  it "should replace arguments" do
+    dep('arg replacing').with('a').with('b').args.should == %w[b]
+  end
+  it "should do make the args available within the dep like normal block arguments" do
+    outer, before_met, after_meet = nil, nil, nil
+    dep 'arg availability' do |a, b|
+      outer = a
+      met? {
+        before_met = b
+        a == b
+      }
+      meet {
+        a = b
+        after_meet = a
+      }
+    end.meet('a', 'b')
+    outer.should == 'a'
+    before_met.should == 'b'
+    after_meet.should == 'b'
+  end
+  it "should undefine the dep" do
+    @dep = dep('undefining args') {|a| }
+    @dep.with('a').define!
+    @dep.dep_defined?.should be_true
+    @dep.with('a')
+    @dep.dep_defined?.should be_nil
+  end
+end
+
+
 describe "run_in" do
   it "should run in the current directory when run_in isn't set" do
     cwd = Dir.pwd
