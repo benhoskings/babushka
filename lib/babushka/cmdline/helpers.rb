@@ -68,6 +68,22 @@ module Babushka
         }
       end
 
+      def print_search_results search_term, results
+        log "The webservice knows about #{results.length} dep#{'s' unless results.length == 1} that match#{'es' if results.length == 1} '#{search_term}':"
+        log ""
+        log_table(
+          ['Name', 'Source', 'Runs', ' ✓', 'Command'],
+          results
+        )
+        if (custom_sources = results.select {|r| r[1][github_autosource_regex].nil? }.count) > 0
+          log ""
+          log "✣  #{custom_sources == 1 ? 'This source has a custom URI' : 'These sources have custom URIs'}, so babushka can't discover #{custom_sources == 1 ? 'it' : 'them'} automatically."
+          log "   You can run #{custom_sources == 1 ? 'its' : 'their'} deps in the same way, though, once you add #{custom_sources == 1 ? 'it' : 'them'} manually:"
+          log "   $ #{Base.program_name} sources -a <alias> <uri>"
+          log "   $ #{Base.program_name} <alias>:<dep>"
+        end
+      end
+
       def github_autosource_regex
         /^git\:\/\/github\.com\/(.*)\/babushka-deps(\.git)?/
       end
