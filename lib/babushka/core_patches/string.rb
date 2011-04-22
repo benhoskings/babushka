@@ -101,9 +101,9 @@ class String
   #   'Hello world!'.colorize('reverse') #=> "\e[0;29;7mHello world!\e[0m"
   def colorize description = '', start_at = nil
     if start_at.nil? || (cut_point = index(start_at)).nil?
-      Colorizer.colorize self, description
+      Colorizer.instance.colorize self, description
     else
-      self[0...cut_point] + Colorizer.colorize(self[cut_point..-1], description)
+      self[0...cut_point] + Colorizer.instance.colorize(self[cut_point..-1], description)
     end
   end
 

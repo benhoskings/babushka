@@ -3,6 +3,8 @@ class String
   private
 
   class Colorizer
+    include Singleton
+
     HomeOffset = 29
     LightOffset = 60
     BGOffset = 10
@@ -26,32 +28,31 @@ class String
       'blink' => 5, 'blinking' => 5,
       'reverse' => 7, 'reversed' => 7
     }
-    class << self
-      def colorize text, description
-        return text if Babushka::Base.task.opt(:no_color)
 
-        terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
-        bg = terms.detect {|i| /on_#{ColorRegex}/ =~ i }
-        fg = terms.detect {|i| ColorRegex =~ i }
-        ctrl = terms.detect {|i| CtrlRegex =~ i }
+    def colorize text, description
+      return text if Babushka::Base.task.opt(:no_color)
 
-        "\e[#{"0;#{fg_for(fg)};#{bg_for(bg) || ctrl_for(ctrl)}"}m#{text}\e[0m"
-      end
+      terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
+      bg = terms.detect {|i| /on_#{ColorRegex}/ =~ i }
+      fg = terms.detect {|i| ColorRegex =~ i }
+      ctrl = terms.detect {|i| CtrlRegex =~ i }
 
-      def fg_for name
-        light = name.gsub!(LightRegex, '') unless name.nil?
-        (ColorOffsets[name] || 0) + HomeOffset + (light ? LightOffset : 0)
-      end
+      "\e[#{"0;#{fg_for(fg)};#{bg_for(bg) || ctrl_for(ctrl)}"}m#{text}\e[0m"
+    end
 
-      def bg_for name
-        # There's a hole in the table on bg=none, so we use BGOffset to the left
-        offset = fg_for((name || '').sub(/^on_/, ''))
-        offset + BGOffset unless offset == HomeOffset
-      end
+    def fg_for name
+      light = name.gsub!(LightRegex, '') unless name.nil?
+      (ColorOffsets[name] || 0) + HomeOffset + (light ? LightOffset : 0)
+    end
 
-      def ctrl_for name
-        CtrlOffsets[name] || HomeOffset
-      end
+    def bg_for name
+      # There's a hole in the table on bg=none, so we use BGOffset to the left
+      offset = fg_for((name || '').sub(/^on_/, ''))
+      offset + BGOffset unless offset == HomeOffset
+    end
+
+    def ctrl_for name
+      CtrlOffsets[name] || HomeOffset
     end
   end
 
