@@ -9,11 +9,13 @@ module Babushka
     def manager_key; :apt end
 
     def _install! pkgs, opts
+      wait_for_dpkg
       log_shell "Downloading", "#{pkg_cmd} -y -d install #{pkgs.join(' ')}", :sudo => should_sudo?
       super
     end
 
     def update_pkg_lists_if_required
+      wait_for_dpkg
       if !File.exists? '/var/lib/apt/lists/lock'
         update_pkg_lists "Looks like apt hasn't been used on this system yet. Updating"
       else
@@ -30,6 +32,7 @@ module Babushka
 
     private
     def _has? pkg_name
+      wait_for_dpkg
       status = failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status')
       status && status.split(' ').include?('installed')
     end
@@ -41,6 +44,18 @@ module Babushka
       '/var/lib/apt/lists'.p
     end
 
+    def wait_for_dpkg
+      if dpkg_locked?
+        log_block "Looks like dpkg is already in use - waiting" do
+          sleep 1 while dpkg_locked?
+          true
+        end
+      end
+    end
+
+    def dpkg_locked?
+      failable_shell('fuser -v /var/lib/dpkg/lock').stderr[/\bF..../]
+    end
   end
   end
 end
