@@ -15,7 +15,7 @@ class VM
   SERVER_NAME = 'babushka-specs'
 
   def babushka task
-    run "babushka '#{task}' --defaults"
+    run "babushka '#{task}' --defaults --no-colour"
   end
 
   def run cmd, user = 'root'
