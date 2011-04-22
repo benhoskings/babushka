@@ -20,10 +20,6 @@ module Babushka
       end
     end
 
-    def log_extra message, opts = {}, &block
-      log_verbose message.colorize('grey'), opts, &block
-    end
-
     def log_result message, opts = {}, &block
       if opts.delete :as_bypass
         log_result message, opts.merge(:fail_symbol => '~', :fail_color => 'blue')
