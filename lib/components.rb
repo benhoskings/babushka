@@ -42,6 +42,7 @@ module Babushka
     colorizer
     levenshtein
     structs
+    cmdline/parser
     cmdline
     base
     renderable
