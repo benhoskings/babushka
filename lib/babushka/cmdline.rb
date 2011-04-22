@@ -59,19 +59,18 @@ module Babushka
       opt '-a', '--add NAME URI', "Add the source at URI as NAME"
       opt '-u', '--update',       "Update all known sources"
       opt '-l', '--list',         "List dep sources"
-    }.run {|uri|
-      if verb.opts.empty?
-        fail_with help_for(verb.def, "'sources' requires an option.")
-      elsif verb.opts.first.def.name == :add
-        args = verb.opts.first.args.map(&:value)
+    }.run {|cmd|
+      if cmd.opts.length != 1
+        fail_with "'sources' requires a single option."
+      elsif cmd.opts.keys.first == :add
         begin
-          Source.new(args.last, :name => args.first).add!
+          Source.new(cmd.argv.first, :name => cmd.opts[:add]).add!
         rescue SourceError => ex
           log_error ex.message
         end
-      elsif verb.opts.first.def.name == :update
+      elsif cmd.opts.keys.first == :update
         Base.sources.update!
-      elsif verb.opts.first.def.name == :list
+      elsif cmd.opts.keys.first == :list
         Base.sources.list!
       end
     }
