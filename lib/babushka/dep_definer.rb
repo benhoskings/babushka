@@ -20,7 +20,13 @@ module Babushka
     end
 
     def define!
-      instance_eval &block unless block.nil?
+      if block.nil?
+        # nothing to do
+      elsif dependency.args.length != block.arity
+        raise DepArgumentError, "The dep '#{name}' requires #{block.arity} argument#{'s' unless block.arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
+      else
+        instance_exec dependency.args, &block
+      end
     end
 
     delegate :var, :set, :merge, :define_var, :to => :vars

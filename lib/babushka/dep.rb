@@ -1,6 +1,8 @@
 module Babushka
   class DepError < StandardError
   end
+  class DepArgumentError < ArgumentError
+  end
   class Dep
     include PathHelpers
     extend SuggestHelpers
@@ -209,6 +211,16 @@ module Babushka
     # looks like a template suffix, even if it doesn't match a template.
     def suffix
       name.scan(MetaDep::TEMPLATE_SUFFIX).flatten.first
+    end
+
+    def args
+      @args || []
+    end
+
+    def with *new_args
+      undefine_dep!
+      @args = new_args
+      self
     end
 
     # Entry point for a dry +#process+ run, where only +met?+ blocks will be
