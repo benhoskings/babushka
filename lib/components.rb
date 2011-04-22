@@ -43,6 +43,7 @@ module Babushka
     levenshtein
     structs
     cmdline/parser
+    cmdline/handler
     cmdline
     base
     renderable
