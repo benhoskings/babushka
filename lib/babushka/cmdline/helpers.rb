@@ -5,6 +5,46 @@ module Babushka
     module Helpers
       module_function
 
+      def fail_with message
+        log message if message.is_a? String
+        exit 1
+      end
+
+      def print_version opts = {}
+        if opts[:full]
+          log "Babushka v#{Babushka::VERSION}, (c) 2011 Ben Hoskings <ben@hoskings.net>"
+        else
+          log Babushka::VERSION
+        end
+      end
+
+      def print_usage
+        log "\nThe gist:"
+        log "  #{Base.program_name} <command> [options]"
+        log "\nAlso:"
+        log "  #{Base.program_name} help <command>  # Print command-specific usage info"
+        log "  #{Base.program_name} <dep name>      # A shortcut for 'babushka meet <dep name>'"
+        log "  #{Base.program_name} babushka        # Update babushka itself (what babushka.me/up does)"
+      end
+
+      def print_examples
+        log "\nExamples:"
+        log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
+        log "  #{Base.program_name} system --dry-run"
+        log "\n"
+        log "  # Meet the 'fish' dep (i.e. install fish and all its dependencies).".colorize('grey')
+        log "  #{Base.program_name} fish"
+        log "\n"
+        log "  # Meet the 'user setup' dep, printing lots of debugging (including realtime".colorize('grey')
+        log "  # shell command output).".colorize('grey')
+        log "  #{Base.program_name} 'user setup' --debug"
+      end
+
+      def print_notes
+        log "\nCommands can be abbrev'ed, as long as they remain unique."
+        log "  e.g. '#{Base.program_name} l' is short for '#{Base.program_name} list'."
+      end
+
       def search_results_for q
         YAML.load(search_webservice_for(q).body).sort_by {|i|
           -i[:runs_this_week]

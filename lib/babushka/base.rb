@@ -137,62 +137,6 @@ module Babushka
       ], {}), error_message
     end
 
-    def print_version opts = {}
-      if opts[:full]
-        log "Babushka v#{Babushka::VERSION}, (c) 2011 Ben Hoskings <ben@hoskings.net>"
-      else
-        log Babushka::VERSION
-      end
-    end
-
-    def print_usage
-      log "\nThe gist:"
-      log "  #{program_name} <command> [options]"
-      log "\nAlso:"
-      log "  #{program_name} help <command>  # #{verb_for('help').args.first.description}"
-      log "  #{program_name} <dep name>      # A shortcut for 'babushka meet <dep name>'"
-      log "  #{program_name} babushka        # Update babushka itself (what babushka.me/up does)"
-    end
-
-    def print_usage_for verb
-      log "\n#{verb.name} - #{verb.description}"
-      log "\nExample usage:"
-      (verb.opts + verb.args).partition {|opt| !opt.optional }.tap {|items|
-        items.first.each {|item| # mandatory
-          log "  #{program_name} #{verb.name} #{describe_item item}"
-        }
-        unless items.last.empty? # optional
-          log "  #{program_name} #{verb.name} #{items.last.map {|item| describe_item item }.join(' ')}"
-        end
-      }
-    end
-
-    def print_choices_for title, list
-      log "\n#{title.capitalize}:"
-      indent = (list.map {|item| printable_item(item).length }.max || 0) + 4
-      list.each {|item|
-        log "  #{printable_item(item).ljust(indent)}#{item.description}"
-      }
-    end
-
-    def print_examples
-      log "\nExamples:"
-      log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
-      log "  #{program_name} system --dry-run"
-      log "\n"
-      log "  # Meet the 'fish' dep (i.e. install fish and all its dependencies).".colorize('grey')
-      log "  #{program_name} fish"
-      log "\n"
-      log "  # Meet the 'user setup' dep, printing lots of debugging (including realtime".colorize('grey')
-      log "  # shell command output).".colorize('grey')
-      log "  #{program_name} 'user setup' --debug"
-    end
-
-    def print_notes
-      log "\nCommands can be abbrev'ed, as long as they remain unique."
-      log "  e.g. '#{program_name} l' is short for '#{program_name} list'."
-    end
-
     def printable_item item
       if item.is_a? Verb
         item.name.to_s
@@ -236,11 +180,6 @@ module Babushka
         names.compact.each {|name| hsh[name] = name }
         hsh
       }
-    end
-
-    def fail_with message
-      log message if message.is_a? String
-      exit 1
     end
 
     def program_name
