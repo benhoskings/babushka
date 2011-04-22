@@ -44,6 +44,7 @@ module Babushka
     structs
     cmdline/parser
     cmdline/handler
+    cmdline/helpers
     cmdline
     base
     renderable
