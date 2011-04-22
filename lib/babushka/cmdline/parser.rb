@@ -22,6 +22,7 @@ module Babushka
       end
 
       def run
+        parser.parse! argv
         Handler.for(verb).handler.call argv
       end
 
@@ -31,7 +32,6 @@ module Babushka
 
       def parse &blk
         instance_eval &blk
-        parser.parse! argv
       end
 
       private
