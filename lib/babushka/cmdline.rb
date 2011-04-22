@@ -34,11 +34,9 @@ module Babushka
 
     handle('list', "List the available deps") {
       opt '-t', '--templates', "List templates instead of deps"
-    }.run {|filter|
-      to_list = verb.opts.empty? ? :deps : verb.opts.first.def.name
-      filter_str = verb.args.first.value unless verb.args.first.nil?
+    }.run {|cmd|
       Base.sources.local_only {
-        generate_list_for to_list, filter_str
+        Helpers.generate_list_for(cmd.opts[:templates] ? :templates : :deps, cmd.argv.first)
       }
     }
 
