@@ -129,6 +129,11 @@ module Babushka
       @dep_defined = true
     end
 
+    def undefine_dep!
+      debug "undefining: #{inspect}" if dep_defined?
+      @context = @dep_defined = nil
+    end
+
     # Returns true if +#define!+ has aready successfully run on this dep.
     def dep_defined?
       @dep_defined
