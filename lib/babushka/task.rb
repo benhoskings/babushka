@@ -104,8 +104,8 @@ module Babushka
         debug "Updating sticky var #{var_name}: #{var_data.inspect}"
         vars.vars[var_name].update var_data
       }
-      with_vars.each_pair {|var_name,var_data|
-        vars.vars[var_name].update var_data
+      with_vars.each_pair {|var_name,var_value|
+        vars.vars[var_name].update :value => var_value
       }
     end
 

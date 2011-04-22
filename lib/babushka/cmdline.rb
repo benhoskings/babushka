@@ -44,13 +44,14 @@ module Babushka
       opt '-n', '--dry-run',      "Discover the curent state without making any changes"
       opt '-y', '--defaults',     "Assume the default value for all vars without prompting, where possible"
       opt       '--track-blocks', "Track deps' blocks in TextMate as they're run"
-    }.run {|args|
-      if (dep_names = verb.args.map(&:value)).empty?
+    }.run {|cmd|
+      dep_names, vars = cmd.argv.partition {|arg| arg['='].nil? }
+      if dep_names.blank?
         fail_with "Nothing to do."
-      elsif Base.task.opt(:track_blocks) && !which('mate')
+      elsif cmd.opts[:track_blocks] && !which('mate')
         fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings:textmate"
       else
-        task.process dep_names, verb.vars
+        Base.task.process dep_names, Hash[vars.map {|i| i.split('=', 2) }]
       end
     }
 
