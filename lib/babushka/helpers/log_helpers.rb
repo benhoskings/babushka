@@ -45,7 +45,7 @@ module Babushka
       }
     end
 
-    # Write +message+ to the debug log, prefixed with +TickChar+.
+    # Write +message+ to the debug log, prefixed with +TickChar+, returning +true+.
     #
     # This is used to report events that have succeeded, or items that are
     # already working. For example, when the package manager reports that a
