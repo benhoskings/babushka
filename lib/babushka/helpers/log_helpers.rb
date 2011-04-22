@@ -13,6 +13,7 @@ module Babushka
     end
 
     def log_verbose message, opts = {}, &block
+      log_error "#{caller.first}: #log_verbose has been deprecated. Instead, just use #log." # deprecated
       log message, opts, &block
     end
 
