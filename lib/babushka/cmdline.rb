@@ -28,7 +28,7 @@ module Babushka
     }
 
     handle('version', "Print the current version").run {
-      print_version
+      Helpers.print_version
       true
     }
 
