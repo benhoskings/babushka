@@ -10,18 +10,18 @@ module Babushka
       opt       '--no-color', '--no-colour', "Disable color in the output"
     }
 
-    handle('help', "Print usage information").run {|args|
-      print_version :full => true
-      if verb.nil? || (help_arg = verb.args.first).nil?
-        print_usage
-        print_choices_for 'commands', Verbs
-        print_notes
-      elsif (help_verb = verb_for(help_arg.value)).nil?
-        log "#{help_arg.value.capitalize}? I have honestly never heard of that."
+    handle('help', "Print usage information").run {|cmd|
+      Helpers.print_version :full => true
+      if cmd.argv.empty?
+        Helpers.print_usage
+        Helpers.print_handlers
+        Helpers.print_notes
+      elsif (handler = Handler.for(cmd.argv.first)).nil?
+        log "#{cmd.argv.first.capitalize}? I have honestly never heard of that."
       else
-        log_error error_message unless error_message.nil?
-        print_usage_for help_verb
-        print_choices_for 'options', (help_verb.opts + help_verb.args)
+        log "\n#{handler.name} - #{handler.description}"
+        Base.task.cmdline.parse &handler.opt_definer
+        Base.task.cmdline.print_usage
       end
       log "\n"
       true
