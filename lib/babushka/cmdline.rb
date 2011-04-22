@@ -6,7 +6,6 @@ module Babushka
 
     # Check structs.rb for the definitions of Verb, Opt and Arg.
     Opts = [
-      Opt.new(:quiet, '-q', '--quiet', "Run with minimal logging", true, []),
       Opt.new(:debug, '-d', '--debug', "Show more verbose logging, and realtime shell command output", true, [])
     ]
     Verbs = [

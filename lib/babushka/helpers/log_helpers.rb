@@ -13,11 +13,7 @@ module Babushka
     end
 
     def log_verbose message, opts = {}, &block
-      if !opts[:quiet]
-        log message, opts, &block
-      elsif block_given?
-        yield
-      end
+      log message, opts, &block
     end
 
     def log_result message, opts = {}, &block
@@ -56,12 +52,8 @@ module Babushka
     # package is already installed, that's an 'OK' that babushka can move on to
     # the next job, and so +log_ok+ is used to report that fact.
     def log_ok message, opts = {}, &block
-      if !Base.task.opt(:quiet)
-        log message.end_with('.'), opts.merge(:as => :ok), &block
-        true
-      elsif block_given?
-        yield
-      end
+      log message.end_with('.'), opts.merge(:as => :ok), &block
+      true
     end
 
     # Write +message+ to the debug log.
