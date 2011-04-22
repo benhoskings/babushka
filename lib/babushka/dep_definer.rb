@@ -9,7 +9,7 @@ module Babushka
     include AcceptsValueFor
     include AcceptsBlockFor
 
-    attr_reader :payload, :dependency
+    attr_reader :dependency, :payload, :block
 
     delegate :name, :basename, :load_path, :to => :dependency
 
@@ -20,7 +20,7 @@ module Babushka
     end
 
     def define!
-      instance_eval &@block unless @block.nil?
+      instance_eval &block unless block.nil?
     end
 
     delegate :var, :set, :merge, :define_var, :to => :vars
@@ -44,15 +44,15 @@ module Babushka
     end
 
     def file_and_line
-      get_file_and_line_for(@block)
+      get_file_and_line_for(block)
     end
 
     def file_and_line_for block_name
       get_file_and_line_for send(block_name) if has_block? block_name
     end
 
-    def get_file_and_line_for block
-      block.inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
+    def get_file_and_line_for blk
+      blk.inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
     end
 
     private
@@ -65,10 +65,10 @@ module Babushka
       BaseHelper
     end
 
-    def on platform, &block
+    def on platform, &blk
       if platform.in? [*chooser]
         @current_platform = platform
-        block.call.tap {
+        blk.call.tap {
           @current_platform = nil
         }
       end
