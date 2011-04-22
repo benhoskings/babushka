@@ -4,7 +4,8 @@ module Babushka
 
     def initialize cmd, opts
       raise "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
-      @cmd, @opts = cmd, opts
+      # [*cmd] doesn't work here, becuase splatting a string splits it at newlines on 1.8.
+      @cmd, @opts = (cmd.is_a?(Array) ? cmd : [cmd]), opts
     end
 
     def ok?; result end

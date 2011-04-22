@@ -15,6 +15,9 @@ describe "shell" do
   it "should return output of successful commands" do
     shell('echo lol').should == 'lol'
   end
+  it "should accept multiline commands" do
+    shell("echo babu &&\necho shka").should == "babu\nshka"
+  end
   it "should provide the shell to supplied blocks" do
     shell(SucceedingLs) {|shell|
       shell.stdout.should include('bash')
