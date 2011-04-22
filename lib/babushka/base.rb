@@ -43,11 +43,8 @@ module Babushka
     def run args
       if host.nil?
         fail_with "This system is not supported."
-      elsif (task.verb = extract_verb(args)).nil?
-        fail_with "Not sure what you meant."
       else
-        parse_cmdline task.verb, args
-        send "handle_#{task.verb.def.name}", task.verb
+        task.cmdline.run
       end
     ensure
       Base.threads.each &:join
