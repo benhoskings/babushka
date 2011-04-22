@@ -43,7 +43,16 @@ module Babushka
       Verb.new(:version, nil, '--version', "Print the current version", [], [])
     ]
 
-    def handle_help verb = nil, error_message = nil
+  module Cmdline
+
+    handle('global', "Options that are valid for any handler") {
+      opt '-v', '--version',                 "Print the current version"
+      opt '-h', '--help',                    "Show this information"
+      opt '-d', '--debug',                   "Show more verbose logging, and realtime shell command output"
+      opt       '--no-color', '--no-colour', "Disable color in the output"
+    }
+
+    handle('help', "Print usage information").run {|args|
       print_version :full => true
       if verb.nil? || (help_arg = verb.args.first).nil?
         print_usage
@@ -58,22 +67,28 @@ module Babushka
       end
       log "\n"
       true
-    end
+    }
 
-    def handle_version verb
+    handle('version', "Print the current version").run {
       print_version
       true
-    end
+    }
 
-    def handle_list verb
+    handle('list', "List the available deps") {
+      opt '-t', '--templates', "List templates instead of deps"
+    }.run {|filter|
       to_list = verb.opts.empty? ? :deps : verb.opts.first.def.name
       filter_str = verb.args.first.value unless verb.args.first.nil?
       Base.sources.local_only {
         generate_list_for to_list, filter_str
       }
-    end
+    }
 
-    def handle_meet verb
+    handle('meet', 'The main one: run a dep and all its dependencies.') {
+      opt '-n', '--dry-run',      "Discover the curent state without making any changes"
+      opt '-y', '--defaults',     "Assume the default value for all vars without prompting, where possible"
+      opt       '--track-blocks', "Track deps' blocks in TextMate as they're run"
+    }.run {|args|
       if (dep_names = verb.args.map(&:value)).empty?
         fail_with "Nothing to do."
       elsif Base.task.opt(:track_blocks) && !which('mate')
@@ -81,9 +96,13 @@ module Babushka
       else
         task.process dep_names, verb.vars
       end
-    end
+    }
 
-    def handle_sources verb
+    handle('sources', "Manage dep sources") {
+      opt '-a', '--add NAME URI', "Add the source at URI as NAME"
+      opt '-u', '--update',       "Update all known sources"
+      opt '-l', '--list',         "List dep sources"
+    }.run {|uri|
       if verb.opts.empty?
         fail_with help_for(verb.def, "'sources' requires an option.")
       elsif verb.opts.first.def.name == :add
@@ -98,13 +117,13 @@ module Babushka
       elsif verb.opts.first.def.name == :list
         Base.sources.list!
       end
-    end
+    }
 
-    def handle_console verb
+    handle('console', "Start an interactive (irb-based) babushka session").run {
       exec "irb -r'#{Path.lib / 'babushka'}' --simple-prompt"
-    end
+    }
 
-    def handle_search verb
+    handle('search', "Search for deps in the community database").run {
       if verb.args.length != 1
         fail_with "'search' requires a single argument."
       else
@@ -132,9 +151,9 @@ module Babushka
         end
         !results.empty?
       end
-    end
+    }
 
-    def handle_edit verb
+    handle('edit', "Load the file containing the specified dep in $EDITOR").run {
       if verb.args.length != 1
         fail_with "'edit' requires a single argument."
       elsif (dep = Dep.find_or_suggest(verb.args.first.value)).nil?
@@ -153,7 +172,6 @@ module Babushka
           exec "#{editor_var} '#{file}'"
         end
       end
-    end
-  end
+    }
   end
 end
