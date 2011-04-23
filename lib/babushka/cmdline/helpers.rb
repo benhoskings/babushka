@@ -96,15 +96,16 @@ module Babushka
 
       def generate_list_for to_list, filter_str
         context = to_list == :deps ? Base.program_name : ':template =>'
+        match_str = filter_str.try(:downcase)
         Base.sources.all_present.each {|source|
           source.load!
         }.map {|source|
           [source, source.send(to_list).send(to_list)]
         }.map {|(source,items)|
-          if filter_str.nil? || source.name[filter_str]
+          if match_str.nil? || source.name.downcase[match_str]
             [source, items]
           else
-            [source, items.select {|item| item.name[filter_str] }]
+            [source, items.select {|item| item.name.downcase[match_str] }]
           end
         }.select {|(source,items)|
           !items.empty?
