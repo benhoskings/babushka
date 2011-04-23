@@ -54,7 +54,7 @@ module Babushka
     end
 
     def dpkg_locked?
-      failable_shell('fuser -v /var/lib/dpkg/lock').stderr[/\bF..../]
+      which('fuser') and failable_shell('fuser -v /var/lib/dpkg/lock').stderr[/\bF..../]
     end
   end
   end
