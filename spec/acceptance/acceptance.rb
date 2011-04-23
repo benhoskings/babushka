@@ -1,5 +1,3 @@
-# coding: utf-8
-
 require 'acceptance_helper'
 
 describe "babushka" do
@@ -15,7 +13,7 @@ describe "babushka" do
     end
     context "running basic deps" do
       it "should update rubygems" do
-        @vm.babushka('rubygems').should =~ /^\} ✓ rubygems/
+        @vm.should meet('rubygems')
       end
     end
   end

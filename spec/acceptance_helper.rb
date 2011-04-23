@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require 'singleton'
 require 'yaml'
 require 'cloudservers'
@@ -96,4 +98,13 @@ class VM
   def public_key
     Dir.glob(File.expand_path("~/.ssh/id_[dr]sa.pub")).first
   end
+end
+
+RSpec::Matchers.define :meet do |expected|
+  match {|vm|
+    vm.babushka(expected).should =~ /^\} ✓ #{Regexp.escape(expected)}/
+  }
+  failure_message_for_should {|vm|
+    "The '#{expected}' dep couldn't bet met."
+  }
 end
