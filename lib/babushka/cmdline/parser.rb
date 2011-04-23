@@ -24,6 +24,8 @@ module Babushka
       def run
         parser.parse! argv
         Handler.for(verb).handler.call self
+      rescue OptionParser::ParseError => ex
+        log_error "The #{ex.args.first} option #{error_reason(ex)}. #{hint}"
       end
 
       def print_usage
@@ -35,6 +37,16 @@ module Babushka
       end
 
       private
+
+      def hint
+        "`babushka#{" #{verb}" unless @implicit_verb} --help` for more info."
+      end
+
+      def error_reason ex
+        {
+          OptionParser::MissingArgument => "requires an argument"
+        }[ex.class] || "isn't valid"
+      end
 
       def opt *args, &block
         opt_name = args.collapse(/^--/).first.gsub(/\s.*$/, '').gsub('-', '_').to_sym
