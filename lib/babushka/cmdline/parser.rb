@@ -9,14 +9,14 @@ module Babushka
         if argv.empty? || (%w[-h --help] & argv).any?
           new 'help', argv
         elsif !Handler.abbrev.has_key?(argv.first.sub(/^--/, ''))
-          new 'meet', argv
+          new 'meet', argv, :implicit_verb => true
         else
           new Handler.abbrev[argv.shift.sub(/^--/, '')], argv
         end
       end
 
-      def initialize verb, argv
-        @verb, @argv, @opts = verb, argv, {}
+      def initialize verb, argv, parse_opts = {}
+        @verb, @argv, @opts, @implicit_verb = verb, argv, {}, parse_opts[:implicit_verb]
         parse &Handler.for('global').opt_definer
         parse &Handler.for(verb).opt_definer
       end
