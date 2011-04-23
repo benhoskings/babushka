@@ -22,5 +22,12 @@ describe "babushka" do
         @vm.should meet('build tools')
       end
     end
+
+    context "running my deps" do
+      it "should configure the system" do
+        @vm.babushka('benhoskings:system') # once to set the locale
+        @vm.should meet('benhoskings:system')
+      end
+    end
   end
 end
