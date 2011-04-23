@@ -20,7 +20,7 @@ describe "accepts_block_for behaviour" do
     value_from_block = nil
     dep 'returning test' do
       value_from_block = test_defining &lambda
-    end
+    end.met?
     value_from_block.should == lambda
   end
 
@@ -40,7 +40,7 @@ describe "accepts_block_for behaviour" do
     value_from_block = nil
     dep 'default test' do
       value_from_block = test_defaults
-    end
+    end.met?
     value_from_block.should == lambda
   end
 
