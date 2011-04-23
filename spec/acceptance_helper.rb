@@ -15,7 +15,10 @@ class VM
   SERVER_NAME = 'babushka-specs'
 
   def babushka task
-    run "babushka '#{task}' --defaults --no-colour"
+    run("babushka \"#{task}\" --defaults --no-colour").tap {|result|
+      # Fetch the debug log if the dep failed
+      run "cat ~/.babushka/logs/\"#{task}\"" unless result
+    }
   end
 
   def run cmd, user = 'root'
