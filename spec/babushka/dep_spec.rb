@@ -155,21 +155,21 @@ end
 describe "dep creation" do
   it "should work for blank deps" do
     L{
-      dep "blank"
+      dep "a blank dep"
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep('blank').dep_defined?.should be_true
+    Dep('a blank dep').dep_defined?.should be_true
   end
   it "should work for filled in deps" do
     L{
-      dep "standard" do
-        requires 'blank'
+      dep "a standard dep" do
+        requires 'some other dep'
         before { }
         met? { }
         meet { }
         after { }
       end
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep('standard').dep_defined?.should be_true
+    Dep('a standard dep').dep_defined?.should be_true
   end
   it "should accept deps as dep names" do
     L{
