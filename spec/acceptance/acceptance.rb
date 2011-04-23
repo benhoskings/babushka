@@ -15,6 +15,9 @@ describe "babushka" do
       it "should update rubygems" do
         @vm.should meet('rubygems')
       end
+      it "should install build tools" do
+        @vm.should meet('build tools')
+      end
     end
   end
 end
