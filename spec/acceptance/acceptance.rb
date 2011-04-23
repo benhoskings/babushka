@@ -11,7 +11,10 @@ describe "babushka" do
     it "should have installed babushka" do
       @vm.run('babushka --version').should =~ /^[\d.]+$/
     end
-    context "running basic deps" do
+
+    # Between installing babushka itself and these specs, the core
+    # set of deps is pretty much covered.
+    context "running core deps" do
       it "should update rubygems" do
         @vm.should meet('rubygems')
       end
