@@ -20,21 +20,16 @@ module Babushka
       @uris.all? {|uri| handle_source uri, &block } unless @uris.nil?
     end
 
-
-    # single-URI methods
-
     def handle_source uri, &block
       uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
-      ({
-        'http' => L{ Resource.extract(uri, &block) },
-        'https' => L{ Resource.extract(uri, &block) },
-        'ftp' => L{ Resource.extract(uri, &block) },
-        'git' => L{ git(uri, &block) }
-      }[uri.scheme] || L{ unsupported_scheme(uri) }).call
-    end
-
-    def unsupported_scheme uri
-      log_error "Babushka can't handle #{uri.scheme}:// URLs yet. But it can if you write a patch! :)"
+      case uri.scheme
+      when 'git'
+        git uri, &block
+      when 'http', 'https', 'ftp'
+        Resource.extract uri, &block
+      else
+        log_error "Babushka can't handle #{uri.scheme}:// URLs yet. But it can if you write a patch! :)"
+      end
     end
 
   end
