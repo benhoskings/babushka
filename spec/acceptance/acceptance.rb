@@ -14,7 +14,7 @@ describe "babushka" do
 
     # Between installing babushka itself and these specs, the core
     # set of deps is pretty much covered.
-    context "running core deps" do
+    context "core deps" do
       it "should update rubygems" do
         @vm.should meet('rubygems')
       end
@@ -23,7 +23,7 @@ describe "babushka" do
       end
     end
 
-    context "running my deps" do
+    context "some of my deps" do
       it "should configure the system" do
         @vm.babushka('benhoskings:system') # once to set the locale
         @vm.should meet('benhoskings:system')
@@ -36,6 +36,10 @@ describe "babushka" do
       end
     end
 
+    # It's important to have a wide range of deps here, so please suggest
+    # stable deps of your own that I can add to the list. The intention isn't
+    # to run every dep ever, just a representative set that together cover
+    # babushka's scope.
     context "community deps" do
       it "should build node and coffee-script" do
         @vm.should meet('dgoodlad:coffeescript.src')
