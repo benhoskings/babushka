@@ -32,19 +32,22 @@ module Babushka
         filename
       elsif (result = shell(%Q{curl -I -X GET "#{url}"})).nil?
         log_error "Couldn't download #{url}: `curl` exited with non-zero status."
-      elsif (response_code = result.val_for(/HTTP\/1\.\d/))[/^[23]/].nil?
-        log_error "Couldn't download #{url}: #{response_code}."
-      elsif !(location = result.val_for('Location')).nil?
-        log "Following redirect from #{url}"
-        download location, location.p.basename
       else
-        success = log_block "Downloading #{url}" do
-          shell %Q{curl -# -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}, :progress => /[\d\.]+%/
+        response_code = result.val_for(/HTTP\/1\.\d/) # not present for ftp://, etc.
+        if response_code && response_code[/^[23]/].nil?
+          log_error "Couldn't download #{url}: #{response_code}."
+        elsif !(location = result.val_for('Location')).nil?
+          log "Following redirect from #{url}"
+          download location, location.p.basename
+        else
+          success = log_block "Downloading #{url}" do
+            shell %Q{curl -# -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}, :progress => /[\d\.]+%/
+          end
+          filename if success
         end
-        filename if success
       end
     end
-    
+
     def self.detect_type_by_extension path
       TYPES.keys.detect {|key|
         TYPES[key][:exts].any? {|extension|
