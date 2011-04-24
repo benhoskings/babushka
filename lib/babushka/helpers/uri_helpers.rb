@@ -25,7 +25,7 @@ module Babushka
       case uri.scheme
       when 'git'
         git uri, &block
-      when 'http', 'https', 'ftp'
+      when 'http', 'https', 'ftp', nil # We let `curl` work out the protocol if it's nil.
         Resource.extract uri, &block
       else
         log_error "Babushka can't handle #{uri.scheme}:// URLs yet. But it can if you write a patch! :)"
