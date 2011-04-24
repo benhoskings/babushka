@@ -35,5 +35,11 @@ describe "babushka" do
         @vm.should meet('benhoskings:webserver running.nginx')
       end
     end
+
+    context "community deps" do
+      it "should build node and coffee-script" do
+        @vm.should meet('dgoodlad:coffeescript.src')
+      end
+    end
   end
 end
