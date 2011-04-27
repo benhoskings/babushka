@@ -2,20 +2,13 @@ require 'spec_helper'
 
 describe Vars do
   before {
-    dep 'vars spec' do
-      define_var :username, :default => shell('whoami')
-      define_var :domain, :default => :username
-      define_var :db_name
-      define_var :test_user, :default => :db_name
-      setup {
-        set :nginx_version, '0.7.64'
-      }
-    end
+    Base.task.vars.define_var :username, :default => shell('whoami')
+    Base.task.vars.define_var :domain, :default => :username
+    Base.task.vars.define_var :db_name
+    Base.task.vars.define_var :test_user, :default => :db_name
+    Base.task.vars.set :nginx_version, '0.7.64'
   }
   describe "without values" do
-    before {
-      Dep('vars spec').met? # so setup{} is called
-    }
     it "should return a direct value" do
       Base.task.vars.var(:nginx_version).should == '0.7.64'
     end
@@ -34,11 +27,8 @@ describe Vars do
   end
   describe "with values" do
     before {
-      Dep('vars spec').context.setup {
-        set :username, 'bob'
-        set :db_name, 'bobs_database'
-      }
-      Dep('vars spec').met? # so setup{} is called
+      Base.task.vars.set :username, 'bob'
+      Base.task.vars.set :db_name, 'bobs_database'
     }
     it "should return a direct value, overriding default" do
       Base.task.vars.var(:username).should == 'bob'
@@ -55,12 +45,9 @@ describe Vars do
   end
   describe "with values" do
     before {
-      Dep('vars spec').context.setup {
-        set :username, 'bob'
-        set :db_name, 'bobs_database'
-        set :test_user, 'senor_bob'
-      }
-      Dep('vars spec').met? # so setup{} is called
+      Base.task.vars.set :username, 'bob'
+      Base.task.vars.set :db_name, 'bobs_database'
+      Base.task.vars.set :test_user, 'senor_bob'
     }
     it "should return a direct value when there is no default" do
       Base.task.vars.var(:db_name).should == 'bobs_database'
