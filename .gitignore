@@ -1,6 +1,7 @@
 Gemfile.lock
 .bundle/
 .idea
+conf/rackspace.yml
 sources
 sources.yml
 coverage
