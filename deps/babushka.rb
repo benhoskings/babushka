@@ -31,7 +31,7 @@ dep 'set up.babushka' do
       'next' => 'The development head -- slight risk of explosions'
     }
   setup {
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{var(:install_path)}." if var(:install_path).p.exists? unless var(:install_path).p.writable?
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." if repo.path.exists? unless repo.path.writable?
   }
 end
 
@@ -84,7 +84,7 @@ end
 dep 'repo clean.babushka' do
   requires 'installed.babushka'
   met? {
-    repo.clean? or unmeetable("There are local changes in #{var(:install_path)}.")
+    repo.clean? or unmeetable("There are local changes in #{repo.path}.")
   }
 end
 
@@ -92,7 +92,7 @@ dep 'in path.babushka' do
   requires 'up to date.babushka'
   met? { which 'babushka' }
   meet {
-    log_shell "Linking babushka into #{var(:install_path) / '../bin'}", %Q{ln -sf "#{var(:install_path) / 'bin/babushka.rb'}" "#{var(:install_path) / '../bin/babushka'}"}
+    log_shell "Linking babushka into #{repo.path / '../bin'}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{repo.path / '../bin/babushka'}"}
   }
 end
 
