@@ -1,6 +1,6 @@
 dep 'ruby' do
   met? {
-    in_path? 'ruby >= 1.8.6'
+    in_path? 'ruby >= 1.8.6', 'irb'
   }
   requires_when_unmet {
     on :osx, 'ruby.external'
