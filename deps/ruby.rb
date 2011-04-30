@@ -4,7 +4,7 @@ dep 'ruby' do
   }
   requires_when_unmet {
     on :osx, 'ruby.external'
-    on :ubuntu, 'ruby.managed'
+    otherwise 'ruby.managed'
   }
 end
 
