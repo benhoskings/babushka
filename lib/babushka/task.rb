@@ -4,7 +4,7 @@ module Babushka
     include PathHelpers
 
     attr_reader :base_opts, :run_opts, :vars, :persistent_log
-    attr_accessor :verb, :reportable
+    attr_accessor :cmdline, :reportable
 
     def initialize
       @vars = Vars.new
@@ -50,12 +50,12 @@ module Babushka
       }
     end
 
-    def opts
-      verb_opts.merge @run_opts
+    def cmdline
+      @cmdline ||= Cmdline::Parser.for(ARGV)
     end
 
-    def verb_opts
-      verb.nil? ? {} : @verb.opts.inject({}) {|hsh,opt| hsh[opt.def.name] = true; hsh }
+    def opts
+      cmdline.opts.merge @run_opts
     end
 
     def opt name
@@ -104,8 +104,8 @@ module Babushka
         debug "Updating sticky var #{var_name}: #{var_data.inspect}"
         vars.vars[var_name].update var_data
       }
-      with_vars.each_pair {|var_name,var_data|
-        vars.vars[var_name].update var_data
+      with_vars.each_pair {|var_name,var_value|
+        vars.vars[var_name].update :value => var_value
       }
     end
 

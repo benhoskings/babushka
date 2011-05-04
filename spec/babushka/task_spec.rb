@@ -27,7 +27,7 @@ describe Task, "process" do
           var_value = var(:task_var)
         }
       end
-      Base.task.process ['task spec with_vars'], {'task_var' => {:value => 'something tasky'}}
+      Base.task.process ['task spec with_vars'], {'task_var' => 'something tasky'}
       var_value.should == 'something tasky'
     end
   end

@@ -41,7 +41,9 @@ module Babushka
     accepts_block_for
     colorizer
     levenshtein
-    structs
+    cmdline/parser
+    cmdline/handler
+    cmdline/helpers
     cmdline
     base
     renderable
