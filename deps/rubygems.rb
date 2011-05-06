@@ -13,5 +13,10 @@ dep 'rubygems' do
   }
   after {
     %w[cache ruby specs].each {|name| ('~/.gem' / name).mkdir }
+    cd cmd_dir('ruby') do
+      if File.exists? 'gem1.8'
+        shell "ln -sf gem1.8 gem", :sudo => !File.writable?(which('ruby'))
+      end
+    end
   }
 end
