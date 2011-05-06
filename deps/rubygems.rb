@@ -1,34 +1,17 @@
 dep 'rubygems' do
-  requires 'rubygems up to date'
-  after {
-    %w[cache ruby specs].each {|name| ('~/.gem' / name).mkdir }
-  }
-end
-
-dep 'rubygems up to date' do
-  requires 'rubygems installed'
-  met? { in_path? 'gem >= 1.7.2' }
-  meet {
-    log_block "Updating the rubygems install in #{which('gem').p.parent}" do
-      Babushka::GemHelper.update!
-    end
-  }
-end
-
-dep 'rubygems installed' do
+  def version; '1.7.2' end
   requires 'ruby'
   requires_when_unmet 'curl.managed'
-  met? { in_path? %w[gem ruby] }
+  met? {
+    # We check for ruby here too to make sure `ruby` and `gem` run from the same place.
+    in_path? ["gem #{version}", 'ruby']
+  }
   meet {
-    handle_source "http://production.cf.rubygems.org/rubygems/rubygems-1.7.2.tgz" do
+    handle_source "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz" do
       shell "ruby setup.rb", :sudo => !File.writable?(which('ruby'))
     end
   }
   after {
-    cd cmd_dir('ruby') do
-      if File.exists? 'gem1.8'
-        shell "ln -sf gem1.8 gem", :sudo => !File.writable?(which('ruby'))
-      end
-    end
+    %w[cache ruby specs].each {|name| ('~/.gem' / name).mkdir }
   }
 end
