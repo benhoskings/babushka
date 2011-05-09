@@ -51,7 +51,7 @@ module Babushka
       elsif cmd.opts[:track_blocks] && !which('mate')
         fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings:textmate"
       else
-        Base.task.process dep_names, Hash[vars.map {|i| i.split('=', 2) }]
+        Base.task.process dep_names, Hash[*vars.map {|i| i.split('=', 2) }]
       end
     }
 
