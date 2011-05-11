@@ -163,12 +163,6 @@ module Babushka
       end
     end
 
-    def log_shell_with_a_block_to_scan_stdout_for_apps_that_have_broken_return_values message, cmd, opts = {}, &block
-      log_block message do
-        send opts.delete(:sudo) ? :sudo : :shell, cmd, opts.merge(:failable => true), &block
-      end
-    end
-
     private
 
     def shell_cmd cmd, opts = {}, &block
