@@ -14,7 +14,16 @@ module Babushka
       @stdout, @stderr = '', ''
       @result = invoke == 0
       print "#{" " * (@progress.length + 1)}#{"\b" * (@progress.length + 1)}" unless @progress.nil?
-      block_given? ? yield(self) : (stdout.chomp if ok?)
+
+      if block_given?
+        yield(self)
+      elsif ok?
+        stdout.chomp
+      else
+        log "$ #{@cmd.join(' ')}", :closing_status => 'shell command failed' do
+          log_error(stderr.blank? ? stdout : stderr)
+        end
+      end
     end
 
     private

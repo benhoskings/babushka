@@ -113,6 +113,8 @@ module Babushka
     end
 
     def closing_log_message message, result = true, opts = {}
+      message = opts[:closing_status] if opts[:closing_status].is_a?(String)
+
       if opts[:closing_status] == :status_only
         '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar}".colorize(result ? 'green' : 'red')
       elsif opts[:closing_status] == :dry_run
