@@ -47,7 +47,9 @@ module Babushka
     }.run {|cmd|
       # TODO: spec var parsing
       dep_names, vars = cmd.argv.partition {|arg| arg['='].nil? }
-      if dep_names.blank?
+      if !(bad_var = vars.detect {|var| var[/^\w+=/].nil? }).nil?
+        fail_with "'#{bad_var}' looks like a var but it doesn't make sense."
+      elsif dep_names.blank?
         fail_with "Nothing to do."
       elsif cmd.opts[:track_blocks] && !which('mate')
         fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings:textmate"
