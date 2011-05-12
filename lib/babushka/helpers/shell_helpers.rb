@@ -135,9 +135,8 @@ module Babushka
     # For example, on a stock OS X machine:
     #   cmd_dir('ruby') #=> "/usr/bin"
     def cmd_dir cmd_name
-      which("#{cmd_name}") {|shell|
-        File.dirname shell.stdout if shell.ok?
-      }
+      cmd_path = which("#{cmd_name}")
+      File.dirname(cmd_path) unless cmd_path.nil?
     end
 
     # Run a shell command, logging before and after using #log_block, and using
