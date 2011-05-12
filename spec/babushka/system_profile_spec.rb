@@ -30,7 +30,7 @@ describe Babushka::SystemProfile, '.for_host' do
       before {
         File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
         @profile = Babushka::SystemProfile.for_host
-        @profile.should_receive(:shell).with("which lsb_release").and_return("/usr/bin/lsb_release")
+        @profile.should_receive(:ensure_lsb_release).and_return(true)
         @profile.should_receive(:shell).with("lsb_release -a").and_return(%Q{
           No LSB modules are available.
           Distributor ID:	Debian
