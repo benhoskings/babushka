@@ -62,9 +62,7 @@ module Babushka
     # can be simplified to this:
     #   failable_shell('grep rails Gemfile').stdout.empty?
     def failable_shell cmd, opts = {}
-      result = nil
-      shell(cmd, opts) {|s| result = s }
-      result
+      shell(cmd, opts) {|s| s }
     end
 
     # Run +cmd+ in a separate interactive shell. This is useful for running
