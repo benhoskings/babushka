@@ -7,6 +7,14 @@ describe "source_template" do
   end
 end
 
+describe "args" do
+  it "should raise when the wrong number of args are supplied" do
+    L{ dep('arg arity 1') {|a| }.context.define! }.should raise_error(DepArgumentError, "The dep 'arg arity 1' requires 1 argument, but 0 were passed.")
+    L{ dep('arg arity 2') {|a,b| }.with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'arg arity 2' requires 2 arguments, but 1 was passed.")
+    L{ dep('arg arity 3') {|a| }.with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep 'arg arity 3' requires 1 argument, but 2 were passed.")
+  end
+end
+
 describe "methods in deps" do
   before {
     dep 'helper method test' do

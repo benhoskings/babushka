@@ -1,6 +1,8 @@
 module Babushka
   class DepError < StandardError
   end
+  class DepArgumentError < ArgumentError
+  end
   class Dep
     include PathHelpers
     extend SuggestHelpers
@@ -129,6 +131,11 @@ module Babushka
       @dep_defined = true
     end
 
+    def undefine_dep!
+      debug "undefining: #{inspect}" if dep_defined?
+      @context = @dep_defined = nil
+    end
+
     # Returns true if +#define!+ has aready successfully run on this dep.
     def dep_defined?
       @dep_defined
@@ -206,6 +213,16 @@ module Babushka
       name.scan(MetaDep::TEMPLATE_SUFFIX).flatten.first
     end
 
+    def args
+      @args || []
+    end
+
+    def with *new_args
+      undefine_dep!
+      @args = new_args
+      self
+    end
+
     # Entry point for a dry +#process+ run, where only +met?+ blocks will be
     # evaluated.
     #
@@ -215,13 +232,13 @@ module Babushka
     # +met?+ check.
     #
     # TODO: In future, there will be support for specifying that in the DSL.
-    def met?
-      process :dry_run => true, :top_level => true
+    def met? *args
+      with(*args).process :dry_run => true, :top_level => true
     end
 
     # Entry point for a full met?/meet +#process+ run.
-    def meet
-      process :dry_run => false, :top_level => true
+    def meet *args
+      with(*args).process :dry_run => false, :top_level => true
     end
 
     # Trigger a dep run with this dep at the top of the tree.
