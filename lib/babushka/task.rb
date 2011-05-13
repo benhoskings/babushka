@@ -4,7 +4,7 @@ module Babushka
     include PathHelpers
 
     attr_reader :base_opts, :run_opts, :vars, :persistent_log
-    attr_accessor :cmdline, :reportable
+    attr_accessor :reportable
 
     def initialize
       @vars = Vars.new
@@ -46,12 +46,8 @@ module Babushka
       }
     end
 
-    def cmdline
-      @cmdline ||= Cmdline::Parser.for(ARGV)
-    end
-
     def opts
-      cmdline.opts.merge @run_opts
+      Base.cmdline.opts.merge @run_opts
     end
 
     def opt name

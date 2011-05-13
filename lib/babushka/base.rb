@@ -9,6 +9,14 @@ module Babushka
       Task.instance
     end
 
+    # +cmdline+ is an instance of +Cmdline::Parser+ that represents the arguments
+    # that were passed via the commandline. It handles parsing those arguments,
+    # and choosing the task to perform based on the 'verb' supplied - e.g. 'meet',
+    # 'list', etc.
+    def cmdline
+      @cmdline ||= Cmdline::Parser.for(ARGV)
+    end
+
     # +host+ is an instance of Babushka::SystemProfile for the system the command
     # was invoked on. If the current system isn't supported, SystemProfile.for_host
     # will return +nil+, and Base.run will fail early.
@@ -40,7 +48,7 @@ module Babushka
     # When the `babushka` command is run, bin/babushka first triggers a load
     # via lib/babushka.rb, and then calls this method.
     def run
-      task.cmdline.run
+      cmdline.run
     ensure
       threads.each &:join
     end
