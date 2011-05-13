@@ -38,9 +38,8 @@ module Babushka
 
     # The top-level entry point for babushka runs invoked at the command line.
     # When the `babushka` command is run, bin/babushka first triggers a load
-    # via lib/babushka.rb, and then calls this method, passing in the
-    # arguments that were passed on the command line.
-    def run args
+    # via lib/babushka.rb, and then calls this method.
+    def run
       task.cmdline.run
     ensure
       Base.threads.each &:join
