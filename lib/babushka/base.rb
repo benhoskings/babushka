@@ -41,11 +41,7 @@ module Babushka
     # via lib/babushka.rb, and then calls this method, passing in the
     # arguments that were passed on the command line.
     def run args
-      if host.nil?
-        fail_with "This system is not supported."
-      else
-        task.cmdline.run
-      end
+      task.cmdline.run
     ensure
       Base.threads.each &:join
     end
