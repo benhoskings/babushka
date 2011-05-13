@@ -19,6 +19,8 @@ module Babushka
         yield(self)
       elsif ok?
         stdout.chomp
+      elsif stderr.blank? && stdout.blank?
+        log "$ #{@cmd.join(' ')}".colorize('grey') + ' ' + "#{CrossChar} shell command failed".colorize('red')
       else
         log "$ #{@cmd.join(' ')}", :closing_status => 'shell command failed' do
           log_error(stderr.blank? ? stdout : stderr)
