@@ -7,7 +7,7 @@ include Babushka
 
 require 'rubygems'
 require 'rspec'
-Rspec.configure
+RSpec.configure
 
 puts "babushka@#{`git rev-parse --short HEAD`.strip} • ruby-#{RUBY_VERSION} • rspec-#{RSpec::Version::STRING}"
 
