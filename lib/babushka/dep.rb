@@ -63,7 +63,7 @@ module Babushka
     end
 
     def template
-      define! if @template.nil?
+      assign_template if @template.nil?
       @template
     end
 
@@ -98,7 +98,7 @@ module Babushka
       @dep_source = source
       @load_path = Base.sources.current_load_path
       @dep_source.deps.register self
-      define! if Base.sources.current_real_load_source.nil?
+      assign_template if Base.sources.current_real_load_source.nil?
     end
 
     # Attempt to look up the template this dep was defined against (or if no
@@ -110,7 +110,7 @@ module Babushka
         debug "#{name}: already defined."
       elsif dep_defined? == false
         debug "#{name}: defining already failed."
-      elsif assign_template
+      elsif template
         debug "(defining #{name} against #{template.name})"
         define_dep!
       end

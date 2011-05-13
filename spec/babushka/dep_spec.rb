@@ -28,23 +28,23 @@ describe "Dep.make" do
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", Base.sources.anonymous, {}, nil).dep_defined?.should be_true
+      Dep.make("valid dep name", Base.sources.anonymous, {}, nil)
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep("valid dep name").dep_defined?.should be_true
+    Dep("valid dep name").should be_an_instance_of(Dep)
   end
   context "without template" do
     before {
       @dep = Dep.make("valid base dep", Base.sources.anonymous, {}, nil)
     }
     it "should work" do
-      @dep.dep_defined?.should be_true
+      @dep.should be_an_instance_of(Dep)
       @dep.template.should == Dep::BaseTemplate
     end
   end
   context "with template" do
     it "should fail to define optioned deps against a missing template" do
       L{
-        Dep.make("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil)
+        Dep.make("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil).template
       }.should raise_error(DepError, "There is no template named 'template' to define 'valid but missing template' against.")
     end
     context "with template from options" do
@@ -53,7 +53,7 @@ describe "Dep.make" do
         @dep = Dep.make("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
       }
       it "should work" do
-        @dep.dep_defined?.should be_true
+        @dep.should be_an_instance_of(Dep)
         @dep.template.should == @meta
       end
     end
@@ -63,7 +63,7 @@ describe "Dep.make" do
         @dep = Dep.make("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
       }
       it "should work" do
-        @dep.dep_defined?.should be_true
+        @dep.should be_an_instance_of(Dep)
         @dep.template.should == @meta
       end
     end
@@ -157,7 +157,7 @@ describe "dep creation" do
     L{
       dep "a blank dep"
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep('a blank dep').dep_defined?.should be_true
+    Dep('a blank dep').should be_an_instance_of(Dep)
   end
   it "should work for filled in deps" do
     L{
@@ -169,13 +169,13 @@ describe "dep creation" do
         after { }
       end
     }.should change(Base.sources.anonymous, :count).by(1)
-    Dep('a standard dep').dep_defined?.should be_true
+    Dep('a standard dep').should be_an_instance_of(Dep)
   end
   it "should accept deps as dep names" do
     L{
       dep 'parent dep' do
         requires dep('nested dep')
-      end
+      end.met?
     }.should change(Base.sources.anonymous, :count).by(2)
     Dep('parent dep').context.requires.should == [Dep('nested dep')]
   end
@@ -240,74 +240,56 @@ describe "dep creation" do
 end
 
 describe Dep, "defining" do
-  it "should define the dep when called without a block" do
-    dep('defining test').dep_defined?.should == true
+  before {
+    Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
+  }
+  it "should not define the dep when called without a block" do
+    dep('lazy defining test').dep_defined?.should == nil
   end
-  it "should define the dep when called with a block" do
-    dep('defining test with block') do
+  it "should not define the dep when called with a block" do
+    dep('lazy defining test with block') do
       requires 'another dep'
-    end.dep_defined?.should == true
+    end.dep_defined?.should == nil
   end
-  context "lazily" do
-    before {
-      Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
-    }
-    it "should not define the dep when called without a block" do
-      dep('lazy defining test').dep_defined?.should == nil
+  context "after running" do
+    it "should be defined" do
+      dep('lazy defining test with run').tap {|dep|
+        dep.met?
+      }.dep_defined?.should == true
     end
-    it "should not define the dep when called with a block" do
-      dep('lazy defining test with block') do
-        requires 'another dep'
-      end.dep_defined?.should == nil
-    end
-    context "after running" do
-      it "should be defined" do
-        dep('lazy defining test with run').tap {|dep|
+    context "with a template" do
+      let!(:template) { meta 'lazy_defining_template' }
+      it "should use the template" do
+        dep('lazy defining test with template.lazy_defining_template').tap {|dep|
           dep.met?
-        }.dep_defined?.should == true
-      end
-      context "with a template" do
-        let!(:template) { meta 'lazy_defining_template' }
-        it "should use the template" do
-          dep('lazy defining test with template.lazy_defining_template').tap {|dep|
-            dep.met?
-            dep.template.should == template
-          }
-        end
+          dep.template.should == template
+        }
       end
     end
   end
   context "with errors" do
-    it "should raise an exception" do
-      L{
-        dep('defining test with errors') do
-          nonexistent_method
-        end
-      }.should raise_error(NameError)
-    end
-    context "lazily" do
-      before {
-        Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
-      }
-      it "should not be defined, and then have failed defining after a run" do
-        dep('lazy defining test with errors') do
-          nonexistent_method
-        end.tap {|dep|
-          dep.dep_defined?.should == nil
-          dep.met?
-        }.dep_defined?.should == false
-      end
+    before {
+      Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
+    }
+    it "should not be defined, and then have failed defining after a run" do
+      dep('lazy defining test with errors') do
+        nonexistent_method
+      end.tap {|dep|
+        dep.dep_defined?.should == nil
+        dep.met?
+      }.dep_defined?.should == false
     end
   end
   context "repeatedly" do
     it "should only ever define the dep once" do
-      dep('defining test with repetition').tap {|dep|
+      dep('lazy defining test with repetition').tap {|dep|
+        dep.met?
         dep.context.should_receive(:define!).never
         dep.met?
       }
     end
     it "should not overwrite custom blocks" do
-      dep('defining test with block overwriting') do
+      dep('lazy defining test with block overwriting') do
         setup { true }
       end.tap {|dep|
         dep.define!
@@ -315,25 +297,6 @@ describe Dep, "defining" do
         dep.define!
         dep.send(:process_task, :setup).should == 'custom'
       }
-    end
-    context "lazily" do
-      it "should only ever define the dep once" do
-        dep('lazy defining test with repetition').tap {|dep|
-          dep.met?
-          dep.context.should_receive(:define!).never
-          dep.met?
-        }
-      end
-      it "should not overwrite custom blocks" do
-        dep('lazy defining test with block overwriting') do
-          setup { true }
-        end.tap {|dep|
-          dep.define!
-          dep.context.setup { 'custom' }
-          dep.define!
-          dep.send(:process_task, :setup).should == 'custom'
-        }
-      end
     end
   end
 end
