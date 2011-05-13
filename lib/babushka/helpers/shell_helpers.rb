@@ -113,14 +113,16 @@ module Babushka
     # if that command appears anywhere in the PATH. If it doesn't, nil is
     # returned.
     #
-    # This is roughly equivalent to running
-    #   shell("which #{cmd_name}")
-    # except, the behaviour of `which` varies across different flavours of
-    # unix, and so it's best to use this method so that the platform variations
-    # can be wrapped.
-    def which cmd_name, &block
-      result = shell("which #{cmd_name}", &block)
-      result unless result.nil? || result["no #{cmd_name} in"]
+    # For example, on a stock OS X machine:
+    #   which('ruby')     #=> "/usr/bin/ruby"
+    #   which('babushka') #=> nil
+    #
+    # This is roughly equivalent to using `which` or `type` on the shell.
+    # However, because those commands' behaviour and ouptut vary across
+    # platforms and shells, we instead use the logic in #cmd_dir.
+    def which cmd_name
+      matching_dir = cmd_dir(cmd_name)
+      matching_dir / cmd_name unless matching_dir.nil?
     end
 
     # Return the directory from which the specified command would run if
