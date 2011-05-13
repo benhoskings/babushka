@@ -62,9 +62,7 @@ module Babushka
     # can be simplified to this:
     #   failable_shell('grep rails Gemfile').stdout.empty?
     def failable_shell cmd, opts = {}
-      result = nil
-      shell(cmd, opts) {|s| result = s }
-      result
+      shell(cmd, opts) {|s| s }
     end
 
     # Run +cmd+ in a separate interactive shell. This is useful for running
@@ -115,30 +113,32 @@ module Babushka
     # if that command appears anywhere in the PATH. If it doesn't, nil is
     # returned.
     #
-    # This is roughly equivalent to running
-    #   shell("which #{cmd_name}")
-    # except, the behaviour of `which` varies across different flavours of
-    # unix, and so it's best to use this method so that the platform variations
-    # can be wrapped.
-    def which cmd_name, &block
-      raw_which cmd_name, shell("which #{cmd_name}", &block)
-    end
-
-    # Run the extra checks required for platform-independent `which`. This is
-    # separated do it can be used separately, like in "zsh -i -c 'which rvm'".
-    # TODO: update this to use `type`, which is cross-platform.
-    def raw_which cmd_name, result
-      result unless result.nil? || result["no #{cmd_name} in"]
+    # For example, on a stock OS X machine:
+    #   which('ruby')     #=> "/usr/bin/ruby"
+    #   which('babushka') #=> nil
+    #
+    # This is roughly equivalent to using `which` or `type` on the shell.
+    # However, because those commands' behaviour and ouptut vary across
+    # platforms and shells, we instead use the logic in #cmd_dir.
+    def which cmd_name
+      matching_dir = cmd_dir(cmd_name)
+      matching_dir / cmd_name unless matching_dir.nil?
     end
 
     # Return the directory from which the specified command would run if
     # invoked via the PATH. If the command doesn't appear in the PATH, nil is
     # returned.
+    #
     # For example, on a stock OS X machine:
-    #   cmd_dir('ruby') #=> "/usr/bin"
+    #   cmd_dir('ruby')     #=> "/usr/bin"
+    #   cmd_dir('babushka') #=> nil
+    #
+    # This is a direct implementation because the behaviour and output of
+    # `which` and `type` vary across different platforms and shells. It's
+    # also faster to not shell out.
     def cmd_dir cmd_name
-      which("#{cmd_name}") {|shell|
-        File.dirname shell.stdout if shell.ok?
+      ENV['PATH'].split(':').detect {|path|
+        (path / cmd_name).executable?
       }
     end
 
