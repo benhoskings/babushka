@@ -126,11 +126,18 @@ module Babushka
     # Return the directory from which the specified command would run if
     # invoked via the PATH. If the command doesn't appear in the PATH, nil is
     # returned.
+    #
     # For example, on a stock OS X machine:
-    #   cmd_dir('ruby') #=> "/usr/bin"
+    #   cmd_dir('ruby')     #=> "/usr/bin"
+    #   cmd_dir('babushka') #=> nil
+    #
+    # This is a direct implementation because the behaviour and output of
+    # `which` and `type` vary across different platforms and shells. It's
+    # also faster to not shell out.
     def cmd_dir cmd_name
-      cmd_path = which("#{cmd_name}")
-      File.dirname(cmd_path) unless cmd_path.nil?
+      ENV['PATH'].split(':').detect {|path|
+        (path / cmd_name).executable?
+      }
     end
 
     # Run a shell command, logging before and after using #log_block, and using
