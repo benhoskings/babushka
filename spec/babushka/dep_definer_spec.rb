@@ -8,10 +8,27 @@ describe "source_template" do
 end
 
 describe "args" do
-  it "should raise when the wrong number of args are supplied" do
-    L{ dep('arg arity 1') {|a| }.context.define! }.should raise_error(DepArgumentError, "The dep 'arg arity 1' requires 1 argument, but 0 were passed.")
-    L{ dep('arg arity 2') {|a,b| }.with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'arg arity 2' requires 2 arguments, but 1 was passed.")
-    L{ dep('arg arity 3') {|a| }.with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep 'arg arity 3' requires 1 argument, but 2 were passed.")
+  context "without arguments" do
+    it "should be callable without args" do
+      L{ dep('no args') { }.context.define! }.should_not raise_error
+    end
+    it "should fail when called with args" do
+      L{ dep('no args') { }.with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' requires 0 arguments, but 1 was passed.")
+    end
+  end
+  context "with arguments" do
+    it "should fail when called without args" do
+      L{ dep('1 arg') {|a| }.context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' requires 1 argument, but 0 were passed.")
+      L{ dep('2 args') {|a,b| }.context.define! }.should raise_error(DepArgumentError, "The dep '2 args' requires 2 arguments, but 0 were passed.")
+    end
+    it "should fail when called with the wrong number of args" do
+      L{ dep('1 arg') {|a| }.with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' requires 1 argument, but 2 were passed.")
+      L{ dep('2 args') {|a,b| }.with('a').context.define! }.should raise_error(DepArgumentError, "The dep '2 args' requires 2 arguments, but 1 was passed.")
+    end
+    it "should work when called with the right number of args" do
+      L{ dep('1 arg') {|a| }.with('a').context.define! }.should_not raise_error
+      L{ dep('2 args') {|a,b| }.with('a', 'b').context.define! }.should_not raise_error
+    end
   end
 end
 
