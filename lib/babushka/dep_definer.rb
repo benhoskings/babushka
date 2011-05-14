@@ -25,7 +25,7 @@ module Babushka
       elsif dependency.args.length != block.arity
         raise DepArgumentError, "The dep '#{name}' requires #{block.arity} argument#{'s' unless block.arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
       else
-        instance_exec dependency.args, &block
+        instance_exec *dependency.args, &block
       end
     end
 
