@@ -22,10 +22,17 @@ module Babushka
     def define!
       if block.nil?
         # nothing to do
-      elsif dependency.args.length != block.arity
-        raise DepArgumentError, "The dep '#{name}' requires #{block.arity} argument#{'s' unless block.arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
       else
-        instance_exec *dependency.args, &block
+        arity = block.arity
+        # ruby 1.8 doesn't support variable numbers of block arguments. Instead, when #arity is -1
+        # it means there was no argument block: on 1.8, proc{}.arity == -1, and proc{|| }.arity == 0.
+        arity = 0 if arity < 0 && RUBY_VERSION.starts_with?('1.8')
+
+        if dependency.args.length != arity
+          raise DepArgumentError, "The dep '#{name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
+        else
+          instance_exec *dependency.args, &block
+        end
       end
     end
 
