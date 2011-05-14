@@ -8,7 +8,7 @@ dep 'rubygems' do
   }
   meet {
     handle_source "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz" do
-      shell "ruby setup.rb", :sudo => !File.writable?(which('ruby'))
+      log_shell "Installing rubygems-#{version}", "ruby setup.rb", :spinner => true, :sudo => !File.writable?(which('ruby'))
     end
   }
   after {
