@@ -67,7 +67,7 @@ module Babushka
     end
 
     def program_name
-      @program_name ||= File.dirname($0).in?(ENV['PATH'].split(':')) ? File.basename($0) : $0
+      @program_name ||= ENV['PATH'].split(':').include?(File.dirname($0)) ? File.basename($0) : $0
     end
   end
   end

@@ -63,13 +63,13 @@ module Babushka
     def first_nonmatch_for spec
       if spec == :all
         nil
-      elsif spec.in? SystemDefinitions.all_systems
+      elsif SystemDefinitions.all_systems.include? spec
         spec == system ? nil : :system
-      elsif spec.in? PkgHelper.all_manager_keys
+      elsif PkgHelper.all_manager_keys.include? spec
         spec == pkg_helper_key ? nil : :pkg_helper
-      elsif spec.in? our_flavours
+      elsif our_flavours.include? spec
         spec == flavour ? nil : :flavour
-      elsif spec.in? our_flavour_names
+      elsif our_flavour_names.include? spec
         spec == name ? nil : :name
       else
         :system

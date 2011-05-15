@@ -58,7 +58,7 @@ module Babushka
     end
 
     def has_formula_for? pkg
-      pkg.name.in? existing_formulas
+      existing_formulas.include? pkg.name
     end
 
     def existing_formulas

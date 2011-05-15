@@ -24,7 +24,7 @@ module Babushka
 
     def process_choice choice, first = nil, *rest, &block
       raise "You can supply values or a block, but not both." if first && block
-      raise "The choice '#{choice}' isn't valid." unless choice.in? @possible_choices
+      raise "The choice '#{choice}' isn't valid." unless @possible_choices.include?(choice)
 
       @results[choice] = if block
         block
