@@ -1,16 +1,6 @@
 alias :L :proc
 
 class Object
-  # Yield the supplied object to the block before returning it. This is useful
-  # for writing cleaner object creations and related things. For example:
-  #   returning [] do |list|
-  #     list << 'value' if condition
-  #   end
-  def returning obj, &block
-    yield obj
-    obj
-  end
-
   # Return this object's metaclass; i.e. the value of self within a
   # 'class << self' block.
   def metaclass
