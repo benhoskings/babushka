@@ -11,12 +11,6 @@ class Object
     obj
   end
 
-  # The opposite of Array#include - i.e. return true if self appears in the
-  # array splatted into +first+ and +rest+.
-  def in? first, *rest
-    (first.is_a?(Array) ? first : [first].concat(rest)).include? self
-  end
-
   # Return this object's metaclass; i.e. the value of self within a
   # 'class << self' block.
   def metaclass
