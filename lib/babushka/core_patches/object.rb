@@ -31,18 +31,6 @@ class Object
   def tapp
     tap { puts "#{File.basename caller[2]}: #{self.inspect}" }
   end
-  # Log and return unmodified in the same manner as #tapp, but escape the
-  # output to be HTML safe and easily readable. For example,
-  #   #<Object:0x00000100bda208>
-  # becomes
-  #   #&lt;Object:0x00000100bda208><br />
-  def taph
-    tap {
-      puts "<pre>" +
-        "#{File.basename caller[2]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') +
-        "</pre>"
-    }
-  end
 end
 
 unless Object.new.respond_to? :instance_exec

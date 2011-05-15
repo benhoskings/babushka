@@ -18,6 +18,21 @@ end
 `rm -rf '#{tmp_prefix}'` if File.exists? tmp_prefix
 `mkdir -p '#{tmp_prefix}'` unless File.exists? tmp_prefix
 
+class Object
+  # Log and return unmodified in the same manner as #tapp, but escape the
+  # output to be HTML safe and easily readable. For example,
+  #   #<Object:0x00000100bda208>
+  # becomes
+  #   #&lt;Object:0x00000100bda208><br />
+  def taph
+    tap {
+      puts "<pre>" +
+        "#{File.basename caller[2]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') +
+        "</pre>"
+    }
+  end
+end
+
 module Babushka
   class Resource
     def archive_prefix
