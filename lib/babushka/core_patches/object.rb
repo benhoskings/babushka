@@ -7,10 +7,6 @@ class Object
     class << self; self end
   end
 
-  def singleton
-    Class.new self
-  end
-
   def recursive_const_get name
     name.split('::').inject(Object) {|klass,name| klass.const_get name }
   end
