@@ -152,6 +152,9 @@ describe "log_shell" do
 end
 
 describe "which" do
+  it "should return a string" do
+    ShellTester.which('ls').should be_an_instance_of(String)
+  end
   it "should return the path for valid commands" do
     path = `which ls`.chomp
     ShellTester.which('ls').should == path
@@ -162,6 +165,9 @@ describe "which" do
 end
 
 describe "cmd_dir" do
+  it "should return a string" do
+    ShellTester.cmd_dir('ruby').should be_an_instance_of(String)
+  end
   it "should return the cmd_dir of an existing command" do
     ShellTester.cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
   end
