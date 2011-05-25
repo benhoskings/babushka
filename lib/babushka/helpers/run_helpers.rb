@@ -29,7 +29,7 @@ module Babushka
         elsif pattern.is_a? Regexp
           path.readlines.grep pattern
         end
-        output unless output.empty?
+        output unless output.blank?
       end
     end
 
