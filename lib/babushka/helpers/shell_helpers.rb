@@ -122,7 +122,7 @@ module Babushka
     # platforms and shells, we instead use the logic in #cmd_dir.
     def which cmd_name
       matching_dir = cmd_dir(cmd_name)
-      File.join(matching_dir, cmd_name) unless matching_dir.nil?
+      File.join(matching_dir, cmd_name.to_s) unless matching_dir.nil?
     end
 
     # Return the directory from which the specified command would run if
@@ -138,7 +138,7 @@ module Babushka
     # also faster to not shell out.
     def cmd_dir cmd_name
       ENV['PATH'].split(':').detect {|path|
-        File.executable? File.join(path, cmd_name)
+        File.executable? File.join(path, cmd_name.to_s)
       }
     end
 
