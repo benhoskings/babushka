@@ -162,6 +162,10 @@ describe "which" do
   it "should return nil for nonexistent commands" do
     ShellTester.which('nonexistent').should be_nil
   end
+  it "should handle command parameter passed as Symbol" do
+    path = `which ls`.chomp
+    ShellTester.which(:ls).should == path
+  end
 end
 
 describe "cmd_dir" do
