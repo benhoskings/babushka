@@ -42,6 +42,10 @@ describe GitRepo, 'creation' do
   it "should find the parent when called on the subdir" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').root.should == tmp_prefix / 'repos/a'
   end
+  it "should find the git dir within the repo" do
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a').git_dir.should == tmp_prefix / 'repos/a/.git'
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a/lib').git_dir.should == tmp_prefix / 'repos/a/.git'
+  end
   it "should store path as a Fancypath" do
     Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).path.should be_an_instance_of(Fancypath)
     Babushka::GitRepo.new(tmp_prefix / 'repos/a').path.should be_an_instance_of(Fancypath)

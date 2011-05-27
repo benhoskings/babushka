@@ -22,6 +22,10 @@ module Babushka
       @root ||= self.class.repo_for(path)
     end
 
+    def git_dir
+      root / '.git'
+    end
+
     def exists?
       !root.nil? && root.exists?
     end
