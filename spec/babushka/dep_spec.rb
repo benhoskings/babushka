@@ -483,6 +483,13 @@ describe "args" do
     @dep.with('a')
     @dep.dep_defined?.should be_nil
   end
+  it "should uncache the dep" do
+    @dep = dep('uncaching args') {|a| }
+    @dep.with('a').process
+    @dep.send(:cached?).should be_true
+    @dep.with('a')
+    @dep.send(:cached?).should be_false
+  end
 end
 
 

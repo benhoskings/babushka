@@ -219,6 +219,7 @@ module Babushka
 
     def with *new_args
       undefine_dep!
+      uncache!
       @args = new_args
       self
     end
