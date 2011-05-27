@@ -34,6 +34,9 @@ module Babushka
       end
     end
 
+
+    # repo states
+
     def clean?
       repo_shell("git status") # Sometimes git caches invalid index info; this clears it.
       repo_shell("git diff-index --name-status HEAD").blank?
@@ -42,6 +45,19 @@ module Babushka
     def dirty?
       !clean?
     end
+
+    def ahead?
+      !remote_branch_exists? ||
+      !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
+    end
+
+    def behind?
+      remote_branch_exists? &&
+      !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
+    end
+
+
+    # repo info
 
     def branches
       repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
@@ -65,15 +81,8 @@ module Babushka
       }
     end
 
-    def ahead?
-      !remote_branch_exists? ||
-      !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
-    end
 
-    def behind?
-      remote_branch_exists? &&
-      !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
-    end
+    # repo operations
 
     def clone! from
       raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
