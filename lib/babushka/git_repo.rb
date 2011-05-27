@@ -60,6 +60,37 @@ module Babushka
       !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
     end
 
+    def rebasing?
+      %w[rebase rebase-apply ../.dotest].any? {|d|
+        (git_dir / d).exists?
+      } or rebase_merging? or rebasing_interactively?
+    end
+
+    def applying?
+      %w[rebase rebase-apply ../.dotest].any? {|d|
+        (git_dir / d / 'applying').exists?
+      }
+    end
+
+    def merging?
+      (git_dir / 'MERGE_HEAD').exists? or rebase_merging?
+    end
+
+    def bisecting?
+      (git_dir / 'BISECT_LOG').exists?
+    end
+
+    def rebase_merging?
+      %w[rebase-merge .dotest-merge].any? {|d|
+        (git_dir / d).exists?
+      }
+    end
+
+    def rebasing_interactively?
+      %w[rebase-merge .dotest-merge].any? {|d|
+        (git_dir / d / 'interactive').exists?
+      }
+    end
 
     # repo info
 
