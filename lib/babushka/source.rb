@@ -22,7 +22,6 @@ module Babushka
     end
 
     def self.for_path path
-      path = path.p
       remote = cd(path) { shell "git config remote.origin.url" }
       if remote.nil?
         Source.new path # local source
