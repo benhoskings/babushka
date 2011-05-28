@@ -23,15 +23,11 @@ module Babushka
 
     def self.for_path path
       path = path.p
-      if !path.directory?
-        raise ArgumentError, "The path #{path} isn't a directory."
+      remote = cd(path) { shell "git config remote.origin.url" }
+      if remote.nil?
+        Source.new path # local source
       else
-        remote = cd(path) { shell "git config remote.origin.url" }
-        if remote.nil?
-          Source.new path # local source
-        else
-          Source.new remote, :name => path.basename # remote source with custom path
-        end
+        Source.new remote, :name => path.basename # remote source with custom path
       end
     end
 

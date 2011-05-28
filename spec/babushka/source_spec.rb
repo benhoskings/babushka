@@ -154,7 +154,7 @@ describe Source do
       it "should raise when called on a file" do
         L{
           Source.for_path(Source.source_prefix / 'regular_file')
-        }.should raise_error(ArgumentError, "The path #{Source.source_prefix / 'regular_file'} isn't a directory.")
+        }.should raise_error(Errno::ENOTDIR, "Not a directory - #{Source.source_prefix / 'regular_file'}")
       end
     end
     context "on a dir" do
