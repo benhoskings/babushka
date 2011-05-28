@@ -1,11 +1,8 @@
 module Babushka
   class DepPool
 
-    attr_reader :skipped_count
-
     def initialize source
       clear!
-      @skipped_count = 0
       @source = source
     end
 
@@ -25,7 +22,6 @@ module Babushka
 
     def add name, in_opts, block
       if self.for name
-        @skipped_count += 1
         self.for name
       else
         Dep.new name, @source, in_opts, block

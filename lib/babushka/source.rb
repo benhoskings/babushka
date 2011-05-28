@@ -167,7 +167,7 @@ module Babushka
             end
           end
         }
-        debug "Loaded #{deps.count}#{" and skipped #{deps.skipped_count}" unless deps.skipped_count.zero?} deps from #{path}." unless deps.count.zero?
+        debug "Loaded #{deps.count} deps from #{path}." unless deps.count.zero?
         @loaded = true
       end
     end
