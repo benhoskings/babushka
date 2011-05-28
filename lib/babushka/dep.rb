@@ -72,10 +72,9 @@ module Babushka
     delegate :set, :merge, :define_var, :to => :context
 
     # Create a new dep named +name+ within +source+, whose implementation is
-    # found in +block+. This method is used internally by DepPool when a dep is
-    # added to the pool. To define deps yourself, you should call +dep+ (which
-    # is +DepHelpers#dep+).
-    def self.make name, source, opts, block
+    # found in +block+. To define deps yourself, you should call +dep+ (which
+    # is +Dep::Helpers#dep+).
+    def initialize name, source, in_opts, block
       if name.empty?
         raise DepError, "Deps can't have empty names."
       elsif /\A[[:print:]]+\z/i !~ name
@@ -85,22 +84,14 @@ module Babushka
       elsif /\:/ =~ name
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
-        new name, source, Base.sources.current_load_opts.merge(opts), block
+        @name = name.to_s
+        @opts = Base.sources.current_load_opts.merge(in_opts).defaults :for => :all
+        @block = block
+        @dep_source = source
+        @load_path = Base.sources.current_load_path
+        @dep_source.deps.register self
+        assign_template if Base.sources.current_real_load_source.nil?
       end
-    end
-
-    # Store the dep's name, implementation, and other details like its source
-    # and options. The dep isn't defined if defining has been delayed (i.e. if
-    # we're loading from a source).
-    def initialize name, source, in_opts, block
-      @name = name.to_s
-      @opts = in_opts.defaults :for => :all
-      @block = block
-      @vars = {}
-      @dep_source = source
-      @load_path = Base.sources.current_load_path
-      @dep_source.deps.register self
-      assign_template if Base.sources.current_real_load_source.nil?
     end
 
     # Attempt to look up the template this dep was defined against (or if no

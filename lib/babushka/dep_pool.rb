@@ -28,7 +28,7 @@ module Babushka
         @skipped_count += 1
         self.for name
       else
-        Dep.make name, @source, in_opts, block
+        Dep.new name, @source, in_opts, block
       end
     end
 

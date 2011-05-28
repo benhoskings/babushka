@@ -1,40 +1,40 @@
 require 'spec_helper'
 require 'dep_support'
 
-describe "Dep.make" do
+describe "Dep.new" do
   it "should reject deps with empty names" do
     L{
-      Dep.make "", Base.sources.anonymous, {}, nil
+      Dep.new "", Base.sources.anonymous, {}, nil
     }.should raise_error(DepError, "Deps can't have empty names.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.make "carriage\rreturn", Base.sources.anonymous, {}, nil
+      Dep.new "carriage\rreturn", Base.sources.anonymous, {}, nil
     }.should raise_error(DepError, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.make "slashes/invalidate names", Base.sources.anonymous, {}, nil
+      Dep.new "slashes/invalidate names", Base.sources.anonymous, {}, nil
     }.should raise_error(DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     L{
-      Dep.make "colons:invalidate names", Base.sources.anonymous, {}, nil
+      Dep.new "colons:invalidate names", Base.sources.anonymous, {}, nil
     }.should raise_error(DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.make("valid dep name", Base.sources.anonymous, {}, nil)
+      Dep.new("valid dep name", Base.sources.anonymous, {}, nil)
     }.should change(Base.sources.anonymous, :count).by(1)
     Dep("valid dep name").should be_an_instance_of(Dep)
   end
   context "without template" do
     before {
-      @dep = Dep.make("valid base dep", Base.sources.anonymous, {}, nil)
+      @dep = Dep.new("valid base dep", Base.sources.anonymous, {}, nil)
     }
     it "should work" do
       @dep.should be_an_instance_of(Dep)
@@ -44,13 +44,13 @@ describe "Dep.make" do
   context "with template" do
     it "should fail to define optioned deps against a missing template" do
       L{
-        Dep.make("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil).template
+        Dep.new("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil).template
       }.should raise_error(DepError, "There is no template named 'template' to define 'valid but missing template' against.")
     end
     context "with template from options" do
       before {
         @meta = meta('option template')
-        @dep = Dep.make("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
+        @dep = Dep.new("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
       }
       it "should work" do
         @dep.should be_an_instance_of(Dep)
@@ -60,7 +60,7 @@ describe "Dep.make" do
     context "with template from suffix" do
       before {
         @meta = meta('.suffix_template')
-        @dep = Dep.make("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
+        @dep = Dep.new("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
       }
       it "should work" do
         @dep.should be_an_instance_of(Dep)
