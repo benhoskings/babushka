@@ -31,13 +31,11 @@ module Babushka
     end
 
     def self.for_remote name
-      Source.new(default_remote_for(name, :github), :name => name)
+      Source.new(default_remote_for(name), :name => name)
     end
 
-    def self.default_remote_for name, from
-      {
-        :github => "git://github.com/#{name}/babushka-deps.git"
-      }[from]
+    def self.default_remote_for name
+      "git://github.com/#{name}/babushka-deps.git"
     end
 
     require 'uri'
