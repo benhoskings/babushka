@@ -28,14 +28,6 @@ describe Resource do
     Resource.for(archive_path / 'archive.tar').name.should == 'archive'
     Resource.for(archive_path / 'archive.tar.gz').name.should == 'archive'
   end
-  it "should include a prefix on the name when supplied" do
-    Resource.for(archive_path / 'archive.tgz', :prefix => nil).name.should == 'archive'
-    Resource.for(archive_path / 'archive.tgz', :prefix => '').name.should == 'archive'
-    Resource.for(archive_path / 'archive.tgz', :prefix => 'prefix').name.should == 'prefix-archive'
-  end
-  it "should sanitise the prefix name" do
-    Resource.for(archive_path / 'archive.tgz', :prefix => 'silly  "dep" name!').name.should == 'silly_dep_name_-archive'
-  end
   it "should generate the proper command to extract the archive" do
     {
       'tar' => "tar -xf '#{archive_path / 'archive.tar'}'",

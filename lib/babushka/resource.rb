@@ -79,10 +79,7 @@ module Babushka
 
     def initialize path, opts = {}
       @path = path.p
-      @name = [
-        (opts[:prefix] || '').gsub(/[^a-z0-9\-_.]+/, '_'),
-        TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/\.#{t}$/, '') }
-      ].squash.join('-')
+      @name = TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/\.#{t}$/, '') }
     end
 
     def filename
