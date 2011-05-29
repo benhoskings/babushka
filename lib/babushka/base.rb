@@ -58,7 +58,7 @@ module Babushka
         stty_save = `stty -g`.chomp
         trap("INT") {
           system "stty", stty_save
-          unless Base.task.callstack.blank?
+          unless Base.task.callstack.empty?
             puts "\n#{closing_log_message("#{Base.task.callstack.first.contextual_name} (cancelled)", false, :closing_status => true)}"
           end
           exit

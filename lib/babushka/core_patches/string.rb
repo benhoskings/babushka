@@ -108,8 +108,8 @@ class String
   end
 
   # As +colorize+, but modify this string in-place instead of returning a new one.
-  def colorize! description = '', start_at = nil
-    replace colorize(description, start_at) unless description.blank?
+  def colorize! description = nil, start_at = nil
+    replace colorize(description, start_at) unless description.nil?
   end
 
   # Return a new string with all color-related escape sequences removed.

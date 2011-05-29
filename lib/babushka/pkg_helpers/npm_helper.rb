@@ -30,7 +30,7 @@ module Babushka
     end
 
     def cmdline_spec_for pkg
-      if pkg.version.blank?
+      if pkg.version.nil?
         # e.g. 'socket.io'
         "'#{pkg.name}'"
       else

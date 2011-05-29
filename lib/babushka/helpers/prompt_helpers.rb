@@ -50,7 +50,7 @@ module Babushka
     private
 
     def prompt_message message, opts
-      if opts[:choices] && opts[:choice_descriptions].blank?
+      if opts[:choices] && opts[:choice_descriptions].nil?
         "#{message.chomp '?'} (#{opts[:choices] * ','})"
       else
         message.chomp '?'
@@ -58,7 +58,7 @@ module Babushka
     end
 
     def log_choice_descriptions descriptions
-      unless descriptions.blank?
+      unless descriptions.nil?
         max_length = descriptions.keys.map(&:length).max
         log "There are #{descriptions.length} choices:"
         descriptions.each_pair {|choice,description|

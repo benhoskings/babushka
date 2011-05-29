@@ -18,7 +18,7 @@ module Babushka
         opts.update :suffix => true
       end
 
-      if name.to_s.blank?
+      if name.empty?
         raise ArgumentError, "You can't define a template with a blank name."
       elsif INVALID_NAMES.include? name
         raise ArgumentError, "You can't use '#{name}' for a template name, because it's reserved."

@@ -14,9 +14,9 @@ module Babushka
 
         module_eval <<-LOL, file, line
           def #{method_name} *args, &block
-            if !args.blank? && !block.nil?
+            if !args.empty? && !block.nil?
               raise ArgumentError, "You can supply arguments or a block, but not both."
-            elsif args.blank? && block.nil?
+            elsif args.empty? && block.nil?
               #{opts[:type]}_for #{method_name.inspect}, #{default.inspect}
             else
               store_#{opts[:type]}_for #{method_name.inspect}, block || [*args].flatten, #{opts[:choose_with].inspect}
