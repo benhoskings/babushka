@@ -17,10 +17,12 @@ class Object
   end
 
   # Return this object after yielding it to the block. This is useful for
-  # easily inserting logging, among other things. Given this code:
-  #   values.map(&:name).join(', ')
-  # You can easily insert logging like so:
-  #   values.map(&:name).tap {|i| log i }.join(', ')
+  # neatly working with an object in some way before returning it:
+  #   def valmorphanize
+  #     process.tap {|result|
+  #       log "Oops!" unless result
+  #     }
+  #   end
   def tap &block
     yield self
     self
