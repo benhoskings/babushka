@@ -7,10 +7,6 @@ class Object
     class << self; self end
   end
 
-  def recursive_const_get name
-    name.split('::').inject(Object) {|klass,name| klass.const_get name }
-  end
-
   # Return true if this object is +nil?+, or +empty?+ if it accepts that method.
   def blank?
     nil? || (respond_to?(:empty?) && empty?)
