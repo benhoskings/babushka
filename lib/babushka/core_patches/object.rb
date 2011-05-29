@@ -26,7 +26,7 @@ class Object
   def tap &block
     yield self
     self
-  end
+  end unless Object.respond_to?(:tap)
 
   # Return self unmodified after logging the output of #inspect, along with
   # the point at which +tapp+ was called.
