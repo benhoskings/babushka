@@ -65,13 +65,6 @@ class String
     (empty? ? other.p : (p / other))
   end
 
-  # This is defined separately, and then aliased into place if required, so we
-  # can run specs against it no matter which ruby we're running against.
-  def local_lines
-    strip.split(/\n+/)
-  end
-  alias_method :lines, :local_lines unless "".respond_to?(:lines)
-
   # Create a VersionStr from this string.
   def to_version
     Babushka::VersionStr.new self
