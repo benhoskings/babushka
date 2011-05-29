@@ -122,11 +122,4 @@ class String
     gsub! /\e\[\d+[;\d]*m/, ''
     self
   end
-
-  # Return the Levenshtein distance between this string and +other+; that is,
-  # the number of modifications (single-character changes, insertions, or
-  # deletions) that would have to be made to one for it to be equal to the other.
-  def similarity_to other, threshold = nil
-    Babushka::Levenshtein.distance self, other, threshold
-  end
 end

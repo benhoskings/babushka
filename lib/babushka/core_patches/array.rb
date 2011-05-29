@@ -152,7 +152,7 @@ class Array
   #   - strings 1 or 2 characters long must be spelt correctly.
   def similar_to string
     map {|term|
-      [term, term.similarity_to(string)]
+      [term, Babushka::Levenshtein.distance(term, string)]
     }.select {|(i, similarity)|
       similarity <= [i.length - 2, (i.length / 5) + 2].min
     }.sort_by {|(i, similarity)|
