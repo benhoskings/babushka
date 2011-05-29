@@ -43,7 +43,7 @@ module Babushka
 
     def clean?
       repo_shell("git status") # Sometimes git caches invalid index info; this clears it.
-      repo_shell("git diff-index --name-status HEAD").blank?
+      repo_shell("git diff-index --name-status HEAD", &:stdout).blank?
     end
 
     def dirty?
