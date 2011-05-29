@@ -65,16 +65,6 @@ class String
     (empty? ? other.p : (p / other))
   end
 
-  # Converts a name or path to its CamelCased class equivalent.
-  # Some examples:
-  #   'double_rainbow'.camelize         #=> 'DoubleRainbow'
-  #   'double_rainbow/meaning'.camelize #=> 'DoubleRainbow::Meaning'
-  #   '/double_rainbow'.camelize        #=> '::DoubleRainbow'
-  def camelize
-    # From activesupport/lib/active_support/inflector.rb:178
-    gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
-  end
-
   # Split a string into its constituent words, throwing away all the
   # characters in between them.
   def words
