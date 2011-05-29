@@ -65,12 +65,6 @@ class String
     (empty? ? other.p : (p / other))
   end
 
-  # Split a string into its constituent words, throwing away all the
-  # characters in between them.
-  def words
-    split(/[^a-z0-9_.-]+/i)
-  end
-
   # This is defined separately, and then aliased into place if required, so we
   # can run specs against it no matter which ruby we're running against.
   def local_lines
