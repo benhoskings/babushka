@@ -74,7 +74,8 @@ module Babushka
             '9.04'  => 'Jaunty Jackalope',
             '9.10'  => 'Karmic Koala',
             '10.04' => 'Lucid Lynx',
-            '10.10' => 'Maverick Meerkat'
+            '10.10' => 'Maverick Meerkat',
+            '11.04' => 'Natty Narwhal'
           },
           :debian => {
             '5.0.4' => 'Lenny'
