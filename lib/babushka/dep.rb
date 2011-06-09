@@ -105,7 +105,7 @@ module Babushka
       elsif dep_defined? == false
         debug "#{name}: defining already failed."
       elsif template
-        debug "(defining #{name} against #{template.name})"
+        debug "(defining #{name} against #{template.contextual_name})"
         define_dep!
       end
       dep_defined?
