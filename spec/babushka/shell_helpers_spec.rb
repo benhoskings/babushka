@@ -3,8 +3,6 @@ require 'spec_helper'
 SucceedingLs = 'ls /bin'
 FailingLs = 'ls /nonexistent'
 
-class ShellTester; extend ShellHelpers end
-
 describe "shell" do
   it "should return something true on successful commands" do
     shell('true').should_not be_nil
@@ -153,29 +151,29 @@ end
 
 describe "which" do
   it "should return a string" do
-    ShellTester.which('ls').should be_an_instance_of(String)
+    which('ls').should be_an_instance_of(String)
   end
   it "should return the path for valid commands" do
     path = `which ls`.chomp
-    ShellTester.which('ls').should == path
+    which('ls').should == path
   end
   it "should return nil for nonexistent commands" do
-    ShellTester.which('nonexistent').should be_nil
+    which('nonexistent').should be_nil
   end
   it "should handle command parameter passed as Symbol" do
     path = `which ls`.chomp
-    ShellTester.which(:ls).should == path
+    which(:ls).should == path
   end
 end
 
 describe "cmd_dir" do
   it "should return a string" do
-    ShellTester.cmd_dir('ruby').should be_an_instance_of(String)
+    cmd_dir('ruby').should be_an_instance_of(String)
   end
   it "should return the cmd_dir of an existing command" do
-    ShellTester.cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
+    cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
   end
   it "should return nil for nonexistent commands" do
-    ShellTester.cmd_dir('nonexistent').should be_nil
+    cmd_dir('nonexistent').should be_nil
   end
 end
