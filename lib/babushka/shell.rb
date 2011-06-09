@@ -8,11 +8,11 @@ module Babushka
       @cmd, @opts = (cmd.is_a?(Array) ? cmd : [cmd]), opts
     end
 
-    def ok?; result end
+    def ok?; result == 0 end
 
     def run &block
       @stdout, @stderr = '', ''
-      @result = invoke == 0
+      @result = invoke
       print "#{" " * (@progress.length + 1)}#{"\b" * (@progress.length + 1)}" unless @progress.nil?
 
       if block_given?
