@@ -8,8 +8,8 @@ module Babushka
     #
     # If a block is given, it will be yielded once the command has run, with a
     # Babushka::Shell object as its sole argument. Details of the shell command
-    # are contained in this object - see the methods +cmd+, +result+, +stdout+
-    # and +stderr+.
+    # are contained in this object - see the methods +cmd+, +ok?+, +result+,
+    # +stdout+, and +stderr+.
     #
     # Several options can be provided to alter #shell's behaviour.
     #   <tt>:sudo => true</tt> runs the the command as root. If the command
@@ -23,14 +23,14 @@ module Babushka
     #   <tt>:cd</tt> specifies the directory in which the command should run.
     #     If the path doesn't exist or isn't a directory, an error is raised
     #     unless the <tt>:create</tt> option is also set.
-    #     To achieve the directory change, the command is internally updated
-    #     to something like `cd #{dir} && #{cmd}`.
+    #     To achieve the directory change, the command is rewritten to change
+    #     directory first: `cd #{dir} && #{cmd}`.
     #   <tt>:create</tt> causes the directory specified by the <tt>:cd</tt>
     #     option to be created if it doesn't already exist.
     #   <tt>:input</tt> can be used to supply input for the shell command. It
     #     be any object that can be written to an IO with <tt>io << obj</tt>.
-    #     If it is passed, it will be written to the command's stdin pipe
-    #     before any output is read.
+    #     When passed, it will be written to the command's stdin pipe before
+    #     any output is read.
     #   <tt>:spinner => true</tt> When this option is passed, a /-\| spinner
     #     is printed to stdout, and advanced whenever a line is read on the
     #     command's stdout or stderr pipes. This is useful for monitoring the
