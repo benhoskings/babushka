@@ -49,6 +49,19 @@ module Babushka
       opts[:suffix]
     end
 
+    # Returns this template's name, including the source name as a prefix if
+    # this template is in a cloneable source.
+    #
+    # A cloneable source is one that babushka knows how to automatically
+    # update; i.e. a source that babushka could have installed itself.
+    #
+    # In effect, a cloneable source is one whose deps you prefix when you run
+    # them, so this method returns the template's name in the same form as you
+    # would refer to it when using it from another source.
+    def contextual_name
+      source.cloneable? ? "#{source.name}:#{name}" : name
+    end
+
     def build_context block
       Class.new(MetaDepContext, &block).tap {|context|
         shadow = self

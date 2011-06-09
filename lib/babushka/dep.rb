@@ -13,6 +13,7 @@ module Babushka
     # a 'template' of some sort; some are just BaseTemplate, and some are
     # actual meta deps.
     class BaseTemplate
+      def self.contextual_name; name end
       def self.suffixed?; false end
       def self.context_class; DepContext end
     end

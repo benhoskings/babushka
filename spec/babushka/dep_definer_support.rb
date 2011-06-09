@@ -4,6 +4,7 @@ class TestDepContext < DepContext
   end
 end
 class TestTemplate
+  def self.contextual_name; name end
   def self.context_class; TestDepContext end
 end
 class FakeOSXSystemProfile < OSXSystemProfile
