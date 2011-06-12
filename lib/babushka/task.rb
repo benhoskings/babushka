@@ -8,7 +8,7 @@ module Babushka
 
     def initialize
       @vars = Vars.new
-      @run_opts = default_run_opts
+      @run_opts = {}
     end
 
     def process dep_names, with_vars = {}
@@ -59,7 +59,7 @@ module Babushka
     end
 
     def callstack
-      opts[:callstack]
+      @callstack ||= []
     end
 
     def log_path_for dep
@@ -97,12 +97,6 @@ module Babushka
       save_var_log_for var_path_for(dep), {
         :info => task_info(dep, result),
         :vars => vars.for_save
-      }
-    end
-
-    def default_run_opts
-      {
-        :callstack => []
       }
     end
 
