@@ -398,11 +398,11 @@ module Babushka
     def cached_result
       cached_process.tap {|result|
         if result
-          log "#{LogHelpers::TickChar} #{name} (cached)".colorize('green')
+          log "#{Logging::TickChar} #{name} (cached)".colorize('green')
         elsif task.opt(:dry_run)
           log "~ #{name} (cached)".colorize('blue')
         else
-          log "#{LogHelpers::CrossChar} #{name} (cached)".colorize('red')
+          log "#{Logging::CrossChar} #{name} (cached)".colorize('red')
         end
       }
     end

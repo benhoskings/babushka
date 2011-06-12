@@ -20,7 +20,7 @@ module Babushka
       elsif ok?
         stdout.chomp
       elsif stderr.empty? && stdout.empty?
-        log "$ #{@cmd.join(' ')}".colorize('grey') + ' ' + "#{CrossChar} shell command failed".colorize('red')
+        log "$ #{@cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
       else
         log "$ #{@cmd.join(' ')}", :closing_status => 'shell command failed' do
           log_error(stderr.empty? ? stdout : stderr)
