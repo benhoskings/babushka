@@ -20,7 +20,7 @@ module Babushka
     end
 
     def _has? pkg_name
-      failable_shell("pacman -Q #{pkg_name}").stderr !~ /not found$/
+      raw_shell("pacman -Q #{pkg_name}").stderr !~ /not found$/
     end
   end
   end

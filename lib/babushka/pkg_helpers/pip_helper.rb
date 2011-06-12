@@ -19,7 +19,7 @@ module Babushka
     def _has? pkg
       # Some example output:
       #   gunicorn==0.12.0
-      failable_shell("pip freeze '#{pkg.name}'").stdout.split("\n").select {|line|
+      raw_shell("pip freeze '#{pkg.name}'").stdout.split("\n").select {|line|
         line[/^#{Regexp.escape(pkg.name)}\=\=/]
       }.any? {|match|
         pkg.matches? match.scan(/\=\=(.*)$/).flatten.first

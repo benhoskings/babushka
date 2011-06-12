@@ -12,7 +12,7 @@ module Babushka
       # Some example output, with 'wget' installed:
       #   fedora-13:  'wget.x86_64  1.12-2.fc13       @fedora'
       #   centos-5.5: 'wget.x86_64  1.11.4-2.el5_4.1  installed'
-      failable_shell("#{pkg_binary} list -q '#{pkg_name}'").stdout.split("\n").select {|line|
+      raw_shell("#{pkg_binary} list -q '#{pkg_name}'").stdout.split("\n").select {|line|
         line[/^#{Regexp.escape(pkg_name.to_s)}\.\w+\b/] # e.g. wget.x86_64
       }.any? {|match|
         final_word = match[/[^\s]+$/] || ''

@@ -33,7 +33,7 @@ module Babushka
     private
     def _has? pkg_name
       wait_for_dpkg
-      status = failable_shell("dpkg -s #{pkg_name}").stdout.val_for('Status')
+      status = raw_shell("dpkg -s #{pkg_name}").stdout.val_for('Status')
       status && status.split(' ').include?('installed')
     end
 
@@ -54,7 +54,7 @@ module Babushka
     end
 
     def dpkg_locked?
-      which('fuser') and failable_shell('fuser -v /var/lib/dpkg/lock').stderr[/\bF..../]
+      which('fuser') and raw_shell('fuser -v /var/lib/dpkg/lock').stderr[/\bF..../]
     end
   end
   end
