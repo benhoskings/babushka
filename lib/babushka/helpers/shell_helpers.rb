@@ -72,9 +72,14 @@ module Babushka
     # As an example, this shell command:
     #   shell('grep rails Gemfile') {|shell| shell.stdout }.empty?
     # can be simplified to this:
-    #   failable_shell('grep rails Gemfile').stdout.empty?
-    def failable_shell cmd, opts = {}
+    #   raw_shell('grep rails Gemfile').stdout.empty?
+    def raw_shell cmd, opts = {}
       shell(cmd, opts) {|s| s }
+    end
+
+    def failable_shell cmd, opts = {}
+      log_error "#failable_shell has been renamed to #raw_shell." # deprecated
+      raw_shell cmd, opts
     end
 
     # Run +cmd+ in a separate interactive shell. This is useful for running

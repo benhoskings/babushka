@@ -67,18 +67,23 @@ describe "shell?" do
   end
 end
 
-describe "failable_shell" do
+describe "raw_shell" do
   it "should always return a Shell" do
-    failable_shell('true').should be_a(Shell)
-    failable_shell('false').should be_a(Shell)
+    raw_shell('true').should be_a(Shell)
+    raw_shell('false').should be_a(Shell)
+  end
+  it "should return stdout for succeeding commands" do
+    shell = raw_shell(SucceedingLs)
+    shell.stdout.should include("bash")
+    shell.stderr.should be_empty
   end
   it "should return stderr for failed commands" do
-    shell = failable_shell(FailingLs)
+    shell = raw_shell(FailingLs)
     shell.stdout.should be_empty
     shell.stderr.should include("No such file or directory")
   end
   it "should support sudo" do
-    failable_shell('whoami', :sudo => true).stdout.should == "root\n"
+    raw_shell('whoami', :sudo => true).stdout.should == "root\n"
   end
 end
 
