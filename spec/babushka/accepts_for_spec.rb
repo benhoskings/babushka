@@ -79,6 +79,10 @@ describe "accepts_list_for" do
   it "should return the empty list for no input" do
     @list.records.should == []
   end
+  it "should return the empty list for nil input" do
+    @list.records nil
+    @list.records.should == []
+  end
   it "should return the correct default when no value is stored" do
     @list.produces.should == ["a default response"]
     @list.valid_formats.should == %w[html xml js json]
