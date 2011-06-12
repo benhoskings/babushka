@@ -21,8 +21,8 @@ class Array
   # This is defined separately, and then aliased into place if required, so we
   # can run specs against it no matter which ruby we're running against.
   def local_group_by &block
-    inject(Hash.new {|hsh,k| hsh[k] = [] }) {|hsh,i|
-      hsh[yield(i)].push i
+    inject({}) {|hsh,i|
+      (hsh[yield(i)] ||= []).push i
       hsh
     }
   end

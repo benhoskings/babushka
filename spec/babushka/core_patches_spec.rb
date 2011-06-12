@@ -79,6 +79,9 @@ describe Array, '#local_group_by' do
       'ar' => %w[narwahl]
     }
   end
+  it "should return nil for keys that don't match a group" do
+    %w[cat badger narwahl pug].local_group_by(&:length)[4].should be_nil
+  end
 end
 
 describe Array, '#versions' do
