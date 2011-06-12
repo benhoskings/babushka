@@ -397,7 +397,13 @@ module Babushka
 
     def cached_result
       cached_process.tap {|result|
-        log_result "#{name} (cached)", :result => result, :as_bypass => task.opt(:dry_run)
+        if result
+          log "#{LogHelpers::TickChar} #{name} (cached)".colorize('green')
+        elsif task.opt(:dry_run)
+          log "~ #{name} (cached)".colorize('blue')
+        else
+          log "#{LogHelpers::CrossChar} #{name} (cached)".colorize('red')
+        end
       }
     end
     def cached?

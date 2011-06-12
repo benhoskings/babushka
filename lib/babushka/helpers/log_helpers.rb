@@ -17,17 +17,6 @@ module Babushka
       log message, opts, &block
     end
 
-    def log_result message, opts = {}, &block
-      if opts.delete :as_bypass
-        log_result message, opts.merge(:fail_symbol => '~', :fail_color => 'blue')
-      else
-        log [
-          (opts[:result] ? TickChar : (opts[:fail_symbol] || '×')).colorize(opts[:result] ? (opts[:ok_color] || 'grey') : (opts[:fail_color] || 'red')),
-          "#{message}".colorize(opts[:result] ? (opts[:ok_color] || 'none') : (opts[:fail_color] || 'red'))
-        ].join(' ')
-      end
-    end
-
     # Yield the block, writing a note to the log about it beforehand and
     # afterwards.
     #
