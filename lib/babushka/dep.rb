@@ -281,10 +281,10 @@ module Babushka
     # `/etc/init.d` directly; instead, it should separately test that the
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
-    def process with_run_opts = {}
-      task.run_opts.update with_run_opts
+    def process with_opts = {}
+      task.opts.update with_opts
       (cached? ? cached_result : process_and_cache).tap {
-        Base.sources.uncache! if with_run_opts[:top_level]
+        Base.sources.uncache! if with_opts[:top_level]
       }
     end
 

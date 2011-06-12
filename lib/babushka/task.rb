@@ -3,12 +3,12 @@ module Babushka
     include Singleton
     include PathHelpers
 
-    attr_reader :base_opts, :run_opts, :vars, :persistent_log
+    attr_reader :opts, :vars, :persistent_log
     attr_accessor :reportable
 
     def initialize
       @vars = Vars.new
-      @run_opts = {}
+      @opts = Base.cmdline.opts.dup
     end
 
     def process dep_names, with_vars = {}
@@ -44,10 +44,6 @@ module Babushka
         :source_uri => dep.dep_source.uri,
         :result => result
       }
-    end
-
-    def opts
-      Base.cmdline.opts.merge @run_opts
     end
 
     def opt name
