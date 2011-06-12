@@ -54,6 +54,18 @@ module Babushka
       send shell_method, cmd, opts, &block
     end
 
+    # Run +cmd+, returning true if its exit code was 0.
+    #
+    # This is useful to run shell commands whose output isn't important,
+    # but whose exit code is. Unlike +#shell+, which logs the output of shell
+    # commands that exit with non-zero status, +#shell?+ runs silently.
+    #
+    # The idea is that +#shell+ is for when you're interested in the command's
+    # output, and +#shell?+ is for when you're interested in the exit status.
+    def shell? cmd, opts = {}
+      shell(cmd, opts) {|s| s.ok? }
+    end
+
     # This method is a shortcut for accessing the results of a shell command
     # without using a block. The method itself returns the shell object that
     # is yielded to the block by +#shell+.

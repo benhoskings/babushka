@@ -56,6 +56,17 @@ describe "shell" do
   end
 end
 
+describe "shell?" do
+  it "should return true for successful commands" do
+    shell?('true').should be_true
+    shell?(SucceedingLs).should be_true
+  end
+  it "should return false for failed commands" do
+    shell?('false').should be_false
+    shell?(FailingLs).should be_false
+  end
+end
+
 describe "failable_shell" do
   it "should always return a Shell" do
     failable_shell('true').should be_a(Shell)
