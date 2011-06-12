@@ -57,7 +57,7 @@ module Babushka
     end
 
     def inspect
-      "#<VersionOf #{[name, version].compact.join(' | ')}>"
+      "#<VersionOf #{name}#{", v#{version}" unless version.nil?}>"
     end
   end
 end
