@@ -29,7 +29,7 @@ describe "Dep.make" do
   it "should create deps with valid names" do
     L{
       Dep.make("valid dep name", Base.sources.anonymous, {}, nil)
-    }.should change(Base.sources.anonymous, :count).by(1)
+    }.should change(Base.sources.anonymous.deps, :count).by(1)
     Dep("valid dep name").should be_an_instance_of(Dep)
   end
   context "without template" do
@@ -156,7 +156,7 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "a blank dep"
-    }.should change(Base.sources.anonymous, :count).by(1)
+    }.should change(Base.sources.anonymous.deps, :count).by(1)
     Dep('a blank dep').should be_an_instance_of(Dep)
   end
   it "should work for filled in deps" do
@@ -168,7 +168,7 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Base.sources.anonymous, :count).by(1)
+    }.should change(Base.sources.anonymous.deps, :count).by(1)
     Dep('a standard dep').should be_an_instance_of(Dep)
   end
   it "should accept deps as dep names" do
@@ -176,7 +176,7 @@ describe "dep creation" do
       dep 'parent dep' do
         requires dep('nested dep')
       end.met?
-    }.should change(Base.sources.anonymous, :count).by(2)
+    }.should change(Base.sources.anonymous.deps, :count).by(2)
     Dep('parent dep').context.requires.should == [Dep('nested dep')]
   end
   after { Base.sources.anonymous.deps.clear! }
