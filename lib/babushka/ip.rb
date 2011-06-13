@@ -47,7 +47,7 @@ module Babushka
         parts.map(&:to_i)
       ).map {|(str,val)|
         yield str, val
-      }.squash
+      }.compact
     end
 
     def offset_by offset
