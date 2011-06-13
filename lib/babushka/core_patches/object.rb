@@ -7,11 +7,6 @@ class Object
     class << self; self end
   end
 
-  # Return true if this object is +nil?+, or +empty?+ if it accepts that method.
-  def blank?
-    nil? || (respond_to?(:empty?) && empty?)
-  end
-
   # Return this object after yielding it to the block. This is useful for
   # neatly working with an object in some way before returning it:
   #   def valmorphanize
