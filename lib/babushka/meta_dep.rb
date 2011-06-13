@@ -37,7 +37,7 @@ module Babushka
 
     attr_reader :name, :source, :opts, :context_class
 
-    delegate :desc, :to => :context_class
+    def desc; context_class.desc end
 
     def initialize name, source, opts, &block
       @name, @source, @opts, @block = name, source, opts, block
