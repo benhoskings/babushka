@@ -2,7 +2,8 @@ module Babushka
   class LambdaChooser
 
     attr_reader :owner
-    delegate :var, :to => :owner
+
+    def var(name, opts = {}) owner.var(name, opts) end
 
     def initialize owner, *possible_choices, &block
       raise ArgumentError, "You can't use :otherwise as a choice name, because it's reserved." if possible_choices.include?(:otherwise)
