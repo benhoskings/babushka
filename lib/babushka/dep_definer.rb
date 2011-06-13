@@ -11,6 +11,10 @@ module Babushka
 
     attr_reader :dependency, :payload, :block
 
+    def set(key, value) vars.set(key, value) end
+    def merge(key, value) vars.merge(key, value) end
+    def var(name, opts = {}) vars.var(name, opts) end
+    def define_var(name, opts = {}) vars.define_var(name, opts) end
 
     def initialize dep, &block
       @dependency = dep
@@ -34,8 +38,6 @@ module Babushka
         end
       end
     end
-
-    delegate :var, :set, :merge, :define_var, :to => :vars
 
     def result message, opts = {}
       opts[:result].tap {
