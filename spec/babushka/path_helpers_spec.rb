@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-class PathTester; extend PathHelpers end
-
 describe "cd" do
   before do
     @tmp_dir = tmp_prefix
@@ -17,7 +15,7 @@ describe "cd" do
 
   it "should yield if no dir is given" do
     has_yielded = false
-    PathTester.cd(nil) {|path|
+    cd(nil) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
@@ -27,7 +25,7 @@ describe "cd" do
 
   it "should yield if no chdir is required" do
     has_yielded = false
-    PathTester.cd(@original_pwd) {|path|
+    cd(@original_pwd) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == @original_pwd
       has_yielded = true
@@ -36,7 +34,7 @@ describe "cd" do
   end
   it "should change dir for the duration of the block" do
     has_yielded = false
-    PathTester.cd(@tmp_dir) {
+    cd(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
       has_yielded = true
     }
@@ -44,9 +42,9 @@ describe "cd" do
     Dir.pwd.should == @original_pwd
   end
   it "should work recursively" do
-    PathTester.cd(@tmp_dir) {
+    cd(@tmp_dir) {
       Dir.pwd.should == @tmp_dir
-      PathTester.cd(@tmp_dir_2) {
+      cd(@tmp_dir_2) {
         Dir.pwd.should == @tmp_dir_2
       }
       Dir.pwd.should == @tmp_dir
@@ -54,10 +52,10 @@ describe "cd" do
     Dir.pwd.should == @original_pwd
   end
   it "should fail on nonexistent dirs" do
-    L{ PathTester.cd(@nonexistent_dir) }.should raise_error(Errno::ENOENT)
+    L{ cd(@nonexistent_dir) }.should raise_error(Errno::ENOENT)
   end
   it "should create nonexistent dirs if :create => true is specified" do
-    PathTester.cd(@nonexistent_dir, :create => true) {
+    cd(@nonexistent_dir, :create => true) {
       Dir.pwd.should == @nonexistent_dir
     }
     Dir.pwd.should == @original_pwd
@@ -72,13 +70,13 @@ describe "in_build_dir" do
     @original_pwd = Dir.pwd
   }
   it "should change to the build dir with no args" do
-    PathTester.in_build_dir {
+    in_build_dir {
       Dir.pwd.should == "~/.babushka/build".p
     }
     Dir.pwd.should == @original_pwd
   end
   it "should append the supplied path when supplied" do
-    PathTester.in_build_dir "tmp" do
+    in_build_dir "tmp" do
       Dir.pwd.should == "~/.babushka/build/tmp".p
     end
     Dir.pwd.should == @original_pwd
@@ -90,13 +88,13 @@ describe "in_download_dir" do
     @original_pwd = Dir.pwd
   }
   it "should change to the download dir with no args" do
-    PathTester.in_download_dir {
+    in_download_dir {
       Dir.pwd.should == "~/.babushka/downloads".p
     }
     Dir.pwd.should == @original_pwd
   end
   it "should append the supplied path when supplied" do
-    PathTester.in_download_dir "tmp" do
+    in_download_dir "tmp" do
       Dir.pwd.should == "~/.babushka/downloads/tmp".p
     end
     Dir.pwd.should == @original_pwd
