@@ -22,8 +22,6 @@ module Babushka
     core_patches/symbol
     core_patches/uri
     xml_string
-    popen
-    shell
     helpers/log_helpers
     helpers/shell_helpers
     helpers/prompt_helpers
@@ -32,6 +30,8 @@ module Babushka
     helpers/suggest_helpers
     helpers/git_helpers
     helpers/uri_helpers
+    popen
+    shell
     git_repo
     resource
     lambda_chooser
