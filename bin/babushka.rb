@@ -11,6 +11,11 @@ require File.expand_path(
   )
 )
 
+# Mix in the #Dep, #dep & #meta top-level helper methods, since we're running standalone.
+Object.class_eval {
+  include Babushka::Dep::Helpers
+}
+
 Babushka::Base.exit_on_interrupt!
 
 # If babushka was invoked as a command, then we run according to the arguments

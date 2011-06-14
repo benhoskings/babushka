@@ -28,8 +28,6 @@ Babushka::Components.each {|c| require File.join(Babushka::Path.path, 'lib/babus
 
 # Finally, mix in some top-level helper methods:
 Object.class_eval {
-  # Dep helpers like #Dep, #dep & #meta;
-  include Babushka::Dep::Helpers
   # Logging helpers like #log, #log_ok, #log_error & #debug.
   include Babushka::LogHelpers
   # Shell helpers like #shell, #failable_shell & #sudo.
