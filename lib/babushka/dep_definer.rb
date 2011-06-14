@@ -79,7 +79,7 @@ module Babushka
     end
 
     def on platform, &blk
-      if platform.in? [*chooser]
+      if [*chooser].include? platform
         @current_platform = platform
         blk.call.tap {
           @current_platform = nil

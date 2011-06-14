@@ -41,20 +41,6 @@ module Babushka
       def meta name, opts = {}, &block
         Base.sources.current_load_source.templates.add name, opts, block
       end
-
-      # deprecated
-      %w[pkg managed src app font installer tmbundle dl nginx apache2 vim_plugin lighttpd_module gem_source security_apt_source plist_default pathogen_plugin_source pathogen_link_exists].each {|meta|
-        define_method meta do |*args|
-          name = args.first
-          new_meta = {'pkg' => 'managed'}[meta] || meta
-          log_error "#{caller.first.sub(/\:in [^:]+$/, '')}: This syntax isn't valid any more:"
-          log "  #{meta} '#{name}'"
-          log_error "Instead, you should use one of these:"
-          log "  dep '#{name.end_with(".#{new_meta}")}'"
-          log "  dep '#{name.chomp(".#{new_meta}")}', :template => '#{new_meta}'"
-          log ""
-        end
-      }
     end
 
     attr_reader :name, :opts, :vars, :dep_source, :load_path
@@ -288,10 +274,10 @@ module Babushka
     # `/etc/init.d` directly; instead, it should separately test that the
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
-    def process with_run_opts = {}
-      task.run_opts.update with_run_opts
+    def process with_opts = {}
+      task.opts.update with_opts
       (cached? ? cached_result : process_and_cache).tap {
-        Base.sources.uncache! if with_run_opts[:top_level]
+        Base.sources.uncache! if with_opts[:top_level]
       }
     end
 
@@ -404,7 +390,13 @@ module Babushka
 
     def cached_result
       cached_process.tap {|result|
-        log_result "#{name} (cached)", :result => result, :as_bypass => task.opt(:dry_run)
+        if result
+          log "#{Logging::TickChar} #{name} (cached)".colorize('green')
+        elsif task.opt(:dry_run)
+          log "~ #{name} (cached)".colorize('blue')
+        else
+          log "#{Logging::CrossChar} #{name} (cached)".colorize('red')
+        end
       }
     end
     def cached?

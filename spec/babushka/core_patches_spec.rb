@@ -79,39 +79,17 @@ describe Array, '#local_group_by' do
       'ar' => %w[narwahl]
     }
   end
-end
-
-describe Array, '#local_lines' do
-  it "should work for empty strings" do
-    "".local_lines.should == []
-  end
-  it "should do what you expect" do
-    "uno\ndos\ntres".local_lines.should == %w[uno dos tres]
-  end
-  it "should work with empty lines and such" do
-    %Q{
-uno
-dos 
-
-  
-tres
-  
-
-    }.local_lines.should == [
-      'uno',
-      'dos ',
-      '  ',
-      'tres'
-    ]
+  it "should return nil for keys that don't match a group" do
+    %w[cat badger narwahl pug].local_group_by(&:length)[4].should be_nil
   end
 end
 
 describe Array, '#versions' do
   {
-    %w[a]     => [VersionOf('a')],
-    %w[a b c] => [VersionOf('a'), VersionOf('b'), VersionOf('c')],
-    [VersionOf('a')] => [VersionOf('a')],
-    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [VersionOf('a', '0.1'), VersionOf('b', '>= 0.6.0'), VersionOf('c', '~> 2.2')]
+    %w[a]     => [Babushka.VersionOf('a')],
+    %w[a b c] => [Babushka.VersionOf('a'), Babushka.VersionOf('b'), Babushka.VersionOf('c')],
+    [Babushka.VersionOf('a')] => [Babushka.VersionOf('a')],
+    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [Babushka.VersionOf('a', '0.1'), Babushka.VersionOf('b', '>= 0.6.0'), Babushka.VersionOf('c', '~> 2.2')]
   }.each_pair {|input, expected|
     it "should return #{expected.inspect} when passed #{input.inspect}" do
       input.versions.should == expected
@@ -171,18 +149,5 @@ describe String, "val_for" do
   it "paths" do
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for("/dev/disk1s2        	Apple_HFS").should == "/Volumes/TextMate 1.5.9"
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
-  end
-end
-
-describe String, "camelize" do
-  it "should convert underscored strings to CamelCase" do
-    {
-      "test" => "Test",
-      "testy_test" => "TestyTest",
-      "Test" => "Test",
-      "TestyTest" => "TestyTest"
-    }.each_pair {|k,v|
-      k.camelize.should == v
-    }
   end
 end

@@ -1,5 +1,3 @@
-require 'digest/sha1'
-
 class Inkan
   attr_accessor :credit, :comment, :comment_suffix
   
@@ -26,6 +24,7 @@ class Inkan
   end
   
   def self.sha(content)
+    require 'digest/sha1'
     Digest::SHA1.hexdigest(content)
   end
   

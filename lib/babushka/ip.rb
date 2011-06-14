@@ -16,7 +16,7 @@ module Babushka
 
     # Returns whether this IP should be considered a valid one for a client to be using.
     def valid?
-      describe.in? :public, :private, :loopback
+      [:public, :private, :loopback].include? describe
     end
 
     def next
@@ -47,7 +47,7 @@ module Babushka
         parts.map(&:to_i)
       ).map {|(str,val)|
         yield str, val
-      }.squash
+      }.compact
     end
 
     def offset_by offset
@@ -80,7 +80,7 @@ module Babushka
       elsif bytes.starts_with?(172) && ((16..31) === bytes[1]) # Class-B private; RFC1918
         :private
       elsif bytes.starts_with? 169, 254 # Link-local range; RFC3330/3927
-        bytes[2].in?(0, 255) ? :reserved : :self_assigned
+        [0, 255].include?(bytes[2]) ? :reserved : :self_assigned
       elsif bytes.starts_with? 192, 0, 2 # TEST-NET - used as example.com IP
         :reserved
       elsif bytes.starts_with? 192, 88, 99 # 6-to-4 relay anycast; RFC3068

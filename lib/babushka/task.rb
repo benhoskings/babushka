@@ -3,12 +3,12 @@ module Babushka
     include Singleton
     include PathHelpers
 
-    attr_reader :base_opts, :run_opts, :vars, :persistent_log
+    attr_reader :opts, :vars, :persistent_log
     attr_accessor :reportable
 
     def initialize
       @vars = Vars.new
-      @run_opts = default_run_opts
+      @opts = Base.cmdline.opts.dup
     end
 
     def process dep_names, with_vars = {}
@@ -46,10 +46,6 @@ module Babushka
       }
     end
 
-    def opts
-      Base.cmdline.opts.merge @run_opts
-    end
-
     def opt name
       opts[name]
     end
@@ -59,7 +55,7 @@ module Babushka
     end
 
     def callstack
-      opts[:callstack]
+      @callstack ||= []
     end
 
     def log_path_for dep
@@ -98,12 +94,6 @@ module Babushka
       save_var_log_for var_path_for(dep), {
         :info => task_info(dep, result),
         :vars => vars.for_save
-      }
-    end
-
-    def default_run_opts
-      {
-        :callstack => []
       }
     end
 

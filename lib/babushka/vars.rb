@@ -35,7 +35,7 @@ module Babushka
     end
 
     def define_var name, opts = {}
-      vars[name.to_s].update opts.dragnet(:default, :type, :message, :choices, :choice_descriptions)
+      vars[name.to_s].update opts.slice(:default, :type, :message, :choices, :choice_descriptions)
       vars[name.to_s][:choices] ||= vars[name.to_s][:choice_descriptions].keys unless vars[name.to_s][:choice_descriptions].nil?
       vars[name.to_s]
     end
@@ -46,7 +46,7 @@ module Babushka
         save_referenced_default_for(var, vars_to_save) if vars[var][:default].is_a?(Symbol)
         vars_to_save
       }.reject_r {|var,data|
-        !data.class.in?([String, Symbol, Hash, Numeric, TrueClass, FalseClass]) ||
+        ![String, Symbol, Hash, Numeric, TrueClass, FalseClass].include?(data.class) ||
         var.to_s['password']
       }
     end
@@ -79,7 +79,7 @@ module Babushka
     def ask_for_var key, opts
       set key, send("prompt_for_#{vars[key][:type] || 'value'}",
         message_for(key),
-        vars[key].dragnet(:choices, :choice_descriptions).merge(
+        vars[key].slice(:choices, :choice_descriptions).merge(
           opts
         ).merge(
           :default => default_for(key),

@@ -7,6 +7,8 @@ module Babushka
   ]
 
   Components = %w[
+    core_patches/blank
+    core_patches/try
     core_patches/array
     core_patches/hash
     core_patches/hashish

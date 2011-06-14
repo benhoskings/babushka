@@ -37,7 +37,7 @@ module Babushka
     def self.report_report_result dep, response
       if response.is_a? Net::HTTPSuccess
         gist_id = response.body.scan(/<repo>(\d+)<\/repo>/).flatten.first
-        if gist_id.blank?
+        if gist_id.nil?
           log "Done, but the report's URL couldn't be parsed. Here's some info:"
           log response.body
         else

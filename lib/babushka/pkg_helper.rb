@@ -70,7 +70,7 @@ module Babushka
     end
 
     def cmdline_spec_for pkg
-      "#{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.blank?}"
+      "#{pkg.name}#{" --version '#{pkg.version}'" unless pkg.version.nil?}"
     end
   end
   end

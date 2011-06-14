@@ -65,29 +65,6 @@ class String
     (empty? ? other.p : (p / other))
   end
 
-  # Converts a name or path to its CamelCased class equivalent.
-  # Some examples:
-  #   'double_rainbow'.camelize         #=> 'DoubleRainbow'
-  #   'double_rainbow/meaning'.camelize #=> 'DoubleRainbow::Meaning'
-  #   '/double_rainbow'.camelize        #=> '::DoubleRainbow'
-  def camelize
-    # From activesupport/lib/active_support/inflector.rb:178
-    gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
-  end
-
-  # Split a string into its constituent words, throwing away all the
-  # characters in between them.
-  def words
-    split(/[^a-z0-9_.-]+/i)
-  end
-
-  # This is defined separately, and then aliased into place if required, so we
-  # can run specs against it no matter which ruby we're running against.
-  def local_lines
-    strip.split(/\n+/)
-  end
-  alias_method :lines, :local_lines unless "".respond_to?(:lines)
-
   # Create a VersionStr from this string.
   def to_version
     Babushka::VersionStr.new self
@@ -108,8 +85,8 @@ class String
   end
 
   # As +colorize+, but modify this string in-place instead of returning a new one.
-  def colorize! description = '', start_at = nil
-    replace colorize(description, start_at) unless description.blank?
+  def colorize! description = nil, start_at = nil
+    replace colorize(description, start_at) unless description.nil?
   end
 
   # Return a new string with all color-related escape sequences removed.
@@ -121,12 +98,5 @@ class String
   def decolorize!
     gsub! /\e\[\d+[;\d]*m/, ''
     self
-  end
-
-  # Return the Levenshtein distance between this string and +other+; that is,
-  # the number of modifications (single-character changes, insertions, or
-  # deletions) that would have to be made to one for it to be equal to the other.
-  def similarity_to other, threshold = nil
-    Babushka::Levenshtein.distance self, other, threshold
   end
 end

@@ -14,13 +14,13 @@ class Hash
 
   # Return a new hash filtered to contain only the key-value pairs whose keys
   # appear in +keys+.
-  def dragnet *keys
-    dup.dragnet! *keys
+  def slice *keys
+    dup.slice! *keys
   end
 
   # Filter this hash in-place so it contains only the key-value pairs whose
   # keys appear in +keys+.
-  def dragnet! *keys
+  def slice! *keys
     keys.inject({}) {|acc,key|
       acc[key] = self.delete(key) if self.has_key?(key)
       acc

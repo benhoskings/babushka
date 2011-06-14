@@ -2,10 +2,6 @@
 
 module Babushka
   module LogHelpers
-    TickChar = '✓'
-    CrossChar = '✗'
-    @@indentation_level = 0
-
     # Log +message+ as an error. This is a shortcut for
     #   log(message, :as => :error)
     def log_error message, opts = {}, &block
@@ -15,17 +11,6 @@ module Babushka
     def log_verbose message, opts = {}, &block
       log_error "#{caller.first}: #log_verbose has been deprecated. Instead, just use #log." # deprecated
       log message, opts, &block
-    end
-
-    def log_result message, opts = {}, &block
-      if opts.delete :as_bypass
-        log_result message, opts.merge(:fail_symbol => '~', :fail_color => 'blue')
-      else
-        log [
-          (opts[:result] ? TickChar : (opts[:fail_symbol] || '×')).colorize(opts[:result] ? (opts[:ok_color] || 'grey') : (opts[:fail_color] || 'red')),
-          "#{message}".colorize(opts[:result] ? (opts[:ok_color] || 'none') : (opts[:fail_color] || 'red'))
-        ].join(' ')
-      end
     end
 
     # Yield the block, writing a note to the log about it beforehand and
@@ -92,27 +77,32 @@ module Babushka
       # now = Time.now
       # print "#{now.to_i}.#{now.usec}: ".ljust(20) unless opts[:debug]
       printable = !opts[:debug] || Base.task.opt(:debug)
-      print_log indentation, printable unless opts[:indentation] == false
+      Logging.print_log Logging.indentation, printable unless opts[:indentation] == false
       if block_given?
-        print_log "#{message} {\n".colorize('grey'), printable
-        @@indentation_level += 1 if printable
+        Logging.print_log "#{message} {\n".colorize('grey'), printable
+        Logging.indent! if printable
         yield.tap {|result|
-          @@indentation_level -= 1 if printable
-          log closing_log_message(message, result, opts), opts
+          Logging.undent! if printable
+          log Logging.closing_log_message(message, result, opts), opts
         }
       else
-        message = message.to_s.rstrip.gsub "\n", "\n#{indentation}"
-        message = "#{TickChar.colorize('grey')} #{message}" if opts[:as] == :ok
+        message = message.to_s.rstrip.gsub "\n", "\n#{Logging.indentation}"
+        message = "#{Logging::TickChar.colorize('grey')} #{message}" if opts[:as] == :ok
         message = message.colorize 'red' if opts[:as] == :error
         message = message.colorize 'bold' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
-        print_log message, printable
+        Logging.print_log message, printable
         $stdout.flush
         nil
       end
     end
+  end
 
-    def closing_log_message message, result = true, opts = {}
+  class Logging
+    TickChar = '✓'
+    CrossChar = '✗'
+
+    def self.closing_log_message message, result = true, opts = {}
       message = opts[:closing_status] if opts[:closing_status].is_a?(String)
 
       if opts[:closing_status] == :status_only
@@ -126,7 +116,7 @@ module Babushka
       end
     end
 
-    def log_table headings, rows
+    def self.log_table headings, rows
       all_rows = rows.map {|row|
         row.map(&:to_s)
       }.unshift(
@@ -149,17 +139,28 @@ module Babushka
 
     private
 
-    def print_log message, printable
+    def self.print_log message, printable
       print message if printable
       write_to_persistent_log message
     end
 
-    def write_to_persistent_log message
+    def self.write_to_persistent_log message
       Base.task.persistent_log.write message unless Base.task.persistent_log.nil?
     end
 
-    def indentation
-      ' ' * @@indentation_level * 2
+    def self.indentation
+      ' ' * indentation_level * 2
+    end
+    def self.indentation_level
+      @indentation_level ||= 0
+    end
+    def self.indent!
+      @indentation_level ||= 0
+      @indentation_level += 1
+    end
+    def self.undent!
+      @indentation_level ||= 0
+      @indentation_level -= 1
     end
   end
 end

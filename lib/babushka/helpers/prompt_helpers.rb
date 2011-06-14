@@ -50,7 +50,7 @@ module Babushka
     private
 
     def prompt_message message, opts
-      if opts[:choices] && opts[:choice_descriptions].blank?
+      if opts[:choices] && opts[:choice_descriptions].nil?
         "#{message.chomp '?'} (#{opts[:choices] * ','})"
       else
         message.chomp '?'
@@ -58,7 +58,7 @@ module Babushka
     end
 
     def log_choice_descriptions descriptions
-      unless descriptions.blank?
+      unless descriptions.nil?
         max_length = descriptions.keys.map(&:length).max
         log "There are #{descriptions.length} choices:"
         descriptions.each_pair {|choice,description|
@@ -86,7 +86,7 @@ module Babushka
         value = read_from_prompt(opts[:prompt].end_with(' '), opts[:choices]).try(:chomp)
         value = opts[:default] if value.blank? && !(opts[:default] && opts[:default].to_s.empty?)
 
-        error_message = if opts[:choices] && !value.in?(opts[:choices])
+        error_message = if opts[:choices] && !opts[:choices].include?(value)
           "That's not a valid choice"
         elsif block_given? && !yield(value)
           opts[:retry]

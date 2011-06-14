@@ -15,7 +15,7 @@ module Babushka
 
     private
     def _has? pkg
-      pkg.name.split(/\s+/, 2).first.in? existing_packages
+      existing_packages.include? pkg.name.split(/\s+/, 2).first
     end
   end
   end

@@ -1,67 +1,28 @@
 alias :L :proc
 
 class Object
-  # Yield the supplied object to the block before returning it. This is useful
-  # for writing cleaner object creations and related things. For example:
-  #   returning [] do |list|
-  #     list << 'value' if condition
-  #   end
-  def returning obj, &block
-    yield obj
-    obj
-  end
-
-  # The opposite of Array#include - i.e. return true if self appears in the
-  # array splatted into +first+ and +rest+.
-  def in? first, *rest
-    (first.is_a?(Array) ? first : [first].concat(rest)).include? self
-  end
-
   # Return this object's metaclass; i.e. the value of self within a
   # 'class << self' block.
   def metaclass
     class << self; self end
   end
 
-  def singleton
-    Class.new self
-  end
-
-  def recursive_const_get name
-    name.split('::').inject(Object) {|klass,name| klass.const_get name }
-  end
-
-  # Return true if this object is +nil?+, or +empty?+ if it accepts that method.
-  def blank?
-    nil? || (respond_to?(:empty?) && empty?)
-  end
-
   # Return this object after yielding it to the block. This is useful for
-  # easily inserting logging, among other things. Given this code:
-  #   values.map(&:name).join(', ')
-  # You can easily insert logging like so:
-  #   values.map(&:name).tap {|i| log i }.join(', ')
+  # neatly working with an object in some way before returning it:
+  #   def valmorphanize
+  #     process.tap {|result|
+  #       log "Oops!" unless result
+  #     }
+  #   end
   def tap &block
     yield self
     self
-  end
+  end unless Object.respond_to?(:tap)
 
   # Return self unmodified after logging the output of #inspect, along with
   # the point at which +tapp+ was called.
   def tapp
     tap { puts "#{File.basename caller[2]}: #{self.inspect}" }
-  end
-  # Log and return unmodified in the same manner as #tapp, but escape the
-  # output to be HTML safe and easily readable. For example,
-  #   #<Object:0x00000100bda208>
-  # becomes
-  #   #&lt;Object:0x00000100bda208><br />
-  def taph
-    tap {
-      puts "<pre>" +
-        "#{File.basename caller[2]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') +
-        "</pre>"
-    }
   end
 end
 
@@ -94,18 +55,5 @@ unless Object.new.respond_to? :instance_exec
       end
       ret
     end
-  end
-end
-
-# The implementation of #try as found in activesupport:
-#   lib/active_support/core_ext/object/try.rb
-# Try is just a nil-swallowing send, which means return nil when called on
-# nil and just send like normal when called on any other object.
-class Object
-  alias_method :try, :__send__
-end
-class NilClass
-  def try *args
-    nil
   end
 end
