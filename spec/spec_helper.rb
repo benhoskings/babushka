@@ -10,6 +10,11 @@ require 'rubygems'
 require 'rspec'
 RSpec.configure
 
+# RSpec::Core::Example.send :include, Babushka::Helpers
+RSpec::Core::ExampleGroup.send :include, Babushka::LogHelpers
+RSpec::Core::ExampleGroup.send :include, Babushka::ShellHelpers
+RSpec::Core::ExampleGroup.send :include, Babushka::PathHelpers
+
 puts "babushka@#{`git rev-parse --short HEAD`.strip} • ruby-#{RUBY_VERSION} • rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
