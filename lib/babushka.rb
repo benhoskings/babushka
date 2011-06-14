@@ -26,11 +26,21 @@ Babushka::ExternalComponents.each {|c| require File.join(Babushka::Path.path, 'l
 # Next, load babushka itself.
 Babushka::Components.each {|c| require File.join(Babushka::Path.path, 'lib/babushka', c) }
 
-# Finally, mix in some top-level helper methods:
-Object.class_eval {
-  # Logging helpers like #log, #log_ok, #log_error & #debug.
-  include Babushka::LogHelpers
-  # Shell helpers like #shell, #failable_shell & #sudo.
-  include Babushka::ShellHelpers
-  include Babushka::VersionOf::Helpers
+# Finally, mix in the helper methods we want available everywhere within babushka.
+Babushka.constants.map {|constant_name|
+  Babushka.const_get constant_name
+}.select {|constant|
+  constant.is_a?(Class)
+}.unshift(Babushka).each {|klass|
+  klass.class_eval {
+    # Logging helpers like #log, #log_ok, #log_error & #debug.
+    include Babushka::LogHelpers
+    extend Babushka::LogHelpers
+    # Shell helpers like #shell, #failable_shell & #sudo.
+    include Babushka::ShellHelpers
+    extend Babushka::ShellHelpers
+    # The #VersionOf helper.
+    include Babushka::VersionOf::Helpers
+    extend Babushka::VersionOf::Helpers
+  }
 }
