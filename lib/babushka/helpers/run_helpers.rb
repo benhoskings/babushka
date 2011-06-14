@@ -78,7 +78,7 @@ module Babushka
     end
 
     def _by_babushka
-      "by babushka-#{Babushka::VERSION} at #{Time.now}"
+      "by babushka-#{VERSION} at #{Time.now}"
     end
     def edited_by_babushka
       "This line edited #{_by_babushka}"

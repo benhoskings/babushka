@@ -38,7 +38,7 @@ module Babushka
 
     def task_info dep, result
       {
-        :version => Babushka::VERSION,
+        :version => VERSION,
         :run_at => Time.now,
         :system_info => Base.host.description,
         :dep_name => dep.name,
