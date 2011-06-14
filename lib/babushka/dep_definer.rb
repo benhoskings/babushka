@@ -11,7 +11,10 @@ module Babushka
 
     attr_reader :dependency, :payload, :block
 
-    delegate :name, :basename, :load_path, :to => :dependency
+    def set(key, value) vars.set(key, value) end
+    def merge(key, value) vars.merge(key, value) end
+    def var(name, opts = {}) vars.var(name, opts) end
+    def define_var(name, opts = {}) vars.define_var(name, opts) end
 
     def initialize dep, &block
       @dependency = dep
@@ -29,14 +32,12 @@ module Babushka
         arity = 0 if arity < 0 && RUBY_VERSION.starts_with?('1.8')
 
         if dependency.args.length != arity
-          raise DepArgumentError, "The dep '#{name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
+          raise DepArgumentError, "The dep '#{dependency.name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
         else
           instance_exec *dependency.args, &block
         end
       end
     end
-
-    delegate :var, :set, :merge, :define_var, :to => :vars
 
     def result message, opts = {}
       opts[:result].tap {
