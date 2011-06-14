@@ -1,5 +1,6 @@
 module Babushka
   class Vars
+    include LogHelpers
     include PromptHelpers
 
     attr_reader :vars, :saved_vars

@@ -1,5 +1,8 @@
 module Babushka
   class SystemProfile
+    include ShellHelpers
+    extend ShellHelpers
+
     def self.for_host
       {
         'Linux' => LinuxSystemProfile,

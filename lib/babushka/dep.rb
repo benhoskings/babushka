@@ -4,6 +4,8 @@ module Babushka
   class DepArgumentError < ArgumentError
   end
   class Dep
+    include LogHelpers
+    extend LogHelpers
     include PathHelpers
     extend SuggestHelpers
 
