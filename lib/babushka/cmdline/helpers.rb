@@ -10,6 +10,7 @@ module Babushka
     end
 
     module Helpers
+      extend LogHelpers
       module_function
 
       def print_version opts = {}

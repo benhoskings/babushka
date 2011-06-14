@@ -4,8 +4,8 @@ module Babushka
   class GitRepoExists < GitRepoError
   end
   class GitRepo
-    include PathHelpers
-    extend PathHelpers
+    include ShellHelpers
+    extend ShellHelpers
 
     attr_reader :path
 

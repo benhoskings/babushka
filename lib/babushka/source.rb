@@ -4,6 +4,8 @@ module Babushka
   class Source
     include GitHelpers
     include LogHelpers
+    extend LogHelpers
+    extend ShellHelpers
     include PathHelpers
     extend PathHelpers
 

@@ -1,5 +1,7 @@
 module Babushka
   class Shell
+    include LogHelpers
+
     attr_reader :cmd, :result, :stdout, :stderr
 
     def initialize cmd, opts

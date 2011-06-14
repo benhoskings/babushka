@@ -3,6 +3,9 @@ module Babushka
     class UnmeetableDep < DepError
     end
 
+    include LogHelpers
+    include ShellHelpers
+    include PathHelpers
     include RunHelpers
 
     include AcceptsListFor

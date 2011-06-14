@@ -1,6 +1,8 @@
 module Babushka
   class RunReporter
   class << self
+    include LogHelpers
+
     def queue dep, result, reportable
       if dep.dep_source.type != :public
         debug "Not reporting #{dep.contextual_name}, since it's not in a public source."

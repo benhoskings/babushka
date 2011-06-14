@@ -84,12 +84,17 @@ describe Array, '#local_group_by' do
   end
 end
 
+def version_of *args
+  Babushka::VersionOf::Helpers.VersionOf *args
+end
+
+
 describe Array, '#versions' do
   {
-    %w[a]     => [Babushka.VersionOf('a')],
-    %w[a b c] => [Babushka.VersionOf('a'), Babushka.VersionOf('b'), Babushka.VersionOf('c')],
-    [Babushka.VersionOf('a')] => [Babushka.VersionOf('a')],
-    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [Babushka.VersionOf('a', '0.1'), Babushka.VersionOf('b', '>= 0.6.0'), Babushka.VersionOf('c', '~> 2.2')]
+    %w[a]     => [version_of('a')],
+    %w[a b c] => [version_of('a'), version_of('b'), version_of('c')],
+    [version_of('a')] => [version_of('a')],
+    ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [version_of('a', '0.1'), version_of('b', '>= 0.6.0'), version_of('c', '~> 2.2')]
   }.each_pair {|input, expected|
     it "should return #{expected.inspect} when passed #{input.inspect}" do
       input.versions.should == expected

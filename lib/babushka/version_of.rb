@@ -1,6 +1,8 @@
 module Babushka
   class VersionOf
     module Helpers
+      module_function
+
       def VersionOf first, *rest
         # Convert the arguments into a VersionOf. If a single string argument is
         # passed, try splitting it on space to separate name and version. Otherwise,

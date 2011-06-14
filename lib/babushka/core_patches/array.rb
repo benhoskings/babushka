@@ -84,7 +84,7 @@ class Array
 
   # Return a new array by converting each element in this array to a VersionOf.
   def versions
-    map {|i| Babushka::VersionOf i }
+    map {|i| Babushka::VersionOf::Helpers.VersionOf i }
   end
 
   # Return a string describing this array as an English list. The final two

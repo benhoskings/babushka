@@ -1,5 +1,7 @@
 module Babushka
   module RunHelpers
+    include LogHelpers
+    include ShellHelpers
     include PathHelpers
 
     def hostname
