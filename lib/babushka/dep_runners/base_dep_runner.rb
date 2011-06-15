@@ -6,15 +6,6 @@ module Babushka
 
     private
 
-    # TODO: remove these two once the new version handling is done.
-    def version
-      var(:versions)[name]
-    end
-
-    def set_version version_str
-      merge :versions, name => version_str
-    end
-
     # deprecated
     def provided? provided_list = provides
       log_error "#{caller.first}: #provided? has been renamed to #in_path?."
