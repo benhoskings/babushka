@@ -3,9 +3,11 @@ module Babushka
   end
   class Resource
     include LogHelpers
+    extend LogHelpers
     include ShellHelpers
     extend ShellHelpers
     include PathHelpers
+    extend PathHelpers
 
     def self.get url, &block
       filename = URI.unescape(url.to_s).p.basename
