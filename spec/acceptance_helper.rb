@@ -6,14 +6,17 @@ require 'cloudservers'
 
 require 'spec_helper'
 
-module LogHelpers
-  def print_log message, printable
+class Babushka::Logging
+  def self.print_log message, printable
     print message if printable
   end
 end
 
 class VM
   include Singleton
+  include Babushka::LogHelpers
+  include Babushka::ShellHelpers
+
   SERVER_NAME = 'babushka-specs'
 
   def babushka task
