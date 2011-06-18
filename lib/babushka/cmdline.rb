@@ -20,8 +20,8 @@ module Babushka
         log "#{cmd.argv.first.capitalize}? I have honestly never heard of that."
       else
         log "\n#{handler.name} - #{handler.description}"
-        Base.task.cmdline.parse &handler.opt_definer
-        Base.task.cmdline.print_usage
+        Base.cmdline.parse &handler.opt_definer
+        Base.cmdline.print_usage
       end
       log "\n"
       true
