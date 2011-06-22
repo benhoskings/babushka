@@ -155,7 +155,12 @@ module Babushka
     end
 
     def write_to_persistent_log message
-      Base.task.persistent_log.write message unless Base.task.persistent_log.nil?
+      Base.task.persistent_log.tap do |log|
+        if log
+          log.write message
+          log.flush
+        end
+      end
     end
 
     def indentation
