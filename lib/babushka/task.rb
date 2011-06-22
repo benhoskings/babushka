@@ -75,6 +75,7 @@ module Babushka
     def log_dep dep
       log_prefix.mkdir
       log_path_for(dep).open('w') {|f|
+        f.sync = true
         @persistent_log = f
         yield.tap { @persistent_log = nil }
       }
