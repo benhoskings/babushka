@@ -38,7 +38,7 @@ module Babushka
           log_error "Couldn't download #{url}: #{response_code}."
         elsif !(location = result.val_for('Location')).nil?
           log "Following redirect from #{url}"
-          download location, location.p.basename
+          download URI.escape(location), location.p.basename
         else
           success = log_block "Downloading #{url}" do
             shell %Q{curl -# -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}, :progress => /[\d\.]+%/
