@@ -65,21 +65,21 @@ class Array
   def squash!
     delete_if &:blank?
   end
-  # First filter this array through through +#grep+ to contain only the
-  # elements matching +by+, and then remove the search term from the
-  # resulting elements.
+
+  # Return a new array containing the elements that match +pattern+, with
+  # +pattern+ removed.
+  #
   # This is useful for selecting items from a list based on some label,
-  # and removing the label, in one step.
-  # One good example is selecting the current branch from `git branch`
-  # output. Given this repository:
+  # removing the label at the same time. A good example is finding the current
+  # git branch. Given this repository:
   #   $ git branch
   #     master
   #   * next
   #     topic
   # You can use +#collapse+ to retrieve the current branch like this:
   #   shell('git branch').split("\n").collapse(/\* /) #=> ["next"]
-  def collapse by
-    grep(by).map {|i| i.sub by, '' }
+  def collapse pattern
+    grep(pattern).map {|i| i.sub pattern, '' }
   end
 
   # Return a new array by converting each element in this array to a VersionOf.

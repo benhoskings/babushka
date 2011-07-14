@@ -41,7 +41,7 @@ describe Array, '#collapse' do
     [].collapse('blah').should == []
     [].collapse(/blah/).should == []
   end
-  it "should select first names from a list" do
+  it "should select surnames from a list" do
     [
       'Ben Hoskings',
       'Nathan Sampimon',
