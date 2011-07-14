@@ -120,15 +120,16 @@ class Array
   #
   #   %w[latte espresso ristretto].to_list(:limit => 2, :noun => 'coffees') #=> "latte, espresso et al - 3 coffees"
   def to_list(opts = {})
-    if opts[:limit].nil? || (self.length <= opts[:limit])
+    items = map(&:to_s)
+    if opts[:limit].nil? || (length <= opts[:limit])
       [
-        self[0..-2].squash.join(', '),
-        last
+        items[0..-2].squash.join(', '),
+        items.last
       ].squash.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
     else
-      self[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " - #{self.length} #{opts[:noun]}")
+      items[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " - #{length} #{opts[:noun]}")
     end +
-    (opts[:suffix] ? " #{self.length > 1 ? 'are' : 'is'} #{opts[:suffix].strip}" : '')
+    (opts[:suffix] ? " #{length > 1 ? 'are' : 'is'} #{opts[:suffix].strip}" : '')
   end
 
   # If the final element of the array is a +Hash+, it's removed from this array
