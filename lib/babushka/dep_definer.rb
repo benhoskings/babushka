@@ -11,6 +11,8 @@ module Babushka
 
     attr_reader :dependency, :payload, :block
 
+    def name; dependency.name end
+    def basename; dependency.basename end
     def load_path; dependency.load_path end
 
     def set(key, value) vars.set(key, value) end
