@@ -3,6 +3,7 @@ module Babushka
     include Singleton
     include LogHelpers
     include PathHelpers
+    include ShellHelpers
 
     attr_reader :opts, :vars, :persistent_log
     attr_accessor :reportable
