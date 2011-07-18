@@ -99,6 +99,8 @@ module Babushka
   end
 
   class Logging
+    extend LogHelpers
+
     TickChar = '✓'
     CrossChar = '✗'
 
