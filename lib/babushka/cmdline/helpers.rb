@@ -72,7 +72,7 @@ module Babushka
       def print_search_results search_term, results
         log "The webservice knows about #{results.length} dep#{'s' unless results.length == 1} that match#{'es' if results.length == 1} '#{search_term}':"
         log ""
-        log_table(
+        Logging.log_table(
           ['Name', 'Source', 'Runs', ' ✓', 'Command'],
           results
         )

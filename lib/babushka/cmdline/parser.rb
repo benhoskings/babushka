@@ -3,6 +3,8 @@ require 'optparse'
 module Babushka
   module Cmdline
     class Parser
+      include LogHelpers
+
       attr_reader :verb, :argv, :opts
 
       def self.for argv

@@ -2,6 +2,7 @@
 
 module Babushka
   module Cmdline
+    extend LogHelpers
 
     handle('global', "Options that are valid for any handler") {
       opt '-v', '--version',                 "Print the current version"
