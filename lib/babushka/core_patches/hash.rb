@@ -99,8 +99,8 @@ class Hash
 
     keys.map {|key|
       [
-        URI.encode(key.to_s),
-        URI.encode(fetch(key).to_s)
+        URI.escape(key.to_s),
+        URI.escape(fetch(key).to_s)
       ].join('=')
     }.join( '&')
   end
