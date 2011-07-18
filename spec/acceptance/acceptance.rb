@@ -13,9 +13,6 @@ describe "babushka" do
   end
 
   context "core deps" do
-      it "should update rubygems" do
-        @vm.should meet('rubygems')
-      end
     it "should install build tools" do
       @vm.should meet('build tools')
     end
