@@ -2,6 +2,8 @@ module Babushka
   class SourcePool
     include Singleton
 
+    include LogHelpers
+
     SOURCE_DEP_SEPARATOR = ':'
 
     def current
