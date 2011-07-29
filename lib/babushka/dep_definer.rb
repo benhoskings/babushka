@@ -19,6 +19,7 @@ module Babushka
     def load_path; dependency.load_path end
 
     include Vars::Helpers
+    extend Vars::Helpers
 
     def initialize dep, &block
       @dependency = dep
