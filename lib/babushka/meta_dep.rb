@@ -1,5 +1,7 @@
 module Babushka
   class MetaDep
+    include LogHelpers
+
     INVALID_NAMES = %w[base]
 
     VALID_NAME_START_CHARS = /[a-z]/
@@ -41,6 +43,7 @@ module Babushka
 
     def initialize name, source, opts, &block
       @name, @source, @opts, @block = name, source, opts, block
+      debug "Defining #{source.name}:#{name} template"
       @context_class = build_context block
       source.templates.register self
     end
