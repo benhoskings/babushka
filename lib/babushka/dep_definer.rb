@@ -4,9 +4,13 @@ module Babushka
     end
 
     include LogHelpers
+    extend LogHelpers
     include ShellHelpers
+    extend ShellHelpers
     include PathHelpers
+    extend PathHelpers
     include RunHelpers
+    extend RunHelpers
 
     include AcceptsListFor
     include AcceptsValueFor
