@@ -18,10 +18,7 @@ module Babushka
     def basename; dependency.basename end
     def load_path; dependency.load_path end
 
-    def set(key, value) vars.set(key, value) end
-    def merge(key, value) vars.merge(key, value) end
-    def var(name, opts = {}) vars.var(name, opts) end
-    def define_var(name, opts = {}) vars.define_var(name, opts) end
+    include Vars::Helpers
 
     def initialize dep, &block
       @dependency = dep
@@ -77,10 +74,6 @@ module Babushka
     end
 
     private
-
-    def vars
-      Base.task.vars
-    end
 
     def pkg_manager
       BaseHelper

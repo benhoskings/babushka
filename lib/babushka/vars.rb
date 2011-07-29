@@ -5,6 +5,13 @@ module Babushka
 
     attr_reader :vars, :saved_vars
 
+    module Helpers
+      def set(key, value) Base.task.vars.set(key, value) end
+      def merge(key, value) Base.task.vars.merge(key, value) end
+      def var(name, opts = {}) Base.task.vars.var(name, opts) end
+      def define_var(name, opts = {}) Base.task.vars.define_var(name, opts) end
+    end
+
     def initialize
       @vars = Hashish.hash
       @saved_vars = Hashish.hash
