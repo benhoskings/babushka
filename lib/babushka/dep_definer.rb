@@ -12,6 +12,9 @@ module Babushka
     include RunHelpers
     extend RunHelpers
 
+    include VersionOf::Helpers
+    extend VersionOf::Helpers
+
     include AcceptsListFor
     include AcceptsValueFor
     include AcceptsBlockFor
