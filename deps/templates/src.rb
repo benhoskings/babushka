@@ -1,12 +1,8 @@
 meta :src do
   accepts_list_for :source
   accepts_list_for :extra_source
-  accepts_list_for :provides, :default_name
+  accepts_list_for :provides, :basename
   accepts_value_for :prefix, '/usr/local'
-
-  def default_name
-    Babushka::VersionOf basename
-  end
 
   accepts_block_for :preconfigure
 
