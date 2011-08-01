@@ -1,6 +1,7 @@
 module Babushka
   class BugReporter
     extend LogHelpers
+    extend ShellHelpers
     extend PromptHelpers
 
     # This method creates a bug report for +dep+, by reading the debug log and
