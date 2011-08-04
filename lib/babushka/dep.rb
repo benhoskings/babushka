@@ -258,12 +258,12 @@ module Babushka
     # - An 'X' means the corresponding return value doesn't matter, and is
     #   discarded.
     #
-    #     Initial state   | initial +met?+       | meet  | subsequent +met?+ | dep returns
-    #     ----------------+----------------------+-------+-------------------+------------
-    #     already met     | true                 | -     | -                 | true
-    #     unmeetable      | UnmeetableDep raised | -     | -                 | false
-    #     couldn't be met | false                | X     | false             | false
-    #     met during run  | false                | X     | true              | true
+    #     Initial state   | initial met?         | meet  | subsequent met? | dep returns
+    #     ----------------+----------------------+-------+-----------------+------------
+    #     already met     | true                 | -     | -               | true
+    #     unmeetable      | UnmeetableDep raised | -     | -               | false
+    #     couldn't be met | false                | X     | false           | false
+    #     met during run  | false                | X     | true            | true
     #
     # Wherever possible, the +met?+ test shouldn't directly test that the
     # +meet+ block performed specific tasks; only that its overall purpose has
