@@ -14,7 +14,7 @@ RSpec::Core::RakeTask.new('acceptance') {|t|
 
 desc 'Profile the spec suite'
 RSpec::Core::RakeTask.new('profile') {|t|
-  t.rspec_opts = %w[--color --profile]
+  t.rspec_opts = %w[--colour --profile]
 }
 
 desc 'Run code coverage'
