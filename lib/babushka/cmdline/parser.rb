@@ -18,7 +18,7 @@ module Babushka
       end
 
       def initialize verb, argv, parse_opts = {}
-        @verb, @argv, @opts, @implicit_verb = verb, argv, {}, parse_opts[:implicit_verb]
+        @verb, @argv, @opts, @implicit_verb = verb, argv, default_opts, parse_opts[:implicit_verb]
         parse &Handler.for('global').opt_definer
         parse &Handler.for(verb).opt_definer
       end
@@ -39,6 +39,12 @@ module Babushka
       end
 
       private
+
+      def default_opts
+        {
+          :"[no_]color" => $stdout.tty?
+        }
+      end
 
       def hint
         "`babushka#{" #{verb}" unless @implicit_verb} --help` for more info."
