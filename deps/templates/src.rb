@@ -4,8 +4,6 @@ meta :src do
   accepts_list_for :provides, :basename
   accepts_value_for :prefix, '/usr/local'
 
-  accepts_block_for :preconfigure
-
   accepts_block_for(:preconfigure) {
     if './configure'.p.exists?
       true # No preconfigure needed
