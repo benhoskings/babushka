@@ -5,10 +5,11 @@ module Babushka
     extend LogHelpers
 
     handle('global', "Options that are valid for any handler") {
-      opt '-v', '--version',                 "Print the current version"
-      opt '-h', '--help',                    "Show this information"
-      opt '-d', '--debug',                   "Show more verbose logging, and realtime shell command output"
-      opt       '--no-color', '--no-colour', "Disable color in the output"
+      opt '-v', '--version',     "Print the current version"
+      opt '-h', '--help',        "Show this information"
+      opt '-d', '--debug',       "Show more verbose logging, and realtime shell command output"
+      opt       '--[no-]color',
+                '--[no-]colour', "Disable color in the output"
     }
 
     handle('help', "Print usage information").run {|cmd|
