@@ -45,7 +45,7 @@ module Babushka
     end
 
     # The top-level entry point for babushka runs invoked at the command line.
-    # When the `babushka` command is run, bin/babushka first triggers a load
+    # When the `babushka` command is run, bin/babushka.rb first triggers a load
     # via lib/babushka.rb, and then calls this method.
     def run
       cmdline.run
