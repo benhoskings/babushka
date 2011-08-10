@@ -169,13 +169,13 @@ describe Fancypath do
     example 'with symbol' do
       @dir.create_dir
       %W(a.jpg b.jpg c.gif).each { |f| (@dir/f).touch }
-      @dir.select(:jpg).should == [@dir/'a.jpg', @dir/'b.jpg']
+      @dir.select(:jpg).should =~ [@dir/'a.jpg', @dir/'b.jpg']
     end
 
     example 'with glob' do
       @dir.create_dir
       %W(a.jpg b.jpg c.gif).each { |f| (@dir/f).touch }
-      @dir.select("*.jpg").should == [@dir/'a.jpg', @dir/'b.jpg']
+      @dir.select("*.jpg").should =~ [@dir/'a.jpg', @dir/'b.jpg']
     end
 
     example 'with regex' do
@@ -187,7 +187,7 @@ describe Fancypath do
     example 'with multiple args' do
       @dir.create_dir
       %W(a.jpg b.jpg c.gif).each { |f| (@dir/f).touch }
-      @dir.select(:jpg, '*.gif').should == [@dir/'a.jpg', @dir/'b.jpg', @dir/'c.gif']
+      @dir.select(:jpg, '*.gif').should =~ [@dir/'a.jpg', @dir/'b.jpg', @dir/'c.gif']
     end
 
     # todo: with block
