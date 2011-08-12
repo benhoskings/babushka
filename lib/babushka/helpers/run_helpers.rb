@@ -9,12 +9,12 @@ module Babushka
     end
 
     def rake cmd, &block
-      sudo "rake #{cmd} RAILS_ENV=#{var :rails_env}", :as => var(:username), &block
+      sudo "rake #{cmd} RAILS_ENV=#{var :app_env}", :as => var(:username), &block
     end
 
     def bundle_rake cmd, &block
       cd var(:rails_root) do
-        shell "bundle exec rake #{cmd} --trace RAILS_ENV=#{var :rails_env}", :as => var(:username), :log => true, &block
+        shell "bundle exec rake #{cmd} --trace RAILS_ENV=#{var :app_env}", :as => var(:username), :log => true, &block
       end
     end
 
