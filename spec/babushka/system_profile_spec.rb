@@ -26,6 +26,9 @@ describe Babushka::SystemProfile, '.for_host' do
     it "should return LinuxSystemProfile on unknown Linux boxes" do
       Babushka::SystemProfile.for_host.class.should == Babushka::LinuxSystemProfile
     end
+    it "should return a proper description on unknown Linux boxes" do
+      Babushka::SystemProfile.for_host.description.should == "Linux unknown"
+    end
     context "version matching" do
       before {
         File.should_receive(:exists?).with("/etc/debian_version").and_return(true)

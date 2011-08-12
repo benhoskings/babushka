@@ -44,7 +44,7 @@ module Babushka
         (flavour_str unless flavour_str == system_str),
         system_str,
         version,
-        "(#{name_str})"
+        ("(#{name_str})" unless name_str.nil?)
       ].compact.join(' ')
     end
 
@@ -126,7 +126,9 @@ module Babushka
     def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
+    def flavour; :unknown end
     def flavour_str; flavour_str_map[system][flavour] end
+    def version; 'unknown' end
     def release; version end
 
     def self.for_flavour
