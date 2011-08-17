@@ -16,9 +16,7 @@ require File.expand_path(
 
 # Mix in the #Dep, #dep & #meta top-level helper methods, since we're running
 # standalone.
-Object.class_eval {
-  include Babushka::Dep::Helpers
-}
+Object.send :include, Babushka::DSL
 
 # Handle ctrl-c gracefully during babushka runs.
 Babushka::Base.exit_on_interrupt!
