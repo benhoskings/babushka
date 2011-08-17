@@ -34,26 +34,6 @@ describe "declaration" do
   after { Base.sources.anonymous.templates.clear! }
 end
 
-describe "declaration with dot" do
-  before {
-    @meta = meta '.test'
-  }
-  it "should work" do
-    L{ meta '.suffix_count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
-  end
-  it_should_behave_like 'defined meta dep'
-  it "should be marked as suffixed" do
-    @meta.opts[:suffix].should be_true
-  end
-  describe "collisions" do
-    before { meta 'collision_test' }
-    it "should conflict, disregarding the dot" do
-      L{ meta '.collision_test' }.should raise_error(ArgumentError, "A template called 'collision_test' has already been defined.")
-    end
-  end
-  after { Base.sources.anonymous.templates.clear! }
-end
-
 describe "using" do
   describe "invalid templates" do
     it "should not define deps as options" do
@@ -68,7 +48,7 @@ describe "using" do
 
   describe "without template" do
     before {
-      @meta = meta('.templateless_test') {}
+      @meta = meta('templateless_test') {}
     }
     it "should define deps based on the template" do
       dep('templateless dep.templateless_test').template.should == @meta
