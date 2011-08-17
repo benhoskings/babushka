@@ -163,7 +163,7 @@ module Babushka
     # suffix, if any. Unlike +#basename+, this method will return anything that
     # looks like a template suffix, even if it doesn't match a template.
     def suffix
-      name.scan(MetaDep::TEMPLATE_SUFFIX).flatten.first
+      name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
     def args
