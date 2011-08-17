@@ -16,6 +16,10 @@ describe "prompt_for_value" do
       @values = ['']
       prompt_for_value('value', :default => 'default').should == 'default'
     end
+    it "should handle non-string defaults" do
+      @values = ['']
+      prompt_for_value('value', :default => 80).should == '80'
+    end
   end
 
   describe "with choices" do
