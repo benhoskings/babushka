@@ -1,7 +1,13 @@
 require 'spec_helper'
 require 'dep_definer_support'
 
-shared_examples_for 'defined meta dep' do
+describe "declaration" do
+  before {
+    @meta = meta 'test'
+  }
+  it "should work" do
+    L{ meta 'count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
+  end
   it "should set the name" do
     @meta.name.should == 'test'
   end
@@ -18,16 +24,6 @@ shared_examples_for 'defined meta dep' do
   it "should not define a dep helper" do
     Object.new.should_not respond_to('test')
   end
-end
-
-describe "declaration" do
-  before {
-    @meta = meta 'test'
-  }
-  it "should work" do
-    L{ meta 'count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
-  end
-  it_should_behave_like 'defined meta dep'
   it "should not be marked as suffixed" do
     @meta.opts[:suffix].should be_false
   end
