@@ -11,6 +11,9 @@ describe "declaration" do
   it "should set the name" do
     @meta.name.should == 'test'
   end
+  it "should downcase the name" do
+    meta("Case_Test").name.should == 'case_test'
+  end
   it "should set the source" do
     @meta.source.should == Base.sources.anonymous
   end
