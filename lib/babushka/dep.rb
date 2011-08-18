@@ -131,6 +131,19 @@ module Babushka
       end
     end
 
+    # Returns this dep's name, including the source name as a prefix if this
+    # dep is in a cloneable source.
+    #
+    # A cloneable source is one that babushka knows how to automatically
+    # update; i.e. a source that babushka could have installed itself.
+    #
+    # In effect, a cloneable source is one whose deps you prefix when you run
+    # them, so this method returns the dep's name in the same form as you would
+    # refer to it on the commandline or within a +require+ call in another dep.
+    def contextual_name
+      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
+    end
+
     # Return this dep's name, first removing the template suffix if one is
     # present.
     #
@@ -146,24 +159,11 @@ module Babushka
       suffixed? ? name.sub(/\.#{Regexp.escape(template.name)}$/, '') : name
     end
 
-    # Returns this dep's name, including the source name as a prefix if this
-    # dep is in a cloneable source.
-    #
-    # A cloneable source is one that babushka knows how to automatically
-    # update; i.e. a source that babushka could have installed itself.
-    #
-    # In effect, a cloneable source is one whose deps you prefix when you run
-    # them, so this method returns the dep's name in the same form as you would
-    # refer to it on the commandline or within a +require+ call in another dep.
-    def contextual_name
-      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
-    end
-
     # Returns the portion of the end of the dep name that looks like a template
     # suffix, if any. Unlike +#basename+, this method will return anything that
     # looks like a template suffix, even if it doesn't match a template.
     def suffix
-      name.scan(MetaDep::TEMPLATE_SUFFIX).flatten.first
+      name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
     def args

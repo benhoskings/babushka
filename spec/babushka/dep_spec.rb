@@ -41,31 +41,28 @@ describe "Dep.new" do
       @dep.template.should == Dep::BaseTemplate
     end
   end
-  context "with template" do
+  context "with a missing template" do
     it "should fail to define optioned deps against a missing template" do
       L{
         Dep.new("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil).template
       }.should raise_error(DepError, "There is no template named 'template' to define 'valid but missing template' against.")
     end
-    context "with template from options" do
-      before {
-        @meta = meta('option template')
-        @dep = Dep.new("valid option dep", Base.sources.anonymous, {:template => 'option template'}, nil)
+  end
+  context "with template" do
+    before {
+      @meta = meta('template')
+    }
+    it "should work when passed as an option" do
+      Dep.new("valid option dep", Base.sources.anonymous, {:template => 'template'}, nil).tap {|dep|
+        dep.should be_an_instance_of(Dep)
+        dep.template.should == @meta
       }
-      it "should work" do
-        @dep.should be_an_instance_of(Dep)
-        @dep.template.should == @meta
-      end
     end
-    context "with template from suffix" do
-      before {
-        @meta = meta('.suffix_template')
-        @dep = Dep.new("valid dep name.suffix_template", Base.sources.anonymous, {}, nil)
+    it "should work when passed as a suffix" do
+      Dep.new("valid dep name.template", Base.sources.anonymous, {}, nil).tap {|dep|
+        dep.should be_an_instance_of(Dep)
+        dep.template.should == @meta
       }
-      it "should work" do
-        @dep.should be_an_instance_of(Dep)
-        @dep.template.should == @meta
-      end
     end
     after { Base.sources.anonymous.templates.clear! }
   end
@@ -182,58 +179,39 @@ describe "dep creation" do
   after { Base.sources.anonymous.deps.clear! }
 
   context "without template" do
-    before { dep 'without template' }
     it "should use the base template" do
-      Dep('without template').template.should == Dep::BaseTemplate
+      dep('without template').template.should == Dep::BaseTemplate
     end
   end
-  context "with option template" do
+  context "with template" do
     before {
-      @template = meta 'option template'
+      @template = meta 'template'
     }
-    it "should use the specified template as an option" do
-      dep('with option template', :template => 'option template').template.should == @template
-    end
-    it "should not recognise the template as a suffix" do
-      dep('with option template.option template').template.should == Dep::BaseTemplate
-    end
-  end
-  context "with suffix template" do
-    before {
-      @template = meta '.suffix_template'
-    }
-    context "as option template" do
-      before {
-        @dep = dep('with suffix template', :template => 'suffix_template')
+    it "should use the template when passed as an option" do
+      dep('with template', :template => 'template').tap {|dep|
+        dep.template.should == @template
+        dep.should_not be_suffixed
+        dep.suffix.should be_nil
       }
-      it "should use the specified template as an option" do
-        @dep.template.should == @template
-      end
-      it "should not be suffixed" do
-        @dep.should_not be_suffixed
-        @dep.suffix.should be_nil
-      end
     end
-    context "as suffix template" do
-      before {
-        @dep = dep('with suffix template.suffix_template')
+    it "should use the template and be suffixed when passed as a suffix" do
+      dep('with template.template').tap {|dep|
+        dep.template.should == @template
+        dep.should be_suffixed
+        dep.suffix.should == 'template'
       }
-      it "should use the specified template as a suffix" do
-        @dep.template.should == @template
-      end
-      it "should not be suffixed" do
-        @dep.should be_suffixed
-        @dep.suffix.should == 'suffix_template'
-      end
     end
-  end
-  context "with both templates" do
-    before {
-      meta '.suffix_template'
-      @template = meta 'option template'
-    }
-    it "should use the option template" do
-      dep('with both templates.suffix_template', :template => 'option template').template.should == @template
+    context "when both are passed" do
+      before {
+        @another_template = meta 'another_template'
+      }
+      it "should use the option template" do
+        dep('with both templates.template', :template => 'another_template').tap {|dep|
+          dep.template.should == @another_template
+          dep.should_not be_suffixed
+          dep.suffix.should == 'template'
+        }
+      end
     end
   end
   after { Base.sources.anonymous.templates.clear! }
@@ -326,23 +304,29 @@ describe Dep, '#basename' do
     end
   end
   context "for option-templated deps" do
-    before { meta 'basename template' }
+    before { meta 'basename_template' }
     it "should be the same as the dep's name" do
-      dep('basename test', :template => 'basename template').basename.should == 'basename test'
+      dep('basename test', :template => 'basename_template').basename.should == 'basename test'
     end
     context "with a suffix" do
       it "should be the same as the dep's name" do
-        dep('basename test.basename template', :template => 'basename template').basename.should == 'basename test.basename template'
+        dep('basename test.basename_template', :template => 'basename_template').basename.should == 'basename test.basename_template'
       end
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after {
+      Base.sources.anonymous.deps.clear!
+      Base.sources.anonymous.templates.clear!
+    }
   end
   context "for suffix-templated deps" do
     before { meta 'basename_template' }
     it "should remove the suffix name" do
       dep('basename test.basename_template').basename.should == 'basename test'
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after {
+      Base.sources.anonymous.deps.clear!
+      Base.sources.anonymous.templates.clear!
+    }
   end
 end
 
