@@ -57,6 +57,16 @@ describe Array, '#collapse' do
       'master'
     ]
   end
+  it "should use the replacement if passed" do
+    [
+      "Chain fail2ban-nginx-catchall (1 references)",
+      "target     prot opt source               destination",
+      "DROP       all  --  58.161.41.76         0.0.0.0/0  ",
+      "RETURN     all  --  0.0.0.0/0            0.0.0.0/0  "
+    ].collapse(/^DROP\s+[^\d]+([\d\.]+)\s+.*/, '\1').should == [
+      '58.161.41.76'
+    ]
+  end
 end
 
 describe Array, '#local_group_by' do

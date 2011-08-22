@@ -67,7 +67,8 @@ class Array
   end
 
   # Return a new array containing the elements that match +pattern+, with
-  # +pattern+ removed.
+  # +pattern+ removed (or replaced via Array#sub, if +replacement+ is
+  # supplied).
   #
   # This is useful for selecting items from a list based on some label,
   # removing the label at the same time. A good example is finding the current
@@ -78,8 +79,8 @@ class Array
   #     topic
   # You can use +#collapse+ to retrieve the current branch like this:
   #   shell('git branch').split("\n").collapse(/\* /) #=> ["next"]
-  def collapse pattern
-    grep(pattern).map {|i| i.sub pattern, '' }
+  def collapse pattern, replacement = ''
+    grep(pattern).map {|i| i.sub pattern, replacement }
   end
 
   # Return a new array by converting each element in this array to a VersionOf.
