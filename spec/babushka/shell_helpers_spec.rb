@@ -108,20 +108,17 @@ describe 'argument behaviour' do
 end
 
 describe "sudo" do
-  before {
-    @current_user = `whoami`.chomp
-  }
   it "should run as root when no user is given" do
     should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
     sudo('whoami')
   end
   it "should run as the given user" do
     should_receive(:shell_cmd).with('sudo -u ben whoami', {}).once
-    sudo('whoami', :as => @current_user)
+    sudo('whoami', :as => ENV['USER'])
   end
   it "should treat :sudo => 'string' as a username" do
     should_receive(:shell_cmd).with('sudo -u ben whoami', {}).once
-    shell('whoami', :sudo => @current_user)
+    shell('whoami', :sudo => ENV['USER'])
   end
   it "should sudo from #shell when :as is specified" do
     should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
