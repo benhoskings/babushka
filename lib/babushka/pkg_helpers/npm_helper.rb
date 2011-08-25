@@ -19,12 +19,9 @@ module Babushka
     def _has? pkg
       # Some example output:
       #   socket.io@0.6.15      =rauchg active installed remote
-      shell("#{pkg_cmd} ls '#{pkg.name}'").split("\n").select {|l|
-        # npm mistakenly includes \e[m in here even with --color false.
-        l[/^#{Regexp.escape(pkg.name)}(\e\[m)?\@.*\binstalled\b/]
-      }.map {|installed|
-        installed.sub(/\s+=.*$/, '')
-      }.any? {|match|
+      shell("#{pkg_cmd} ls").split("\n").grep(
+        /^\W*#{Regexp.escape(pkg.name)}\@/
+      ).any? {|match|
         pkg.matches? match.scan(/\@(.*)$/).flatten.first
       }
     end
