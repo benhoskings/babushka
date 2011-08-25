@@ -123,7 +123,7 @@ module Babushka
       else
         "sudo -u #{opts[:as] || 'root'} #{cmd}"
       end
-      shell sudo_cmd, opts.discard(:as, :sudo), &block
+      shell sudo_cmd, opts.discard(:as, :sudo, :su), &block
     end
 
     # This method returns the full path to the specified command in the PATH,
