@@ -8,7 +8,6 @@ include Babushka::DSL
 
 require 'rubygems'
 require 'rspec'
-RSpec.configure
 
 # RSpec::Core::Example.send :include, Babushka::Helpers
 RSpec::Core::ExampleGroup.send :include, Babushka::LogHelpers
