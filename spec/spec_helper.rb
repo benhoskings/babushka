@@ -14,7 +14,7 @@ RSpec::Core::ExampleGroup.send :include, Babushka::LogHelpers
 RSpec::Core::ExampleGroup.send :include, Babushka::ShellHelpers
 RSpec::Core::ExampleGroup.send :include, Babushka::PathHelpers
 
-puts "babushka@#{`git rev-parse --short HEAD`.strip} • ruby-#{RUBY_VERSION} • rspec-#{RSpec::Version::STRING}"
+puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
   "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
