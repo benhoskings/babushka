@@ -1,3 +1,4 @@
+*.rbc
 .bundle/
 .idea
 conf/rackspace.yml
