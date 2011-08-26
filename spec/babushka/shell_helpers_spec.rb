@@ -83,7 +83,8 @@ describe "raw_shell" do
     shell.stderr.should include("No such file or directory")
   end
   it "should support sudo" do
-    raw_shell('whoami', :sudo => true).stdout.should == "root\n"
+    should_receive(:shell).with('whoami', :sudo => true).once
+    raw_shell('whoami', :sudo => true)
   end
 end
 
@@ -107,46 +108,34 @@ describe 'argument behaviour' do
 end
 
 describe "sudo" do
-  before {
-    @current_user = `whoami`.chomp
-  }
   it "should run as root when no user is given" do
-    sudo('whoami').should == 'root'
+    should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
+    sudo('whoami')
   end
   it "should run as the given user" do
-    sudo('whoami', :as => @current_user).should == @current_user
+    should_receive(:shell_cmd).with('sudo -u ben whoami', {}).once
+    sudo('whoami', :as => ENV['USER'])
   end
   it "should treat :sudo => 'string' as a username" do
-    shell('whoami', :sudo => @current_user).should == @current_user
+    should_receive(:shell_cmd).with('sudo -u ben whoami', {}).once
+    shell('whoami', :sudo => ENV['USER'])
   end
   it "should sudo from #shell when :as is specified" do
-    shell('whoami', :as => 'root').should == 'root'
+    should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
+    shell('whoami', :as => 'root')
   end
   describe "compound commands" do
     it "should use 'sudo su -' when opts[:su] is supplied" do
-      sudo("echo \\`whoami\\`", :su => true).should == 'root'
+      should_receive(:shell_cmd).with('sudo su - root -c "echo \\`whoami\\`"', {}).once
+      sudo("echo \\`whoami\\`", :su => true)
     end
-    describe "redirects" do
-      before {
-        @tmp_path = tmp_prefix / 'su_with_redirect'
-        sudo "rm #{@tmp_path}"
-      }
-      it "should use 'sudo su -'" do
-        sudo("echo \\`whoami\\` > #{@tmp_path}")
-        @tmp_path.read.chomp.should == 'root'
-        @tmp_path.owner.should == 'root'
-      end
+    it "should use 'sudo su -' for redirects" do
+      should_receive(:shell_cmd).with('sudo su - root -c "echo \\`whoami\\` > %s/su_with_redirect"' % tmp_prefix, {}).once
+      sudo("echo \\`whoami\\` > %s/su_with_redirect" % tmp_prefix)
     end
-    describe "pipes" do
-      before {
-        @tmp_path = tmp_prefix / 'su_with_redirect'
-        sudo "rm #{@tmp_path}"
-      }
-      it "should use 'sudo su -'" do
-        sudo("echo \\`whoami\\` | tee #{@tmp_path}")
-        @tmp_path.read.chomp.should == 'root'
-        @tmp_path.owner.should == 'root'
-      end
+    it "should use 'sudo su -' for pipes" do
+      should_receive(:shell_cmd).with('sudo su - root -c "echo \\`whoami\\` | tee %s/su_with_pipe"' % tmp_prefix, {}).once
+      sudo("echo \\`whoami\\` | tee %s/su_with_pipe" % tmp_prefix)
     end
   end
 end
