@@ -39,7 +39,8 @@ module Babushka
       path = filename.p
 
       log "Patching #{path}"
-      sudo "cat > #{path}", :as => path.owner, :input => path.readlines.map {|l|
+      # TODO: upgrade #shell to not sudo if no user change is required.
+      shell "cat > #{path}", :as => (path.owner unless path.owner == ENV['USER']), :input => path.readlines.map {|l|
         l.gsub /^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}"
       }.join("")
     end
