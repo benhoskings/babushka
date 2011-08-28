@@ -55,7 +55,7 @@ module Babushka
       versions = commands.select {|cmd|
         !cmd.version.nil?
       }.inject({}) {|hsh,cmd|
-        hsh[cmd] = shell("#{cmd.name} --version").split(/[\s\-]/).detect {|piece|
+        hsh[cmd] = (shell("#{cmd.name} --version") || '').split(/[\s\-]/).detect {|piece|
           begin
             cmd.matches? piece.to_version
           rescue VersionStrError
