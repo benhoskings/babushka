@@ -39,7 +39,10 @@ module Babushka
       if payload.has_key? method_name
         payload[method_name].map {|i| i.respond_to?(:call) ? i.call : i }.compact
       else
-        [*(default.is_a?(Symbol) ? send(default) : (default || []))]
+        # Splatting on expressions instead of just a single token seems
+        # to break the result in rubinius. https://gist.github.com/1173301
+        values = default.is_a?(Symbol) ? send(default) : (default || [])
+        [*values]
       end
     end
   end
