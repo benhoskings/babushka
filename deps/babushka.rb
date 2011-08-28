@@ -89,7 +89,7 @@ dep 'repo clean.babushka' do
 end
 
 dep 'in path.babushka' do
-  requires 'up to date.babushka'
+  requires 'installed.babushka'
   met? { which 'babushka' }
   meet {
     log_shell "Linking babushka into #{repo.path / '../bin'}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{repo.path / '../bin/babushka'}"}
