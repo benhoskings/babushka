@@ -30,9 +30,6 @@ dep 'set up.babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
-  setup {
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
-  }
 end
 
 dep 'up to date.babushka' do
@@ -106,6 +103,9 @@ dep 'installed.babushka' do
   def babushka_source
     "git://github.com/benhoskings/babushka.git"
   end
+  setup {
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
+  }
   met? { repo.exists? }
   meet {
     log_block "Cloning #{babushka_source} into #{repo.path}" do
