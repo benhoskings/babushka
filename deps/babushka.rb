@@ -91,6 +91,9 @@ dep 'in path.babushka' do
   def bin_path
     repo.path / '../bin'
   end
+  setup {
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{bin_path} (to symlink babushka into the path)." unless bin_path.hypothetically_writable?
+  }
   met? { which 'babushka' }
   meet {
     bin_path.mkdir
