@@ -30,13 +30,13 @@ end
 
 dep 'existing.install_path' do
   met? { subpaths.all? {|path| File.directory?(install_prefix / path) } }
-  meet { subpaths.each {|path| sudo "mkdir -p '#{install_prefix / path}'" } }
+  meet { sudo "mkdir -p #{subpaths.map {|path| "'#{install_prefix / path}'" }.join(' ')}" }
 end
 
 # TODO this won't be required once we can pass vars around
 dep 'usr-local.install_path' do
   met? { subpaths.all? {|path| File.directory?('/usr/local' / path) } }
-  meet { subpaths.each {|path| sudo "mkdir -p '#{'/usr/local' / path}'" } }
+  meet { sudo "mkdir -p #{subpaths.map {|path| "'#{'/usr/local' / path}'" }.join(' ')}" }
 end
 
 dep 'install location in path', :template => 'external' do
