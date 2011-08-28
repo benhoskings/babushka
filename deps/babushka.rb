@@ -30,9 +30,6 @@ dep 'set up.babushka' do
       'master' => 'Standard-issue babushka',
       'next' => 'The development head -- slight risk of explosions'
     }
-  setup {
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." if repo.path.exists? unless repo.path.writable?
-  }
 end
 
 dep 'up to date.babushka' do
@@ -70,7 +67,8 @@ dep 'update would fast forward.babushka' do
 end
 
 dep 'on correct branch.babushka' do
-  requires 'repo clean.babushka', 'branch exists.babushka'
+  requires 'branch exists.babushka'
+  requires_when_unmet 'repo clean.babushka'
   met? { repo.current_branch == var(:babushka_branch) }
   meet { repo.checkout! var(:babushka_branch) }
 end
@@ -89,21 +87,33 @@ dep 'repo clean.babushka' do
 end
 
 dep 'in path.babushka' do
-  requires 'up to date.babushka'
+  requires 'installed.babushka'
+  def bin_path
+    repo.path / '../bin'
+  end
+  setup {
+    unmeetable "The binary path alongside babushka, #{bin_path}, isn't in your $PATH." unless ENV['PATH'].split(':').include?(bin_path)
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{bin_path} (to symlink babushka into the path)." unless bin_path.hypothetically_writable?
+  }
   met? { which 'babushka' }
   meet {
-    log_shell "Linking babushka into #{repo.path / '../bin'}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{repo.path / '../bin/babushka'}"}
+    bin_path.mkdir
+    log_shell "Linking babushka into #{bin_path}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{bin_path / 'babushka'}"}
   }
 end
 
 dep 'installed.babushka' do
   requires 'ruby', 'git'
-  requires_when_unmet 'writable.install_path'
-  setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
+  def babushka_source
+    "git://github.com/benhoskings/babushka.git"
+  end
+  setup {
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
+  }
   met? { repo.exists? }
   meet {
-    log_block "Cloning #{var(:babushka_source)} into #{repo.path}" do
-      repo.clone! var(:babushka_source)
+    log_block "Cloning #{babushka_source} into #{repo.path}" do
+      repo.clone! babushka_source
     end
   }
 end
