@@ -76,7 +76,7 @@ module Babushka
           ['Name', 'Source', 'Runs', ' ✓', 'Command'],
           results
         )
-        if (custom_sources = results.select {|r| r[1][github_autosource_regex].nil? }.count) > 0
+        if (custom_sources = results.select {|r| r[1][github_autosource_regex].nil? }.length) > 0
           log ""
           log "✣  #{custom_sources == 1 ? 'This source has a custom URI' : 'These sources have custom URIs'}, so babushka can't discover #{custom_sources == 1 ? 'it' : 'them'} automatically."
           log "   You can run #{custom_sources == 1 ? 'its' : 'their'} deps in the same way, though, once you add #{custom_sources == 1 ? 'it' : 'them'} manually:"
