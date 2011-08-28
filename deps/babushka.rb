@@ -92,13 +92,13 @@ dep 'in path.babushka' do
   requires 'installed.babushka'
   met? { which 'babushka' }
   meet {
+    bin_path.mkdir
     log_shell "Linking babushka into #{repo.path / '../bin'}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{repo.path / '../bin/babushka'}"}
   }
 end
 
 dep 'installed.babushka' do
   requires 'ruby', 'git'
-  requires_when_unmet 'writable.install_path'
   setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
   met? { repo.exists? }
   meet {
