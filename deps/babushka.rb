@@ -31,7 +31,7 @@ dep 'set up.babushka' do
       'next' => 'The development head -- slight risk of explosions'
     }
   setup {
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." if repo.path.exists? unless repo.path.writable?
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
   }
 end
 
