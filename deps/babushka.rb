@@ -103,11 +103,13 @@ end
 
 dep 'installed.babushka' do
   requires 'ruby', 'git'
-  setup { set :babushka_source, "git://github.com/benhoskings/babushka.git" }
+  def babushka_source
+    "git://github.com/benhoskings/babushka.git"
+  end
   met? { repo.exists? }
   meet {
-    log_block "Cloning #{var(:babushka_source)} into #{repo.path}" do
-      repo.clone! var(:babushka_source)
+    log_block "Cloning #{babushka_source} into #{repo.path}" do
+      repo.clone! babushka_source
     end
   }
 end
