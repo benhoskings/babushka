@@ -50,6 +50,13 @@ class Fancypath < Pathname
 
   alias_method :/, :join
 
+  # This method returns true if the path is writable (i.e. and already
+  # exists), or if the current user would be able to create it (i.e. if
+  # its closest existing parent is writable).
+  def hypothetically_writable?
+    writable? || (!exists? && !root? && parent.hypothetically_writable?)
+  end
+
   # make file
   def touch
     `touch '#{self}'`
