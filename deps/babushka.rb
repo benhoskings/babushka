@@ -70,7 +70,8 @@ dep 'update would fast forward.babushka' do
 end
 
 dep 'on correct branch.babushka' do
-  requires 'repo clean.babushka', 'branch exists.babushka'
+  requires 'branch exists.babushka'
+  requires_when_unmet 'repo clean.babushka'
   met? { repo.current_branch == var(:babushka_branch) }
   meet { repo.checkout! var(:babushka_branch) }
 end
