@@ -91,10 +91,13 @@ end
 
 dep 'in path.babushka' do
   requires 'installed.babushka'
+  def bin_path
+    repo.path / '../bin'
+  end
   met? { which 'babushka' }
   meet {
     bin_path.mkdir
-    log_shell "Linking babushka into #{repo.path / '../bin'}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{repo.path / '../bin/babushka'}"}
+    log_shell "Linking babushka into #{bin_path}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{bin_path / 'babushka'}"}
   }
 end
 
