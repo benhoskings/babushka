@@ -93,9 +93,11 @@ dep 'in path.babushka' do
   end
   setup {
     unmeetable "The binary path alongside babushka, #{bin_path}, isn't in your $PATH." unless ENV['PATH'].split(':').include?(bin_path)
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{bin_path} (to symlink babushka into the path)." unless bin_path.hypothetically_writable?
   }
   met? { which 'babushka' }
+  prepare {
+    unmeetable "The current user, #{shell('whoami')}, can't write to #{bin_path} (to symlink babushka into the path)." unless bin_path.hypothetically_writable?
+  }
   meet {
     bin_path.mkdir
     log_shell "Linking babushka into #{bin_path}", %Q{ln -sf "#{repo.path / 'bin/babushka.rb'}" "#{bin_path / 'babushka'}"}
