@@ -22,4 +22,4 @@ Object.send :include, Babushka::DSL
 Babushka::Base.exit_on_interrupt!
 
 # Invoke babushka, returning the correct exit status to the shell.
-exit Babushka::Base.run
+exit !!Babushka::Base.run
