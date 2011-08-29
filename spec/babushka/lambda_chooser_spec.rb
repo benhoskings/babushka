@@ -38,7 +38,7 @@ describe "lambda choosing" do
   it "should reject :otherwise as a choice name" do
     L{
       LambdaChooser.new(nil, :ours, :yours, :otherwise)
-    }.should raise_error ArgumentError, "You can't use :otherwise as a choice name, because it's reserved."
+    }.should raise_error(ArgumentError, "You can't use :otherwise as a choice name, because it's reserved.")
   end
 
   it "should pick 'otherwise' if no choices match" do
