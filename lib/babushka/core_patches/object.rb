@@ -38,9 +38,15 @@ unless Object.new.respond_to? :instance_exec
     # This is a fallback implementation for older rubies that don't have
     # a built-in #instance_exec.
     def instance_exec(*args, &block)
-      n = 0
-      n += 1 while respond_to?(method_name = "__instance_exec_#{n}")
-      metaclass.send :define_method, method_name, &block
+      begin
+        old_critical, Thread.critical = Thread.critical, true
+        n = 0
+        n += 1 while respond_to?(method_name = "__instance_exec_#{n}")
+        metaclass.send :define_method, method_name, &block
+      ensure
+        Thread.critical = old_critical
+      end
+
       send method_name, *args
     ensure
       metaclass.send :remove_method, method_name
