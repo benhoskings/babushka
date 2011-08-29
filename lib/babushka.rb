@@ -1,5 +1,5 @@
 module Babushka
-  VERSION        = '0.9.3'
+  VERSION        = '0.9.4'
   WorkingPrefix  = '~/.babushka'
   SourcePrefix   = '~/.babushka/sources'
   BuildPrefix    = '~/.babushka/build'
