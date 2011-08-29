@@ -166,3 +166,22 @@ describe String, "val_for" do
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
   end
 end
+
+describe Object, '#instance_exec' do
+  it "should run in the context of the object" do
+    "omg".instance_exec { reverse }.should == "gmo"
+  end
+  it "should accept arguments" do
+    "40".instance_exec(16) {|base| to_i(base) }.should == 64
+  end
+  it "should not pollute the class" do
+    b1, b2 = "b1", "b2"
+    b1.instance_exec {
+      def question
+        "Are you thinking what I'm thinking?, b2?"
+      end
+    }
+    b1.should respond_to(:question)
+    b2.should_not respond_to(:question)
+  end
+end
