@@ -1,5 +1,12 @@
 # coding: utf-8
 
+class Object
+  def taph
+    tap { puts "<pre>#{File.basename caller[2]}: #{self.inspect.gsub('<', '&lt;')}</pre>" }
+  end
+end
+
+
 $:.concat %w[spec/babushka spec/fancypath spec/inkan .]
 
 require 'lib/babushka'
