@@ -11,7 +11,7 @@ module Babushka
     def _install! pkgs, opts
       pkgs.each {|pkg|
         log_shell "Installing #{pkg} via #{manager_key}",
-          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
+          "#{pkg_cmd} install -g #{cmdline_spec_for pkg} #{opts}",
           :sudo => should_sudo?
       }
     end
@@ -19,7 +19,7 @@ module Babushka
     def _has? pkg
       # Some example output:
       #   socket.io@0.6.15      =rauchg active installed remote
-      shell("#{pkg_cmd} ls").split("\n").grep(
+      shell("#{pkg_cmd} ls -g").split("\n").grep(
         /^\W*#{Regexp.escape(pkg.name)}\@/
       ).any? {|match|
         pkg.matches? match.scan(/\@(.*)$/).flatten.first
