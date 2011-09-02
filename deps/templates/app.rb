@@ -1,7 +1,11 @@
+# template for os x applications
 meta :app do
+  # the URI from where to fetch the application. This can be git, tar, ziped or whatever
   accepts_list_for :source
+  # the directory to install the applicaiton in. First first existing directory is taken.
   accepts_list_for :prefix, %w[~/Applications /Applications]
   accepts_list_for :extra_source
+  # the executable that should be available if the dep is met
   accepts_list_for :provides, :name
   accepts_block_for :current_version do |path| nil end
   accepts_block_for :latest_version
@@ -22,6 +26,7 @@ meta :app do
     end
   end
 
+  # use the first string from the prefix array that is an existing directory 
   def prefix_to_use
     prefix.map(&:p).find {|pre|
       pre.directory?
