@@ -1,4 +1,4 @@
-meta :install_path do
+meta :fhs do
   def subpaths
     %w[. bin etc include lib sbin share share/doc var].concat(
       (1..9).map {|i| "share/man/man#{i}" }
@@ -9,8 +9,8 @@ meta :install_path do
   end
 end
 
-dep 'writable.install_path' do
-  requires 'existing.install_path'
+dep 'writable.fhs' do
+  requires 'layout.fhs'
   requires_when_unmet 'admins can sudo'
   met? {
     writable, nonwritable = subpaths.partition {|path| File.writable_real?(install_prefix / path) }
@@ -28,7 +28,7 @@ dep 'writable.install_path' do
   }
 end
 
-dep 'existing.install_path' do
+dep 'layout.fhs' do
   met? { subpaths.all? {|path| File.directory?(install_prefix / path) } }
   meet { sudo "mkdir -p #{subpaths.map {|path| "'#{install_prefix / path}'" }.join(' ')}" }
 end
