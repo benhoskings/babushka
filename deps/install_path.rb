@@ -33,12 +33,6 @@ dep 'existing.install_path' do
   meet { sudo "mkdir -p #{subpaths.map {|path| "'#{install_prefix / path}'" }.join(' ')}" }
 end
 
-# TODO this won't be required once we can pass vars around
-dep 'usr-local.install_path' do
-  met? { subpaths.all? {|path| File.directory?('/usr/local' / path) } }
-  meet { sudo "mkdir -p #{subpaths.map {|path| "'#{'/usr/local' / path}'" }.join(' ')}" }
-end
-
 dep 'install location in path', :template => 'external' do
   met? { ENV['PATH'].split(':').include? install_prefix / 'bin' }
 end
