@@ -123,6 +123,19 @@ describe GitRepo, '#clean? / #dirty?' do
   end
 end
 
+describe GitRepo, '#include?' do
+  before(:all) { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return true for valid commits" do
+    subject.include?('20758f2d9d696c51ac83a0fd36626d421057b24d').should be_true
+    subject.include?('20758f2').should be_true
+  end
+  it "should return false for nonexistent commits" do
+    subject.include?('20758f2d9d696c51ac83a0fd36626d421057b24e').should be_false
+    subject.include?('20758f3').should be_false
+  end
+end
+
 describe GitRepo, '#branches' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   context "on a repo with commits" do
