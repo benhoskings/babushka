@@ -1,5 +1,8 @@
-dep 'homebrew binary in place' do
-  requires 'homebrew git repo'
+meta :homebrew do
+end
+
+dep 'binary.homebrew' do
+  requires 'repo.homebrew'
   met? { which 'brew' }
   meet {
     cd var(:homebrew_prefix) do
@@ -8,7 +11,7 @@ dep 'homebrew binary in place' do
   }
 end
 
-dep 'homebrew git repo' do
+dep 'repo.homebrew' do
   requires_when_unmet Dep('writable.fhs').with(path), 'git'
   define_var :homebrew_prefix, :default => '/usr/local', :message => "Where would you like homebrew installed"
   setup {
