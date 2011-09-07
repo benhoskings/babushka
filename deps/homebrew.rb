@@ -9,7 +9,7 @@ dep 'homebrew binary in place' do
 end
 
 dep 'homebrew git repo' do
-  requires_when_unmet 'writable.fhs', 'git'
+  requires_when_unmet Dep('writable.fhs').with(path), 'git'
   define_var :homebrew_prefix, :default => '/usr/local', :message => "Where would you like homebrew installed"
   setup {
     if Babushka::BrewHelper.present?
