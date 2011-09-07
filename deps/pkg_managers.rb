@@ -54,7 +54,7 @@ dep 'universe.apt_source' do
 end
 
 dep 'homebrew' do
-  requires 'homebrew binary in place', 'build tools'
+  requires 'binary.homebrew', 'build tools'
 end
 
 dep 'yum', :template => 'external' do

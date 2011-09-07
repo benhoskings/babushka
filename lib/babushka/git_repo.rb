@@ -50,6 +50,10 @@ module Babushka
       !clean?
     end
 
+    def include? ref
+      repo_shell("git rev-list -n 1 '#{ref}'")
+    end
+
     def ahead?
       !remote_branch_exists? ||
       !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
