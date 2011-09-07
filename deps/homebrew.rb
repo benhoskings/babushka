@@ -10,11 +10,7 @@ end
 dep 'binary.homebrew' do
   requires 'repo.homebrew'
   met? { which 'brew' }
-  meet {
-    cd path do
-      log_shell "Resetting to HEAD", "git reset --hard"
-    end
-  }
+  meet { log_shell "Resetting to HEAD", "git reset --hard", :cd => path }
 end
 
 dep 'repo.homebrew' do
