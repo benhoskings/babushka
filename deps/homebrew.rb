@@ -15,7 +15,13 @@ end
 
 dep 'repo.homebrew' do
   requires_when_unmet Dep('writable.fhs').with(path), 'git'
-  met? { repo.exists? }
+  met? {
+    if repo.exists? && !repo.include?('ec2d785212af2c35b57f8c405b0855169d24dc0c')
+      unmeetable "There is a non-homebrew repo at #{path}."
+    else
+      repo.exists?
+    end
+  }
   meet {
     git "git://github.com/mxcl/homebrew.git" do
       log_shell "Gitifying #{path}", "cp -r .git '#{path}'"
