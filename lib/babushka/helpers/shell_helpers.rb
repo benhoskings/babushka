@@ -63,7 +63,7 @@ module Babushka
     # The idea is that +#shell+ is for when you're interested in the command's
     # output, and +#shell?+ is for when you're interested in the exit status.
     def shell? cmd, opts = {}
-      shell(cmd, opts) {|s| s.ok? }
+      shell(cmd, opts) {|s| s.stdout.chomp if s.ok? }
     end
 
     # This method is a shortcut for accessing the results of a shell command
