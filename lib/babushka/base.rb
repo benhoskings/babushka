@@ -61,7 +61,7 @@ module Babushka
           unless Base.task.callstack.empty?
             puts "\n#{Logging.closing_log_message("#{Base.task.callstack.first.contextual_name} (cancelled)", false, :closing_status => true)}"
           end
-          exit
+          exit false
         }
       end
     end
