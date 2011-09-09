@@ -90,12 +90,6 @@ module Babushka
       env_info.val_for('RUBYGEMS VERSION').to_version
     end
 
-    def update!
-      shell('gem update --system', :sudo => !which('gem').p.writable?).tap {|result|
-        @_cached_env_info = nil # `gem` changed, so this info needs re-fetching
-      }
-    end
-
 
     private
 
