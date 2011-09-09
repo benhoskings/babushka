@@ -70,17 +70,17 @@ module Babushka
       opt '-u', '--update',       "Update all known sources"
       opt '-l', '--list',         "List dep sources"
     }.run {|cmd|
-      if cmd.opts.length != 1
+      if cmd.opts.slice(:add, :update, :list).length != 1
         fail_with "'sources' requires a single option."
-      elsif cmd.opts.keys.first == :add
+      elsif cmd.opts.has_key?(:add)
         begin
           Source.new(cmd.argv.first, :name => cmd.opts[:add]).add!
         rescue SourceError => ex
           log_error ex.message
         end
-      elsif cmd.opts.keys.first == :update
+      elsif cmd.opts.has_key?(:update)
         Base.sources.update!
-      elsif cmd.opts.keys.first == :list
+      elsif cmd.opts.has_key?(:list)
         Base.sources.list!
       end
     }
