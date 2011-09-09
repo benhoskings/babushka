@@ -108,9 +108,9 @@ module Babushka
           else
             [source, items.select {|item| item.name.downcase[match_str] }]
           end
-        }.select {|(source,items)|
+        }.select {|(_,items)|
           !items.empty?
-        }.sort_by {|(source,items)|
+        }.sort_by {|(source,_)|
           source.name
         }.each {|(source,items)|
           indent = (items.map {|item| "#{source.name}:#{item.name}".length }.max || 0) + 3

@@ -50,7 +50,7 @@ module Babushka
     def run
       cmdline.run
     ensure
-      threads.each &:join
+      threads.each(&:join)
     end
 
     def exit_on_interrupt!

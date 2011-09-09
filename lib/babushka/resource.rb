@@ -99,7 +99,7 @@ module Babushka
     end
 
     def extract &block
-      cd(archive_prefix, :create => true) { process_extract &block }
+      cd(archive_prefix, :create => true) { process_extract(&block) }
     end
 
     def process_extract &block
@@ -128,7 +128,7 @@ module Babushka
 
     def identity_dirs
       Dir.glob('*/').map {|dir| dir.chomp('/') }.select {|dir|
-        dir.downcase.gsub(/[ -_\.]/, '') == name.downcase.gsub(/[ -_\.]/, '')
+        dir.downcase.gsub(/[ \-_\.]/, '') == name.downcase.gsub(/[ \-_\.]/, '')
       }
     end
 

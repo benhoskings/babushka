@@ -46,7 +46,7 @@ class Array
   # Return a new array containing every element from this array for which
   # the block returns true.
   def extract &block
-    dup.extract! &block
+    dup.extract!(&block)
   end
   # Like +extract+, but remove the extracted values in-place before
   # returning them.
@@ -63,7 +63,7 @@ class Array
   end
   # Like +squash+, but remove the +#nil?+ and +#blank?+ entries in-place.
   def squash!
-    delete_if &:blank?
+    delete_if(&:blank?)
   end
 
   # Return a new array containing the elements that match +pattern+, with
@@ -157,9 +157,9 @@ class Array
       [term, Babushka::Levenshtein.distance(term, string)]
     }.select {|(i, similarity)|
       similarity <= [i.length - 2, (i.length / 5) + 2].min
-    }.sort_by {|(i, similarity)|
+    }.sort_by {|(_, similarity)|
       similarity
-    }.map {|(i, similarity)|
+    }.map {|(i, _)|
       i
     }
   end

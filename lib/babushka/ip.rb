@@ -20,11 +20,11 @@ module Babushka
     end
 
     def next
-      offset_by 1
+      offset_by(1)
     end
 
     def prev
-      offset_by -1
+      offset_by(-1)
     end
 
     private
@@ -43,7 +43,7 @@ module Babushka
 
     def parse_and_sanitize input, &block
       parts = input.strip.split('.')
-      bytes = parts.zip(
+      parts.zip(
         parts.map(&:to_i)
       ).map {|(str,val)|
         yield str, val

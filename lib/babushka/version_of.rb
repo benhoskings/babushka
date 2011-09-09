@@ -8,13 +8,13 @@ module Babushka
         # passed, try splitting it on space to separate name and version. Otherwise,
         # pass the arguments as-is, splatting if required.
         if rest.any?
-          Babushka::VersionOf.new *[first].concat(rest)
+          Babushka::VersionOf.new(*[first].concat(rest))
         elsif first.is_a?(String)
-          Babushka::VersionOf.new *first.split(' ', 2)
+          Babushka::VersionOf.new(*first.split(' ', 2))
         elsif first.is_a?(Array)
-          Babushka::VersionOf.new *first
+          Babushka::VersionOf.new(*first)
         else
-          Babushka::VersionOf.new first
+          Babushka::VersionOf.new(first)
         end
       end
     end

@@ -77,7 +77,7 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      installed = Dir[
+      Dir[
         installed_pkgs_path / pkg_name / '*'
       ].map {|i|
         File.basename i.chomp('/')

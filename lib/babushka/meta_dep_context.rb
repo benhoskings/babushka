@@ -7,7 +7,7 @@ module Babushka
     end
 
     def define!
-      instance_eval &self.class.template unless self.class.template.nil?
+      instance_eval(&self.class.template) unless self.class.template.nil?
       super
     end
 

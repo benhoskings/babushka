@@ -1,8 +1,8 @@
 class Inkan
   attr_accessor :credit, :comment, :comment_suffix
   
-  def self.legitimate?(file)
-    File.open(file) do |file|
+  def self.legitimate?(filename)
+    File.open(filename) do |file|
       file_content = file.read
       seal, content = if file_content[/\A#!/]
         hashbang, seal, remaining_content = file_content.split("\n", 3)

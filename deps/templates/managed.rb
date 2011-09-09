@@ -62,7 +62,7 @@ meta :managed do
     Babushka::PkgHelper.all_manager_keys + Babushka::SystemDefinitions.all_tokens
   end
 
-  template &managed_template
+  template(&managed_template)
 end
 
 meta :gem do
@@ -75,7 +75,7 @@ meta :gem do
     Babushka::GemHelper
   end
 
-  template &managed_template
+  template(&managed_template)
 end
 
 meta :pip do
@@ -88,7 +88,7 @@ meta :pip do
     Babushka::PipHelper
   end
 
-  template &managed_template
+  template(&managed_template)
 end
 
 meta :npm do
@@ -101,5 +101,5 @@ meta :npm do
     Babushka::NpmHelper
   end
 
-  template &managed_template
+  template(&managed_template)
 end

@@ -84,7 +84,7 @@ module Babushka
       if (task_block = send(task_name)).nil?
         true
       else
-        instance_eval &task_block
+        instance_eval(&task_block)
       end
     end
 

@@ -53,6 +53,7 @@ module Babushka
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register self
         assign_template if Base.sources.current_real_load_source.nil?
+        @dep_defined = @_cached_process = nil # false represents failure for these two.
       end
     end
 
@@ -333,7 +334,7 @@ module Babushka
     def process_task task_name
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
-      context.instance_eval &context.send(task_name)
+      context.instance_eval(&context.send(task_name))
     rescue DepDefiner::UnmeetableDep => ex
       raise ex
     rescue StandardError => e

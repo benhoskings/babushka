@@ -8,6 +8,7 @@ module Babushka
       raise "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
       # [*cmd] doesn't work here, becuase splatting a string splits it at newlines on 1.8.
       @cmd, @opts = (cmd.is_a?(Array) ? cmd : [cmd]), opts
+      @progress = nil
     end
 
     def ok?; result == 0 end

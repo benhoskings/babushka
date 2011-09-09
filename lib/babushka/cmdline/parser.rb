@@ -19,8 +19,8 @@ module Babushka
 
       def initialize verb, argv, parse_opts = {}
         @verb, @argv, @opts, @implicit_verb = verb, argv, default_opts, parse_opts[:implicit_verb]
-        parse &Handler.for('global').opt_definer
-        parse &Handler.for(verb).opt_definer
+        parse(&Handler.for('global').opt_definer)
+        parse(&Handler.for(verb).opt_definer)
       end
 
       def run
@@ -35,7 +35,7 @@ module Babushka
       end
 
       def parse &blk
-        instance_eval &blk
+        instance_eval(&blk)
       end
 
       private

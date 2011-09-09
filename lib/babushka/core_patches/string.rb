@@ -96,7 +96,7 @@ class String
 
   # Remove all color-related escape sequences from this string in-place.
   def decolorize!
-    gsub! /\e\[\d+[;\d]*m/, ''
+    gsub!(/\e\[\d+[;\d]*m/, '')
     self
   end
 end

@@ -10,7 +10,7 @@ dep 'writable.fhs' do |path|
   requires Dep('layout.fhs').with(path)
   requires_when_unmet 'admins can sudo'
   met? {
-    writable, nonwritable = subpaths.partition {|subpath| File.writable_real?(path / subpath) }
+    _, nonwritable = subpaths.partition {|subpath| File.writable_real?(path / subpath) }
     nonwritable.empty?.tap {|result|
       log "Some directories within #{path} aren't writable by #{shell 'whoami'}." unless result
     }

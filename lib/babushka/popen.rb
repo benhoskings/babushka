@@ -9,10 +9,10 @@ module Babushka
         reopen_pipe_for :read, pipes[:in], STDIN
         reopen_pipe_for :write, pipes[:out], STDOUT
         reopen_pipe_for :write, pipes[:err], STDERR
-        exec *cmd
+        exec(*cmd)
       }
 
-      far.values.each &:close
+      far.values.each(&:close)
       near.values.each {|p| p.sync = true }
 
       begin

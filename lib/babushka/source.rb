@@ -9,7 +9,7 @@ module Babushka
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :name, :uri, :repo, :type, :deps, :templates
+    attr_reader :name, :uri, :deps, :templates
 
     def self.present
       source_prefix.glob('*').map(&:p).select {|path|
@@ -72,6 +72,7 @@ module Babushka
       @name = (opts[:name] || self.class.default_name_for_uri(@uri)).to_s
       @deps = DepPool.new self
       @templates = MetaDepPool.new self
+      @loaded = @currently_loading = false
     end
 
     def uri_matches? path
@@ -182,10 +183,6 @@ module Babushka
       Base.sources.load_context :source => self do
         deps.define_deps!
       end
-    end
-
-    def inspect
-      "#<Babushka::Source @name=#{name.inspect}, @type=#{type.inspect}, @uri=#{uri.inspect}, @deps.count=#{deps.count}>"
     end
 
     def update!
