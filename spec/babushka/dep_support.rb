@@ -17,8 +17,8 @@ def make_counter_dep opts = {}
     lambdas
   }
   dep opts[:name] do
-    requires opts[:requires] unless opts[:requires].nil?
-    requires_when_unmet opts[:requires_when_unmet] unless opts[:requires_when_unmet].nil?
+    requires opts[:requires]
+    requires_when_unmet opts[:requires_when_unmet]
     DepContext.accepted_blocks.each {|dep_method|
       send dep_method do
         incrementers[dep_method].call
