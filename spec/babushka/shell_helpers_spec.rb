@@ -113,12 +113,12 @@ describe "sudo" do
     sudo('whoami')
   end
   it "should run as the given user" do
-    should_receive(:shell_cmd).with("sudo -u #{ENV['USER']} whoami", {}).once
-    sudo('whoami', :as => ENV['USER'])
+    should_receive(:shell_cmd).with("sudo -u batman whoami", {}).once
+    sudo('whoami', :as => 'batman')
   end
   it "should treat :sudo => 'string' as a username" do
-    should_receive(:shell_cmd).with("sudo -u #{ENV['USER']} whoami", {}).once
-    shell('whoami', :sudo => ENV['USER'])
+    should_receive(:shell_cmd).with("sudo -u batman whoami", {}).once
+    shell('whoami', :sudo => 'batman')
   end
   it "should sudo from #shell when :as is specified" do
     should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
