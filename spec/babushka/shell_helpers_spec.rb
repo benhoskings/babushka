@@ -113,16 +113,38 @@ describe "sudo" do
     sudo('whoami')
   end
   it "should run as the given user" do
-    should_receive(:shell_cmd).with("sudo -u #{ENV['USER']} whoami", {}).once
-    sudo('whoami', :as => ENV['USER'])
+    should_receive(:shell_cmd).with("sudo -u batman whoami", {}).once
+    sudo('whoami', :as => 'batman')
   end
   it "should treat :sudo => 'string' as a username" do
-    should_receive(:shell_cmd).with("sudo -u #{ENV['USER']} whoami", {}).once
-    shell('whoami', :sudo => ENV['USER'])
+    should_receive(:shell_cmd).with("sudo -u batman whoami", {}).once
+    shell('whoami', :sudo => 'batman')
   end
   it "should sudo from #shell when :as is specified" do
     should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
     shell('whoami', :as => 'root')
+  end
+  context "when already running as the sudo user" do
+    it "should not sudo when the user is already root" do
+      stub!(:current_username).and_return('root')
+      should_receive(:shell_cmd).with('whoami', {}).once
+      sudo('whoami')
+    end
+    it "should not sudo with :as" do
+      stub!(:current_username).and_return('batman')
+      should_receive(:shell_cmd).with("whoami", {}).once
+      sudo('whoami', :as => 'batman')
+    end
+    it "should not sudo with a :sudo => 'string' username" do
+      stub!(:current_username).and_return('batman')
+      should_receive(:shell_cmd).with("whoami", {}).once
+      shell('whoami', :sudo => 'batman')
+    end
+    it "should not sudo from #shell when :as is specified" do
+      stub!(:current_username).and_return('root')
+      should_receive(:shell_cmd).with('whoami', {}).once
+      shell('whoami', :as => 'root')
+    end
   end
   describe "compound commands" do
     it "should use 'sudo su -' when opts[:su] is supplied" do
