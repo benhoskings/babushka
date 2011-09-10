@@ -119,10 +119,12 @@ module Babushka
       cmd = cmd.to_s
       as = opts[:as] || (opts[:sudo].is_a?(String) ? opts[:sudo] : 'root')
       sudo_cmd = if opts[:su] || cmd[' |'] || cmd[' >']
+
         "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
       else
         "sudo -u #{as} #{cmd}"
       end
+
       shell sudo_cmd, opts.discard(:as, :sudo, :su), &block
     end
 
