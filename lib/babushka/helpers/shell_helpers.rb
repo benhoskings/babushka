@@ -118,8 +118,10 @@ module Babushka
     def sudo cmd, opts = {}, &block
       cmd = cmd.to_s
       as = opts[:as] || (opts[:sudo].is_a?(String) ? opts[:sudo] : 'root')
-      sudo_cmd = if opts[:su] || cmd[' |'] || cmd[' >']
 
+      sudo_cmd = if current_username == as
+        cmd # Don't sudo if we're already running as the specified user.
+      elsif opts[:su] || cmd[' |'] || cmd[' >']
         "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
       else
         "sudo -u #{as} #{cmd}"
@@ -186,6 +188,11 @@ module Babushka
 
     def shell_cmd cmd, opts = {}, &block
       Shell.new(cmd, opts).run(&block)
+    end
+
+    def current_username
+      require 'etc'
+      Etc.getpwuid(Process.euid).name
     end
   end
 end
