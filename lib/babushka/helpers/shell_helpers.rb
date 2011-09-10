@@ -117,11 +117,11 @@ module Babushka
     #   shell('ls', :as => 'ben')
     def sudo cmd, opts = {}, &block
       cmd = cmd.to_s
-      opts[:as] ||= opts[:sudo] if opts[:sudo].is_a?(String)
+      as = opts[:as] || (opts[:sudo].is_a?(String) ? opts[:sudo] : 'root')
       sudo_cmd = if opts[:su] || cmd[' |'] || cmd[' >']
-        "sudo su - #{opts[:as] || 'root'} -c \"#{cmd.gsub('"', '\"')}\""
+        "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
       else
-        "sudo -u #{opts[:as] || 'root'} #{cmd}"
+        "sudo -u #{as} #{cmd}"
       end
       shell sudo_cmd, opts.discard(:as, :sudo, :su), &block
     end
