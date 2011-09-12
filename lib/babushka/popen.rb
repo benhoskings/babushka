@@ -1,6 +1,6 @@
 module Babushka
   module Open3
-    def popen3 cmd, &block
+    def popen3 cmd, opts = {}, &block
       pipes = { :in => IO::pipe, :out => IO::pipe, :err => IO::pipe }
       near = { :in => pipes[:in][1], :out => pipes[:out][0], :err => pipes[:err][0] }
       far = { :in => pipes[:in][0], :out => pipes[:out][1], :err => pipes[:err][1] }

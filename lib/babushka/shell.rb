@@ -35,7 +35,7 @@ module Babushka
 
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
-      Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
+      Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
         unless @opts[:input].nil?
           stdin << @opts[:input]
           stdin.close
@@ -86,6 +86,10 @@ module Babushka
           yield if block_given?
         end
       end
+    end
+
+    def popen_opts
+      {}
     end
   end
 end
