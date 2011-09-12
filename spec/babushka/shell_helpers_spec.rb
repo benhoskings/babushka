@@ -16,12 +16,18 @@ describe "shell" do
   it "should accept multiline commands" do
     shell("echo babu &&\necho shka").should == "babu\nshka"
   end
-  it "should provide the shell to supplied blocks" do
+  it "should provide the shell to supplied blocks when the command succeeds" do
+    (the_block = "").should_receive(:was_called)
     shell(SucceedingLs) {|shell|
+      the_block.was_called
       shell.stdout.should include('bash')
       shell.stderr.should be_empty
     }
+  end
+  it "should provide the shell to supplied blocks when the command fails" do
+    (the_block = "").should_receive(:was_called)
     shell(FailingLs) {|shell|
+      the_block.was_called
       shell.stdout.should be_empty
       shell.stderr.should include("No such file or directory")
     }
