@@ -95,6 +95,9 @@ describe "raw_shell" do
     should_receive(:shell).with('whoami', :sudo => true).once
     raw_shell('whoami', :sudo => true)
   end
+  it "should handle env vars" do
+    raw_shell({'KEY' => 'value'}, 'echo $KEY').stdout.should == "value\n"
+  end
 end
 
 describe 'argument behaviour' do
@@ -191,6 +194,12 @@ describe "log_shell" do
     should_receive(:shell).with('false', {:spinner=>true}).and_return(nil)
     should_receive(:log).with(" failed", {:as=>:error, :indentation=>false}).once
     log_shell 'Setting sail for fail', 'false'
+  end
+  it "should handle env vars" do
+    should_receive(:log).with("Echoing some vars...", {:newline=>false}).once
+    should_receive(:shell).with({'KEY' => 'value'}, 'echo $KEY', {:spinner=>true}).and_return('value')
+    should_receive(:log).with(" done.", {:as=>nil, :indentation=>false}).once
+    log_shell 'Echoing some vars', {'KEY' => 'value'}, 'echo $KEY'
   end
 end
 
