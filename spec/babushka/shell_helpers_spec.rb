@@ -169,16 +169,17 @@ describe "sudo" do
 end
 
 describe "log_shell" do
-  before {
-    should_receive(:log).exactly(2).times
-  }
-  it "should log and run a command" do
-    should_receive(:shell).with('uptime', {:spinner => true})
+  it "should log correctly for a successful command" do
+    should_receive(:log).with("Getting uptime...", {:newline=>false}).once
+    should_receive(:shell).with('uptime', {:spinner=>true}).and_return("days and days")
+    should_receive(:log).with(" done.", {:as=>nil, :indentation=>false}).once
     log_shell 'Getting uptime', 'uptime'
   end
   it "should log correctly for a failing command" do
-    should_receive(:shell).with('nonexistent', {:spinner => true})
-    log_shell 'Nonexistent shell command', 'nonexistent'
+    should_receive(:log).with("Setting sail for fail...", {:newline=>false}).once
+    should_receive(:shell).with('false', {:spinner=>true}).and_return(nil)
+    should_receive(:log).with(" failed", {:as=>:error, :indentation=>false}).once
+    log_shell 'Setting sail for fail', 'false'
   end
 end
 
