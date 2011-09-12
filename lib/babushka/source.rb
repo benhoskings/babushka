@@ -22,27 +22,20 @@ module Babushka
     end
 
     def self.for_path path
-      path = path.p
-      if !path.directory?
-        raise ArgumentError, "The path #{path} isn't a directory."
+      remote = cd(path) { shell "git config remote.origin.url" }
+      if remote.nil?
+        Source.new path # local source
       else
-        remote = cd(path) { shell "git config remote.origin.url" }
-        if remote.nil?
-          Source.new path # local source
-        else
-          Source.new remote, :name => path.basename # remote source with custom path
-        end
+        Source.new remote, :name => path.basename # remote source with custom path
       end
     end
 
     def self.for_remote name
-      Source.new(default_remote_for(name, :github), :name => name)
+      Source.new(default_remote_for(name), :name => name)
     end
 
-    def self.default_remote_for name, from
-      {
-        :github => "git://github.com/#{name}/babushka-deps.git"
-      }[from]
+    def self.default_remote_for name
+      "git://github.com/#{name}/babushka-deps.git"
     end
 
     require 'uri'
@@ -174,7 +167,7 @@ module Babushka
             end
           end
         }
-        debug "Loaded #{deps.count}#{" and skipped #{deps.skipped_count}" unless deps.skipped_count.zero?} deps from #{path}." unless deps.count.zero?
+        debug "Loaded #{deps.count} deps from #{path}." unless deps.count.zero?
         @loaded = true
       end
     end
