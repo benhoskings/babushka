@@ -14,15 +14,6 @@ RSpec::Core::ExampleGroup.send :include, Babushka::LogHelpers
 RSpec::Core::ExampleGroup.send :include, Babushka::ShellHelpers
 RSpec::Core::ExampleGroup.send :include, Babushka::PathHelpers
 
-puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
-
-def tmp_prefix
-  "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
-end
-
-`rm -rf '#{tmp_prefix}'` if File.exists? tmp_prefix
-`mkdir -p '#{tmp_prefix}'` unless File.exists? tmp_prefix
-
 class Object
   # Log and return unmodified in the same manner as #tapp, but escape the
   # output to be HTML safe and easily readable. For example,
@@ -37,6 +28,15 @@ class Object
     }
   end
 end
+
+puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
+
+def tmp_prefix
+  "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
+end
+
+`rm -rf '#{tmp_prefix}'` if File.exists? tmp_prefix
+`mkdir -p '#{tmp_prefix}'` unless File.exists? tmp_prefix
 
 module Babushka
   class Resource
