@@ -114,6 +114,9 @@ describe 'argument behaviour' do
 end
 
 describe "sudo" do
+  it "should reject array input" do
+    L{ sudo(%w[whoami]) }.should raise_error(ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings.")
+  end
   it "should run as root when no user is given" do
     should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
     sudo('whoami')

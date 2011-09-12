@@ -35,7 +35,10 @@ module Babushka
     #     is printed to stdout, and advanced whenever a line is read on the
     #     command's stdout or stderr pipes. This is useful for monitoring the
     #     progress of a long-running command, like a build or an installer.
-    def shell cmd, opts = {}, &block
+    def shell *cmd, &block
+      opts = cmd.extract_options!
+      cmd = cmd.first if cmd.map(&:class) == [Array]
+
       if opts[:dir] # deprecated
         log_error "#{caller.first}: #shell's :dir option has been renamed to :cd."
         opts[:cd] = opts[:dir]
@@ -50,7 +53,7 @@ module Babushka
         end
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
-      send shell_method, cmd, opts, &block
+      send shell_method, *cmd.dup.push(opts), &block
     end
 
     # Run +cmd+, returning true if its exit code was 0.
@@ -114,19 +117,27 @@ module Babushka
     # is equivalent to these two shell calls:
     #   shell('ls', :sudo => 'ben')
     #   shell('ls', :as => 'ben')
-    def sudo cmd, opts = {}, &block
-      cmd = cmd.to_s
+    def sudo *cmd, &block
+      opts = cmd.extract_options!
+
+      if cmd.map(&:class) != [String]
+        raise ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings."
+      end
+
       as = opts[:as] || (opts[:sudo].is_a?(String) ? opts[:sudo] : 'root')
+      cmd = cmd.last
 
       sudo_cmd = if current_username == as
         cmd # Don't sudo if we're already running as the specified user.
-      elsif opts[:su] || cmd[' |'] || cmd[' >']
-        "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
       else
-        "sudo -u #{as} #{cmd}"
+        if opts[:su] || cmd[' |'] || cmd[' >']
+          "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
+        else
+          "sudo -u #{as} #{cmd}"
+        end
       end
 
-      shell sudo_cmd, opts.discard(:as, :sudo, :su), &block
+      shell [sudo_cmd], opts.discard(:as, :sudo, :su), &block
     end
 
     # This method returns the full path to the specified command in the PATH,
@@ -185,8 +196,8 @@ module Babushka
 
     private
 
-    def shell_cmd cmd, opts = {}, &block
-      Shell.new(cmd, opts).run(&block)
+    def shell_cmd *cmd, &block
+      Shell.new(*cmd).run(&block)
     end
 
     def current_username
