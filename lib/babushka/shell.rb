@@ -2,11 +2,12 @@ module Babushka
   class Shell
     include LogHelpers
 
-    attr_reader :cmd, :opts, :result, :stdout, :stderr
+    attr_reader :cmd, :opts, :env, :result, :stdout, :stderr
 
     def initialize *cmd
       @opts = cmd.extract_options!
       raise "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
+      @env = cmd.first.is_a?(Hash) ? cmd.shift : {}
       @cmd = cmd
       @progress = nil
     end
@@ -91,6 +92,7 @@ module Babushka
     def popen_opts
       {}.tap {|opts|
         opts[:chdir] = @opts[:cd].p.to_s if @opts[:cd]
+        opts[:env] = @env if @env
       }
     end
   end

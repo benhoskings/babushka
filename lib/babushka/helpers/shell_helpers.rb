@@ -119,6 +119,7 @@ module Babushka
     #   shell('ls', :as => 'ben')
     def sudo *cmd, &block
       opts = cmd.extract_options!
+      env = cmd.first.is_a?(Hash) ? cmd.shift : {}
 
       if cmd.map(&:class) != [String]
         raise ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings."
@@ -137,7 +138,7 @@ module Babushka
         end
       end
 
-      shell [sudo_cmd], opts.discard(:as, :sudo, :su), &block
+      shell [env, sudo_cmd], opts.discard(:as, :sudo, :su), &block
     end
 
     # This method returns the full path to the specified command in the PATH,

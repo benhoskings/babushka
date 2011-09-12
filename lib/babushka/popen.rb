@@ -11,6 +11,7 @@ module Babushka
         reopen_pipe_for :write, pipes[:err], STDERR
 
         Dir.chdir opts[:chdir] if opts[:chdir]
+        ENV.update opts[:env] if opts[:env]
 
         exec(*cmd)
       }
