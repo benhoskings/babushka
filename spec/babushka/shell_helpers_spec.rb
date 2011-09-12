@@ -16,12 +16,21 @@ describe "shell" do
   it "should accept multiline commands" do
     shell("echo babu &&\necho shka").should == "babu\nshka"
   end
-  it "should provide the shell to supplied blocks" do
+  it "should accept environment variables as the first argument" do
+    shell({'KEY' => 'value'}, "echo $KEY").should == "value"
+  end
+  it "should provide the shell to supplied blocks when the command succeeds" do
+    (the_block = "").should_receive(:was_called)
     shell(SucceedingLs) {|shell|
+      the_block.was_called
       shell.stdout.should include('bash')
       shell.stderr.should be_empty
     }
+  end
+  it "should provide the shell to supplied blocks when the command fails" do
+    (the_block = "").should_receive(:was_called)
     shell(FailingLs) {|shell|
+      the_block.was_called
       shell.stdout.should be_empty
       shell.stderr.should include("No such file or directory")
     }
@@ -57,8 +66,8 @@ describe "shell" do
 end
 
 describe "shell?" do
-  it "should return true for successful commands" do
-    shell?('true').should be_true
+  it "should return the output for successful commands" do
+    shell?('echo lol').should == 'lol'
     shell?(SucceedingLs).should be_true
   end
   it "should return false for failed commands" do
@@ -108,71 +117,80 @@ describe 'argument behaviour' do
 end
 
 describe "sudo" do
+  it "should reject array input" do
+    L{ sudo(%w[whoami]) }.should raise_error(ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings.")
+  end
   it "should run as root when no user is given" do
-    should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
+    should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
     sudo('whoami')
   end
   it "should run as the given user" do
-    should_receive(:shell_cmd).with("sudo -u batman whoami", {}).once
+    should_receive(:shell_cmd).with({}, 'sudo -u batman whoami', {}).once
     sudo('whoami', :as => 'batman')
   end
   it "should treat :sudo => 'string' as a username" do
-    should_receive(:shell_cmd).with("sudo -u batman whoami", {}).once
+    should_receive(:shell_cmd).with({}, 'sudo -u batman whoami', {}).once
     shell('whoami', :sudo => 'batman')
   end
   it "should sudo from #shell when :as is specified" do
-    should_receive(:shell_cmd).with('sudo -u root whoami', {}).once
+    should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
     shell('whoami', :as => 'root')
   end
   context "when already running as the sudo user" do
     it "should not sudo when the user is already root" do
       stub!(:current_username).and_return('root')
-      should_receive(:shell_cmd).with('whoami', {}).once
+      should_receive(:shell_cmd).with({}, 'whoami', {}).once
       sudo('whoami')
     end
     it "should not sudo with :as" do
       stub!(:current_username).and_return('batman')
-      should_receive(:shell_cmd).with("whoami", {}).once
+      should_receive(:shell_cmd).with({}, 'whoami', {}).once
       sudo('whoami', :as => 'batman')
     end
     it "should not sudo with a :sudo => 'string' username" do
       stub!(:current_username).and_return('batman')
-      should_receive(:shell_cmd).with("whoami", {}).once
+      should_receive(:shell_cmd).with({}, 'whoami', {}).once
       shell('whoami', :sudo => 'batman')
     end
     it "should not sudo from #shell when :as is specified" do
       stub!(:current_username).and_return('root')
-      should_receive(:shell_cmd).with('whoami', {}).once
+      should_receive(:shell_cmd).with({}, 'whoami', {}).once
       shell('whoami', :as => 'root')
+    end
+    it "should handle env vars properly" do
+      stub!(:current_username).and_return('root')
+      should_receive(:shell_cmd).with({'KEY' => 'value'}, 'echo $KEY', {}).once
+      sudo({'KEY' => 'value'}, 'echo $KEY')
     end
   end
   describe "compound commands" do
     it "should use 'sudo su -' when opts[:su] is supplied" do
-      should_receive(:shell_cmd).with('sudo su - root -c "echo \\`whoami\\`"', {}).once
+      should_receive(:shell_cmd).with({}, 'sudo su - root -c "echo \\`whoami\\`"', {}).once
       sudo("echo \\`whoami\\`", :su => true)
     end
     it "should use 'sudo su -' for redirects" do
-      should_receive(:shell_cmd).with('sudo su - root -c "echo \\`whoami\\` > %s/su_with_redirect"' % tmp_prefix, {}).once
+      should_receive(:shell_cmd).with({}, 'sudo su - root -c "echo \\`whoami\\` > %s/su_with_redirect"' % tmp_prefix, {}).once
       sudo("echo \\`whoami\\` > %s/su_with_redirect" % tmp_prefix)
     end
     it "should use 'sudo su -' for pipes" do
-      should_receive(:shell_cmd).with('sudo su - root -c "echo \\`whoami\\` | tee %s/su_with_pipe"' % tmp_prefix, {}).once
+      should_receive(:shell_cmd).with({}, 'sudo su - root -c "echo \\`whoami\\` | tee %s/su_with_pipe"' % tmp_prefix, {}).once
       sudo("echo \\`whoami\\` | tee %s/su_with_pipe" % tmp_prefix)
     end
   end
 end
 
 describe "log_shell" do
-  before {
-    should_receive(:log).exactly(2).times
-  }
-  it "should log and run a command" do
-    should_receive(:shell).with('uptime', {:spinner => true})
+  it "should log correctly for a successful command" do
+    should_receive(:log).with("Getting uptime...", {:newline=>false}).once
+    should_receive(:shell).with('uptime', {:spinner=>true}).and_return("days and days")
+    should_receive(:log).with(" done.", {:as=>nil, :indentation=>false}).once
     log_shell 'Getting uptime', 'uptime'
   end
   it "should log correctly for a failing command" do
-    should_receive(:shell).with('nonexistent', {:spinner => true})
-    log_shell 'Nonexistent shell command', 'nonexistent'
+    should_receive(:log).with("Setting sail for fail...", {:newline=>false}).once
+    should_receive(:shell).with('false', {:spinner=>true}).and_return(nil)
+    should_receive(:log).with(" failed", {:as=>:error, :indentation=>false}).once
+    log_shell 'Setting sail for fail', 'false'
   end
 end
 

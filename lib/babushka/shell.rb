@@ -2,12 +2,13 @@ module Babushka
   class Shell
     include LogHelpers
 
-    attr_reader :cmd, :result, :stdout, :stderr
+    attr_reader :cmd, :opts, :env, :result, :stdout, :stderr
 
-    def initialize cmd, opts
+    def initialize *cmd
+      @opts = cmd.extract_options!
       raise "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
-      # [*cmd] doesn't work here, becuase splatting a string splits it at newlines on 1.8.
-      @cmd, @opts = (cmd.is_a?(Array) ? cmd : [cmd]), opts
+      @env = cmd.first.is_a?(Hash) ? cmd.shift : {}
+      @cmd = cmd
       @progress = nil
     end
 
@@ -35,7 +36,7 @@ module Babushka
 
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
-      Babushka::Open3.popen3 @cmd do |stdin,stdout,stderr|
+      Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
         unless @opts[:input].nil?
           stdin << @opts[:input]
           stdin.close
@@ -86,6 +87,13 @@ module Babushka
           yield if block_given?
         end
       end
+    end
+
+    def popen_opts
+      {}.tap {|opts|
+        opts[:chdir] = @opts[:cd].p.to_s if @opts[:cd]
+        opts[:env] = @env if @env
+      }
     end
   end
 end
