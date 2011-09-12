@@ -63,8 +63,8 @@ describe "shell" do
 end
 
 describe "shell?" do
-  it "should return true for successful commands" do
-    shell?('true').should be_true
+  it "should return the output for successful commands" do
+    shell?('echo lol').should == 'lol'
     shell?(SucceedingLs).should be_true
   end
   it "should return false for failed commands" do
