@@ -89,7 +89,9 @@ module Babushka
     end
 
     def popen_opts
-      {}
+      {}.tap {|opts|
+        opts[:chdir] = @opts[:cd].p.to_s if @opts[:cd]
+      }
     end
   end
 end

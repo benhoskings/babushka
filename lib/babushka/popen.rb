@@ -9,6 +9,9 @@ module Babushka
         reopen_pipe_for :read, pipes[:in], STDIN
         reopen_pipe_for :write, pipes[:out], STDOUT
         reopen_pipe_for :write, pipes[:err], STDERR
+
+        Dir.chdir opts[:chdir] if opts[:chdir]
+
         exec(*cmd)
       }
 
