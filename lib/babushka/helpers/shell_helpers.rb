@@ -64,8 +64,8 @@ module Babushka
     #
     # The idea is that +#shell+ is for when you're interested in the command's
     # output, and +#shell?+ is for when you're interested in the exit status.
-    def shell? cmd, opts = {}
-      shell(cmd, opts) {|s| s.stdout.chomp if s.ok? }
+    def shell? *cmd
+      shell(*cmd) {|s| s.stdout.chomp if s.ok? }
     end
 
     # This method is a shortcut for accessing the results of a shell command
@@ -75,13 +75,13 @@ module Babushka
     #   shell('grep rails Gemfile') {|shell| shell.stdout }.empty?
     # can be simplified to this:
     #   raw_shell('grep rails Gemfile').stdout.empty?
-    def raw_shell cmd, opts = {}
-      shell(cmd, opts) {|s| s }
+    def raw_shell *cmd
+      shell(*cmd) {|s| s }
     end
 
-    def failable_shell cmd, opts = {}
+    def failable_shell *cmd
       log_error "#failable_shell has been renamed to #raw_shell." # deprecated
-      raw_shell cmd, opts
+      raw_shell(*cmd)
     end
 
     # Run +cmd+ in a separate interactive shell. This is useful for running
@@ -189,9 +189,10 @@ module Babushka
     # output is emitted by the command. Once the command terminates, the log
     # would be completed to show
     #   Sleeping for a bit... done.
-    def log_shell message, cmd, opts = {}, &block
+    def log_shell message, *cmd, &block
+      opts = cmd.extract_options!
       log_block message do
-        shell cmd, opts.merge(:spinner => true), &block
+        shell *cmd.dup.push(opts.merge(:spinner => true)), &block
       end
     end
 
