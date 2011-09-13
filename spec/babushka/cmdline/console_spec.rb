@@ -1,10 +1,11 @@
 require 'spec_helper'
 
 describe "console" do
-  it "should launch a console with Kernel#exec" do
-    Object.stub!(:exec)
-    project_root = File.dirname(File.dirname(File.dirname(File.dirname(__FILE__))))
-    Object.should_receive(:exec).with("irb -r'#{File.join(project_root, 'lib/babushka')}' --simple-prompt")
-    Base.run ['console']
+  before {
+    entry_point = File.expand_path(File.join(__FILE__, '../../../../lib/babushka'))
+    Cmdline.should_receive(:exec).with("irb -r'#{entry_point}' --simple-prompt")
+  }
+  it "should launch a console via Kernel#exec" do
+    Cmdline::Parser.for(%w[console]).run
   end
 end
