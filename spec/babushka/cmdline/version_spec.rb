@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe "version" do
+  before {
+    Cmdline::Helpers.should_receive(:log).with(Babushka::VERSION)
+  }
   it "should print the version" do
-    Base.should_receive(:log).with(VERSION)
-    Base.run ['version']
+    Cmdline::Parser.for(%w[version]).run
   end
 end
