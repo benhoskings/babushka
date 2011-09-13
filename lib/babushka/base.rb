@@ -18,8 +18,12 @@ module Babushka
     end
 
     # +host+ is an instance of Babushka::SystemProfile for the system the command
-    # was invoked on. If the current system isn't supported, SystemProfile.for_host
-    # will return +nil+, and Base.run will fail early.
+    # was invoked on.
+    # If the current system isn't supported, SystemProfile.for_host will return
+    # +nil+, and Base.run will fail early. If the system is known but the
+    # flavour isn't (e.g. an unknown Linux variant), a generic SystemProfile
+    # will be used, which should work for most operations but will fail on deps
+    # that attempt to use the package manager, etc.
     def host
       @host ||= Babushka::SystemProfile.for_host
     end
