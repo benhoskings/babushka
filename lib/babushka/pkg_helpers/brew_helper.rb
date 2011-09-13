@@ -32,7 +32,7 @@ module Babushka
     end
 
     def should_sudo?
-      super || !File.writable?(installed_pkgs_path)
+      super || !installed_pkgs_path.hypothetically_writable?
     end
 
 
