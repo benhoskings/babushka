@@ -98,7 +98,8 @@ module Babushka
       end
     end
 
-    # Run +cmd+ via sudo.
+    # Run +cmd+ via `sudo`, bypassing it if possible (i.e. if we're running as
+    # root already, or as the user that was requested).
     #
     # The return behaviour and block handling of +#sudo+ are identical to that
     # of +#shell+. In fact, +#sudo+ constructs a sudo command, and then uses
