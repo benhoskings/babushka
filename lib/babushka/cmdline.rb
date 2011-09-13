@@ -19,13 +19,13 @@ module Babushka
         Helpers.print_handlers
         Helpers.print_notes
       elsif (handler = Handler.for(cmd.argv.first)).nil?
-        log "#{cmd.argv.first.capitalize}? I have honestly never heard of that."
+        Helpers.log "#{cmd.argv.first.capitalize}? I have honestly never heard of that."
       else
-        log "\n#{handler.name} - #{handler.description}"
-        Base.cmdline.parse(&handler.opt_definer)
-        Base.cmdline.print_usage
+        Helpers.log "\n#{handler.name} - #{handler.description}"
+        cmd.parse(&handler.opt_definer)
+        cmd.print_usage
       end
-      log "\n"
+      Helpers.log "\n"
       true
     }
 
