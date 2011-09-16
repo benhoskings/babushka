@@ -72,6 +72,7 @@ module Babushka
 
     TYPES = {
       :deb => {:file_match => 'Debian binary package', :exts => %w[deb]},
+      :pkg => {:file_match => 'xar archive', :exts => %w[pkg]},
       :tar => {:file_match => 'tar archive', :exts => %w[tar]},
       :gzip => {:file_match => 'gzip compressed data', :exts => %w[tgz tar.gz]},
       :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[tbz2 tar.bz2]},
@@ -190,6 +191,7 @@ module Babushka
   class Resource
     CLASSES = {
       :deb => FileResource,
+      :pkg => FileResource,
       :tar => TarResource,
       :gzip => TarResource,
       :bzip2 => TarResource,
