@@ -137,7 +137,7 @@ module Babushka
     end
   end
 
-  class DebResource < Resource
+  class FileResource < Resource
     def extract &block
       in_download_dir {
         block.call(self)
@@ -189,7 +189,7 @@ module Babushka
   
   class Resource
     CLASSES = {
-      :deb => DebResource,
+      :deb => FileResource,
       :tar => TarResource,
       :gzip => TarResource,
       :bzip2 => TarResource,
