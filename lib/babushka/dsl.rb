@@ -13,14 +13,14 @@ module Babushka
     # DSL (along with +meta+); templated or not, this is how deps are
     # defined.
     def dep name, opts = {}, &block
-      Base.sources.current_load_source.deps.add name, opts, block
+      Base.sources.current_load_source.deps.add_dep name, opts, block
     end
 
     # Define and return a meta dep named +name+, and whose implementation is
     # found in +block+. This method, along with +dep, together are the
     # top level of babushka's DSL.
     def meta name, opts = {}, &block
-      Base.sources.current_load_source.templates.add name, opts, block
+      Base.sources.current_load_source.templates.add_template name, opts, block
     end
   end
 end
