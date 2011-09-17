@@ -11,7 +11,7 @@ module Babushka
     def names
       @template_hash.keys
     end
-    def templates
+    def items
       @template_hash.values
     end
     def for spec

@@ -199,11 +199,11 @@ describe Source do
     }
     it "should find the specified dep" do
       @source.find('test dep 1').should be_an_instance_of(Dep)
-      @source.deps.deps.include?(@source.find('test dep 1')).should be_true
+      @source.deps.items.include?(@source.find('test dep 1')).should be_true
     end
     it "should find the specified template" do
       @source.find_template('test_meta_1').should be_an_instance_of(MetaDep)
-      @source.templates.templates.include?(@source.find_template('test_meta_1')).should be_true
+      @source.templates.items.include?(@source.find_template('test_meta_1')).should be_true
     end
   end
 
