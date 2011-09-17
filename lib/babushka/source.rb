@@ -172,12 +172,6 @@ module Babushka
       end
     end
 
-    def define_deps!
-      Base.sources.load_context :source => self do
-        deps.define_deps!
-      end
-    end
-
     def update!
       if @updated
         debug "Already pulled #{name} (#{uri}) this session."

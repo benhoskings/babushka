@@ -90,7 +90,6 @@ describe Source do
     context "with a good source" do
       before {
         @source = Source.new('spec/deps/good')
-        @source.stub!(:define_deps!)
         @source.load!
       }
       it "should load deps from a file" do
@@ -108,7 +107,6 @@ describe Source do
     context "with a source with errors" do
       before {
         @source = Source.new('spec/deps/bad')
-        @source.stub!(:define_deps!)
         @source.load!
       }
       it "should recover from load errors" do
