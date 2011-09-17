@@ -66,7 +66,6 @@ module Babushka
     dsl
     dep
     dep_pool
-    meta_dep_pool
     task
     source
     source_pool
