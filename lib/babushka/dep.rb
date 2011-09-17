@@ -47,7 +47,7 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
         @name = name.to_s
-        @opts = Base.sources.current_load_opts.merge(in_opts).defaults :for => :all
+        @opts = Base.sources.current_load_opts.merge(in_opts)
         @block = block
         @dep_source = source
         @load_path = Base.sources.current_load_path
@@ -266,7 +266,7 @@ module Babushka
           # ... not if it failed as part of this process, since that should log anyway.
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif !Base.host.matches?(opts[:for])
+        elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
