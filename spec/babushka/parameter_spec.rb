@@ -44,5 +44,15 @@ describe Parameter do
       Prompt.should_receive(:get_value).with('What number am I thinking of', {}).and_return('7')
       Parameter.new(:unset).ask('What number am I thinking of').to_s.should == '7'
     end
+    describe "choices, from #choose" do
+      it "should pass to #choices when given as an array" do
+        Prompt.should_receive(:get_value).with('unset', :choices => %w[a b]).and_return('a')
+        Parameter.new(:unset).choose(%w[a b]).to_s.should == 'a'
+      end
+      it "should pass to #choice_descriptions when given as a hash" do
+        Prompt.should_receive(:get_value).with('unset', :choice_descriptions => {:a => 'a', :b => 'b'}).and_return('a')
+        Parameter.new(:unset).choose(:a => 'a', :b => 'b').to_s.should == 'a'
+      end
+    end
   end
 end
