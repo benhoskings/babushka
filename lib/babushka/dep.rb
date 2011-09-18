@@ -168,14 +168,18 @@ module Babushka
       name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
-    def block_args
-      @block_args || []
-    end
-
-    def with *new_args
-      undefine_dep!
-      uncache!
-      @block_args = new_args
+    def with *args
+      @args = if args.map(&:class) == [Hash] # named arguments
+        if (unexpected = args.first.keys - params).any?
+          raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
+        end
+        args.first
+      else # positional arguments
+        if args.length != params.length
+          raise DepArgumentError, "The dep '#{name}' requires #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
+        end
+        params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
+      end
       self
     end
 
@@ -188,13 +192,13 @@ module Babushka
     # +met?+ check.
     #
     # TODO: In future, there will be support for specifying that in the DSL.
-    def met? *block_args
-      with(*block_args).process :dry_run => true, :top_level => true
+    def met? *args
+      with(*args).process :dry_run => true, :top_level => true
     end
 
     # Entry point for a full met?/meet +#process+ run.
-    def meet *block_args
-      with(*block_args).process :dry_run => false, :top_level => true
+    def meet *args
+      with(*args).process :dry_run => false, :top_level => true
     end
 
     # Trigger a dep run with this dep at the top of the tree.

@@ -39,19 +39,9 @@ module Babushka
     def define!
       define_params!
 
-      if block.nil?
-        # nothing to do
-      else
-        arity = block.arity
-        # ruby 1.8 doesn't support variable numbers of block arguments. Instead, when #arity is -1
-        # it means there was no argument block: on 1.8, proc{}.arity == -1, and proc{|| }.arity == 0.
-        arity = 0 if arity < 0 && RUBY_VERSION.starts_with?('1.8')
-
-        if dependency.block_args.length != arity
-          raise DepArgumentError, "The dep '#{dependency.name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.block_args.length} #{dependency.block_args.length == 1 ? 'was' : 'were'} passed."
-        else
-          instance_exec(*dependency.block_args, &block)
-        end
+      unless block.nil?
+        raise "Dep block arguments aren't supported anymore. Instead, specify parameter names as symbols after the dep name. TODO: docs." if block.arity > 0
+        instance_eval(&block)
       end
     end
 
