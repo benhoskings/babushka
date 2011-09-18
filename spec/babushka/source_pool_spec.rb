@@ -149,7 +149,7 @@ end
 describe SourcePool, '#load_context' do
   context "without a template" do
     before {
-      Dep.should_receive(:new).with('load_context', Base.sources.anonymous, {}, nil)
+      Dep.should_receive(:new).with('load_context', Base.sources.anonymous, [], {}, nil)
     }
     it "should pass the correct options" do
       dep 'load_context'

@@ -12,8 +12,8 @@ module Babushka
     # in +block+. This is the usual top-level entry point of the babushka
     # DSL (along with +meta+); templated or not, this is how deps are
     # defined.
-    def dep name, opts = {}, &block
-      Base.sources.current_load_source.deps.add_dep name, opts, block
+    def dep name, *args, &block
+      Base.sources.current_load_source.deps.add_dep name, args, block
     end
 
     # Define and return a meta dep named +name+, and whose implementation is

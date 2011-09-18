@@ -36,7 +36,7 @@ module Babushka
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
     # is +Dep::Helpers#dep+).
-    def initialize name, source, in_opts, block
+    def initialize name, source, args, opts, block
       if name.empty?
         raise DepError, "Deps can't have empty names."
       elsif /\A[[:print:]]+\z/i !~ name
@@ -47,7 +47,7 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
         @name = name.to_s
-        @opts = Base.sources.current_load_opts.merge(in_opts)
+        @opts = Base.sources.current_load_opts.merge(opts)
         @block = block
         @dep_source = source
         @load_path = Base.sources.current_load_path
