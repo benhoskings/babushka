@@ -130,31 +130,5 @@ describe "'y' input" do
       Prompt.should_receive(:read_from_prompt).and_return('value')
       Prompt.get_value('value').should == 'value'
     end
-    context "with default" do
-      it "should ask for the value again with a custom log message" do
-        Prompt.should_receive(:log).with("value [val]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('y')
-        Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('n')
-        Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value [val]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('')
-        Prompt.get_value('value', :default => 'val').should == 'val'
-      end
-    end
-    context "repeated" do
-      it "should return nil" do
-        Prompt.should_receive(:log).with("value", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('y')
-        Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('n')
-        Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('y')
-        Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('n')
-        Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('value')
-        Prompt.get_value('value').should == 'value'
-      end
-    end
   end
 end
