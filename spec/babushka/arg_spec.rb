@@ -33,8 +33,14 @@ describe Arg do
 
   describe "asking for values" do
     it "should request a value when it's not present" do
-      Prompt.should_receive(:get_value).with('unset').and_return('value')
+      Prompt.should_receive(:get_value).with('unset', :default => nil).and_return('value')
       Arg.new(:unset).to_s.should == 'value'
+    end
+    describe "with defaults" do
+      it "should return the default" do
+        Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
+        Arg.new(:unset).default('default').to_s.should == 'default'
+      end
     end
   end
 end

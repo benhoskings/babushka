@@ -7,6 +7,10 @@ module Babushka
       @value = value
     end
 
+    def default value
+      tap { @default = value }
+    end
+
     def set?
       !!@value
     end
@@ -26,7 +30,7 @@ module Babushka
   private
 
     def value
-      @value ||= Prompt.get_value(name.to_s)
+      @value ||= Prompt.get_value(name.to_s, :default => @default)
     end
   end
 end
