@@ -60,6 +60,15 @@ module Babushka
       end
     end
 
+    def define_or_complain!
+      @dep_defined = begin
+        define!
+      rescue StandardError => e
+        log_exception_in_dep(e)
+        false
+      end
+    end
+
     # Attempt to look up the template this dep was defined against (or if no
     # template was specified, BaseTemplate), and then define the dep against
     # it. If an error occurs, the backtrace point within the dep from which the
@@ -277,7 +286,7 @@ module Babushka
         if dep_defined? == false
           # Only log about define errors if the define previously failed...
           log_error "This dep isn't defined. Perhaps there was a load error?"
-        elsif !rescuing_errors { define! }
+        elsif !define_or_complain!
           # ... not if it failed as part of this process, since that should log anyway.
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
@@ -360,13 +369,10 @@ module Babushka
       raise DepError, e.message
     end
 
-    def rescuing_errors &block
-      yield
-    rescue StandardError => e
-      log_error "#{e.backtrace.first}: #{e.message}"
+    def log_exception_in_dep e
+      log_error e.message
       log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
       debug e.backtrace * "\n"
-      @dep_defined = false
     end
 
     def track_block_for task_name
