@@ -83,7 +83,7 @@ module Babushka
           raise DepParameterError, "You can't use #{param.inspect} as a parameter (on '#{dependency.name}'), because that's already a method on #{method(param).owner}."
         else
           metaclass.send :define_method, param do
-            dependency.args[param]
+            dependency.args[param] ||= Parameter.new(param)
           end
         end
       }

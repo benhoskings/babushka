@@ -338,6 +338,11 @@ describe Dep, "params" do
     dep('set params test', :a_set_param)
     Dep('set params test').with('a value').context.a_set_param.should == 'a value'
   end
+  it "should ask for the value when it's not set" do
+    dep('unset params test', :an_unset_param)
+    Prompt.should_receive(:get_value).with('an_unset_param', {}).and_return('a value from the prompt')
+    Dep('unset params test').context.an_unset_param.to_s.should == 'a value from the prompt'
+  end
 end
 
 describe Dep, 'lambda lists' do
