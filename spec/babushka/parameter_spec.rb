@@ -40,5 +40,9 @@ describe Parameter do
       Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
       Parameter.new(:unset).default('default').to_s.should == 'default'
     end
+    it "should pass the message from #ask" do
+      Prompt.should_receive(:get_value).with('What number am I thinking of', {}).and_return('7')
+      Parameter.new(:unset).ask('What number am I thinking of').to_s.should == '7'
+    end
   end
 end
