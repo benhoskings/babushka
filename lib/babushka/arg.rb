@@ -12,11 +12,17 @@ module Babushka
     end
 
     def to_s
-      @value.to_s
+      value.to_s
     end
 
     def to_str
-      @value.to_str
+      value.to_str
+    end
+
+  private
+
+    def value
+      @value ||= Prompt.get_value(name.to_s)
     end
   end
 end

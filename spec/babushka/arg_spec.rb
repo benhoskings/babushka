@@ -30,4 +30,11 @@ describe Arg do
       }.should raise_error(NoMethodError, "undefined method `to_str' for 3065:Fixnum")
     end
   end
+
+  describe "asking for values" do
+    it "should request a value when it's not present" do
+      Prompt.should_receive(:get_value).with('unset').and_return('value')
+      Arg.new(:unset).to_s.should == 'value'
+    end
+  end
 end
