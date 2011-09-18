@@ -35,6 +35,8 @@ module Babushka
     end
 
     def define!
+      define_args!
+
       if block.nil?
         # nothing to do
       else
@@ -82,6 +84,13 @@ module Babushka
     end
 
     private
+
+    def define_args!
+      dependency.args.each {|arg|
+        metaclass.send :define_method, arg do
+        end
+      }
+    end
 
     def pkg_manager
       BaseHelper

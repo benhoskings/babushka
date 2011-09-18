@@ -336,6 +336,16 @@ describe Dep, '#basename' do
   end
 end
 
+describe Dep, "args" do
+  it "should define methods on the context" do
+    dep('args test', :an_arg).context.should respond_to(:an_arg)
+  end
+  it "should not pollute other deps" do
+    dep('args test', :an_arg)
+    dep('argless dep').context.should_not respond_to(:an_arg)
+  end
+end
+
 describe Dep, 'lambda lists' do
   before {
     Babushka::Base.host.stub!(:name).and_return(:test_name)
