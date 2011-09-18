@@ -6,7 +6,7 @@ meta :fhs do
   end
 end
 
-dep 'writable.fhs' do |path|
+dep 'writable.fhs', :path do
   requires Dep('layout.fhs').with(path)
   requires_when_unmet 'admins can sudo'
   met? {
@@ -25,7 +25,7 @@ dep 'writable.fhs' do |path|
   }
 end
 
-dep 'layout.fhs' do |path|
+dep 'layout.fhs', :path do
   met? { subpaths.all? {|subpath| File.directory?(path / subpath) } }
   meet { sudo "mkdir -p #{subpaths.map {|subpath| "'#{path / subpath}'" }.join(' ')}" }
 end
