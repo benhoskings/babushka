@@ -19,6 +19,10 @@ module Babushka
       value.to_str
     end
 
+    def inspect
+      "#<Babushka::Arg:#{object_id} #{name}: #{@value || '[unset]'}>"
+    end
+
   private
 
     def value
