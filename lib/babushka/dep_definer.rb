@@ -43,10 +43,10 @@ module Babushka
         # it means there was no argument block: on 1.8, proc{}.arity == -1, and proc{|| }.arity == 0.
         arity = 0 if arity < 0 && RUBY_VERSION.starts_with?('1.8')
 
-        if dependency.args.length != arity
-          raise DepArgumentError, "The dep '#{dependency.name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
+        if dependency.block_args.length != arity
+          raise DepArgumentError, "The dep '#{dependency.name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.block_args.length} #{dependency.block_args.length == 1 ? 'was' : 'were'} passed."
         else
-          instance_exec(*dependency.args, &block)
+          instance_exec(*dependency.block_args, &block)
         end
       end
     end

@@ -441,7 +441,7 @@ end
 
 describe "args" do
   it "should replace arguments" do
-    dep('arg replacing').with('a').with('b').args.should == %w[b]
+    dep('arg replacing').with('a').with('b').block_args.should == %w[b]
   end
   it "should do make the args available within the dep like normal block arguments" do
     outer, before_met, after_meet = nil, nil, nil

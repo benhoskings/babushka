@@ -165,14 +165,14 @@ module Babushka
       name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
-    def args
-      @args || []
+    def block_args
+      @block_args || []
     end
 
     def with *new_args
       undefine_dep!
       uncache!
-      @args = new_args
+      @block_args = new_args
       self
     end
 
@@ -185,13 +185,13 @@ module Babushka
     # +met?+ check.
     #
     # TODO: In future, there will be support for specifying that in the DSL.
-    def met? *args
-      with(*args).process :dry_run => true, :top_level => true
+    def met? *block_args
+      with(*block_args).process :dry_run => true, :top_level => true
     end
 
     # Entry point for a full met?/meet +#process+ run.
-    def meet *args
-      with(*args).process :dry_run => false, :top_level => true
+    def meet *block_args
+      with(*block_args).process :dry_run => false, :top_level => true
     end
 
     # Trigger a dep run with this dep at the top of the tree.
