@@ -20,7 +20,7 @@ module Babushka
       def self.context_class; DepContext end
     end
 
-    attr_reader :name, :opts, :vars, :dep_source, :load_path
+    attr_reader :name, :args, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
 
     def context
@@ -47,6 +47,7 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
         @name = name.to_s
+        @args = args
         @opts = Base.sources.current_load_opts.merge(opts)
         @block = block
         @dep_source = source

@@ -32,6 +32,12 @@ describe "Dep.new" do
     }.should change(Base.sources.anonymous.deps, :count).by(1)
     Dep("valid dep name").should be_an_instance_of(Dep)
   end
+  it "should store the args" do
+    L{
+      Dep.new("valid dep with args", Base.sources.anonymous, [:some, :args], {}, nil)
+    }.should change(Base.sources.anonymous.deps, :count).by(1)
+    Dep("valid dep with args").args.should == [:some, :args]
+  end
   context "without template" do
     before {
       @dep = Dep.new("valid base dep", Base.sources.anonymous, [], {}, nil)
