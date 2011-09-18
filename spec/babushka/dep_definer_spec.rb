@@ -8,6 +8,26 @@ describe "source_template" do
 end
 
 describe "args" do
+  describe "parsing style" do
+    it "should parse as named when just a single hash is passed" do
+      dep('1 arg', :a).tap {|dep|
+        dep.should_receive(:parse_named_arguments).with({:a => 'a'})
+        dep.with(:a => 'a')
+      }
+    end
+    it "should parse as a list when non-hash values are passed" do
+      dep('2 args', :a, :b).tap {|dep|
+        dep.should_receive(:parse_positional_arguments).with(['a', {'key' => 'value'}])
+        dep.with('a', 'key' => 'value')
+      }
+    end
+    it "should parse as a list when no args are passed" do
+      dep('no args').tap {|dep|
+        dep.should_receive(:parse_positional_arguments).with([])
+        dep.with
+      }
+    end
+  end
   context "without arguments" do
     it "should fail when called with unnamed args" do
       L{ dep('no args').with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' requires 0 arguments, but 1 was passed.")
@@ -16,7 +36,7 @@ describe "args" do
       L{ dep('no args').with(:a => 'a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' received an unexpected argument :a.")
     end
   end
-  context "with arguments" do
+  context "with the wrong number of arguments" do
     it "should fail when called with the wrong number of unnamed args" do
       L{ dep('1 arg', :a).with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' requires 1 argument, but 2 were passed.")
       L{ dep('2 args', :a, :b).with('a').context.define! }.should raise_error(DepArgumentError, "The dep '2 args' requires 2 arguments, but 1 was passed.")

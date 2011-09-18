@@ -169,16 +169,10 @@ module Babushka
     end
 
     def with *args
-      @args = if args.map(&:class) == [Hash] # named arguments
-        if (unexpected = args.first.keys - params).any?
-          raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
-        end
-        args.first
-      else # positional arguments
-        if args.length != params.length
-          raise DepArgumentError, "The dep '#{name}' requires #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
-        end
-        params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
+      @args = if args.map(&:class) == [Hash]
+        parse_named_arguments(args.first)
+      else
+        parse_positional_arguments(args)
       end
       self
     end
@@ -263,6 +257,20 @@ module Babushka
     end
 
     private
+
+    def parse_named_arguments args
+      if (unexpected = args.keys - params).any?
+        raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
+      end
+      args
+    end
+
+    def parse_positional_arguments args
+      if args.length != params.length
+        raise DepArgumentError, "The dep '#{name}' requires #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
+      end
+      params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
+    end
 
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
