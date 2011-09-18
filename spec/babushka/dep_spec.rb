@@ -349,6 +349,12 @@ describe Dep, "params" do
     dep('params test', :a_param)
     dep('paramless dep').context.should_not respond_to(:a_param)
   end
+  context "when the value is set" do
+    it "should provide the value directly" do
+      dep('set params test', :a_set_param)
+      Dep('set params test').with('a value').context.a_set_param.should == 'a value'
+    end
+  end
 end
 
 describe Dep, 'lambda lists' do
