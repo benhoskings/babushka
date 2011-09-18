@@ -360,11 +360,7 @@ module Babushka
     rescue DepDefiner::UnmeetableDep => ex
       raise ex
     rescue StandardError => e
-      log "#{e.class} at #{e.backtrace.first}:".colorize('red')
-      log e.message.colorize('red')
-      dep_callpoint = e.backtrace.detect {|l| l[load_path.to_s] } unless load_path.nil?
-      log "Check #{dep_callpoint}." unless dep_callpoint.nil? || e.backtrace.first[dep_callpoint]
-      debug e.backtrace * "\n"
+      log_exception_in_dep(e)
       Base.task.reportable = true
       raise DepError, e.message
     end
