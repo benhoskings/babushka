@@ -20,7 +20,11 @@ module Babushka
     end
 
     def to_str
-      value.to_str
+      if !value.respond_to?(:to_str)
+        raise DepArgumentError, "Can't coerce #{value}:#{value.class.name} into a String"
+      else
+        value.to_str
+      end
     end
 
     def inspect

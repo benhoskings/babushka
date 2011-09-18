@@ -27,7 +27,7 @@ describe Parameter do
     it "should fail when the value itself would fail" do
       L{
         File.exists?(Parameter.new(:path, 3065))
-      }.should raise_error(NoMethodError, "undefined method `to_str' for 3065:Fixnum")
+      }.should raise_error(DepArgumentError, "Can't coerce 3065:Fixnum into a String")
     end
   end
 
