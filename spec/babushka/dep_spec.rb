@@ -246,8 +246,7 @@ describe Dep, "defining" do
       it "should use the template" do
         dep('lazy defining test with template.lazy_defining_template').tap {|dep|
           dep.met?
-          dep.template.should == template
-        }
+        }.template.should == template
       end
     end
   end
@@ -274,13 +273,11 @@ describe Dep, "defining" do
     end
     it "should not overwrite custom blocks" do
       dep('lazy defining test with block overwriting') do
-        setup { true }
+        setup { 'initial' }
       end.tap {|dep|
-        dep.define!
         dep.context.setup { 'custom' }
         dep.define!
-        dep.send(:process_task, :setup).should == 'custom'
-      }
+      }.send(:process_task, :setup).should == 'custom'
     end
   end
 end
