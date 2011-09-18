@@ -19,4 +19,15 @@ describe Arg do
       "a #{Arg.new(:adjective, "nice")} arg".should == "a nice arg"
     end
   end
+
+  describe "#to_str" do
+    it "should delegate to the value" do
+      File.exists?(Arg.new(:path, "/bin")).should be_true
+    end
+    it "should fail when the value itself would fail" do
+      L{
+        File.exists?(Arg.new(:path, 3065))
+      }.should raise_error(NoMethodError, "undefined method `to_str' for 3065:Fixnum")
+    end
+  end
 end

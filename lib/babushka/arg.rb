@@ -14,5 +14,9 @@ module Babushka
     def to_s
       @value.to_s
     end
+
+    def to_str
+      @value.to_str
+    end
   end
 end
