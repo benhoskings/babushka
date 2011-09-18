@@ -244,11 +244,6 @@ module Babushka
       @dep_defined = true
     end
 
-    def undefine_dep!
-      debug "undefining: #{inspect}" if dep_defined?
-      @context = @dep_defined = nil
-    end
-
     # Attempt to retrieve the template specified in +opts[:template]+. If the
     # template name includes a source prefix, it is searched for within the
     # corresponding source. Otherwise, it is searched for in the current source

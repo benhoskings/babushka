@@ -282,19 +282,6 @@ describe Dep, "defining" do
   end
 end
 
-describe Dep, "undefining" do
-  it "should undefine the dep" do
-    dep('undefining').tap {|dep|
-      dep.define!
-      old_context = dep.context
-      dep.dep_defined?.should be_true
-      dep.undefine_dep!
-      dep.dep_defined?.should be_false
-      dep.context.should_not == old_context
-    }
-  end
-end
-
 describe Dep, '#basename' do
   context "for base deps" do
     it "should be the same as the dep's name" do
