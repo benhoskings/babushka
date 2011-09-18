@@ -340,6 +340,11 @@ describe Dep, "args" do
   it "should define methods on the context" do
     dep('args test', :an_arg).context.should respond_to(:an_arg)
   end
+  it "should raise on conflicting methods" do
+    L{
+      dep('conflicting arg names', :name).context
+    }.should raise_error(DepArgumentError, "You can't use :name as an argument name (on 'conflicting arg names'), because that's already a method on Babushka::DepDefiner.")
+  end
   it "should not pollute other deps" do
     dep('args test', :an_arg)
     dep('argless dep').context.should_not respond_to(:an_arg)

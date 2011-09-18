@@ -87,7 +87,11 @@ module Babushka
 
     def define_args!
       dependency.args.each {|arg|
-        metaclass.send :define_method, arg do
+        if respond_to?(arg)
+          raise Dep::DepArgumentError, "You can't use #{arg.inspect} as an argument name (on '#{dependency.name}'), because that's already a method on #{method(arg).owner}."
+        else
+          metaclass.send :define_method, arg do
+          end
         end
       }
     end
