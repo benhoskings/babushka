@@ -32,7 +32,13 @@ module Babushka
   private
 
     def value
-      @value ||= Prompt.get_value(name.to_s, :default => @default)
+      @value ||= Prompt.get_value(name.to_s, prompt_opts)
+    end
+
+    def prompt_opts
+      {}.tap {|hsh|
+        hsh[:default] = @default unless @default.nil?
+      }
     end
   end
 end
