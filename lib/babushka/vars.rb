@@ -1,7 +1,6 @@
 module Babushka
   class Vars
     include LogHelpers
-    include PromptHelpers
 
     attr_reader :vars, :saved_vars
 
@@ -82,7 +81,7 @@ module Babushka
     private
 
     def ask_for_var key, opts
-      set key, send("prompt_for_#{vars[key][:type] || 'value'}",
+      set key, Prompt.send("get_#{vars[key][:type] || 'value'}",
         message_for(key),
         vars[key].slice(:choices, :choice_descriptions).merge(
           opts

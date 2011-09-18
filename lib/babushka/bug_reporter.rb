@@ -2,14 +2,13 @@ module Babushka
   class BugReporter
     extend LogHelpers
     extend ShellHelpers
-    extend PromptHelpers
 
     # This method creates a bug report for +dep+, by reading the debug log and
     # vars associated with it and posting them as a gist. If the github user is
     # set in the git config, it's marked as from that user, otherwise it's
     # anonymous.
     def self.report dep
-      confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
+      Prompt.confirm "I can file a bug report for that now, if you like.", :default => 'n', :otherwise => "OK, you're on your own :)" do
         post_report dep,
           (which('git') && shell('git config github.user')) || 'anonymous',
           Base.task.var_path_for(dep).read,

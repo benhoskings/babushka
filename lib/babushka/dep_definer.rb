@@ -12,6 +12,8 @@ module Babushka
     include RunHelpers
     extend RunHelpers
 
+    include Prompt::Helpers
+    extend Prompt::Helpers
     include VersionOf::Helpers
     extend VersionOf::Helpers
 
