@@ -70,7 +70,7 @@ module Babushka
     source
     source_pool
     vars
-    arg
+    parameter
     dep_runners/base_dep_runner
     dep_definer
     dep_context

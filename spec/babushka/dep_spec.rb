@@ -32,11 +32,11 @@ describe "Dep.new" do
     }.should change(Base.sources.anonymous.deps, :count).by(1)
     Dep("valid dep name").should be_an_instance_of(Dep)
   end
-  it "should store the args" do
+  it "should store the params" do
     L{
-      Dep.new("valid dep with args", Base.sources.anonymous, [:some, :args], {}, nil)
+      Dep.new("valid dep with params", Base.sources.anonymous, [:some, :params], {}, nil)
     }.should change(Base.sources.anonymous.deps, :count).by(1)
-    Dep("valid dep with args").args.should == [:some, :args]
+    Dep("valid dep with params").params.should == [:some, :params]
   end
   context "without template" do
     before {
@@ -336,18 +336,18 @@ describe Dep, '#basename' do
   end
 end
 
-describe Dep, "args" do
+describe Dep, "params" do
   it "should define methods on the context" do
-    dep('args test', :an_arg).context.should respond_to(:an_arg)
+    dep('params test', :a_param).context.should respond_to(:a_param)
   end
   it "should raise on conflicting methods" do
     L{
-      dep('conflicting arg names', :name).context
-    }.should raise_error(DepArgumentError, "You can't use :name as an argument name (on 'conflicting arg names'), because that's already a method on Babushka::DepDefiner.")
+      dep('conflicting param names', :name).context
+    }.should raise_error(DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
   end
   it "should not pollute other deps" do
-    dep('args test', :an_arg)
-    dep('argless dep').context.should_not respond_to(:an_arg)
+    dep('params test', :a_param)
+    dep('paramless dep').context.should_not respond_to(:a_param)
   end
 end
 

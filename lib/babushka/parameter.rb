@@ -1,5 +1,5 @@
 module Babushka
-  class Arg
+  class Parameter
     attr_reader :name
 
     def initialize(name, value = nil)
@@ -24,7 +24,7 @@ module Babushka
     end
 
     def inspect
-      "#<Babushka::Arg:#{object_id} #{name}: #{@value || '[unset]'}>"
+      "#<Babushka::Parameter:#{object_id} #{name}: #{@value || '[unset]'}>"
     end
 
   private

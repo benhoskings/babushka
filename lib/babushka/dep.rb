@@ -1,6 +1,8 @@
 module Babushka
   class DepError < StandardError
   end
+  class DepParameterError < ArgumentError
+  end
   class DepArgumentError < ArgumentError
   end
   class Dep
@@ -20,7 +22,7 @@ module Babushka
       def self.context_class; DepContext end
     end
 
-    attr_reader :name, :args, :opts, :vars, :dep_source, :load_path
+    attr_reader :name, :params, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
 
     def context
@@ -36,7 +38,7 @@ module Babushka
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
     # is +Dep::Helpers#dep+).
-    def initialize name, source, args, opts, block
+    def initialize name, source, params, opts, block
       if name.empty?
         raise DepError, "Deps can't have empty names."
       elsif /\A[[:print:]]+\z/i !~ name
@@ -47,7 +49,7 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       else
         @name = name.to_s
-        @args = args
+        @params = params
         @opts = Base.sources.current_load_opts.merge(opts)
         @block = block
         @dep_source = source

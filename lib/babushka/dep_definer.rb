@@ -37,7 +37,7 @@ module Babushka
     end
 
     def define!
-      define_args!
+      define_params!
 
       if block.nil?
         # nothing to do
@@ -87,12 +87,12 @@ module Babushka
 
     private
 
-    def define_args!
-      dependency.args.each {|arg|
-        if respond_to?(arg)
-          raise Dep::DepArgumentError, "You can't use #{arg.inspect} as an argument name (on '#{dependency.name}'), because that's already a method on #{method(arg).owner}."
+    def define_params!
+      dependency.params.each {|param|
+        if respond_to?(param)
+          raise DepParameterError, "You can't use #{param.inspect} as a parameter (on '#{dependency.name}'), because that's already a method on #{method(param).owner}."
         else
-          metaclass.send :define_method, arg do
+          metaclass.send :define_method, param do
           end
         end
       }

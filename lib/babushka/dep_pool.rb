@@ -20,12 +20,12 @@ module Babushka
       spec.respond_to?(:name) ? @pool[spec.name] : @pool[spec]
     end
 
-    def add_dep name, args, block
+    def add_dep name, params, block
       if self.for name
         self.for name
       else
-        opts = args.extract_options!
-        Dep.new name, @source, args, opts, block
+        opts = params.extract_options!
+        Dep.new name, @source, params, opts, block
       end
     end
 
