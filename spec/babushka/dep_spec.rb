@@ -331,6 +331,7 @@ describe Dep, "params" do
   end
   it "should not pollute other deps" do
     dep('params test', :a_param)
+    Dep('params test').context.should respond_to(:a_param)
     dep('paramless dep').context.should_not respond_to(:a_param)
   end
   context "when the value is set" do
