@@ -7,9 +7,7 @@ module Babushka
       @value = value
     end
 
-    def default value
-      tap { @default = value }
-    end
+    def default(value) tap { @default = value } end
 
     def set?
       !!@value
