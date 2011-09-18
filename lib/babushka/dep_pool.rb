@@ -7,20 +7,20 @@ module Babushka
     end
 
     def count
-      @dep_hash.length
+      @pool.length
     end
     
     def names
-      @dep_hash.keys
+      @pool.keys
     end
-    def deps
-      @dep_hash.values
+    def items
+      @pool.values
     end
     def for spec
-      spec.respond_to?(:name) ? @dep_hash[spec.name] : @dep_hash[spec]
+      spec.respond_to?(:name) ? @pool[spec.name] : @pool[spec]
     end
 
-    def add name, in_opts, block
+    def add_dep name, in_opts, block
       if self.for name
         self.for name
       else
@@ -28,19 +28,20 @@ module Babushka
       end
     end
 
-    def clear!
-      @dep_hash = {}
-    end
-    def uncache!
-      deps.each {|dep| dep.send :uncache! }
-    end
-    def define_deps!
-      deps.each {|dep| dep.define! }
+    def add_template name, in_opts, block
+      MetaDep.for name, @source, in_opts, &block
     end
 
-    def register dep
-      raise "There is already a registered dep called '#{dep.name}'." if @dep_hash.has_key?(dep.name)
-      @dep_hash[dep.name] = dep
+    def clear!
+      @pool = {}
+    end
+    def uncache!
+      items.each {|i| i.send :uncache! }
+    end
+
+    def register item
+      raise "Already registered '#{item.name}'." if @pool.has_key?(item.name)
+      @pool[item.name] = item
     end
 
   end

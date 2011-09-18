@@ -64,7 +64,7 @@ module Babushka
       @uri, @type = self.class.discover_uri_and_type(path)
       @name = (opts[:name] || self.class.default_name_for_uri(@uri)).to_s
       @deps = DepPool.new self
-      @templates = MetaDepPool.new self
+      @templates = DepPool.new self
       @loaded = @currently_loading = false
     end
 
@@ -169,12 +169,6 @@ module Babushka
         }
         debug "Loaded #{deps.count} deps from #{path}." unless deps.count.zero?
         @loaded = true
-      end
-    end
-
-    def define_deps!
-      Base.sources.load_context :source => self do
-        deps.define_deps!
       end
     end
 
