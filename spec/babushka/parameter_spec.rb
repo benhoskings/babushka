@@ -36,11 +36,9 @@ describe Parameter do
       Prompt.should_receive(:get_value).with('unset', {}).and_return('value')
       Parameter.new(:unset).to_s.should == 'value'
     end
-    describe "with defaults" do
-      it "should return the default" do
-        Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
-        Parameter.new(:unset).default('default').to_s.should == 'default'
-      end
+    it "should pass the default from #default" do
+      Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
+      Parameter.new(:unset).default('default').to_s.should == 'default'
     end
   end
 end
