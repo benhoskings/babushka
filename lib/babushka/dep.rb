@@ -25,16 +25,6 @@ module Babushka
     attr_reader :name, :params, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
 
-    def context
-      define! if @context.nil?
-      @context
-    end
-
-    def template
-      assign_template if @template.nil?
-      @template
-    end
-
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
     # is +Dep::Helpers#dep+).
@@ -60,69 +50,19 @@ module Babushka
       end
     end
 
-    def define_or_complain!
-      @dep_defined = begin
-        define!
-      rescue StandardError => e
-        log_exception_in_dep(e)
-        false
-      end
+    def context
+      define! if @context.nil?
+      @context
     end
 
-    # Attempt to look up the template this dep was defined against (or if no
-    # template was specified, BaseTemplate), and then define the dep against
-    # it. If an error occurs, the backtrace point within the dep from which the
-    # exception was triggered is logged, as well as the actual exception point.
-    def define!
-      if dep_defined?
-        debug "#{name}: already defined."
-      elsif dep_defined? == false
-        debug "#{name}: defining already failed."
-      elsif template
-        debug "(defining #{name} against #{template.contextual_name})"
-        define_dep!
-      end
-      dep_defined?
-    end
-
-    # Create a context for this dep from its template, and then process the
-    # dep's outer block in that context.
-    #
-    # This results in the details of the dep being stored, like the
-    # implementation of +met?+ and +meet+, as well as its +requires+ list and
-    # any other items defined at the top level.
-    def define_dep!
-      @context = template.context_class.new self, &@block
-      context.define!
-      @dep_defined = true
-    end
-
-    def undefine_dep!
-      debug "undefining: #{inspect}" if dep_defined?
-      @context = @dep_defined = nil
+    def template
+      assign_template if @template.nil?
+      @template
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
     def dep_defined?
       @dep_defined
-    end
-
-    # Attempt to retrieve the template specified in +opts[:template]+. If the
-    # template name includes a source prefix, it is searched for within the
-    # corresponding source. Otherwise, it is searched for in the current source
-    # and the core sources.
-    def assign_template
-      @template = if opts[:template]
-        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
-          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-        }
-      else
-        Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
-      end
-    end
-
-    def self.base_template
-      BaseTemplate
     end
 
     # Look up the dep specified by +dep_name+, yielding it to the block if it
@@ -266,6 +206,66 @@ module Babushka
     end
 
     private
+
+    def define_or_complain!
+      @dep_defined = begin
+        define!
+      rescue StandardError => e
+        log_exception_in_dep(e)
+        false
+      end
+    end
+
+    # Attempt to look up the template this dep was defined against (or if no
+    # template was specified, BaseTemplate), and then define the dep against
+    # it. If an error occurs, the backtrace point within the dep from which the
+    # exception was triggered is logged, as well as the actual exception point.
+    def define!
+      if dep_defined?
+        debug "#{name}: already defined."
+      elsif dep_defined? == false
+        debug "#{name}: defining already failed."
+      elsif template
+        debug "(defining #{name} against #{template.contextual_name})"
+        define_dep!
+      end
+      dep_defined?
+    end
+
+    # Create a context for this dep from its template, and then process the
+    # dep's outer block in that context.
+    #
+    # This results in the details of the dep being stored, like the
+    # implementation of +met?+ and +meet+, as well as its +requires+ list and
+    # any other items defined at the top level.
+    def define_dep!
+      @context = template.context_class.new self, &@block
+      context.define!
+      @dep_defined = true
+    end
+
+    def undefine_dep!
+      debug "undefining: #{inspect}" if dep_defined?
+      @context = @dep_defined = nil
+    end
+
+    # Attempt to retrieve the template specified in +opts[:template]+. If the
+    # template name includes a source prefix, it is searched for within the
+    # corresponding source. Otherwise, it is searched for in the current source
+    # and the core sources.
+    def assign_template
+      @template = if opts[:template]
+        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
+          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+        }
+      else
+        Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
+      end
+    end
+
+    def self.base_template
+      BaseTemplate
+    end
 
     def parse_named_arguments args
       if (unexpected = args.keys - params).any?

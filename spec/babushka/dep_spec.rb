@@ -276,7 +276,7 @@ describe Dep, "defining" do
         setup { 'initial' }
       end.tap {|dep|
         dep.context.setup { 'custom' }
-        dep.define!
+        dep.send(:define!)
       }.send(:process_task, :setup).should == 'custom'
     end
   end
