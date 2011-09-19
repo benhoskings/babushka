@@ -46,6 +46,9 @@ describe Parameter do
     it "should work with #/" do
       (Parameter.new(:test, "/path") / 'joining') == "/path/joining"
     end
+    it "should work with #[]" do
+      Parameter.new(:test, "The Rural Jurour")[/ur/].should == 'ur'
+    end
   end
 
   describe "asking for values" do
