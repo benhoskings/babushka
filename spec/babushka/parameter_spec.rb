@@ -8,6 +8,17 @@ describe Parameter do
     Parameter.new(:test, 'testy test').set?.should be_true
   end
 
+  describe "#==" do
+    it "should behave like a string when it's set" do
+      Parameter.new(:test, "a value").should == "a value"
+      Parameter.new(:test, "a value").should_not == "another value"
+    end
+    it "should prompt when the value isn't set" do
+      Prompt.should_receive(:get_value)
+      Parameter.new(:test) == "a value"
+    end
+  end
+
   describe "#to_s" do
     it "should delegate to the value" do
       Parameter.new(:test, "a value").to_s.should == "a value"
