@@ -54,6 +54,9 @@ module Babushka
       if opts[:choices] && opts[:choice_descriptions]
         raise ArgumentError, "You can't use the :choices and :choice_descriptions options together."
       end
+      if opts[:choices] && opts[:choices].any? {|c| !c.is_a?(String) }
+        raise ArgumentError, "Choices must be passed as strings."
+      end
       opts.defaults! :prompt => '? '
       prompt_and_read_value prompt_message(message, opts), opts, &block
     end

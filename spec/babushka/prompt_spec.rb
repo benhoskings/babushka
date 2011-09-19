@@ -44,6 +44,11 @@ describe Prompt, "get_value" do
       Prompt.should_receive(:read_from_prompt).and_return('a')
       Prompt.get_value('value', :choices => %w[a b c]).should == 'a'
     end
+    it "should reject non-string choices" do
+      L{
+        Prompt.get_value('value', :choices => [:a, :b])
+      }.should raise_error ArgumentError, "Choices must be passed as strings."
+    end
     describe "with default" do
       it "should accept a valid choice" do
         Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
