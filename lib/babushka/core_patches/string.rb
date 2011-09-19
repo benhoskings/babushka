@@ -1,4 +1,14 @@
 class String
+  # Delegate String#with to Babushka::Dep#with. This is to provide a nicer
+  # syntax for specifying dep arguments, for example:
+  #
+  #   dep 'user has a password' do
+  #     requires 'user exists'.with(shell('whoami'))
+  #   end
+  def with *args
+    Babushka::Dep(self).with(*args)
+  end
+
   # Returns true iff +other+ appears exactly at the start of +self+.
   def starts_with? other
     self[0, other.length] == other
