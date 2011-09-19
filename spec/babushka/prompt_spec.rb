@@ -92,6 +92,20 @@ describe Prompt, "get_value" do
       Prompt.get_value('value', :choice_descriptions => {'a' => "the first one", 'b' => "there's also this", 'c' => "or this"}).should == 'a'
     end
   end
+
+  describe "validation" do
+    it "should treat 'true' as valid" do
+      Prompt.should_receive(:read_from_prompt).and_return('value')
+      Prompt.get_value('value') {|value| true }.should == 'value'
+    end
+    it "should treat 'false' as invalid" do
+      Prompt.should_receive(:log).with("value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('another value')
+      Prompt.should_receive(:log).with("That wasn't valid. value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('value')
+      Prompt.get_value('value') {|value| value == 'value' }.should == 'value'
+    end
+  end
 end
 
 describe Prompt, "#get_path" do
