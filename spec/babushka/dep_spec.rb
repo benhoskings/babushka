@@ -334,9 +334,10 @@ describe Dep, "params" do
     Dep('params test').context.should respond_to(:a_param)
     dep('paramless dep').context.should_not respond_to(:a_param)
   end
-  it "should return the value when it's set" do
+  it "should return a param containing the value when it's set" do
     dep('set params test', :a_set_param)
-    Dep('set params test').with('a value').context.a_set_param.should == 'a value'
+    Dep('set params test').with('a value').context.a_set_param.should be_an_instance_of(Parameter)
+    Dep('set params test').with('a value').context.a_set_param.to_s.should == 'a value'
   end
   it "should ask for the value when it's not set" do
     dep('unset params test', :an_unset_param)

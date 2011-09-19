@@ -11,19 +11,19 @@ describe "args" do
   describe "parsing style" do
     it "should parse as named when just a single hash is passed" do
       dep('1 arg', :a).tap {|dep|
-        dep.should_receive(:parse_named_arguments).with({:a => 'a'})
+        dep.should_receive(:parse_named_arguments).with({:a => 'a'}).and_return({})
         dep.with(:a => 'a')
       }
     end
     it "should parse as a list when non-hash values are passed" do
       dep('2 args', :a, :b).tap {|dep|
-        dep.should_receive(:parse_positional_arguments).with(['a', {'key' => 'value'}])
+        dep.should_receive(:parse_positional_arguments).with(['a', {'key' => 'value'}]).and_return({})
         dep.with('a', 'key' => 'value')
       }
     end
     it "should parse as a list when no args are passed" do
       dep('no args').tap {|dep|
-        dep.should_receive(:parse_positional_arguments).with([])
+        dep.should_receive(:parse_positional_arguments).with([]).and_return({})
         dep.with
       }
     end

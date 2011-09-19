@@ -123,7 +123,9 @@ module Babushka
         parse_named_arguments(args.first)
       else
         parse_positional_arguments(args)
-      end
+      end.map_values {|k,v|
+        Parameter.new(k, v)
+      }
       self
     end
 
