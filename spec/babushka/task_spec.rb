@@ -38,9 +38,9 @@ describe Task, "process" do
       @dep.should_receive(:process).with({:top_level => true})
       Base.task.process ['task spec argument passing']
     end
-    it "should provide the values in with_vars as dep arguments" do
+    it "should provide the values in with_vars as dep arguments with symbol names" do
       @dep = dep('task spec argument passing')
-      @dep.should_receive(:with).with({'arg' => 'something argy'}).and_return(@dep)
+      @dep.should_receive(:with).with({:arg => 'something argy'}).and_return(@dep)
       @dep.should_receive(:process).with({:top_level => true})
       Base.task.process ['task spec argument passing'], {'arg' => 'something argy'}
     end
