@@ -7,7 +7,7 @@ meta :fhs do
 end
 
 dep 'writable.fhs', :path do
-  requires Dep('layout.fhs').with(path)
+  requires 'layout.fhs'.with(path)
   requires_when_unmet 'admins can sudo'
   met? {
     _, nonwritable = subpaths.partition {|subpath| File.writable_real?(path / subpath) }
