@@ -269,7 +269,9 @@ module Babushka
     end
 
     def parse_named_arguments args
-      if (unexpected = args.keys - params).any?
+      if (non_symbol = args.keys.reject {|key| key.is_a?(Symbol) }).any?
+        raise DepArgumentError, "The dep '#{name}' received #{'a ' if non_symbol.length == 1}non-symbol argument#{'s' if non_symbol.length > 1} #{non_symbol.map(&:inspect).to_list}."
+      elsif (unexpected = args.keys - params).any?
         raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
       end
       args

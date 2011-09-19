@@ -64,6 +64,18 @@ describe "args" do
       subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
     end
   end
+  context "with non-symbol names" do
+    it "should be rejected, singular" do
+      L{
+        dep('2 args', :a).with('a' => 'a')
+      }.should raise_error(DepArgumentError, %{The dep '2 args' received a non-symbol argument "a".})
+    end
+    it "should be rejected, plural" do
+      L{
+        dep('2 args', :a, :b).with('a' => 'a', 'b' => 'b')
+      }.should raise_error(DepArgumentError, %{The dep '2 args' received non-symbol arguments "a" and "b".})
+    end
+  end
   context "with incomplete named arguments" do
     subject { dep('2 args', :a, :b).with(:a => 'a') }
     it "should partially populate the args with Parameter objects" do
