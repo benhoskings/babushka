@@ -51,6 +51,9 @@ module Babushka
     end
 
     def get_value message, opts = {}, &block
+      if opts[:choices] && opts[:choice_descriptions]
+        raise ArgumentError, "You can't use the :choices and :choice_descriptions options together."
+      end
       opts.defaults! :prompt => '? '
       prompt_and_read_value prompt_message(message, opts), opts, &block
     end

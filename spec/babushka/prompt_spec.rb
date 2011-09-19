@@ -25,6 +25,12 @@ describe Prompt, "get_value" do
     end
   end
 
+  it "should reject :choices and :choice_descriptions together" do
+    L{
+      Prompt.get_value('value', :choices => %w[a b c], :choice_descriptions => {:a => "description"})
+    }.should raise_error(ArgumentError, "You can't use the :choices and :choice_descriptions options together.")
+  end
+
   describe "with choices" do
     it "should accept a valid choice" do
       Prompt.should_receive(:log).with("value (a,b,c)", {:newline => false})
