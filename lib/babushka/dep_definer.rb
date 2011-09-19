@@ -12,6 +12,8 @@ module Babushka
     include RunHelpers
     extend RunHelpers
 
+    include Prompt::Helpers
+    extend Prompt::Helpers
     include VersionOf::Helpers
     extend VersionOf::Helpers
 
@@ -35,19 +37,11 @@ module Babushka
     end
 
     def define!
-      if block.nil?
-        # nothing to do
-      else
-        arity = block.arity
-        # ruby 1.8 doesn't support variable numbers of block arguments. Instead, when #arity is -1
-        # it means there was no argument block: on 1.8, proc{}.arity == -1, and proc{|| }.arity == 0.
-        arity = 0 if arity < 0 && RUBY_VERSION.starts_with?('1.8')
+      define_params!
 
-        if dependency.args.length != arity
-          raise DepArgumentError, "The dep '#{dependency.name}' requires #{arity} argument#{'s' unless arity == 1}, but #{dependency.args.length} #{dependency.args.length == 1 ? 'was' : 'were'} passed."
-        else
-          instance_exec(*dependency.args, &block)
-        end
+      unless block.nil?
+        raise "Dep block arguments aren't supported anymore. Instead, specify parameter names as symbols after the dep name. TODO: docs." if block.arity > 0
+        instance_eval(&block)
       end
     end
 
@@ -82,6 +76,18 @@ module Babushka
     end
 
     private
+
+    def define_params!
+      dependency.params.each {|param|
+        if respond_to?(param)
+          raise DepParameterError, "You can't use #{param.inspect} as a parameter (on '#{dependency.name}'), because that's already a method on #{method(param).owner}."
+        else
+          metaclass.send :define_method, param do
+            dependency.args[param]
+          end
+        end
+      }
+    end
 
     def pkg_manager
       BaseHelper

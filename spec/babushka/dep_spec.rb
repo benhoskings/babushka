@@ -4,37 +4,43 @@ require 'dep_support'
 describe "Dep.new" do
   it "should reject deps with empty names" do
     L{
-      Dep.new "", Base.sources.anonymous, {}, nil
+      Dep.new "", Base.sources.anonymous, [], {}, nil
     }.should raise_error(DepError, "Deps can't have empty names.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.new "carriage\rreturn", Base.sources.anonymous, {}, nil
+      Dep.new "carriage\rreturn", Base.sources.anonymous, [], {}, nil
     }.should raise_error(DepError, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.new "slashes/invalidate names", Base.sources.anonymous, {}, nil
+      Dep.new "slashes/invalidate names", Base.sources.anonymous, [], {}, nil
     }.should raise_error(DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     L{
-      Dep.new "colons:invalidate names", Base.sources.anonymous, {}, nil
+      Dep.new "colons:invalidate names", Base.sources.anonymous, [], {}, nil
     }.should raise_error(DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.new("valid dep name", Base.sources.anonymous, {}, nil)
+      Dep.new("valid dep name", Base.sources.anonymous, [], {}, nil)
     }.should change(Base.sources.anonymous.deps, :count).by(1)
     Dep("valid dep name").should be_an_instance_of(Dep)
   end
+  it "should store the params" do
+    L{
+      Dep.new("valid dep with params", Base.sources.anonymous, [:some, :params], {}, nil)
+    }.should change(Base.sources.anonymous.deps, :count).by(1)
+    Dep("valid dep with params").params.should == [:some, :params]
+  end
   context "without template" do
     before {
-      @dep = Dep.new("valid base dep", Base.sources.anonymous, {}, nil)
+      @dep = Dep.new("valid base dep", Base.sources.anonymous, [], {}, nil)
     }
     it "should work" do
       @dep.should be_an_instance_of(Dep)
@@ -44,7 +50,7 @@ describe "Dep.new" do
   context "with a missing template" do
     it "should fail to define optioned deps against a missing template" do
       L{
-        Dep.new("valid but missing template", Base.sources.anonymous, {:template => 'template'}, nil).template
+        Dep.new("valid but missing template", Base.sources.anonymous, [], {:template => 'template'}, nil).template
       }.should raise_error(DepError, "There is no template named 'template' to define 'valid but missing template' against.")
     end
   end
@@ -53,13 +59,13 @@ describe "Dep.new" do
       @meta = meta('template')
     }
     it "should work when passed as an option" do
-      Dep.new("valid option dep", Base.sources.anonymous, {:template => 'template'}, nil).tap {|dep|
+      Dep.new("valid option dep", Base.sources.anonymous, [], {:template => 'template'}, nil).tap {|dep|
         dep.should be_an_instance_of(Dep)
         dep.template.should == @meta
       }
     end
     it "should work when passed as a suffix" do
-      Dep.new("valid dep name.template", Base.sources.anonymous, {}, nil).tap {|dep|
+      Dep.new("valid dep name.template", Base.sources.anonymous, [], {}, nil).tap {|dep|
         dep.should be_an_instance_of(Dep)
         dep.template.should == @meta
       }
@@ -240,8 +246,7 @@ describe Dep, "defining" do
       it "should use the template" do
         dep('lazy defining test with template.lazy_defining_template').tap {|dep|
           dep.met?
-          dep.template.should == template
-        }
+        }.template.should == template
       end
     end
   end
@@ -268,27 +273,12 @@ describe Dep, "defining" do
     end
     it "should not overwrite custom blocks" do
       dep('lazy defining test with block overwriting') do
-        setup { true }
+        setup { 'initial' }
       end.tap {|dep|
-        dep.define!
         dep.context.setup { 'custom' }
-        dep.define!
-        dep.send(:process_task, :setup).should == 'custom'
-      }
+        dep.send(:define!)
+      }.send(:process_task, :setup).should == 'custom'
     end
-  end
-end
-
-describe Dep, "undefining" do
-  it "should undefine the dep" do
-    dep('undefining').tap {|dep|
-      dep.define!
-      old_context = dep.context
-      dep.dep_defined?.should be_true
-      dep.undefine_dep!
-      dep.dep_defined?.should be_false
-      dep.context.should_not == old_context
-    }
   end
 end
 
@@ -327,6 +317,27 @@ describe Dep, '#basename' do
       Base.sources.anonymous.deps.clear!
       Base.sources.anonymous.templates.clear!
     }
+  end
+end
+
+describe Dep, "params" do
+  it "should define methods on the context" do
+    dep('params test', :a_param).context.should respond_to(:a_param)
+  end
+  it "should raise on conflicting methods" do
+    L{
+      dep('conflicting param names', :name).context
+    }.should raise_error(DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
+  end
+  it "should not pollute other deps" do
+    dep('params test', :a_param)
+    dep('paramless dep').context.should_not respond_to(:a_param)
+  end
+  context "when the value is set" do
+    it "should provide the value directly" do
+      dep('set params test', :a_set_param)
+      Dep('set params test').with('a value').context.a_set_param.should == 'a value'
+    end
   end
 end
 
@@ -438,44 +449,6 @@ describe "calling meet on a single dep" do
   end
   after { Base.sources.anonymous.deps.clear! }
 end
-
-describe "args" do
-  it "should replace arguments" do
-    dep('arg replacing').with('a').with('b').args.should == %w[b]
-  end
-  it "should do make the args available within the dep like normal block arguments" do
-    outer, before_met, after_meet = nil, nil, nil
-    dep 'arg availability' do |a, b|
-      outer = a
-      met? {
-        before_met = b
-        a == b
-      }
-      meet {
-        a = b
-        after_meet = a
-      }
-    end.meet('a', 'b')
-    outer.should == 'a'
-    before_met.should == 'b'
-    after_meet.should == 'b'
-  end
-  it "should undefine the dep" do
-    @dep = dep('undefining args') {|a| }
-    @dep.with('a').define!
-    @dep.dep_defined?.should be_true
-    @dep.with('a')
-    @dep.dep_defined?.should be_nil
-  end
-  it "should uncache the dep" do
-    @dep = dep('uncaching args') {|a| }
-    @dep.with('a').process
-    @dep.send(:cached?).should be_true
-    @dep.with('a')
-    @dep.send(:cached?).should be_false
-  end
-end
-
 
 describe "run_in" do
   it "should run in the current directory when run_in isn't set" do

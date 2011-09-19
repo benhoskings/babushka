@@ -23,7 +23,6 @@ module Babushka
     xml_string
     helpers/log_helpers
     helpers/shell_helpers
-    helpers/prompt_helpers
     helpers/path_helpers
     helpers/run_helpers
     helpers/suggest_helpers
@@ -33,6 +32,7 @@ module Babushka
     shell
     git_repo
     resource
+    prompt
     lambda_chooser
     ip
     version_str
@@ -70,6 +70,7 @@ module Babushka
     source
     source_pool
     vars
+    parameter
     dep_runners/base_dep_runner
     dep_definer
     dep_context

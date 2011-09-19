@@ -1,6 +1,8 @@
 module Babushka
   class DepError < StandardError
   end
+  class DepParameterError < ArgumentError
+  end
   class DepArgumentError < ArgumentError
   end
   class Dep
@@ -20,8 +22,34 @@ module Babushka
       def self.context_class; DepContext end
     end
 
-    attr_reader :name, :opts, :vars, :dep_source, :load_path
+    attr_reader :name, :params, :args, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
+
+    # Create a new dep named +name+ within +source+, whose implementation is
+    # found in +block+. To define deps yourself, you should call +dep+ (which
+    # is +Dep::Helpers#dep+).
+    def initialize name, source, params, opts, block
+      if name.empty?
+        raise DepError, "Deps can't have empty names."
+      elsif /\A[[:print:]]+\z/i !~ name
+        raise DepError, "The dep name '#{name}' contains nonprintable characters."
+      elsif /\// =~ name
+        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
+      elsif /\:/ =~ name
+        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
+      else
+        @name = name.to_s
+        @params = params
+        @args = {}
+        @opts = Base.sources.current_load_opts.merge(opts)
+        @block = block
+        @dep_source = source
+        @load_path = Base.sources.current_load_path
+        @dep_source.deps.register self
+        assign_template if Base.sources.current_real_load_source.nil?
+        @dep_defined = @_cached_process = nil # false represents failure for these two.
+      end
+    end
 
     def context
       define! if @context.nil?
@@ -33,84 +61,9 @@ module Babushka
       @template
     end
 
-    # Create a new dep named +name+ within +source+, whose implementation is
-    # found in +block+. To define deps yourself, you should call +dep+ (which
-    # is +Dep::Helpers#dep+).
-    def initialize name, source, in_opts, block
-      if name.empty?
-        raise DepError, "Deps can't have empty names."
-      elsif /\A[[:print:]]+\z/i !~ name
-        raise DepError, "The dep name '#{name}' contains nonprintable characters."
-      elsif /\// =~ name
-        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
-      elsif /\:/ =~ name
-        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
-      else
-        @name = name.to_s
-        @opts = Base.sources.current_load_opts.merge(in_opts).defaults :for => :all
-        @block = block
-        @dep_source = source
-        @load_path = Base.sources.current_load_path
-        @dep_source.deps.register self
-        assign_template if Base.sources.current_real_load_source.nil?
-        @dep_defined = @_cached_process = nil # false represents failure for these two.
-      end
-    end
-
-    # Attempt to look up the template this dep was defined against (or if no
-    # template was specified, BaseTemplate), and then define the dep against
-    # it. If an error occurs, the backtrace point within the dep from which the
-    # exception was triggered is logged, as well as the actual exception point.
-    def define!
-      if dep_defined?
-        debug "#{name}: already defined."
-      elsif dep_defined? == false
-        debug "#{name}: defining already failed."
-      elsif template
-        debug "(defining #{name} against #{template.contextual_name})"
-        define_dep!
-      end
-      dep_defined?
-    end
-
-    # Create a context for this dep from its template, and then process the
-    # dep's outer block in that context.
-    #
-    # This results in the details of the dep being stored, like the
-    # implementation of +met?+ and +meet+, as well as its +requires+ list and
-    # any other items defined at the top level.
-    def define_dep!
-      @context = template.context_class.new self, &@block
-      context.define!
-      @dep_defined = true
-    end
-
-    def undefine_dep!
-      debug "undefining: #{inspect}" if dep_defined?
-      @context = @dep_defined = nil
-    end
-
     # Returns true if +#define!+ has aready successfully run on this dep.
     def dep_defined?
       @dep_defined
-    end
-
-    # Attempt to retrieve the template specified in +opts[:template]+. If the
-    # template name includes a source prefix, it is searched for within the
-    # corresponding source. Otherwise, it is searched for in the current source
-    # and the core sources.
-    def assign_template
-      @template = if opts[:template]
-        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
-          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-        }
-      else
-        Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
-      end
-    end
-
-    def self.base_template
-      BaseTemplate
     end
 
     # Look up the dep specified by +dep_name+, yielding it to the block if it
@@ -165,14 +118,12 @@ module Babushka
       name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
-    def args
-      @args || []
-    end
-
-    def with *new_args
-      undefine_dep!
-      uncache!
-      @args = new_args
+    def with *args
+      @args = if args.map(&:class) == [Hash]
+        parse_named_arguments(args.first)
+      else
+        parse_positional_arguments(args)
+      end
       self
     end
 
@@ -257,16 +208,85 @@ module Babushka
 
     private
 
+    def define_or_complain!
+      @dep_defined = begin
+        define!
+      rescue StandardError => e
+        log_exception_in_dep(e)
+        false
+      end
+    end
+
+    # Attempt to look up the template this dep was defined against (or if no
+    # template was specified, BaseTemplate), and then define the dep against
+    # it. If an error occurs, the backtrace point within the dep from which the
+    # exception was triggered is logged, as well as the actual exception point.
+    def define!
+      if dep_defined?
+        debug "#{name}: already defined."
+      elsif dep_defined? == false
+        debug "#{name}: defining already failed."
+      elsif template
+        debug "(defining #{name} against #{template.contextual_name})"
+        define_dep!
+      end
+      dep_defined?
+    end
+
+    # Create a context for this dep from its template, and then process the
+    # dep's outer block in that context.
+    #
+    # This results in the details of the dep being stored, like the
+    # implementation of +met?+ and +meet+, as well as its +requires+ list and
+    # any other items defined at the top level.
+    def define_dep!
+      @context = template.context_class.new self, &@block
+      context.define!
+      @dep_defined = true
+    end
+
+    # Attempt to retrieve the template specified in +opts[:template]+. If the
+    # template name includes a source prefix, it is searched for within the
+    # corresponding source. Otherwise, it is searched for in the current source
+    # and the core sources.
+    def assign_template
+      @template = if opts[:template]
+        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
+          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+        }
+      else
+        Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
+      end
+    end
+
+    def self.base_template
+      BaseTemplate
+    end
+
+    def parse_named_arguments args
+      if (unexpected = args.keys - params).any?
+        raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
+      end
+      args
+    end
+
+    def parse_positional_arguments args
+      if args.length != params.length
+        raise DepArgumentError, "The dep '#{name}' requires #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
+      end
+      params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
+    end
+
     def process_and_cache
       log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
         if dep_defined? == false
           # Only log about define errors if the define previously failed...
           log_error "This dep isn't defined. Perhaps there was a load error?"
-        elsif !rescuing_errors { define! }
+        elsif !define_or_complain!
           # ... not if it failed as part of this process, since that should log anyway.
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif !Base.host.matches?(opts[:for])
+        elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
@@ -336,22 +356,15 @@ module Babushka
     rescue DepDefiner::UnmeetableDep => ex
       raise ex
     rescue StandardError => e
-      log "#{e.class} at #{e.backtrace.first}:".colorize('red')
-      log e.message.colorize('red')
-      dep_callpoint = e.backtrace.detect {|l| l[load_path.to_s] } unless load_path.nil?
-      log "Check #{dep_callpoint}." unless dep_callpoint.nil? || e.backtrace.first[dep_callpoint]
-      debug e.backtrace * "\n"
+      log_exception_in_dep(e)
       Base.task.reportable = true
       raise DepError, e.message
     end
 
-    def rescuing_errors &block
-      yield
-    rescue StandardError => e
-      log_error "#{e.backtrace.first}: #{e.message}"
+    def log_exception_in_dep e
+      log_error e.message
       log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
       debug e.backtrace * "\n"
-      @dep_defined = false
     end
 
     def track_block_for task_name
