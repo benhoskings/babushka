@@ -78,6 +78,20 @@ describe Prompt, "get_value" do
       end
     end
   end
+
+  describe "with choice descriptions" do
+    it "should behave like choices, logging the descriptions" do
+      Prompt.should_receive(:log).with("There are 3 choices:")
+      Prompt.should_receive(:log).with("a - the first one")
+      Prompt.should_receive(:log).with("b - there's also this")
+      Prompt.should_receive(:log).with("c - or this")
+      Prompt.should_receive(:log).with("value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('d')
+      Prompt.should_receive(:log).with("That's not a valid choice. value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('a')
+      Prompt.get_value('value', :choice_descriptions => {'a' => "the first one", 'b' => "there's also this", 'c' => "or this"}).should == 'a'
+    end
+  end
 end
 
 describe Prompt, "#get_path" do

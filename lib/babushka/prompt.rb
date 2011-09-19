@@ -53,6 +53,8 @@ module Babushka
     def get_value message, opts = {}, &block
       if opts[:choices] && opts[:choice_descriptions]
         raise ArgumentError, "You can't use the :choices and :choice_descriptions options together."
+      elsif opts[:choice_descriptions]
+        opts[:choices] = opts[:choice_descriptions].keys
       end
       if opts[:choices] && opts[:choices].any? {|c| !c.is_a?(String) }
         raise ArgumentError, "Choices must be passed as strings."
