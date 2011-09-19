@@ -42,6 +42,12 @@ describe Parameter do
     end
   end
 
+  describe "other stringy methods" do
+    it "should work with #/" do
+      (Parameter.new(:test, "/path") / 'joining') == "/path/joining"
+    end
+  end
+
   describe "asking for values" do
     it "should request a value when it's not present" do
       Prompt.should_receive(:get_value).with('unset', {}).and_return('value')

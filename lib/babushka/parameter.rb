@@ -31,6 +31,10 @@ module Babushka
       value == other
     end
 
+    def / other
+      value / other
+    end
+
     def to_s
       value.to_s
     end
