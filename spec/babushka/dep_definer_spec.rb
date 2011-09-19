@@ -46,6 +46,37 @@ describe "args" do
       L{ dep('1 arg', :a).with(:a => 'a', :b => 'b', :c => 'c') }.should raise_error(DepArgumentError, "The dep '1 arg' received unexpected arguments :b and :c.")
     end
   end
+  context "with the right number of positional arguments" do
+    subject { dep('2 args', :a, :b).with('a', 'b') }
+    it "should populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter, :b => Parameter}
+    end
+    it "should set the names correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
+    end
+  end
+  context "with the correct named arguments" do
+    subject { dep('2 args', :a, :b).with(:a => 'a', :b => 'b') }
+    it "should populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter, :b => Parameter}
+    end
+    it "should set the names correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
+    end
+  end
+  context "with incomplete named arguments" do
+    subject { dep('2 args', :a, :b).with(:a => 'a') }
+    it "should partially populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter}
+    end
+    it "should set the names that are present correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a}
+    end
+    it "should lazily create the missing parameter" do
+      subject.context.b.should be_an_instance_of(Parameter)
+      subject.context.b.name.should == :b
+    end
+  end
 end
 
 describe "methods in deps" do
