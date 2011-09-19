@@ -270,8 +270,11 @@ module Babushka
 
     def parse_named_arguments args
       if (non_symbol = args.keys.reject {|key| key.is_a?(Symbol) }).any?
+        # We sort here so we can spec the exception message across different rubies.
+        non_symbol.sort! if non_symbol.all? {|key| key.respond_to?(:<=>) }
         raise DepArgumentError, "The dep '#{name}' received #{'a ' if non_symbol.length == 1}non-symbol argument#{'s' if non_symbol.length > 1} #{non_symbol.map(&:inspect).to_list}."
       elsif (unexpected = args.keys - params).any?
+        unexpected.sort! if unexpected.all? {|key| key.respond_to?(:<=>) }
         raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
       end
       args
