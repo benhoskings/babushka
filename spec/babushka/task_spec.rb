@@ -19,7 +19,7 @@ describe Task, "process" do
       Base.task.process ['task spec']
     end
   end
-  describe "with_vars" do
+  describe "variable assignment" do
     it "should set the values in with_vars as vars" do
       var_value = nil
       dep 'task spec with_vars' do
@@ -29,6 +29,27 @@ describe Task, "process" do
       end
       Base.task.process ['task spec with_vars'], {'task_var' => 'something tasky'}
       var_value.should == 'something tasky'
+    end
+  end
+  describe "argument assignment" do
+    it "should work when with_vars contains no arguments" do
+      @dep = dep('task spec arg passing, no args')
+      @dep.should_receive(:with).with({}).and_return(@dep)
+      @dep.should_receive(:process).with({:top_level => true})
+      Base.task.process ['task spec arg passing, no args']
+    end
+    it "should provide the values in with_vars as dep arguments with symbol names" do
+      @dep = dep('task spec arg passing, 1 arg', :arg)
+      @dep.should_receive(:with).with({:arg => 'something argy'}).and_return(@dep)
+      @dep.should_receive(:process).with({:top_level => true})
+      Base.task.process ['task spec arg passing, 1 arg'], {'arg' => 'something argy'}
+    end
+    it "should print a warning about unexpected arguments, and not pass them to Dep#with" do
+      @dep = dep('task spec arg passing, unexpected arg', :expected)
+      Base.task.should_receive(:log_warn).with(%{Ignoring unexpected argument "unexpected", which the dep 'task spec arg passing, unexpected arg' would reject.})
+      @dep.should_receive(:with).with({:expected => 'something argy'}).and_return(@dep)
+      @dep.should_receive(:process).with({:top_level => true})
+      Base.task.process ['task spec arg passing, unexpected arg'], {'expected' => 'something argy', 'unexpected' => 'nobody expects the Spanish arg!'}
     end
   end
   after {

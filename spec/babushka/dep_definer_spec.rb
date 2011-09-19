@@ -11,39 +11,82 @@ describe "args" do
   describe "parsing style" do
     it "should parse as named when just a single hash is passed" do
       dep('1 arg', :a).tap {|dep|
-        dep.should_receive(:parse_named_arguments).with({:a => 'a'})
+        dep.should_receive(:parse_named_arguments).with({:a => 'a'}).and_return({})
         dep.with(:a => 'a')
       }
     end
     it "should parse as a list when non-hash values are passed" do
       dep('2 args', :a, :b).tap {|dep|
-        dep.should_receive(:parse_positional_arguments).with(['a', {'key' => 'value'}])
+        dep.should_receive(:parse_positional_arguments).with(['a', {'key' => 'value'}]).and_return({})
         dep.with('a', 'key' => 'value')
       }
     end
     it "should parse as a list when no args are passed" do
       dep('no args').tap {|dep|
-        dep.should_receive(:parse_positional_arguments).with([])
+        dep.should_receive(:parse_positional_arguments).with([]).and_return({})
         dep.with
       }
     end
   end
   context "without arguments" do
     it "should fail when called with unnamed args" do
-      L{ dep('no args').with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' requires 0 arguments, but 1 was passed.")
+      L{ dep('no args').with('a') }.should raise_error(DepArgumentError, "The dep 'no args' accepts 0 arguments, but 1 was passed.")
     end
     it "should fail when called with named args that don't match" do
-      L{ dep('no args').with(:a => 'a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' received an unexpected argument :a.")
+      L{ dep('no args').with(:a => 'a') }.should raise_error(DepArgumentError, "The dep 'no args' received an unexpected argument :a.")
     end
   end
   context "with the wrong number of arguments" do
     it "should fail when called with the wrong number of unnamed args" do
-      L{ dep('1 arg', :a).with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' requires 1 argument, but 2 were passed.")
-      L{ dep('2 args', :a, :b).with('a').context.define! }.should raise_error(DepArgumentError, "The dep '2 args' requires 2 arguments, but 1 was passed.")
+      L{ dep('1 arg', :a).with('a', 'b') }.should raise_error(DepArgumentError, "The dep '1 arg' accepts 1 argument, but 2 were passed.")
+      L{ dep('2 args', :a, :b).with('a') }.should raise_error(DepArgumentError, "The dep '2 args' accepts 2 arguments, but 1 was passed.")
     end
     it "should fail when called with named args that don't match" do
-      L{ dep('1 arg', :a).with(:a => 'a', :b => 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' received an unexpected argument :b.")
-      L{ dep('1 arg', :a).with(:a => 'a', :b => 'b', :c => 'c').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' received unexpected arguments :b and :c.")
+      L{ dep('1 arg', :a).with(:a => 'a', :b => 'b') }.should raise_error(DepArgumentError, "The dep '1 arg' received an unexpected argument :b.")
+      L{ dep('1 arg', :a).with(:a => 'a', :b => 'b', :c => 'c') }.should raise_error(DepArgumentError, "The dep '1 arg' received unexpected arguments :b and :c.")
+    end
+  end
+  context "with the right number of positional arguments" do
+    subject { dep('2 args', :a, :b).with('a', 'b') }
+    it "should populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter, :b => Parameter}
+    end
+    it "should set the names correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
+    end
+  end
+  context "with the correct named arguments" do
+    subject { dep('2 args', :a, :b).with(:a => 'a', :b => 'b') }
+    it "should populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter, :b => Parameter}
+    end
+    it "should set the names correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
+    end
+  end
+  context "with non-symbol names" do
+    it "should be rejected, singular" do
+      L{
+        dep('2 args', :a).with('a' => 'a')
+      }.should raise_error(DepArgumentError, %{The dep '2 args' received a non-symbol argument "a".})
+    end
+    it "should be rejected, plural" do
+      L{
+        dep('2 args', :a, :b).with('a' => 'a', 'b' => 'b')
+      }.should raise_error(DepArgumentError, %{The dep '2 args' received non-symbol arguments "a" and "b".})
+    end
+  end
+  context "with incomplete named arguments" do
+    subject { dep('2 args', :a, :b).with(:a => 'a') }
+    it "should partially populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter}
+    end
+    it "should set the names that are present correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a}
+    end
+    it "should lazily create the missing parameter" do
+      subject.context.b.should be_an_instance_of(Parameter)
+      subject.context.b.name.should == :b
     end
   end
 end

@@ -37,6 +37,9 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
       elsif /\:/ =~ name
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
+      elsif !params.all? {|param| param.is_a?(Symbol) }
+        non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
+        raise DepError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
         @name = name.to_s
         @params = params
@@ -123,7 +126,9 @@ module Babushka
         parse_named_arguments(args.first)
       else
         parse_positional_arguments(args)
-      end
+      end.map_values {|k,v|
+        Parameter.new(k, v)
+      }
       self
     end
 
@@ -264,7 +269,12 @@ module Babushka
     end
 
     def parse_named_arguments args
-      if (unexpected = args.keys - params).any?
+      if (non_symbol = args.keys.reject {|key| key.is_a?(Symbol) }).any?
+        # We sort here so we can spec the exception message across different rubies.
+        non_symbol.sort! if non_symbol.all? {|key| key.respond_to?(:<=>) }
+        raise DepArgumentError, "The dep '#{name}' received #{'a ' if non_symbol.length == 1}non-symbol argument#{'s' if non_symbol.length > 1} #{non_symbol.map(&:inspect).to_list}."
+      elsif (unexpected = args.keys - params).any?
+        unexpected.sort! if unexpected.all? {|key| key.respond_to?(:<=>) }
         raise DepArgumentError, "The dep '#{name}' received #{'an ' if unexpected.length == 1}unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:inspect).to_list}."
       end
       args
@@ -272,7 +282,7 @@ module Babushka
 
     def parse_positional_arguments args
       if args.length != params.length
-        raise DepArgumentError, "The dep '#{name}' requires #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
+        raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
       end
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
     end

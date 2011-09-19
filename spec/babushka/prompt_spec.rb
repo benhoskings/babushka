@@ -25,6 +25,12 @@ describe Prompt, "get_value" do
     end
   end
 
+  it "should reject :choices and :choice_descriptions together" do
+    L{
+      Prompt.get_value('value', :choices => %w[a b c], :choice_descriptions => {:a => "description"})
+    }.should raise_error(ArgumentError, "You can't use the :choices and :choice_descriptions options together.")
+  end
+
   describe "with choices" do
     it "should accept a valid choice" do
       Prompt.should_receive(:log).with("value (a,b,c)", {:newline => false})
@@ -37,6 +43,11 @@ describe Prompt, "get_value" do
       Prompt.should_receive(:log).with("That's not a valid choice. value (a,b,c)", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('a')
       Prompt.get_value('value', :choices => %w[a b c]).should == 'a'
+    end
+    it "should reject non-string choices" do
+      L{
+        Prompt.get_value('value', :choices => [:a, :b])
+      }.should raise_error ArgumentError, "Choices must be passed as strings."
     end
     describe "with default" do
       it "should accept a valid choice" do
@@ -65,6 +76,34 @@ describe Prompt, "get_value" do
           Prompt.get_value('value', :choices => %w[a b c], :default => 'd').should == 'a'
         end
       end
+    end
+  end
+
+  describe "with choice descriptions" do
+    it "should behave like choices, logging the descriptions" do
+      Prompt.should_receive(:log).with("There are 3 choices:")
+      Prompt.should_receive(:log).with("a - the first one")
+      Prompt.should_receive(:log).with("b - there's also this")
+      Prompt.should_receive(:log).with("c - or this")
+      Prompt.should_receive(:log).with("value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('d')
+      Prompt.should_receive(:log).with("That's not a valid choice. value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('a')
+      Prompt.get_value('value', :choice_descriptions => {'a' => "the first one", 'b' => "there's also this", 'c' => "or this"}).should == 'a'
+    end
+  end
+
+  describe "validation" do
+    it "should treat 'true' as valid" do
+      Prompt.should_receive(:read_from_prompt).and_return('value')
+      Prompt.get_value('value') {|value| true }.should == 'value'
+    end
+    it "should treat 'false' as invalid" do
+      Prompt.should_receive(:log).with("value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('another value')
+      Prompt.should_receive(:log).with("That wasn't valid. value", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('value')
+      Prompt.get_value('value') {|value| value == 'value' }.should == 'value'
     end
   end
 end
@@ -129,32 +168,6 @@ describe "'y' input" do
       Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('value')
       Prompt.get_value('value').should == 'value'
-    end
-    context "with default" do
-      it "should ask for the value again with a custom log message" do
-        Prompt.should_receive(:log).with("value [val]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('y')
-        Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('n')
-        Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value [val]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('')
-        Prompt.get_value('value', :default => 'val').should == 'val'
-      end
-    end
-    context "repeated" do
-      it "should return nil" do
-        Prompt.should_receive(:log).with("value", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('y')
-        Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('n')
-        Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('y')
-        Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('n')
-        Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
-        Prompt.should_receive(:read_from_prompt).and_return('value')
-        Prompt.get_value('value').should == 'value'
-      end
     end
   end
 end

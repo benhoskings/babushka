@@ -321,6 +321,18 @@ describe Dep, '#basename' do
 end
 
 describe Dep, "params" do
+  describe "non-symbol params" do
+    it "should be rejected, singular" do
+      L{
+        dep('non-symbol param', 'a')
+      }.should raise_error(DepError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
+    end
+    it "should be rejected, plural" do
+      L{
+        dep('non-symbol params', 'a', 'b')
+      }.should raise_error(DepError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
+    end
+  end
   it "should define methods on the context" do
     dep('params test', :a_param).context.should respond_to(:a_param)
   end
@@ -331,13 +343,19 @@ describe Dep, "params" do
   end
   it "should not pollute other deps" do
     dep('params test', :a_param)
+    Dep('params test').context.should respond_to(:a_param)
     dep('paramless dep').context.should_not respond_to(:a_param)
   end
-  context "when the value is set" do
-    it "should provide the value directly" do
-      dep('set params test', :a_set_param)
-      Dep('set params test').with('a value').context.a_set_param.should == 'a value'
-    end
+  it "should return a param containing the value when it's set" do
+    dep('set params test', :a_set_param)
+    Dep('set params test').with('a value').context.a_set_param.should be_an_instance_of(Parameter)
+    Dep('set params test').with('a value').context.a_set_param.to_s.should == 'a value'
+  end
+  it "should ask for the value when it's not set" do
+    dep('unset params test', :an_unset_param)
+    Dep('unset params test').context.an_unset_param.should be_an_instance_of(Parameter)
+    Prompt.should_receive(:get_value).with('an_unset_param', {}).and_return('a value from the prompt')
+    Dep('unset params test').context.an_unset_param.to_s.should == 'a value from the prompt'
   end
 end
 

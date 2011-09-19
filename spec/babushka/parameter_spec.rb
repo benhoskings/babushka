@@ -8,6 +8,17 @@ describe Parameter do
     Parameter.new(:test, 'testy test').set?.should be_true
   end
 
+  describe "#==" do
+    it "should behave like a string when it's set" do
+      Parameter.new(:test, "a value").should == "a value"
+      Parameter.new(:test, "a value").should_not == "another value"
+    end
+    it "should prompt when the value isn't set" do
+      Prompt.should_receive(:get_value)
+      Parameter.new(:test) == "a value"
+    end
+  end
+
   describe "#to_s" do
     it "should delegate to the value" do
       Parameter.new(:test, "a value").to_s.should == "a value"
@@ -31,15 +42,43 @@ describe Parameter do
     end
   end
 
+  describe "other stringy methods" do
+    it "should work with #/" do
+      (Parameter.new(:test, "/path") / 'joining') == "/path/joining"
+    end
+    it "should work with #[]" do
+      Parameter.new(:test, "The Rural Jurour")[/ur/].should == 'ur'
+    end
+    it "should work with #p" do
+      Parameter.new(:test, "/bin").p.should be_an_instance_of(Fancypath)
+    end
+  end
+
   describe "asking for values" do
     it "should request a value when it's not present" do
-      Prompt.should_receive(:get_value).with('unset', :default => nil).and_return('value')
+      Prompt.should_receive(:get_value).with('unset', {}).and_return('value')
       Parameter.new(:unset).to_s.should == 'value'
     end
-    describe "with defaults" do
-      it "should return the default" do
-        Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
-        Parameter.new(:unset).default('default').to_s.should == 'default'
+    it "should pass the default from #default" do
+      Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
+      Parameter.new(:unset).default('default').to_s.should == 'default'
+    end
+    it "should pass the message from #ask" do
+      Prompt.should_receive(:get_value).with('What number am I thinking of', {}).and_return('7')
+      Parameter.new(:unset).ask('What number am I thinking of').to_s.should == '7'
+    end
+    describe "choices, from #choose" do
+      it "should pass to #choices when given as an array" do
+        Prompt.should_receive(:get_value).with('unset', :choices => %w[a b]).and_return('a')
+        Parameter.new(:unset).choose(%w[a b]).to_s.should == 'a'
+      end
+      it "should pass to #choices when given as splatted args" do
+        Prompt.should_receive(:get_value).with('unset', :choices => %w[a b]).and_return('a')
+        Parameter.new(:unset).choose('a', 'b').to_s.should == 'a'
+      end
+      it "should pass to #choice_descriptions when given as a hash" do
+        Prompt.should_receive(:get_value).with('unset', :choice_descriptions => {:a => 'a', :b => 'b'}).and_return('a')
+        Parameter.new(:unset).choose(:a => 'a', :b => 'b').to_s.should == 'a'
       end
     end
   end

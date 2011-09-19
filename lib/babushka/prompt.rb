@@ -51,6 +51,14 @@ module Babushka
     end
 
     def get_value message, opts = {}, &block
+      if opts[:choices] && opts[:choice_descriptions]
+        raise ArgumentError, "You can't use the :choices and :choice_descriptions options together."
+      elsif opts[:choice_descriptions]
+        opts[:choices] = opts[:choice_descriptions].keys
+      end
+      if opts[:choices] && opts[:choices].any? {|c| !c.is_a?(String) }
+        raise ArgumentError, "Choices must be passed as strings."
+      end
       opts.defaults! :prompt => '? '
       prompt_and_read_value prompt_message(message, opts), opts, &block
     end
@@ -98,7 +106,7 @@ module Babushka
       error = if opts[:choices] && !opts[:choices].include?(value)
         "That's not a valid choice"
       elsif block_given? && !yield(value)
-        opts[:retry]
+        opts[:retry] || "That wasn't valid"
       elsif value.blank? && !(opts[:default] && opts[:default].empty?)
         "That was blank"
       elsif !opts[:confirmation] && value == 'y' && !confirm("Wait, do you mean the literal value 'y'?", :default => 'n', :always_ask => true)

@@ -10,9 +10,37 @@ module Babushka
     def default value
       tap { @default = value }
     end
+    def ask value
+      tap { @ask = value }
+    end
+    def choose *value
+      tap {
+        @choose = if [[Hash], [Array]].include?(value.map(&:class))
+          value.first
+        else
+          value
+        end
+      }
+    end
 
     def set?
       !!@value
+    end
+
+    def == other
+      value == other
+    end
+
+    def / other
+      value / other
+    end
+
+    def [] other
+      value[other]
+    end
+
+    def p
+      value.p
     end
 
     def to_s
@@ -34,7 +62,15 @@ module Babushka
   private
 
     def value
-      @value ||= Prompt.get_value(name.to_s, :default => @default)
+      @value ||= Prompt.get_value((@ask || name).to_s, prompt_opts)
+    end
+
+    def prompt_opts
+      {}.tap {|hsh|
+        hsh[:default] = @default unless @default.nil?
+        hsh[:choices] = @choose if @choose.is_a?(Array)
+        hsh[:choice_descriptions] = @choose if @choose.is_a?(Hash)
+      }
     end
   end
 end
