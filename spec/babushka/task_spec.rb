@@ -19,7 +19,7 @@ describe Task, "process" do
       Base.task.process ['task spec']
     end
   end
-  describe "with_vars" do
+  describe "variable assignment" do
     it "should set the values in with_vars as vars" do
       var_value = nil
       dep 'task spec with_vars' do
@@ -29,6 +29,20 @@ describe Task, "process" do
       end
       Base.task.process ['task spec with_vars'], {'task_var' => 'something tasky'}
       var_value.should == 'something tasky'
+    end
+  end
+  describe "argument assignment" do
+    it "should work when with_vars contains no arguments" do
+      @dep = dep('task spec argument passing')
+      @dep.should_receive(:with).with({}).and_return(@dep)
+      @dep.should_receive(:process).with({:top_level => true})
+      Base.task.process ['task spec argument passing']
+    end
+    it "should provide the values in with_vars as dep arguments" do
+      @dep = dep('task spec argument passing')
+      @dep.should_receive(:with).with({'arg' => 'something argy'}).and_return(@dep)
+      @dep.should_receive(:process).with({:top_level => true})
+      Base.task.process ['task spec argument passing'], {'arg' => 'something argy'}
     end
   end
   after {

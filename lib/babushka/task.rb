@@ -27,7 +27,7 @@ module Babushka
       Dep.find_or_suggest dep_name do |dep|
         log_dep(dep) {
           load_run_info_for dep, with_vars
-          dep.process(:top_level => true).tap {|result|
+          dep.with(with_vars).process(:top_level => true).tap {|result|
             save_run_info_for dep, result
           }
         }.tap {|result|
