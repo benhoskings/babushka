@@ -30,7 +30,7 @@ describe "args" do
   end
   context "without arguments" do
     it "should fail when called with unnamed args" do
-      L{ dep('no args').with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' requires 0 arguments, but 1 was passed.")
+      L{ dep('no args').with('a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' accepts 0 arguments, but 1 was passed.")
     end
     it "should fail when called with named args that don't match" do
       L{ dep('no args').with(:a => 'a').context.define! }.should raise_error(DepArgumentError, "The dep 'no args' received an unexpected argument :a.")
@@ -38,8 +38,8 @@ describe "args" do
   end
   context "with the wrong number of arguments" do
     it "should fail when called with the wrong number of unnamed args" do
-      L{ dep('1 arg', :a).with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' requires 1 argument, but 2 were passed.")
-      L{ dep('2 args', :a, :b).with('a').context.define! }.should raise_error(DepArgumentError, "The dep '2 args' requires 2 arguments, but 1 was passed.")
+      L{ dep('1 arg', :a).with('a', 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' accepts 1 argument, but 2 were passed.")
+      L{ dep('2 args', :a, :b).with('a').context.define! }.should raise_error(DepArgumentError, "The dep '2 args' accepts 2 arguments, but 1 was passed.")
     end
     it "should fail when called with named args that don't match" do
       L{ dep('1 arg', :a).with(:a => 'a', :b => 'b').context.define! }.should raise_error(DepArgumentError, "The dep '1 arg' received an unexpected argument :b.")
