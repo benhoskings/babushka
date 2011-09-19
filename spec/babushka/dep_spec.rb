@@ -340,6 +340,7 @@ describe Dep, "params" do
   end
   it "should ask for the value when it's not set" do
     dep('unset params test', :an_unset_param)
+    Dep('unset params test').context.an_unset_param.should be_an_instance_of(Parameter)
     Prompt.should_receive(:get_value).with('an_unset_param', {}).and_return('a value from the prompt')
     Dep('unset params test').context.an_unset_param.to_s.should == 'a value from the prompt'
   end
