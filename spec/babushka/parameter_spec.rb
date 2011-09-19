@@ -49,6 +49,10 @@ describe Parameter do
         Prompt.should_receive(:get_value).with('unset', :choices => %w[a b]).and_return('a')
         Parameter.new(:unset).choose(%w[a b]).to_s.should == 'a'
       end
+      it "should pass to #choices when given as splatted args" do
+        Prompt.should_receive(:get_value).with('unset', :choices => %w[a b]).and_return('a')
+        Parameter.new(:unset).choose('a', 'b').to_s.should == 'a'
+      end
       it "should pass to #choice_descriptions when given as a hash" do
         Prompt.should_receive(:get_value).with('unset', :choice_descriptions => {:a => 'a', :b => 'b'}).and_return('a')
         Parameter.new(:unset).choose(:a => 'a', :b => 'b').to_s.should == 'a'

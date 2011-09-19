@@ -13,8 +13,14 @@ module Babushka
     def ask value
       tap { @ask = value }
     end
-    def choose value
-      tap { @choose value }
+    def choose *value
+      tap {
+        @choose = if [[Hash], [Array]].include?(value.map(&:class))
+          value.first
+        else
+          value
+        end
+      }
     end
 
     def set?
