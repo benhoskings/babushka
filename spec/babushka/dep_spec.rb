@@ -321,6 +321,18 @@ describe Dep, '#basename' do
 end
 
 describe Dep, "params" do
+  describe "non-symbol params" do
+    it "should be rejected, singular" do
+      L{
+        dep('non-symbol param', 'a')
+      }.should raise_error(DepError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
+    end
+    it "should be rejected, plural" do
+      L{
+        dep('non-symbol params', 'a', 'b')
+      }.should raise_error(DepError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
+    end
+  end
   it "should define methods on the context" do
     dep('params test', :a_param).context.should respond_to(:a_param)
   end

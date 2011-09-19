@@ -37,6 +37,9 @@ module Babushka
         raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
       elsif /\:/ =~ name
         raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
+      elsif !params.all? {|param| param.is_a?(Symbol) }
+        non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
+        raise DepError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
         @name = name.to_s
         @params = params
