@@ -49,6 +49,9 @@ describe Parameter do
     it "should work with #[]" do
       Parameter.new(:test, "The Rural Jurour")[/ur/].should == 'ur'
     end
+    it "should work with #p" do
+      Parameter.new(:test, "/bin").p.should be_an_instance_of(Fancypath)
+    end
   end
 
   describe "asking for values" do
