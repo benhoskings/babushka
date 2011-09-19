@@ -44,6 +44,13 @@ describe Task, "process" do
       @dep.should_receive(:process).with({:top_level => true})
       Base.task.process ['task spec arg passing, 1 arg'], {'arg' => 'something argy'}
     end
+    it "should print a warning about unexpected arguments, and not pass them to Dep#with" do
+      @dep = dep('task spec arg passing, unexpected arg', :expected)
+      Base.task.should_receive(:log_warn).with(%{Ignoring unexpected argument "unexpected", which the dep 'task spec arg passing, unexpected arg' would reject.})
+      @dep.should_receive(:with).with({:expected => 'something argy'}).and_return(@dep)
+      @dep.should_receive(:process).with({:top_level => true})
+      Base.task.process ['task spec arg passing, unexpected arg'], {'expected' => 'something argy', 'unexpected' => 'nobody expects the Spanish arg!'}
+    end
   end
   after {
     Base.task.vars.saved_vars.clear

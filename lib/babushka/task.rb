@@ -27,10 +27,7 @@ module Babushka
       Dep.find_or_suggest dep_name do |dep|
         log_dep(dep) {
           load_run_info_for dep, with_vars
-          dep.with(
-            # These string arg names are sanitized in the 'meet' cmdline handler.
-            with_vars.keys.inject({}) {|hsh,k| hsh[k.to_sym] = with_vars[k]; hsh }
-          ).process(:top_level => true).tap {|result|
+          dep.with(task_args_for(dep, with_vars)).process(:top_level => true).tap {|result|
             save_run_info_for dep, result
           }
         }.tap {|result|
@@ -73,6 +70,18 @@ module Babushka
     end
 
     private
+
+    def task_args_for dep, with_vars
+      with_vars.keys.inject({}) {|hsh,k|
+        # The string arg names are sanitized in the 'meet' cmdline handler.
+        hsh[k.to_sym] = with_vars[k]; hsh
+      }.tap {|with_args|
+        if (unexpected = with_args.keys - dep.params).any?
+          log_warn "Ignoring unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:to_s).map(&:inspect).to_list}, which the dep '#{dep.name}' would reject."
+          unexpected.each {|key| with_args.delete(key) }
+        end
+      }
+    end
 
     def log_dep dep
       log_prefix.mkdir
