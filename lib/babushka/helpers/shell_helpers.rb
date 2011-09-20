@@ -1,5 +1,7 @@
 module Babushka
   module ShellHelpers
+    include LogHelpers
+
     # Run +cmd+.
     #
     # If the command succeeds (i.e. returns 0), its output will be returned
@@ -54,6 +56,14 @@ module Babushka
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
       send shell_method, *cmd.dup.push(opts), &block
+    rescue Shell::ShellCommandFailed => e
+      if e.stdout.empty? && e.stderr.empty?
+        log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
+      else
+        log "$ #{e.cmd.join(' ')}", :closing_status => 'shell command failed' do
+          log_error(e.stderr.empty? ? e.stdout : e.stderr)
+        end
+      end
     end
 
     # Run +cmd+, returning true if its exit code was 0.
