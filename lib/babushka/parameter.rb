@@ -10,6 +10,9 @@ module Babushka
     def default value
       tap { @default = value }
     end
+    def suggest value
+      tap { @suggest = value }
+    end
     def ask value
       tap { @ask = value }
     end
@@ -62,12 +65,12 @@ module Babushka
   private
 
     def value
-      @value ||= Prompt.get_value((@ask || name).to_s, prompt_opts)
+      @value ||= @default || Prompt.get_value((@ask || name).to_s, prompt_opts)
     end
 
     def prompt_opts
       {}.tap {|hsh|
-        hsh[:default] = @default unless @default.nil?
+        hsh[:default] = @suggest unless @suggest.nil?
         hsh[:choices] = @choose if @choose.is_a?(Array)
         hsh[:choice_descriptions] = @choose if @choose.is_a?(Hash)
       }
