@@ -2,6 +2,19 @@ module Babushka
   class Shell
     include LogHelpers
 
+    class ShellCommandFailed < StandardError
+      attr_reader :cmd, :stdout, :stderr
+      def initialize cmd, stdout, stderr
+        @cmd, @stdout, @stderr = cmd, stdout, stderr
+        message = if stderr.empty?
+          "Shell command failed: '#{cmd.join(' ')}'"
+        else
+          "Shell command failed: '#{cmd.join(' ')}':\n#{stderr}"
+        end
+        super message
+      end
+    end
+
     attr_reader :cmd, :opts, :env, :result, :stdout, :stderr
 
     def initialize *cmd
@@ -23,12 +36,8 @@ module Babushka
         yield(self)
       elsif ok?
         stdout.chomp
-      elsif stderr.empty? && stdout.empty?
-        log "$ #{@cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
       else
-        log "$ #{@cmd.join(' ')}", :closing_status => 'shell command failed' do
-          log_error(stderr.empty? ? stdout : stderr)
-        end
+        raise ShellCommandFailed.new(cmd, stdout, stderr)
       end
     end
 

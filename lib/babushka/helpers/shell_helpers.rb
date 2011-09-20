@@ -1,5 +1,7 @@
 module Babushka
   module ShellHelpers
+    include LogHelpers
+
     # Run +cmd+.
     #
     # If the command succeeds (i.e. returns 0), its output will be returned
@@ -36,6 +38,32 @@ module Babushka
     #     command's stdout or stderr pipes. This is useful for monitoring the
     #     progress of a long-running command, like a build or an installer.
     def shell *cmd, &block
+      shell!(*cmd, &block)
+    rescue Shell::ShellCommandFailed => e
+      if e.stdout.empty? && e.stderr.empty?
+        log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
+      else
+        log "$ #{e.cmd.join(' ')}", :closing_status => 'shell command failed' do
+          log_error(e.stderr.empty? ? e.stdout : e.stderr)
+        end
+      end
+    end
+
+    # Run +cmd+, returning true if its exit code was 0.
+    #
+    # This is useful to run shell commands whose output isn't important,
+    # but whose exit code is. Unlike +#shell+, which logs the output of shell
+    # commands that exit with non-zero status, +#shell?+ runs silently.
+    #
+    # The idea is that +#shell+ is for when you're interested in the command's
+    # output, and +#shell?+ is for when you're interested in the exit status.
+    def shell? *cmd
+      shell(*cmd) {|s| s.stdout.chomp if s.ok? }
+    end
+
+    # Run +cmd+ via #shell, raising an exception if it doesn't exit
+    # with success.
+    def shell! *cmd, &block
       opts = cmd.extract_options!
       cmd = cmd.first if cmd.map(&:class) == [Array]
 
@@ -54,18 +82,6 @@ module Babushka
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
       send shell_method, *cmd.dup.push(opts), &block
-    end
-
-    # Run +cmd+, returning true if its exit code was 0.
-    #
-    # This is useful to run shell commands whose output isn't important,
-    # but whose exit code is. Unlike +#shell+, which logs the output of shell
-    # commands that exit with non-zero status, +#shell?+ runs silently.
-    #
-    # The idea is that +#shell+ is for when you're interested in the command's
-    # output, and +#shell?+ is for when you're interested in the exit status.
-    def shell? *cmd
-      shell(*cmd) {|s| s.stdout.chomp if s.ok? }
     end
 
     # This method is a shortcut for accessing the results of a shell command
