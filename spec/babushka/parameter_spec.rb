@@ -60,6 +60,18 @@ describe Parameter do
     end
   end
 
+  describe "default values" do
+    it "should be returned when no value is set" do
+      Parameter.new(:unset).default('default').to_s.should == 'default'
+    end
+    it "should be ignored when a value is set" do
+      Parameter.new(:set, 'value').default('default').to_s.should == 'value'
+    end
+    it "should take precedence over suggested values" do
+      Parameter.new(:unset).default('default').suggest('suggestion').to_s.should == 'default'
+    end
+  end
+
   describe "asking for values" do
     it "should request a value when it's not present" do
       Prompt.should_receive(:get_value).with('unset', {}).and_return('value')
