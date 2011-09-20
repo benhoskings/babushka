@@ -7,15 +7,17 @@ module Babushka
     include ShellHelpers
     extend ShellHelpers
 
-    attr_reader :path
-
     def self.repo_for path
       maybe = shell("git rev-parse --git-dir", :cd => path) if path.p.dir?
       maybe == '.git' ? path.p : maybe / '..' unless maybe.nil?
     end
 
     def initialize path
-      @path = path.p
+      @raw_path = path
+    end
+
+    def path
+      @path ||= @raw_path.p
     end
 
     def root
