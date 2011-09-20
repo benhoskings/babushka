@@ -60,15 +60,15 @@ describe Parameter do
     end
   end
 
-  describe "default values" do
+  describe "#default!" do
     it "should be returned when no value is set" do
-      Parameter.new(:unset).default('default').to_s.should == 'default'
+      Parameter.new(:unset).default!('default!').to_s.should == 'default!'
     end
     it "should be ignored when a value is set" do
-      Parameter.new(:set, 'value').default('default').to_s.should == 'value'
+      Parameter.new(:set, 'value').default!('default!').to_s.should == 'value'
     end
-    it "should take precedence over suggested values" do
-      Parameter.new(:unset).default('default').suggest('suggestion').to_s.should == 'default'
+    it "should take precedence over default values" do
+      Parameter.new(:unset).default!('default!').default('default').to_s.should == 'default!'
     end
   end
 
@@ -77,9 +77,9 @@ describe Parameter do
       Prompt.should_receive(:get_value).with('unset', {}).and_return('value')
       Parameter.new(:unset).to_s.should == 'value'
     end
-    it "should pass the value from #suggest" do
-      Prompt.should_receive(:get_value).with('unset', :default => 'suggestion').and_return('suggestion')
-      Parameter.new(:unset).suggest('suggestion').to_s.should == 'suggestion'
+    it "should pass the default from #default" do
+      Prompt.should_receive(:get_value).with('unset', :default => 'default').and_return('default')
+      Parameter.new(:unset).default('default').to_s.should == 'default'
     end
     it "should pass the message from #ask" do
       Prompt.should_receive(:get_value).with('What number am I thinking of', {}).and_return('7')
