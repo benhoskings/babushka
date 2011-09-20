@@ -60,15 +60,15 @@ describe Parameter do
     end
   end
 
-  describe "default values" do
+  describe "#default!" do
     it "should be returned when no value is set" do
-      Parameter.new(:unset).default('default').to_s.should == 'default'
+      Parameter.new(:unset).default!('default!').to_s.should == 'default!'
     end
     it "should be ignored when a value is set" do
-      Parameter.new(:set, 'value').default('default').to_s.should == 'value'
+      Parameter.new(:set, 'value').default!('default!').to_s.should == 'value'
     end
     it "should take precedence over suggested values" do
-      Parameter.new(:unset).default('default').suggest('suggestion').to_s.should == 'default'
+      Parameter.new(:unset).default!('default!').suggest('suggestion').to_s.should == 'default!'
     end
   end
 
