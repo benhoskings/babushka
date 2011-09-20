@@ -38,24 +38,7 @@ module Babushka
     #     command's stdout or stderr pipes. This is useful for monitoring the
     #     progress of a long-running command, like a build or an installer.
     def shell *cmd, &block
-      opts = cmd.extract_options!
-      cmd = cmd.first if cmd.map(&:class) == [Array]
-
-      if opts[:dir] # deprecated
-        log_error "#{caller.first}: #shell's :dir option has been renamed to :cd."
-        opts[:cd] = opts[:dir]
-      end
-      if opts[:cd]
-        if !opts[:cd].p.exists?
-          if opts[:create]
-            opts[:cd].p.mkdir
-          else
-            raise Errno::ENOENT, opts[:cd]
-          end
-        end
-      end
-      shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
-      send shell_method, *cmd.dup.push(opts), &block
+      shell!(*cmd, &block)
     rescue Shell::ShellCommandFailed => e
       if e.stdout.empty? && e.stderr.empty?
         log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
@@ -76,6 +59,29 @@ module Babushka
     # output, and +#shell?+ is for when you're interested in the exit status.
     def shell? *cmd
       shell(*cmd) {|s| s.stdout.chomp if s.ok? }
+    end
+
+    # Run +cmd+ via #shell, raising an exception if it doesn't exit
+    # with success.
+    def shell! *cmd, &block
+      opts = cmd.extract_options!
+      cmd = cmd.first if cmd.map(&:class) == [Array]
+
+      if opts[:dir] # deprecated
+        log_error "#{caller.first}: #shell's :dir option has been renamed to :cd."
+        opts[:cd] = opts[:dir]
+      end
+      if opts[:cd]
+        if !opts[:cd].p.exists?
+          if opts[:create]
+            opts[:cd].p.mkdir
+          else
+            raise Errno::ENOENT, opts[:cd]
+          end
+        end
+      end
+      shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
+      send shell_method, *cmd.dup.push(opts), &block
     end
 
     # This method is a shortcut for accessing the results of a shell command

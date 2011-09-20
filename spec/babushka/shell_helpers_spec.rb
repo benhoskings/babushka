@@ -76,6 +76,17 @@ describe "shell?" do
   end
 end
 
+describe "shell!" do
+  it "should return the output for successful commands" do
+    shell!('echo lol').should == 'lol'
+    shell!(SucceedingLs).should be_true
+  end
+  it "should return false for failed commands" do
+    L{ shell!('false') }.should raise_error(Shell::ShellCommandFailed, "Shell command failed: 'false'")
+    L{ shell!(FailingLs) }.should raise_error(Shell::ShellCommandFailed)
+  end
+end
+
 describe "raw_shell" do
   it "should always return a Shell" do
     raw_shell('true').should be_a(Shell)
