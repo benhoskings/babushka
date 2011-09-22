@@ -101,7 +101,7 @@ module Babushka
         Base.sources.all_present.each {|source|
           source.load!
         }.map {|source|
-          [source, source.send(to_list).send(to_list)]
+          [source, source.send(to_list).items]
         }.map {|(source,items)|
           if match_str.nil? || source.name.downcase[match_str]
             [source, items]
