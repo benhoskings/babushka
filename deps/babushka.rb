@@ -8,6 +8,7 @@ dep 'babushka', :path, :branch do
   requires 'up to date.babushka'.with(path, branch)
   requires 'in path.babushka'.with(path)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
+  path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
   branch.default!('master')
 end
 
