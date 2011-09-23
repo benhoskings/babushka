@@ -1,12 +1,14 @@
 class String
-  # Delegate String#with to Babushka::Dep#with. This is to provide a nicer
-  # syntax for specifying dep arguments, for example:
+  # Return a Dep::Requirement that specifies the dep that should later be
+  # called, and the arguments that should be passed. This allows requiring
+  # deps with a less noisy syntax, and the lookup is lazy (it happens at
+  # the point the dep is invoked, from its parent dep in Dep#process_deps).
   #
-  #   dep 'user has a password' do
-  #     requires 'user exists'.with(shell('whoami'))
+  #   dep 'user has a password', :username do
+  #     requires 'user exists'.with(username)
   #   end
   def with *args
-    Babushka::Dep(self).with(*args)
+    Babushka::Dep::Requirement.new(self, args)
   end
 
   # Returns true iff +other+ appears exactly at the start of +self+.

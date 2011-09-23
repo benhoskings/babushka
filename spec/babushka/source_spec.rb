@@ -116,6 +116,35 @@ describe Source do
     end
   end
 
+  describe "loading deps with parameters" do
+    let(:source) { Source.new('spec/deps/params').tap(&:load!) }
+    let(:requires) { source.deps.for('top-level dep with params').context.requires }
+    it "should store the right number of requirements" do
+      requires.length.should == 2
+    end
+    it "should store the right kinds of objects" do
+      requires.map(&:class).should == [String, Babushka::Dep::Requirement]
+    end
+    it "should store string requirements properly" do
+      requires.first.should == 'a dep without params'
+    end
+    context "requirements" do
+      let(:requirement) { requires.last }
+      it "should store the name properly" do
+        requirement.name.should == 'another dep with params'
+      end
+      context "arguments" do
+        let(:args) { requirement.args }
+        it "should store parameters" do
+          args.map(&:class).should == [Parameter]
+        end
+        it "should store the name properly" do
+          args.map(&:name).should == [:param]
+        end
+      end
+    end
+  end
+
   describe "defining deps" do
     before {
       @source = Source.new('spec/deps/good')
