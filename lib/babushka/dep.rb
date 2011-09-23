@@ -22,6 +22,9 @@ module Babushka
       def self.context_class; DepContext end
     end
 
+    class Requirement < Struct.new(:name, :args)
+    end
+
     attr_reader :name, :params, :args, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
 
@@ -319,9 +322,9 @@ module Babushka
     end
 
     def process_deps accessor = :requires
-      context.send(accessor).send(task.opt(:dry_run) ? :each : :all?) do |dep_name|
-        Dep.find_or_suggest dep_name, :from => dep_source do |dep|
-          dep.process
+      requirements_for(accessor).send(task.opt(:dry_run) ? :each : :all?) do |requirement|
+        Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
+          dep.with(*requirement.args).process
         end
       end
     end
@@ -369,6 +372,16 @@ module Babushka
       log_exception_in_dep(e)
       Base.task.reportable = true
       raise DepError, e.message
+    end
+
+    def requirements_for list_name
+      context.send(list_name).map {|dep_or_requirement|
+        if dep_or_requirement.is_a?(Requirement)
+          dep_or_requirement
+        else
+          Requirement.new(dep_or_requirement, [])
+        end
+      }
     end
 
     def log_exception_in_dep e

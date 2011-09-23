@@ -380,6 +380,41 @@ describe Dep, 'lambda lists' do
   end
 end
 
+describe Dep, '#requirements_for' do
+  let(:dependency) {
+    dep 'requirements_for specs' do
+      requires 'a dep'
+      requires 'another dep'.with(:some, :args)
+      requires 'a third'.with()
+    end
+  }
+  let(:requirements) {
+    dependency.send(:requirements_for, :requires)
+  }
+  it "should have the right number of requirements" do
+    requirements.length.should == 3
+  end
+  it "should return a Requirement for all the required deps" do
+    requirements.each {|c| c.should be_an_instance_of(Babushka::Dep::Requirement) }
+  end
+  it "should contain the right dep names" do
+    requirements.map(&:name).should == ['a dep', 'another dep', 'a third']
+  end
+  it "should work with empty args" do
+    requirements[0].args.should == []
+    requirements[2].args.should == []
+  end
+  context "arguments" do
+    let(:args) { requirements[1].args }
+    it "should have the right number of args" do
+      args.length.should == 2
+    end
+    it "should contain the right args" do
+      args.should == [:some, :args]
+    end
+  end
+end
+
 describe "calling met? on a single dep" do
   before {
     setup_yield_counts
