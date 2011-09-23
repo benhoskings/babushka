@@ -284,7 +284,7 @@ module Babushka
     end
 
     def parse_positional_arguments args
-      if args.length != params.length
+      if !args.empty? && args.length != params.length
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
       end
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }

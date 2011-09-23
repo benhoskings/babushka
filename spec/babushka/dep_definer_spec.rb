@@ -46,6 +46,15 @@ describe "args" do
       L{ dep('1 arg', :a).with(:a => 'a', :b => 'b', :c => 'c') }.should raise_error(DepArgumentError, "The dep '1 arg' received unexpected arguments :b and :c.")
     end
   end
+  context "with empty arguments" do
+    subject { dep('2 args', :a, :b).with() }
+    it "should populate the args with Parameter objects" do
+      subject.args.map_values {|_,v| v.class }.should == {:a => Parameter, :b => Parameter}
+    end
+    it "should set the names correctly" do
+      subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
+    end
+  end
   context "with the right number of positional arguments" do
     subject { dep('2 args', :a, :b).with('a', 'b') }
     it "should populate the args with Parameter objects" do
