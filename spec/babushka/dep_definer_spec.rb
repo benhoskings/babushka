@@ -54,6 +54,9 @@ describe "args" do
     it "should set the names correctly" do
       subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
     end
+    it "should not set the values" do
+      subject.args.values.each {|v| v.should_not be_set }
+    end
   end
   context "with the right number of positional arguments" do
     subject { dep('2 args', :a, :b).with('a', 'b') }
@@ -63,6 +66,9 @@ describe "args" do
     it "should set the names correctly" do
       subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
     end
+    it "should set the values" do
+      subject.args.values.each {|v| v.should be_set }
+    end
   end
   context "with the correct named arguments" do
     subject { dep('2 args', :a, :b).with(:a => 'a', :b => 'b') }
@@ -71,6 +77,9 @@ describe "args" do
     end
     it "should set the names correctly" do
       subject.args.map_values {|_,v| v.name }.should == {:a => :a, :b => :b}
+    end
+    it "should set the values" do
+      subject.args.values.each {|v| v.should be_set }
     end
   end
   context "with non-symbol names" do
@@ -96,6 +105,10 @@ describe "args" do
     it "should lazily create the missing parameter" do
       subject.context.b.should be_an_instance_of(Parameter)
       subject.context.b.name.should == :b
+    end
+    it "should set only the paramters that were passed" do
+      subject.context.a.should be_set
+      subject.context.b.should_not be_set
     end
   end
 end
