@@ -87,6 +87,14 @@ describe "accepts_list_for" do
     @list.produces.should == ["a default response"]
     @list.valid_formats.should == %w[html xml js json]
   end
+  it "should accept splatted args" do
+    @list.records "an item", "another item"
+    @list.records.should == ["an item", "another item"]
+  end
+  it "should accept an array of args" do
+    @list.records ["an item", "another item"]
+    @list.records.should == ["an item", "another item"]
+  end
   it "should return the value when called without args" do
     [:records, :produces, :valid_formats].each {|method_name|
       @list.send(method_name, "hello").send(method_name).should == ["hello"]
