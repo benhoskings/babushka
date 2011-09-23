@@ -319,11 +319,11 @@ module Babushka
     end
 
     def process_deps accessor = :requires
-      context.send(accessor).send(task.opt(:dry_run) ? :each : :all?, &L{|dep_name|
+      context.send(accessor).send(task.opt(:dry_run) ? :each : :all?) do |dep_name|
         Dep.find_or_suggest dep_name, :from => dep_source do |dep|
           dep.process
         end
-      })
+      end
     end
 
     def process_self
