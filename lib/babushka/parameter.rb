@@ -2,6 +2,10 @@ module Babushka
   class Parameter
     attr_reader :name
 
+    def self.for name, value = nil
+      value.is_a?(Parameter) ? value : Parameter.new(name, value)
+    end
+
     def initialize(name, value = nil)
       @name = name
       @value = value

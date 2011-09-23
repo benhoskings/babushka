@@ -8,6 +8,20 @@ describe Parameter do
     Parameter.new(:test, 'testy test').set?.should be_true
   end
 
+  describe ".for" do
+    let(:input) { 'testy test' }
+    let(:param) { Parameter.for(:test, input) }
+    it "should return a parameter" do
+      param.should be_an_instance_of(Parameter)
+    end
+    context "with Parameter input" do
+      let(:input) { Parameter.new(:test, 'testy test') }
+      it "should not re-wrap the Parameter" do
+        Parameter.for(:test, input).object_id.should == input.object_id
+      end
+    end
+  end
+
   describe "#==" do
     it "should behave like a string when it's set" do
       Parameter.new(:test, "a value").should == "a value"

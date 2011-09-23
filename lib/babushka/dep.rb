@@ -130,7 +130,7 @@ module Babushka
       else
         parse_positional_arguments(args)
       end.map_values {|k,v|
-        Parameter.new(k, v)
+        Parameter.for(k, v)
       }
       self
     end
