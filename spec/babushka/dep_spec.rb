@@ -513,12 +513,13 @@ describe "run_in" do
     Dir.pwd.should == cwd
     ran_in.should == cwd
   end
-  it "should fail when run_in is set to a nonexistent directory" do
-    L{
-      dep 'dep with run_in set to a nonexistent dir' do
-        run_in((tmp_prefix / 'nonexistent').to_s)
-      end.met?
-    }.should raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}")
+  it "should not run when run_in is set to a nonexistent directory" do
+    ran_in = nil
+    dep 'dep with run_in set' do
+      run_in tmp_prefix / 'nonexistent'
+      met? { ran_in = Dir.pwd }
+    end.met?
+    ran_in.should be_nil
   end
   it "should run in the specified directory when run_in is set" do
     cwd = Dir.pwd
