@@ -5,25 +5,25 @@ describe "Dep.new" do
   it "should reject deps with empty names" do
     L{
       Dep.new "", Base.sources.anonymous, [], {}, nil
-    }.should raise_error(DepError, "Deps can't have empty names.")
+    }.should raise_error(InvalidDepName, "Deps can't have empty names.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
     L{
       Dep.new "carriage\rreturn", Base.sources.anonymous, [], {}, nil
-    }.should raise_error(DepError, "The dep name 'carriage\rreturn' contains nonprintable characters.")
+    }.should raise_error(InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps slashes in their names" do
     L{
       Dep.new "slashes/invalidate names", Base.sources.anonymous, [], {}, nil
-    }.should raise_error(DepError, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
+    }.should raise_error(InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     L{
       Dep.new "colons:invalidate names", Base.sources.anonymous, [], {}, nil
-    }.should raise_error(DepError, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
+    }.should raise_error(InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
@@ -325,12 +325,12 @@ describe Dep, "params" do
     it "should be rejected, singular" do
       L{
         dep('non-symbol param', 'a')
-      }.should raise_error(DepError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
+      }.should raise_error(DepParameterError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
     end
     it "should be rejected, plural" do
       L{
         dep('non-symbol params', 'a', 'b')
-      }.should raise_error(DepError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
+      }.should raise_error(DepParameterError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
     end
   end
   it "should define methods on the context" do

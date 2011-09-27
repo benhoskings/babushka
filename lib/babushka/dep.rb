@@ -1,6 +1,8 @@
 module Babushka
   class DepError < StandardError
   end
+  class InvalidDepName < ArgumentError
+  end
   class DepParameterError < DepError
   end
   class DepArgumentError < DepError
@@ -33,16 +35,16 @@ module Babushka
     # is +Dep::Helpers#dep+).
     def initialize name, source, params, opts, block
       if name.empty?
-        raise DepError, "Deps can't have empty names."
+        raise InvalidDepName, "Deps can't have empty names."
       elsif /\A[[:print:]]+\z/i !~ name
-        raise DepError, "The dep name '#{name}' contains nonprintable characters."
+        raise InvalidDepName, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
-        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
+        raise InvalidDepName, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
       elsif /\:/ =~ name
-        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
+        raise InvalidDepName, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       elsif !params.all? {|param| param.is_a?(Symbol) }
         non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
-        raise DepError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
+        raise DepParameterError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
         @name = name.to_s
         @params = params
