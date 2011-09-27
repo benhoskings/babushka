@@ -5,9 +5,9 @@ module Babushka
   end
   class TemplateNotFound < ArgumentError
   end
-  class DepParameterError < DepError
+  class DepParameterError < ArgumentError
   end
-  class DepArgumentError < DepError
+  class DepArgumentError < ArgumentError
   end
   class Dep
     include LogHelpers
