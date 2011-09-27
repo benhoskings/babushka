@@ -1,9 +1,9 @@
 module Babushka
   class DepError < StandardError
   end
-  class DepParameterError < ArgumentError
+  class DepParameterError < DepError
   end
-  class DepArgumentError < ArgumentError
+  class DepArgumentError < DepError
   end
   class Dep
     include LogHelpers
