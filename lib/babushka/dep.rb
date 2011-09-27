@@ -326,7 +326,9 @@ module Babushka
       log_error e.message
       log "I don't know how to fix that, so it's up to you. :)"
       nil
-    rescue DepError => e
+    rescue StandardError => e
+      log_exception_in_dep e
+      Base.task.reportable = true
       nil
     end
 
@@ -377,10 +379,6 @@ module Babushka
       context.instance_eval(&context.send(task_name))
     rescue UnmeetableDep => e
       raise e
-    rescue StandardError => e
-      log_exception_in_dep(e)
-      Base.task.reportable = true
-      raise DepError, e.message
     end
 
     def requirements_for list_name
