@@ -1,8 +1,5 @@
 module Babushka
   class DepDefiner
-    class UnmeetableDep < DepError
-    end
-
     include LogHelpers
     extend LogHelpers
     include ShellHelpers
@@ -60,7 +57,7 @@ module Babushka
     end
 
     def unmeetable message
-      raise UnmeetableDep, message
+      raise Babushka::UnmeetableDep, message
     end
 
     def file_and_line

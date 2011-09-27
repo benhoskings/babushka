@@ -1,6 +1,8 @@
 module Babushka
   class DepError < StandardError
   end
+  class UnmeetableDep < DepError
+  end
   class InvalidDepName < ArgumentError
   end
   class TemplateNotFound < ArgumentError
@@ -317,7 +319,7 @@ module Babushka
     def process_this_dep
       process_task(:setup)
       process_deps and process_self
-    rescue DepDefiner::UnmeetableDep => e
+    rescue UnmeetableDep => e
       log_error e.message
       log "I don't know how to fix that, so it's up to you. :)"
       nil
@@ -370,7 +372,7 @@ module Babushka
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.instance_eval(&context.send(task_name))
-    rescue DepDefiner::UnmeetableDep => e
+    rescue UnmeetableDep => e
       raise e
     rescue StandardError => e
       log_exception_in_dep(e)
