@@ -3,6 +3,8 @@ module Babushka
   end
   class InvalidDepName < ArgumentError
   end
+  class TemplateNotFound < ArgumentError
+  end
   class DepParameterError < DepError
   end
   class DepArgumentError < DepError
@@ -262,7 +264,7 @@ module Babushka
     def assign_template
       @template = if opts[:template]
         Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
-          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+          raise TemplateNotFound, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         }
       else
         Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template

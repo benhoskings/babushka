@@ -203,7 +203,7 @@ describe "template selection during defining" do
     it "should not find the template with the wrong source prefix, and raise" do
       L{
         dep('template selection 2', :template => 'source_2:meta_1')
-      }.should raise_error(DepError, "There is no template named 'source_2:meta_1' to define 'template selection 2' against.")
+      }.should raise_error(TemplateNotFound, "There is no template named 'source_2:meta_1' to define 'template selection 2' against.")
     end
   end
   context "without namespacing" do
@@ -214,7 +214,7 @@ describe "template selection during defining" do
       it "should not find a template in the wrong source, and raise" do
         L{
           mock_dep('template selection 4', :template => 'meta_3', :in => @source1).template
-        }.should raise_error(DepError, "There is no template named 'meta_3' to define 'template selection 4' against.")
+        }.should raise_error(TemplateNotFound, "There is no template named 'meta_3' to define 'template selection 4' against.")
       end
     end
     context "with suffixes" do

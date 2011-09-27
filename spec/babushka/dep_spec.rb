@@ -51,7 +51,7 @@ describe "Dep.new" do
     it "should fail to define optioned deps against a missing template" do
       L{
         Dep.new("valid but missing template", Base.sources.anonymous, [], {:template => 'template'}, nil).template
-      }.should raise_error(DepError, "There is no template named 'template' to define 'valid but missing template' against.")
+      }.should raise_error(TemplateNotFound, "There is no template named 'template' to define 'valid but missing template' against.")
     end
   end
   context "with template" do
