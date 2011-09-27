@@ -75,8 +75,8 @@ module Babushka
       elsif cmd.opts.has_key?(:add)
         begin
           Source.new(cmd.argv.first, :name => cmd.opts[:add]).add!
-        rescue SourceError => ex
-          log_error ex.message
+        rescue SourceError => e
+          log_error e.message
         end
       elsif cmd.opts.has_key?(:update)
         Base.sources.update!
