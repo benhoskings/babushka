@@ -1,6 +1,6 @@
 module Babushka
 
-  class UnmeetableDep < StandardError
+  class UnmeetableDep < RuntimeError
   end
   class InvalidDepName < ArgumentError
   end
