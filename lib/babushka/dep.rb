@@ -1,10 +1,7 @@
 module Babushka
 
-  class DepError < StandardError
+  class UnmeetableDep < StandardError
   end
-  class UnmeetableDep < DepError
-  end
-
   class InvalidDepName < ArgumentError
   end
   class TemplateNotFound < ArgumentError
