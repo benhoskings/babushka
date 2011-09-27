@@ -377,8 +377,6 @@ module Babushka
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.instance_eval(&context.send(task_name))
-    rescue UnmeetableDep => e
-      raise e
     end
 
     def requirements_for list_name
