@@ -1,8 +1,10 @@
 module Babushka
+
   class DepError < StandardError
   end
   class UnmeetableDep < DepError
   end
+
   class InvalidDepName < ArgumentError
   end
   class TemplateNotFound < ArgumentError
@@ -11,6 +13,7 @@ module Babushka
   end
   class DepArgumentError < ArgumentError
   end
+
   class Dep
     include LogHelpers
     extend LogHelpers
