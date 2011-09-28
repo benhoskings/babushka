@@ -325,6 +325,9 @@ module Babushka
       log_error e.message
       log "I don't know how to fix that, so it's up to you. :)"
       nil
+    rescue DepDefinitionError => e
+      log_exception_in_dep e, "Looks like a problem with '#{name}' - check"
+      nil
     rescue StandardError => e
       log_exception_in_dep e
       Base.task.reportable = true
@@ -388,9 +391,9 @@ module Babushka
       }
     end
 
-    def log_exception_in_dep e
+    def log_exception_in_dep e, message = 'Check'
       log_error e.message
-      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      log "#{message} #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
       debug e.backtrace * "\n"
     end
 
