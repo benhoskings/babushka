@@ -12,7 +12,7 @@ module Babushka
 
     def render source, opts = {}
       shell("cat > '#{path}'",
-        :input => inkan_output_for(source, opts[:context]),
+        :input => inkan_output_for(source, opts),
         :sudo => opts[:sudo]
       ).tap {|result|
         if result
@@ -35,10 +35,12 @@ module Babushka
 
     private
 
-    def inkan_output_for source, custom_context
+    def inkan_output_for source, opts = {}
       Inkan.render {|inkan|
         inkan.credit = "Generated #{_by_babushka}, from #{sha_of(source)}"
-        inkan.print render_erb(source, custom_context)
+        inkan.comment = opts[:comment] if opts[:comment]
+        inkan.comment_suffix = opts[:comment_suffix] if opts[:comment_suffix]
+        inkan.print render_erb(source, opts[:context])
       }
     end
 
