@@ -1,10 +1,18 @@
 module Babushka
-  class DepError < StandardError
+
+  class UnmeetableDep < RuntimeError
   end
-  class DepParameterError < ArgumentError
+  class DepDefinitionError < ArgumentError
   end
-  class DepArgumentError < ArgumentError
+  class InvalidDepName < DepDefinitionError
   end
+  class TemplateNotFound < DepDefinitionError
+  end
+  class DepParameterError < DepDefinitionError
+  end
+  class DepArgumentError < DepDefinitionError
+  end
+
   class Dep
     include LogHelpers
     extend LogHelpers
@@ -33,16 +41,16 @@ module Babushka
     # is +Dep::Helpers#dep+).
     def initialize name, source, params, opts, block
       if name.empty?
-        raise DepError, "Deps can't have empty names."
+        raise InvalidDepName, "Deps can't have empty names."
       elsif /\A[[:print:]]+\z/i !~ name
-        raise DepError, "The dep name '#{name}' contains nonprintable characters."
+        raise InvalidDepName, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
-        raise DepError, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
+        raise InvalidDepName, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."
       elsif /\:/ =~ name
-        raise DepError, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
+        raise InvalidDepName, "The dep name '#{name}' contains ':', which isn't allowed (colons separate dep and template names from source prefixes)."
       elsif !params.all? {|param| param.is_a?(Symbol) }
         non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
-        raise DepError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
+        raise DepParameterError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
         @name = name.to_s
         @params = params
@@ -260,7 +268,7 @@ module Babushka
     def assign_template
       @template = if opts[:template]
         Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
-          raise DepError, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+          raise TemplateNotFound, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
         }
       else
         Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
@@ -313,11 +321,13 @@ module Babushka
     def process_this_dep
       process_task(:setup)
       process_deps and process_self
-    rescue DepDefiner::UnmeetableDep => ex
-      log_error ex.message
+    rescue UnmeetableDep => e
+      log_error e.message
       log "I don't know how to fix that, so it's up to you. :)"
       nil
-    rescue DepError => ex
+    rescue StandardError => e
+      log_exception_in_dep e
+      Base.task.reportable = e.is_a?(DepDefinitionError)
       nil
     end
 
@@ -366,12 +376,6 @@ module Babushka
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.instance_eval(&context.send(task_name))
-    rescue DepDefiner::UnmeetableDep => ex
-      raise ex
-    rescue StandardError => e
-      log_exception_in_dep(e)
-      Base.task.reportable = true
-      raise DepError, e.message
     end
 
     def requirements_for list_name
@@ -386,7 +390,8 @@ module Babushka
 
     def log_exception_in_dep e
       log_error e.message
-      log "Check #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
+      advice = e.is_a?(DepDefinitionError) ? "Looks like a problem with '#{name}' - check" : "Check"
+      log "#{advice} #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
       debug e.backtrace * "\n"
     end
 

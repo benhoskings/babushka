@@ -38,7 +38,7 @@ describe "using" do
     it "should not define deps as options" do
       L{
         dep('something undefined', :template => 'undefined').should be_nil
-      }.should raise_error(DepError, "There is no template named 'undefined' to define 'something undefined' against.")
+      }.should raise_error(TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
     end
     it "should define deps as options" do
       dep('something.undefined').should be_an_instance_of(Dep)
