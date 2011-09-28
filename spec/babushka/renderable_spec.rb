@@ -10,10 +10,10 @@ shared_examples_for 'renderable' do
       subject.exists?.should be_true
     end
     it "should have added the prefix" do
-      (dest_file).read.should =~ Renderable::SEAL_REGEXP
+      dest_file.read.should =~ Renderable::SEAL_REGEXP
     end
     it "should have interpolated the erb" do
-      (dest_file).read.should =~ content
+      dest_file.read.should =~ content
     end
     describe "#clean?" do
       it "should be clean" do
