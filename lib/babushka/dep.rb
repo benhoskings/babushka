@@ -2,13 +2,15 @@ module Babushka
 
   class UnmeetableDep < RuntimeError
   end
-  class InvalidDepName < ArgumentError
+  class DepDefinitionError < ArgumentError
   end
-  class TemplateNotFound < ArgumentError
+  class InvalidDepName < DepDefinitionError
   end
-  class DepParameterError < ArgumentError
+  class TemplateNotFound < DepDefinitionError
   end
-  class DepArgumentError < ArgumentError
+  class DepParameterError < DepDefinitionError
+  end
+  class DepArgumentError < DepDefinitionError
   end
 
   class Dep
