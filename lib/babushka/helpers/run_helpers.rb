@@ -74,6 +74,7 @@ module Babushka
     end
 
     def append_to_file text, file, opts = {}
+      text = text.to_s
       shell %Q{echo "\n# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}, opts
     end
 
