@@ -64,10 +64,12 @@ class String
   #   'key with spaces: space-separated value'.val_for('key with spaces') #=> 'space-separated value'
   def val_for key
     split("\n").grep(
-      key.is_a?(Regexp) ? key : /(^|^[^\w]*\s+)#{Regexp.escape(key)}\b/
+      # The key we're after, maybe preceded by non-word chars and spaces, and
+      # followed either by a word/non-word boundary or whitespace.
+      key.is_a?(Regexp) ? key : /(^|^[^\w]*\s+)#{Regexp.escape(key)}(\b|(?=\s))/
     ).map {|l|
       l.sub(/^[^\w]*\s+/, '').
-        sub(key.is_a?(Regexp) ? key : /^#{Regexp.escape(key)}\b\s*[:=]?/, '').
+        sub(key.is_a?(Regexp) ? key : /^#{Regexp.escape(key)}(\b|(?=\s))\s*[:=]?/, '').
         sub(/[;,]\s*$/, '').
         strip
     }.first
