@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe Prompt, "get_value" do
+  it "should raise when not running on a terminal" do
+    $stdin.should_receive(:tty?).and_return(false)
+    expect { Prompt.get_value('value') }.to raise_error(PromptUnavailable)
+  end
+
   it "should return the value" do
     Prompt.should_receive(:log).with("value", {:newline => false})
     Prompt.should_receive(:read_from_prompt).and_return('value')

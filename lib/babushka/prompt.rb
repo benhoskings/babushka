@@ -1,4 +1,11 @@
 module Babushka
+
+  class PromptUnavailable < RuntimeError
+    def initialize message
+      super %{Can't prompt for "#{message}" because STDIN isn't a terminal.}
+    end
+  end
+
   class Prompt
     extend LogHelpers
 
@@ -92,6 +99,8 @@ module Babushka
       if Base.task.opt(:defaults) && opts[:default]
         puts '.'
         opts[:default]
+      elsif !$stdin.tty?
+        raise PromptUnavailable.new(message)
       else
         read_value_from_prompt message, opts, &block
       end
