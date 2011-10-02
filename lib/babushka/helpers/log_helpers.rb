@@ -66,14 +66,14 @@ module Babushka
     # By default, the message is ended with a newline. You can pass
     # :newline => false to prevent the newline character being added.
     #
-    # To specify the message type, you can use :as. There are three custom
+    # To specify the message type, you can use :as. There are four custom
     # types supported:
     #   :ok      The message is printed in grey with +TickChar+ prepended, as
     #            used by +log_ok+.
     #   :warning The message is printed in yellow, as used by +log_warn+.
     #   :error   The message is printed in red, as used by +log_error+.
-    #   :stderr  The message (representing STDERR output) is printed in blue,
-    #            as used within the +Shell+ class for debug logging.
+    #   :stderr  The message (representing STDERR output) is printed in bold,
+    #            as used by +Shell+ for debug logging.
     #
     # If a block is given, the block is yielded with the indentation level
     # incremented. Opening and closing braces are printed to the log to represent
