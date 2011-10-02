@@ -139,6 +139,11 @@ class Array
     last.is_a?(::Hash) ? pop : {}
   end
 
+  # As above, without modifying the receiving object.
+  def extract_options
+    dup.extract_options!
+  end
+
   # Return a new array containing the terms from this array that were
   # determined to be 'similar to' +string+. A string is considered to
   # be similar to another if its Levenshtein distance is less than
