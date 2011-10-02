@@ -40,7 +40,9 @@ module Babushka
     def shell *cmd, &block
       shell!(*cmd, &block)
     rescue Shell::ShellCommandFailed => e
-      if e.stdout.empty? && e.stderr.empty?
+      if cmd.extract_options[:log]
+        # Don't log the error if the command already logged
+      elsif e.stdout.empty? && e.stderr.empty?
         log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
       else
         log "$ #{e.cmd.join(' ')}", :closing_status => 'shell command failed' do
