@@ -31,7 +31,7 @@ managed_template = L{
   }
   met? {
     if installs.blank?
-      log_ok "Not required on #{pkg_manager.manager_key}-based systems."
+      log_ok "Nothing to install on #{pkg_manager.manager_key}-based systems."
     else
       packages_present? and in_path?
     end
