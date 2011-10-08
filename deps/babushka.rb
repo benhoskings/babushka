@@ -4,16 +4,26 @@ meta :babushka do
   end
 end
 
-dep 'babushka', :path, :branch do
-  requires 'up to date.babushka'.with(path, branch)
-  requires 'in path.babushka'.with(path)
+dep 'babushka', :path, :babushka_source, :branch do
+  requires 'up to date.babushka'.with(path, babushka_source, branch)
+  requires 'in path.babushka'.with(path, babushka_source)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
   path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
+  babushka_source.default!('git://github.com/benhoskings/babushka.git')
   branch.default!('master')
 end
 
-dep 'up to date.babushka', :path, :branch do
-  requires 'repo clean.babushka'.with(path)
+dep 'babushka-git', :path, :babushka_source, :branch do
+  requires 'in path.babushka'.with(path, babushka_source)
+  requires 'up to date.babushka'.with(path, babushka_source, branch)
+  path.ask("Where would you like babushka installed").default('/usr/local/babushka')
+  path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
+  babushka_source.ask("What is the babushka repo you'd like to use").default('git://github.com/benhoskings/babushka.git')
+  branch.ask("What is the branch you'd like to use").default('master')
+end
+
+dep 'up to date.babushka', :path, :babushka_source, :branch do
+  requires 'repo clean.babushka'.with(path, babushka_source)
   requires 'update would fast forward.babushka'.with(path, branch)
   met? {
     (!repo.behind?).tap {|result|
@@ -60,15 +70,15 @@ dep 'branch exists.babushka', :path, :branch do
   meet { repo.track! "origin/#{branch}" }
 end
 
-dep 'repo clean.babushka', :path do
-  requires 'installed.babushka'.with(path)
+dep 'repo clean.babushka', :path, :babushka_source do
+  requires 'installed.babushka'.with(path, babushka_source)
   met? {
     repo.clean? or unmeetable("There are local changes in #{repo.path}.")
   }
 end
 
-dep 'in path.babushka', :path do
-  requires 'installed.babushka'
+dep 'in path.babushka', :path, :babushka_source do
+  requires 'installed.babushka'.with(path, babushka_source)
   def bin_path
     repo.path / '../bin'
   end
@@ -85,11 +95,8 @@ dep 'in path.babushka', :path do
   }
 end
 
-dep 'installed.babushka', :path do
+dep 'installed.babushka', :path, :babushka_source do
   requires 'ruby', 'git'
-  def babushka_source
-    "git://github.com/benhoskings/babushka.git"
-  end
   setup {
     unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
   }
@@ -100,3 +107,4 @@ dep 'installed.babushka', :path do
     end
   }
 end
+
