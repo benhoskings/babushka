@@ -12,7 +12,7 @@ dep 'git.managed' do
   installs {
     via :macports, 'git-core +svn +bash_completion'
     via :apt, 'git-core'
-    via :pkgsrc, 'scmgit'
+    via :binpkgsrc, 'scmgit'
     otherwise 'git'
   }
 end
