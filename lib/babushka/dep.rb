@@ -299,7 +299,7 @@ module Babushka
     end
 
     def process_and_cache
-      log contextual_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
+      log logging_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
         if dep_defined? == false
           # Only log about define errors if the define previously failed...
           log_error "This dep isn't defined. Perhaps there was a load error?"
@@ -386,6 +386,14 @@ module Babushka
           Requirement.new(dep_or_requirement, [])
         end
       }
+    end
+
+    def logging_name
+      if Base.task.opt(:debug)
+        "#{contextual_name}(#{args.values.map(&:description).join(', ')})"
+      else
+        contextual_name
+      end
     end
 
     def log_exception_in_dep e
