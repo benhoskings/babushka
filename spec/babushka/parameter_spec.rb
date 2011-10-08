@@ -62,6 +62,18 @@ describe Parameter do
     end
   end
 
+  describe '#description' do
+    it "should describe unset parameters" do
+      Parameter.new(:test).description.should == 'test: [unset]'
+    end
+    it "should describe set parameters" do
+      Parameter.new(:test, "a value").description.should == 'test: "a value"'
+    end
+    it "should describe non-string values" do
+      Parameter.new(:test, %w[non-string value]).description.should == 'test: ["non-string", "value"]'
+    end
+  end
+
   describe "other stringy methods" do
     it "should work with #/" do
       (Parameter.new(:test, "/path") / 'joining') == "/path/joining"

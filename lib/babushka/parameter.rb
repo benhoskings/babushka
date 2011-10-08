@@ -111,7 +111,11 @@ module Babushka
     end
 
     def inspect
-      "#<Babushka::Parameter:#{object_id} #{name}: #{@value || '[unset]'}>"
+      "#<Babushka::Parameter:#{object_id} #{description}>"
+    end
+
+    def description
+      "#{name}: #{@value ? @value.inspect : '[unset]'}"
     end
 
   private
