@@ -115,7 +115,15 @@ module Babushka
     end
 
     def description
-      "#{name}: #{@value ? @value.inspect : '[unset]'}"
+      if @value
+        "#{name}: #{@value.inspect}"
+      elsif @default_bang
+        "#{name}: [default!: #{@default_bang.inspect}]"
+      elsif @default
+        "#{name}: [default: #{@default.inspect}]"
+      else
+        "#{name}: [unset]"
+      end
     end
 
   private

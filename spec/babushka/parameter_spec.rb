@@ -66,6 +66,12 @@ describe Parameter do
     it "should describe unset parameters" do
       Parameter.new(:test).description.should == 'test: [unset]'
     end
+    it "should describe unset parameters with defaults" do
+      Parameter.new(:test).default("a default").description.should == 'test: [default: "a default"]'
+    end
+    it "should describe unset parameters with bang-defaults" do
+      Parameter.new(:test).default!("a bang-default").description.should == 'test: [default!: "a bang-default"]'
+    end
     it "should describe set parameters" do
       Parameter.new(:test, "a value").description.should == 'test: "a value"'
     end
