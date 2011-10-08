@@ -1,5 +1,5 @@
 module Babushka
-  class PkgSrcHelper < PkgHelper
+  class BinPkgSrcHelper < PkgHelper
   class << self
     def existing_packages
       shell("pkg_info -a").lines.to_a.collect!{ |i| i.split(/\s+/)[0] }
@@ -8,7 +8,7 @@ module Babushka
     def pkg_binary; 'pkg_radd' end
     def pkg_cmd; pkg_binary end
     def pkg_type; :pkg end
-    def manager_key; :pkgsrc end
+    def manager_key; :binpkgsrc end
 
     def update_pkg_lists_if_required
       if !File.exists? pkg_list_dir

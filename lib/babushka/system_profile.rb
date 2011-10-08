@@ -140,7 +140,7 @@ module Babushka
   class DragonFlySystemProfile < BSDSystemProfile
     def system_str; 'DragonFly' end
     def flavour; :dragonfly end
-    def pkg_helper; PkgSrcHelper end
+    def pkg_helper; BinPkgSrcHelper end
     def total_memory; shell("sysctl -a").val_for("hw.physmem").to_i end
   end
 

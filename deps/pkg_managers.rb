@@ -95,7 +95,7 @@ dep 'pip.src' do
   }
 end
 
-dep 'pkgsrc', :template => 'external' do
+dep 'binpkgsrc', :template => 'external' do
   expects 'pkg_radd'
   otherwise {
     log "You seem to be running DragonflyBSD ot NETBSD, but are missing the pkgsrc package manager. Something is very, very wrong here."
