@@ -61,6 +61,7 @@ module Babushka
     pkg_helpers/macports_helper
     pkg_helpers/src_helper
     pkg_helpers/pip_helper
+    pkg_helpers/pkgsrc_helper
     pkg_helpers/npm_helper
     pkg_helpers/pacman_helper
     dsl

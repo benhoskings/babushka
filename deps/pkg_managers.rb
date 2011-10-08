@@ -94,3 +94,10 @@ dep 'pip.src' do
     log_shell "Installing pip", "python setup.py install", :sudo => !which('python').p.writable?
   }
 end
+
+dep 'pkgsrc', :template => 'external' do
+  expects 'pkg_radd'
+  otherwise {
+    log "You seem to be running DragonflyBSD ot NETBSD, but are missing the pkgsrc package manager. Something is very, very wrong here."
+  }
+end

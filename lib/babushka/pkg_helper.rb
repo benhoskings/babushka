@@ -8,7 +8,7 @@ module Babushka
     def pkg_binary; pkg_cmd end
 
     def all_manager_keys
-      [:apt, :brew, :macports, :yum]
+      [:apt, :brew, :macports, :yum, :pkgsrc]
     end
 
     def manager_dep
