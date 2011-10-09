@@ -147,7 +147,7 @@ module Babushka
   class FreeBSDSystemProfile < BSDSystemProfile
     def system_str; 'FreeBSD' end
     def flavour; :freebsd end
-    def pkg_helper; PortsHelper end
+    def pkg_helper; BinPortsHelper end
     def total_memory; shell("sysctl -a").val_for("hw.realmem").to_i end
   end
 
