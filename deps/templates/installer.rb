@@ -6,7 +6,7 @@ meta :installer do
 
   template {
     prepare { setup_source_uris }
-    met? { in_path? }
+    met? { in_path?(provides) }
 
     # At the moment, we just try to install every .[m]pkg in the archive.
     # Example:

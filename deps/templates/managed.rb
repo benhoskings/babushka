@@ -33,7 +33,7 @@ managed_template = L{
     if installs.blank?
       log_ok "Nothing to install on #{pkg_manager.manager_key}-based systems."
     else
-      packages_present? and in_path?
+      packages_present? and in_path?(provides)
     end
   }
   before {
