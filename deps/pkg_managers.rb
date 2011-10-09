@@ -98,6 +98,13 @@ end
 dep 'binpkgsrc', :template => 'external' do
   expects 'pkg_radd'
   otherwise {
-    log "You seem to be running DragonflyBSD ot NETBSD, but are missing the pkgsrc package manager. Something is very, very wrong here."
+    log "You seem to be running DragonflyBSD or NETBSD, but are missing the pkgsrc package manager. Something is very, very wrong here."
+  }
+end
+
+dep 'binports', :template => 'external' do
+  expects 'pkg_add'
+  otherwise {
+    log "You seem to be running FreeBSD, but are missing the ports package manager. Something is very, very wrong here."
   }
 end
