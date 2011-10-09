@@ -5,6 +5,9 @@ module Babushka
       shell("pkg_info -a").lines.to_a.collect!{ |i| i.split(/\s+/)[0] }
     end
 
+    # Note that with pkg_radd it is possible to override the default
+    # repository using PKG_PATH environment variable to. See man 1 pkg_add.
+
     def pkg_binary; 'pkg_radd' end
     def pkg_cmd; pkg_binary end
     def pkg_type; :pkg end

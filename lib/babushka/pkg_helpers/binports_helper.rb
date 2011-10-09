@@ -10,8 +10,8 @@ module Babushka
     #   to calculate the URL to download packages from.
     #
     #   If you're using outdated FreeBSD RELEASE branch (like 6.2-release)
-    #   that does not have 
-    #   please either consider to move to the STABLE one (like 6-release)
+    #   that does not have anymore it's public package repository, please
+    #   either consider to move to the STABLE one (like 6-release)
     #   or set PACKAGESITE var to point to appropriate package repository.
 
     def pkg_binary; 'pkg_add' end
