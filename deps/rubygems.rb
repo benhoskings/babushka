@@ -1,5 +1,5 @@
-dep 'rubygems' do
-  def version; '1.8.10' end
+dep 'rubygems', :version do
+  version.default!('1.8.10')
   requires 'ruby'
   requires_when_unmet 'curl.managed'
   met? {
