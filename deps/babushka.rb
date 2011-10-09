@@ -49,13 +49,13 @@ end
 
 dep 'on correct branch.babushka', :path, :branch do
   requires 'branch exists.babushka'.with(path, branch)
-  requires_when_unmet 'repo clean.babushka'
+  requires_when_unmet 'repo clean.babushka'.with(path)
   met? { repo.current_branch == branch.to_s }
   meet { repo.checkout! branch }
 end
 
 dep 'branch exists.babushka', :path, :branch do
-  requires 'installed.babushka'
+  requires 'installed.babushka'.with(path)
   met? { repo.branches.include? branch.to_s }
   meet { repo.track! "origin/#{branch}" }
 end
@@ -68,7 +68,7 @@ dep 'repo clean.babushka', :path do
 end
 
 dep 'in path.babushka', :path do
-  requires 'installed.babushka'
+  requires 'installed.babushka'.with(path)
   def bin_path
     repo.path / '../bin'
   end
