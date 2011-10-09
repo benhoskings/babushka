@@ -5,12 +5,6 @@ module Babushka
 
     private
 
-    # deprecated
-    def provided? provided_list
-      log_error "#{caller.first}: #provided? has been renamed to #in_path?."
-      in_path? provided_list
-    end
-
     # TODO: solve cmd/app and string/version handling better.
     def in_path? provided_list
       apps, command_names = [*provided_list].partition {|i| i.to_s[/\.app\/?$/] }
