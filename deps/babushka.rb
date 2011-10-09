@@ -4,16 +4,17 @@ meta :babushka do
   end
 end
 
-dep 'babushka', :path, :branch do
-  requires 'up to date.babushka'.with(path, branch)
-  requires 'in path.babushka'.with(path)
+dep 'babushka', :path, :source, :branch do
+  requires 'up to date.babushka'.with(path, source, branch)
+  requires 'in path.babushka'.with(path, source)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
   path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
+  source.default!('git://github.com/benhoskings/babushka.git')
   branch.default!('master')
 end
 
-dep 'up to date.babushka', :path, :branch do
-  requires 'repo clean.babushka'.with(path)
+dep 'up to date.babushka', :path, :source, :branch do
+  requires 'repo clean.babushka'.with(path, source)
   requires 'update would fast forward.babushka'.with(path, branch)
   met? {
     (!repo.behind?).tap {|result|
@@ -60,15 +61,15 @@ dep 'branch exists.babushka', :path, :branch do
   meet { repo.track! "origin/#{branch}" }
 end
 
-dep 'repo clean.babushka', :path do
-  requires 'installed.babushka'.with(path)
+dep 'repo clean.babushka', :path, :source do
+  requires 'installed.babushka'.with(path, source)
   met? {
     repo.clean? or unmeetable("There are local changes in #{repo.path}.")
   }
 end
 
-dep 'in path.babushka', :path do
-  requires 'installed.babushka'
+dep 'in path.babushka', :path, :source do
+  requires 'installed.babushka'.with(path, source)
   def bin_path
     repo.path / '../bin'
   end
@@ -85,18 +86,16 @@ dep 'in path.babushka', :path do
   }
 end
 
-dep 'installed.babushka', :path do
+dep 'installed.babushka', :path, :source do
   requires 'ruby', 'git'
-  def babushka_source
-    "git://github.com/benhoskings/babushka.git"
-  end
   setup {
     unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
   }
   met? { repo.exists? }
   meet {
-    log_block "Cloning #{babushka_source} into #{repo.path}" do
-      repo.clone! babushka_source
+    log_block "Cloning #{source} into #{repo.path}" do
+      repo.clone! source
     end
   }
 end
+
