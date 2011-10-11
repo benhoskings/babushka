@@ -1,9 +1,13 @@
+require 'rexml/document'
+require 'net/http'
+
 meta :app do
   accepts_list_for :source
   accepts_list_for :prefix, %w[~/Applications /Applications]
   accepts_value_for :provides, :name
   accepts_value_for :version, nil
   accepts_block_for :current_version do |path| nil end
+  accepts_list_for :sparkle
 
   def app
     Babushka.VersionOf(provides, version)
@@ -35,8 +39,25 @@ meta :app do
     }
   end
 
+  def get_source_from_sparkle
+    sparkle_url = sparkle.first
+    puts 'Fetching via sparkle at ' + sparkle_url
+    url = URI.parse(sparkle_url)
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port) {|http|
+      http.request(req)
+    }
+    doc = REXML::Document.new res.body
+    [doc.elements['rss/channel/item/enclosure'].attributes['url']]
+  end
+
   template {
     prepare {
+      unless sparkle.empty?
+        def source
+          get_source_from_sparkle
+        end
+      end
       setup_source_uris
     }
 
@@ -49,7 +70,7 @@ meta :app do
 
     meet {
       process_sources {|archive|
-        Dir.glob("**/#{app_name_matcher}").select {|entry|
+        matches = Dir.glob("**/#{app_name_matcher}").select {|entry|
           (entry / 'Contents/MacOS').exists? # must be an app bundle itself
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
