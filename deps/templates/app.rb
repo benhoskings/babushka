@@ -51,7 +51,7 @@ meta :app do
 
   template {
     prepare {
-      unless sparkle.empty?
+      unless sparkle.blank?
         def source
           get_source_from_sparkle
         end
