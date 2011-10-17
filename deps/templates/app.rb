@@ -8,7 +8,7 @@ meta :app do
   accepts_list_for :provides, :name
   accepts_block_for :current_version do |path| nil end
   accepts_block_for :latest_version
-  accepts_list_for :sparkle
+  accepts_value_for :sparkle
 
   def app_name_match
     provides.first.to_s.sub(/\.app$/, '*.app')
@@ -39,9 +39,8 @@ meta :app do
   end
 
   def get_source_from_sparkle
-    sparkle_url = sparkle.first
-    puts 'Fetching via sparkle at ' + sparkle_url
-    url = URI.parse(sparkle_url)
+    puts 'Fetching via sparkle at ' + sparkle
+    url = URI.parse(sparkle)
     req = Net::HTTP::Get.new(url.path)
     res = Net::HTTP.start(url.host, url.port) {|http|
       http.request(req)
