@@ -69,7 +69,7 @@ meta :app do
 
     meet {
       process_sources {|archive|
-        matches = Dir.glob("**/#{app_name_matcher}").select {|entry|
+        Dir.glob("**/#{app_name_matcher}").select {|entry|
           (entry / 'Contents/MacOS').exists? # must be an app bundle itself
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
