@@ -6,6 +6,11 @@ describe Prompt, "get_value" do
     expect { Prompt.get_value('value') }.to raise_error(PromptUnavailable)
   end
 
+  it "should raise when not running on a terminal and a default is present" do
+    $stdin.should_receive(:tty?).and_return(false)
+    expect { Prompt.get_value('value', :default => 'a default') }.to raise_error(PromptUnavailable)
+  end
+
   it "should raise when a default is expected but not available" do
     Base.task.should_receive(:opt).with(:defaults).and_return(true)
     expect { Prompt.get_value('value') }.to raise_error(DefaultUnavailable)

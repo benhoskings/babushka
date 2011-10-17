@@ -100,7 +100,7 @@ module Babushka
     def prompt_and_read_value message, opts, &block
       if !opts[:default] && Base.task.opt(:defaults)
         raise DefaultUnavailable.new(message)
-      elsif !opts[:default] && !$stdin.tty?
+      elsif !$stdin.tty?
         raise PromptUnavailable.new(message)
       else
         log_choice_descriptions opts[:choice_descriptions]
