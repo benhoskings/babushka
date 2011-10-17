@@ -16,8 +16,10 @@ dep 'git.managed' do
   }
 end
 
-dep 'git.installer' do
-  source "http://git-osx-installer.googlecode.com/files/git-1.7.7-intel-universal-snow-leopard.dmg"
+dep 'git.installer', :version do
+  version.default!('1.7.7')
+  source "http://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
+  provides "git >= #{version}"
   after {
     cd '/usr/local/bin', :create => true, :sudo => true do
       sudo "ln -sf /usr/local/git/bin/git* ."
