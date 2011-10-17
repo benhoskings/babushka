@@ -7,7 +7,7 @@ meta :app do
   accepts_value_for :provides, :name
   accepts_value_for :version, nil
   accepts_block_for :current_version do |path| nil end
-  accepts_list_for :sparkle
+  accepts_value_for :sparkle
 
   def app
     Babushka.VersionOf(provides, version)
@@ -40,9 +40,8 @@ meta :app do
   end
 
   def get_source_from_sparkle
-    sparkle_url = sparkle.first
-    puts 'Fetching via sparkle at ' + sparkle_url
-    url = URI.parse(sparkle_url)
+    puts 'Fetching via sparkle at ' + sparkle
+    url = URI.parse(sparkle)
     req = Net::HTTP::Get.new(url.path)
     res = Net::HTTP.start(url.host, url.port) {|http|
       http.request(req)
