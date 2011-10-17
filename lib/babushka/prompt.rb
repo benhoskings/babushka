@@ -73,7 +73,7 @@ module Babushka
         raise ArgumentError, "Choices must be passed as strings."
       end
       opts.defaults! :prompt => '? '
-      prompt_and_read_value prompt_message(message, opts), opts, &block
+      prompt_and_read_value prompt_message(message, opts), opts.merge(:ask => !Base.task.opt(:defaults)), &block
     end
 
 
@@ -98,15 +98,15 @@ module Babushka
     end
 
     def prompt_and_read_value message, opts, &block
-      if !opts[:default] && Base.task.opt(:defaults)
+      if !opts[:default] && !opts[:ask]
         raise DefaultUnavailable.new(message)
-      elsif !Base.task.opt(:defaults) && !$stdin.tty?
+      elsif opts[:ask] && !$stdin.tty?
         raise PromptUnavailable.new(message)
       else
         log_choice_descriptions opts[:choice_descriptions]
         log message, :newline => false
 
-        if Base.task.opt(:defaults) && opts[:default]
+        if opts[:default] && !opts[:ask]
           puts '.'
           opts[:default]
         else
