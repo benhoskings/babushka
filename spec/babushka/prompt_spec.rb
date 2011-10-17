@@ -8,7 +8,6 @@ describe Prompt, "get_value" do
 
   it "should raise when a default is expected but not available" do
     Base.task.should_receive(:opt).with(:defaults).and_return(true)
-    Base.task.should_receive(:opt).with(:defaults).and_return(true)
     expect { Prompt.get_value('value') }.to raise_error(DefaultUnavailable)
   end
 

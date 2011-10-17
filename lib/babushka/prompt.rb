@@ -98,19 +98,20 @@ module Babushka
     end
 
     def prompt_and_read_value message, opts, &block
-      log_choice_descriptions opts[:choice_descriptions]
-
-      log message, :newline => false
-
-      if Base.task.opt(:defaults) && opts[:default]
-        puts '.'
-        opts[:default]
-      elsif Base.task.opt(:defaults)
+      if !opts[:default] && Base.task.opt(:defaults)
         raise DefaultUnavailable.new(message)
-      elsif !$stdin.tty?
+      elsif !opts[:default] && !$stdin.tty?
         raise PromptUnavailable.new(message)
       else
-        read_value_from_prompt message, opts, &block
+        log_choice_descriptions opts[:choice_descriptions]
+        log message, :newline => false
+
+        if Base.task.opt(:defaults) && opts[:default]
+          puts '.'
+          opts[:default]
+        else
+          read_value_from_prompt message, opts, &block
+        end
       end
     end
 
