@@ -107,8 +107,7 @@ module Babushka
       shell("mkdir -p '#{name}'") and
       cd(name) {
         unless log_shell("Extracting #{filename}", extract_command)
-          log_error "Couldn't extract #{path}."
-          log "(The file is probably corrupt - maybe the download was cancelled before it finished?)"
+          log_error "Couldn't extract #{path} - probably a bad download."
         else
           cd(content_subdir) {
             block.nil? or block.call(self)
