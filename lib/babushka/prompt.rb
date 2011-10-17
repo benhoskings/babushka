@@ -1,5 +1,11 @@
 module Babushka
 
+  class DefaultUnavailable < RuntimeError
+    def initialize message
+      super %{Not prompting for "#{message}" because we're running with '--defaults'.}
+    end
+  end
+
   class PromptUnavailable < RuntimeError
     def initialize message
       super %{Can't prompt for "#{message}" because STDIN isn't a terminal.}
@@ -99,6 +105,8 @@ module Babushka
       if Base.task.opt(:defaults) && opts[:default]
         puts '.'
         opts[:default]
+      elsif Base.task.opt(:defaults)
+        raise DefaultUnavailable.new(message)
       elsif !$stdin.tty?
         raise PromptUnavailable.new(message)
       else
