@@ -389,7 +389,7 @@ module Babushka
     end
 
     def logging_name
-      if Base.task.opt(:debug)
+      if Base.task.opt(:show_args) || Base.task.opt(:debug)
         "#{contextual_name}(#{args.values.map(&:description).join(', ')})"
       else
         contextual_name

@@ -48,6 +48,7 @@ describe "help" do
         --[no-]color, --[no-]colour  Disable color in the output
     -n, --dry-run                    Discover the curent state without making any changes
     -y, --defaults                   Assume the default value for all vars without prompting, where possible
+        --show-args                  Show the arguments being passed between deps as they're run
         --track-blocks               Track deps' blocks in TextMate as they're run
 ")
 
