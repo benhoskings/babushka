@@ -2,7 +2,7 @@ module Babushka
   class BinPortsHelper < PkgHelper
   class << self
     def existing_packages
-      shell("pkg_info").lines.to_a.collect!{ |i| i.split(/\s+/)[0] }
+      shell("pkg_info").lines.to_a.map {|i| i.split(/\s+/)[0] }
     end
 
     # Regarding FreeBSD binary packages the following should be noted:
@@ -26,7 +26,7 @@ module Babushka
     end
 
     def _has? pkg
-      existing_packages.any?{ |i| i.match(/#{pkg}/)}
+      existing_packages.any? {|i| i.match(/#{pkg}/)}
     end
 
   end

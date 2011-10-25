@@ -17,7 +17,6 @@ dep 'rubygems', :version do
       %w[gem1.8 gem18].each do |file|
         if File.exists? file
           shell "ln -sf #{file} gem", :sudo => !File.writable?(which('ruby'))
-          break
         end
       end
     end

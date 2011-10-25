@@ -85,7 +85,7 @@ module Babushka
           },
           :debian => {
             '5.0.4' => 'Lenny'
-          },
+          }
         },
         :bsd => {
           :dragonfly => {},
