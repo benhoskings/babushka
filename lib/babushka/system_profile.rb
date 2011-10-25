@@ -6,7 +6,9 @@ module Babushka
     def self.for_host
       {
         'Linux' => LinuxSystemProfile,
-        'Darwin' => OSXSystemProfile
+        'Darwin' => OSXSystemProfile,
+        'DragonFly' => DragonFlySystemProfile,
+        'FreeBSD' => FreeBSDSystemProfile
       }[shell('uname -s')].try(:for_flavour)
     end
 
@@ -20,6 +22,7 @@ module Babushka
 
     def linux?; false end
     def osx?; false end
+    def bsd?; false end
     def pkg_helper; nil end
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
@@ -122,7 +125,32 @@ module Babushka
     def pkg_helper; BrewHelper end
     def total_memory; shell("sysctl -a").val_for("hw.memsize").to_i end
   end
-  
+
+  class BSDSystemProfile < SystemProfile
+    def bsd?; true end
+    def system; :bsd end
+    def system_str; 'BSD' end
+    def flavour; :unknown end
+    def flavour_str; system_str end
+    def version; shell 'uname -s' end
+    def release; shell 'uname -r' end
+    def get_version_info; shell 'uname -v' end
+  end
+
+  class DragonFlySystemProfile < BSDSystemProfile
+    def system_str; 'DragonFly' end
+    def flavour; :dragonfly end
+    def pkg_helper; BinPkgSrcHelper end
+    def total_memory; shell("sysctl -a").val_for("hw.physmem").to_i end
+  end
+
+  class FreeBSDSystemProfile < BSDSystemProfile
+    def system_str; 'FreeBSD' end
+    def flavour; :freebsd end
+    def pkg_helper; BinPortsHelper end
+    def total_memory; shell("sysctl -a").val_for("hw.realmem").to_i end
+  end
+
   class LinuxSystemProfile < SystemProfile
     def linux?; true end
     def system; :linux end

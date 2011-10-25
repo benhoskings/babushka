@@ -47,6 +47,10 @@ module Babushka
             '6.0' => :squeeze,
             '7.0' => :wheezy
           }
+        },
+        :bsd => {
+          :dragonfly => {},
+          :freebsd => {}
         }
       }
     end
@@ -81,7 +85,11 @@ module Babushka
           },
           :debian => {
             '5.0.4' => 'Lenny'
-          }
+          },
+        },
+        :bsd => {
+          :dragonfly => {},
+          :freebsd => {}
         }
       }
     end
