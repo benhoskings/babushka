@@ -1,6 +1,6 @@
 module Babushka
   class DepContext < DepDefiner
-    include BaseDepRunner
+    include DepRunner
 
     accepts_list_for :desc
     accepts_list_for :requires

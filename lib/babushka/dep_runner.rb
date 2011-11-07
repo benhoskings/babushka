@@ -1,5 +1,5 @@
 module Babushka
-  module BaseDepRunner
+  module DepRunner
     include GitHelpers
     include UriHelpers
 
