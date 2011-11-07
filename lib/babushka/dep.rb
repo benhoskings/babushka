@@ -30,6 +30,12 @@ module Babushka
       def self.context_class; DepContext end
     end
 
+    # A Requirement is a representation of a dep being called - its name, along
+    # with the arguments that will be passed to it.
+    #
+    # Requirement is used internally by babushka when deps are required with
+    # arguments using "name".with(args). This allows babushka to delay loading
+    # the dep in question until the moment it's called.
     class Requirement < Struct.new(:name, :args)
     end
 
