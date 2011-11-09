@@ -3,6 +3,36 @@ module Babushka
   end
   class GitRepoExists < GitRepoError
   end
+  # This class is used for manipulating git repositories (see {#initialize} how to start). Mostly it provides shortcuts to most often used git commands.
+  # @example Example of usage:
+  #   @repo ||= Babushka::GitRepo.new('.')
+  #   @repo.clone "https://github.com/benhoskings/babushka"
+  #   @repo.checkout! "devel"
+  #
+  # For practical example how to use GitRepo class, see Ben Hoskings {https://github.com/benhoskings/babushka-deps/blob/master/push.rb push dep}
+  #
+  # Methods for checking repositrory state:
+  #
+  # * {#clean?}
+  # * {#dirty?}
+  # * {#include?} ref
+  # * {#ahead?}
+  # * {#behind?}
+  # * {#rebasing?}
+  # * {#applying?}
+  # * {#merging?}
+  # * {#bisecting?}
+  # * {#rebase_merging?}
+  # * {#rebasing_interactively?}
+  #
+  # Methods for repository operations:
+  # 
+  # * {#clone!}
+  # * {#branch!}
+  # * {#track!}
+  # * {#checkout!}
+  # * {#reset_hard!} refspec
+  
   class GitRepo
     include ShellHelpers
     extend ShellHelpers
@@ -11,7 +41,8 @@ module Babushka
       maybe = shell("git rev-parse --git-dir", :cd => path) if path.p.dir?
       maybe == '.git' ? path.p : maybe / '..' unless maybe.nil?
     end
-
+    # @example Initialize repo in current dir
+    #   @repo ||= Babushka::GitRepo.new('.')
     def initialize path
       @raw_path = path
     end
@@ -31,7 +62,8 @@ module Babushka
     def exists?
       !root.nil? && root.exists?
     end
-
+    # executes shell command setting current directory to repository root
+    #
     def repo_shell cmd, opts = {}, &block
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
@@ -39,9 +71,6 @@ module Babushka
         shell cmd, opts.merge(:cd => root), &block
       end
     end
-
-
-    # repo states
 
     def clean?
       repo_shell("git status") # Sometimes git caches invalid index info; this clears it.
@@ -98,8 +127,6 @@ module Babushka
       }
     end
 
-    # repo info
-
     def branches
       repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
     end
@@ -121,9 +148,6 @@ module Babushka
         b[/^(remotes\/)?origin\/#{current_branch}$/]
       }
     end
-
-
-    # repo operations
 
     def clone! from
       raise GitRepoExists, "Can't clone #{from} to existing path #{path}." if exists?
