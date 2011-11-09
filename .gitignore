@@ -6,3 +6,6 @@ sources
 sources.yml
 coverage
 .yardoc
+
+#ignore, yard  generated there
+doc
