@@ -42,10 +42,10 @@ module Babushka
     def self.discover_uri_and_type path
       if path.nil?
         [nil, :implicit]
+      elsif path.to_s.sub(/^\w+:\/\//, '')[/^[^\/]+[@:]/]
+        [path.to_s, :private]
       elsif path.to_s[/^(git|https?|file):\/\//]
         [path.to_s, :public]
-      elsif path.to_s[/^(\w+@)?[a-zA-Z0-9.\-]+:/]
-        [path.to_s, :private]
       else
         [path.p, :local]
       end
