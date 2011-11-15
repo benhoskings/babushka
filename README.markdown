@@ -119,7 +119,7 @@ Notice how the contents of the `template` block looks like a normal dep. That's 
 Given the `tmbundle` meta dep, this dep handles the cucumber bundle:
 
     dep 'Cucumber.tmbundle' do
-      source 'git://github.com/bmabey/cucumber-tmbundle.git'
+      source 'https://github.com/bmabey/cucumber-tmbundle.git'
     end
 
 Notice there's no imperative code there at all---just declarations. That's what the DSL aims for. Instead of saying "do this, then do this, then do this", the code should say "here's a description of the problem, now you work it out." Also notice that there's no TextMate-specific logic. Adding this extra level of abstraction means all that's left are the specifics for _this_ TextMate bundle.
@@ -136,7 +136,7 @@ If you already have TextMate installed, babushka notices and just installs the b
         Found at /Applications/TextMate.app.
       } √ TextMate.app
       not already met.
-      Cloning from git://github.com/bmabey/cucumber-tmbundle.git... done.
+      Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
       Cucumber.tmbundle met.
     } √ Cucumber.tmbundle
 
@@ -153,7 +153,7 @@ But if you don't have TextMate, that's an unmet dependency, so it gets pulled in
         TextMate.app met.
       } √ TextMate.app
       not already met.
-      Cloning from git://github.com/bmabey/cucumber-tmbundle.git... done.
+      Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
       Cucumber.tmbundle met.
     } √ Cucumber.tmbundle
 
@@ -166,7 +166,7 @@ The organisation and naming of the files within the source is completely up to y
 
 You can define deps and templates in the same source, arranged however you like. You don't have to worry about having templates loaded before deps that are defined against them, because the load is a two-stage process that first reads every file and sets up the templates, and then defines all the deps that were found.
 
-The best way manage your own source is to make <tt>~/.babushka/deps</tt> a git repo, and push it to <tt>git://github.com/username/babushka-deps.git</tt>.
+The best way manage your own source is to make <tt>~/.babushka/deps</tt> a git repo, and push it to <tt>https://github.com/username/babushka-deps.git</tt>.
 
 To run deps from others' sources, you don't need to add the source explicitly. Just prefix the dep name with the correct username:
 

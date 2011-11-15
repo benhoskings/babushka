@@ -23,6 +23,7 @@ describe Source do
       [
         'git://github.com/benhoskings/babushka-deps.git',
         'http://github.com/benhoskings/babushka-deps.git',
+        'https://github.com/benhoskings/babushka-deps.git',
         'file:///Users/ben/babushka/deps'
       ].each {|uri|
         Source.discover_uri_and_type(uri).should == [uri, :public]
