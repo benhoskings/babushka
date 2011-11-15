@@ -23,7 +23,7 @@ dep 'repo.homebrew' do
     end
   }
   meet {
-    git "git://github.com/mxcl/homebrew.git" do
+    git "https://github.com/mxcl/homebrew.git" do
       log_shell "Gitifying #{path}", "cp -r .git '#{path}'"
     end
   }

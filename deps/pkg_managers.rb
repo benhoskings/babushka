@@ -73,7 +73,7 @@ dep 'npm' do
 end
 
 dep 'nodejs.src' do
-  source 'git://github.com/joyent/node.git'
+  source 'https://github.com/joyent/node.git'
   provides 'node >= 0.4', 'node-waf'
 end
 
