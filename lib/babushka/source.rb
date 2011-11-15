@@ -35,7 +35,7 @@ module Babushka
     end
 
     def self.default_remote_for name
-      "git://github.com/#{name}/babushka-deps.git"
+      "https://github.com/#{name}/babushka-deps.git"
     end
 
     require 'uri'
