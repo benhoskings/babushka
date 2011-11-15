@@ -116,7 +116,7 @@ dep 'fish.src' do
   # (no protocol) - babushka assumes `curl` can handle it, as above.
   # git:// - babushka clones the URL, or if it is already cloned, does a
   #   fetch / reset to update.
-  source "git://github.com/benhoskings/fish.git"
+  source "https://github.com/benhoskings/fish.git"
 
   # The 'provides' setting is just the same as in '.managed', '.gem', and
   # others - it does all the same checks, and defaults to the package name:
