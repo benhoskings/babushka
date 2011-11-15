@@ -40,7 +40,8 @@ describe Source do
     it "should treat ssh-style URLs as private" do
       [
         'git@github.com:benhoskings/babushka-deps.git',
-        'benhoskin.gs:~ben/babushka-deps.git'
+        'benhoskin.gs:~ben/babushka-deps.git',
+        'ben.local:/Users/ben/babushka-deps.git'
       ].each {|uri|
         Source.discover_uri_and_type(uri).should == [uri, :private]
       }
