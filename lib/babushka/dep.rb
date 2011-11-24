@@ -322,6 +322,8 @@ module Babushka
       end
     end
 
+    # Process the tree descending from this dep (first the dependencies, then
+    # the dep itself).
     def process_tree
       process_task(:setup)
       process_requirements and process_self
@@ -335,6 +337,11 @@ module Babushka
       nil
     end
 
+    # Process each of the requirements of this dep in order. If this is a dry
+    # run, check every one; otherwise, require success from all and fail fast.
+    #
+    # Each dep recursively processes its own requirements. Hence, this is the
+    # method that recurses down the dep tree.
     def process_requirements accessor = :requires
       requirements_for(accessor).send(task.opt(:dry_run) ? :each : :all?) do |requirement|
         Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
@@ -343,6 +350,9 @@ module Babushka
       end
     end
 
+    # Process this dep, assuming all its requirements are satisfied. This is
+    # the method that implements the met? -> meet -> met? logic that is what
+    # deps are all about. For details, see the documentation for Dep#process.
     def process_self
       cd context.run_in do
         process_met_task(:initial => true) {
