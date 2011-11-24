@@ -324,7 +324,7 @@ module Babushka
 
     def process_this_dep
       process_task(:setup)
-      process_deps and process_self
+      process_requirements and process_self
     rescue UnmeetableDep => e
       log_error e.message
       log "I don't know how to fix that, so it's up to you. :)"
@@ -335,7 +335,7 @@ module Babushka
       nil
     end
 
-    def process_deps accessor = :requires
+    def process_requirements accessor = :requires
       requirements_for(accessor).send(task.opt(:dry_run) ? :each : :all?) do |requirement|
         Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
           dep.with(*requirement.args).process
@@ -350,7 +350,7 @@ module Babushka
             false # unmet
           else
             process_task(:prepare)
-            if !process_deps(:requires_when_unmet)
+            if !process_requirements(:requires_when_unmet)
               false # install-time deps unmet
             else
               log 'meet' do
