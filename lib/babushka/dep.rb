@@ -224,6 +224,14 @@ module Babushka
       (cached? ? cached_result : process_and_cache).tap {
         Base.sources.uncache! if with_opts[:top_level]
       }
+    rescue UnmeetableDep => e
+      log_error e.message
+      log "I don't know how to fix that, so it's up to you. :)"
+      nil
+    rescue StandardError => e
+      log_exception_in_dep e
+      Base.task.reportable = e.is_a?(DepDefinitionError)
+      nil
     end
 
     private
@@ -327,14 +335,6 @@ module Babushka
     def process_tree
       process_task(:setup)
       process_requirements and process_self
-    rescue UnmeetableDep => e
-      log_error e.message
-      log "I don't know how to fix that, so it's up to you. :)"
-      nil
-    rescue StandardError => e
-      log_exception_in_dep e
-      Base.task.reportable = e.is_a?(DepDefinitionError)
-      nil
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
