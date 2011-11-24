@@ -156,8 +156,6 @@ module Babushka
     # altering the system. It can cause failures, though, because some deps
     # have requirements that need to be met before the dep can perform its
     # +met?+ check.
-    #
-    # TODO: In future, there will be support for specifying that in the DSL.
     def met? *args
       with(*args).process :dry_run => true, :top_level => true
     end

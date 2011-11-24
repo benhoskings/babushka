@@ -107,7 +107,6 @@ module Babushka
     # this run, like changing the user's shell. It's also useful for running
     # commands that are only valid on an interactive shell, like rvm-related
     # commands.
-    # TODO: specs.
     def login_shell cmd, opts = {}, &block
       if shell('echo $SHELL').p.basename == 'zsh'
         shell %Q{zsh -i -c "#{cmd.gsub('"', '\"')}"}, opts, &block

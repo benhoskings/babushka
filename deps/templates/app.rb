@@ -30,7 +30,7 @@ meta :app do
 
   def discover_latest_version
     latest_value = latest_version.call
-    # TODO this is just to detect the default block and ignore it. Yuck :)
+    # This 'true' check is to detect and ignore the default block.
     set_version latest_value unless latest_value == true
   end
 
