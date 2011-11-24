@@ -315,14 +315,14 @@ module Babushka
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
           task.callstack.push self
-          process_this_dep.tap {
+          process_tree.tap {
             task.callstack.pop
           }
         end
       end
     end
 
-    def process_this_dep
+    def process_tree
       process_task(:setup)
       process_requirements and process_self
     rescue UnmeetableDep => e
