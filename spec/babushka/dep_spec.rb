@@ -271,14 +271,6 @@ describe Dep, "defining" do
         dep.met?
       }
     end
-    it "should not overwrite custom blocks" do
-      dep('lazy defining test with block overwriting') do
-        setup { 'initial' }
-      end.tap {|dep|
-        dep.context.setup { 'custom' }
-        dep.send(:define!)
-      }.send(:process_task, :setup).should == 'custom'
-    end
   end
 end
 
