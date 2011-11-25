@@ -230,14 +230,6 @@ module Babushka
       (cached? ? cached_result : cache_process(process!)).tap {
         Base.sources.uncache! if with_opts[:top_level]
       }
-    rescue UnmeetableDep => e
-      log_error e.message
-      log "I don't know how to fix that, so it's up to you. :)"
-      nil
-    rescue StandardError => e
-      log_exception_in_dep e
-      Base.task.reportable = e.is_a?(DepDefinitionError)
-      nil
     end
 
     private
@@ -281,6 +273,14 @@ module Babushka
           }
         end
       end
+    rescue UnmeetableDep => e
+      log_error e.message
+      log "I don't know how to fix that, so it's up to you. :)"
+      nil
+    rescue StandardError => e
+      log_exception_in_dep e
+      Base.task.reportable = e.is_a?(DepDefinitionError)
+      nil
     end
 
     # Process the tree descending from this dep (first the dependencies, then
