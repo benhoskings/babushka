@@ -7,6 +7,42 @@ describe "source_template" do
   end
 end
 
+describe DepDefiner, 'defining' do
+  let(:a_dep) { dep('DepDefiner defining spec') }
+
+  it "shouldn't define straight away" do
+    DepDefiner.new(a_dep).tap {|dd|
+      dd.should_not be_loaded
+      dd.should_not be_failed
+    }
+    DepDefiner.new(a_dep) {}.tap {|dd|
+      dd.should_not be_loaded
+      dd.should_not be_failed
+    }
+  end
+  it "should define without a block" do
+    DepDefiner.new(a_dep).tap {|dd|
+      dd.define!
+      dd.should be_loaded
+      dd.should_not be_failed
+    }
+  end
+  it "should define with a valid block" do
+    DepDefiner.new(a_dep) {}.tap {|dd|
+      dd.define!
+      dd.should be_loaded
+      dd.should_not be_failed
+    }
+  end
+  it "should fail with an invalid block" do
+    DepDefiner.new(a_dep) { lol }.tap {|dd|
+      dd.define!
+      dd.should_not be_loaded
+      dd.should be_failed
+    }
+  end
+end
+
 describe "args" do
   describe "parsing style" do
     it "should parse as named when just a single hash is passed" do

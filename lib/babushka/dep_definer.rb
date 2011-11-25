@@ -31,11 +31,19 @@ module Babushka
       @dependency = dep
       @payload = {}
       @block = block
+      @loaded, @failed = false, false
     end
+
+    def loaded?; @loaded end
+    def failed?; @failed end
 
     def define!
       define_params!
       instance_eval(&block) unless block.nil?
+      @loaded, @failed = true, false
+    rescue StandardError => e
+      dependency.send(:log_exception_in_dep, e)
+      @loaded, @failed = false, true
     end
 
     def result message, opts = {}
