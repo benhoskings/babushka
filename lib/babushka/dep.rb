@@ -66,7 +66,7 @@ module Babushka
         @dep_source = source
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register self
-        assign_template if Base.sources.current_real_load_source.nil?
+        template if Base.sources.current_real_load_source.nil?
         @dep_defined = @_cached_process = nil # false represents failure for these two.
       end
     end
@@ -76,9 +76,18 @@ module Babushka
       @context
     end
 
+    # Attempt to retrieve the template specified in +opts[:template]+. If the
+    # template name includes a source prefix, it is searched for within the
+    # corresponding source. Otherwise, it is searched for in the current source
+    # and the core sources.
     def template
-      assign_template if @template.nil?
-      @template
+      @template ||= if opts[:template]
+        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
+          raise TemplateNotFound, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
+        }
+      else
+        Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
+      end
     end
 
     # Returns true if +#define!+ has aready successfully run on this dep.
@@ -263,20 +272,6 @@ module Babushka
       @context = template.context_class.new self, &@block
       context.define!
       @dep_defined = true
-    end
-
-    # Attempt to retrieve the template specified in +opts[:template]+. If the
-    # template name includes a source prefix, it is searched for within the
-    # corresponding source. Otherwise, it is searched for in the current source
-    # and the core sources.
-    def assign_template
-      @template = if opts[:template]
-        Base.sources.template_for(opts[:template], :from => dep_source).tap {|t|
-          raise TemplateNotFound, "There is no template named '#{opts[:template]}' to define '#{name}' against." if t.nil?
-        }
-      else
-        Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
-      end
     end
 
     def self.base_template
