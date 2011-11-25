@@ -227,7 +227,7 @@ module Babushka
     # something is listening on port 80.
     def process with_opts = {}
       task.opts.update with_opts
-      (cached? ? cached_result : cache_process(process_and_cache)).tap {
+      (cached? ? cached_result : cache_process(process!)).tap {
         Base.sources.uncache! if with_opts[:top_level]
       }
     rescue UnmeetableDep => e
@@ -265,7 +265,7 @@ module Babushka
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
     end
 
-    def process_and_cache
+    def process!
       log logging_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
         if context.failed?
           # Only log about define errors if the define previously failed...
