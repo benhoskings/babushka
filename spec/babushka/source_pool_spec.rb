@@ -202,7 +202,7 @@ describe "template selection during defining" do
     end
     it "should not find the template with the wrong source prefix, and raise" do
       L{
-        dep('template selection 2', :template => 'source_2:meta_1')
+        dep('template selection 2', :template => 'source_2:meta_1').template
       }.should raise_error(TemplateNotFound, "There is no template named 'source_2:meta_1' to define 'template selection 2' against.")
     end
   end

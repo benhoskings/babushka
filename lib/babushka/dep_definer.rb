@@ -31,15 +31,27 @@ module Babushka
       @dependency = dep
       @payload = {}
       @block = block
+      @loaded, @failed = false, false
     end
 
-    def define!
-      define_params!
+    def loaded?; @loaded end
+    def failed?; @failed end
 
-      unless block.nil?
-        raise "Dep block arguments aren't supported anymore. Instead, specify parameter names as symbols after the dep name. More details here: http://github.com/benhoskings/babushka/commit/40054c2" if block.arity > 0
-        instance_eval(&block)
+    def define!
+      unless loaded?
+        define_elements!
+        @loaded, @failed = true, false
       end
+      self
+    rescue StandardError => e
+      @loaded, @failed = false, true
+      raise e if e.is_a?(DepDefinitionError)
+      dependency.send(:log_exception_in_dep, e)
+    end
+
+    def invoke task_name
+      define! unless loaded?
+      send(task_name).call unless failed?
     end
 
     def result message, opts = {}
@@ -73,6 +85,12 @@ module Babushka
     end
 
     private
+
+    def define_elements!
+      debug "(defining #{dependency.name} against #{dependency.template.contextual_name})"
+      define_params!
+      instance_eval(&block) unless block.nil?
+    end
 
     def define_params!
       dependency.params.each {|param|

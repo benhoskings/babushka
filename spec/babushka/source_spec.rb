@@ -108,7 +108,7 @@ describe Source do
       end
       it "should not have defined the deps" do
         dep = @source.deps.for('test dep 1')
-        dep.dep_defined?.should be_false
+        dep.context.should_not be_loaded
       end
       it "should store the source the dep was loaded from" do
         @source.deps.for('test dep 1').dep_source.should == @source
@@ -128,7 +128,7 @@ describe Source do
 
   describe "loading deps with parameters" do
     let(:source) { Source.new('spec/deps/params').tap(&:load!) }
-    let(:requires) { source.deps.for('top-level dep with params').context.requires }
+    let(:requires) { source.deps.for('top-level dep with params').context.define!.requires }
     it "should store the right number of requirements" do
       requires.length.should == 2
     end
@@ -165,7 +165,7 @@ describe Source do
         @dep = @source.deps.for('test dep 1')
       }
       it "should not have defined the deps" do
-        @dep.dep_defined?.should == nil
+        @dep.context.should_not be_loaded
       end
     end
   end

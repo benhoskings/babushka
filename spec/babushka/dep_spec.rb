@@ -228,18 +228,18 @@ describe Dep, "defining" do
     Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
   }
   it "should not define the dep when called without a block" do
-    dep('lazy defining test').dep_defined?.should == nil
+    dep('lazy defining test').context.should_not be_loaded
   end
   it "should not define the dep when called with a block" do
     dep('lazy defining test with block') do
       requires 'another dep'
-    end.dep_defined?.should == nil
+    end.context.should_not be_loaded
   end
   context "after running" do
     it "should be defined" do
       dep('lazy defining test with run').tap {|dep|
         dep.met?
-      }.dep_defined?.should == true
+      }.context.should be_loaded
     end
     context "with a template" do
       let!(:template) { meta 'lazy_defining_template' }
@@ -258,26 +258,18 @@ describe Dep, "defining" do
       dep('lazy defining test with errors') do
         nonexistent_method
       end.tap {|dep|
-        dep.dep_defined?.should == nil
+        dep.context.should_not be_loaded
         dep.met?
-      }.dep_defined?.should == false
+      }.context.should be_failed
     end
   end
   context "repeatedly" do
     it "should only ever define the dep once" do
       dep('lazy defining test with repetition').tap {|dep|
+        dep.context.should_receive(:define_elements!).once
         dep.met?
-        dep.context.should_receive(:define!).never
         dep.met?
       }
-    end
-    it "should not overwrite custom blocks" do
-      dep('lazy defining test with block overwriting') do
-        setup { 'initial' }
-      end.tap {|dep|
-        dep.context.setup { 'custom' }
-        dep.send(:define!)
-      }.send(:process_task, :setup).should == 'custom'
     end
   end
 end
@@ -334,25 +326,25 @@ describe Dep, "params" do
     end
   end
   it "should define methods on the context" do
-    dep('params test', :a_param).context.should respond_to(:a_param)
+    dep('params test', :a_param).context.define!.should respond_to(:a_param)
   end
   it "should raise on conflicting methods" do
     L{
-      dep('conflicting param names', :name).context
+      dep('conflicting param names', :name).context.define!
     }.should raise_error(DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
   end
   it "should not pollute other deps" do
     dep('params test', :a_param)
-    Dep('params test').context.should respond_to(:a_param)
-    dep('paramless dep').context.should_not respond_to(:a_param)
+    Dep('params test').context.define!.should respond_to(:a_param)
+    dep('paramless dep').context.define!.should_not respond_to(:a_param)
   end
   it "should return a param containing the value when it's set" do
     dep('set params test', :a_set_param)
-    Dep('set params test').with('a value').context.a_set_param.should be_an_instance_of(Parameter)
-    Dep('set params test').with('a value').context.a_set_param.to_s.should == 'a value'
+    Dep('set params test').with('a value').context.define!.a_set_param.should be_an_instance_of(Parameter)
+    Dep('set params test').with('a value').context.define!.a_set_param.to_s.should == 'a value'
   end
   it "should ask for the value when it's not set" do
-    dep('unset params test', :an_unset_param)
+    dep('unset params test', :an_unset_param).context.define!
     Dep('unset params test').context.an_unset_param.should be_an_instance_of(Parameter)
     Prompt.should_receive(:get_value).with('an_unset_param', {}).and_return('a value from the prompt')
     Dep('unset params test').context.an_unset_param.to_s.should == 'a value from the prompt'
@@ -370,23 +362,25 @@ describe Dep, 'lambda lists' do
     Babushka::PkgHelper.stub!(:all_manager_keys).and_return([:test_helper, :other_helper])
   }
   it "should match against the system name" do
-    dep('lambda list name match') { requires { on :test_name, 'awesome' } }.context.requires.should == ['awesome']
+    dep('lambda list name match') { requires { on :test_name, 'awesome' } }.context.define!.requires.should == ['awesome']
   end
   it "should match against the system type" do
-    dep('lambda list system match') { requires { on :test_system, 'awesome' } }.context.requires.should == ['awesome']
+    dep('lambda list system match') { requires { on :test_system, 'awesome' } }.context.define!.requires.should == ['awesome']
   end
   it "should match against the system name" do
-    dep('lambda list pkg_helper_key match') { requires { on :test_helper, 'awesome' } }.context.requires.should == ['awesome']
+    dep('lambda list pkg_helper_key match') { requires { on :test_helper, 'awesome' } }.context.define!.requires.should == ['awesome']
   end
 end
 
 describe Dep, '#requirements_for' do
   let(:dependency) {
-    dep 'requirements_for specs' do
+    dep('requirements_for specs') {
       requires 'a dep'
       requires 'another dep'.with(:some, :args)
       requires 'a third'.with()
-    end
+    }.tap {|d|
+      d.context.define!
+    }
   }
   let(:requirements) {
     dependency.send(:requirements_for, :requires)

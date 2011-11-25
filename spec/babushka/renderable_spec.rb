@@ -89,7 +89,7 @@ describe Renderable do
           def custom_renderable_path
             "from explicit binding"
           end
-        end
+        end.met?
         subject.render('spec/renderable/with_binding.conf.erb', :context => Dep('renderable binding spec').context)
       }
       it "should render using the given binding" do
