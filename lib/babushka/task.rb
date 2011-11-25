@@ -11,6 +11,7 @@ module Babushka
     def initialize
       @vars = Vars.new
       @opts = Base.cmdline.opts.dup
+      @caches = {}
       @running = false
     end
 
@@ -35,6 +36,16 @@ module Babushka
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
         }
+      end
+    end
+
+    def cached key, opts = {}, &block
+      if @caches.has_key?(key)
+        @caches[key].tap {|value|
+          opts[:hit].call(value) if opts.has_key?(:hit)
+        }
+      else
+        @caches[key] = block.call
       end
     end
 

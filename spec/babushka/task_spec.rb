@@ -57,6 +57,26 @@ describe Task, "process" do
   }
 end
 
+describe Task, 'caching' do
+  it "should not yield #hit on a cache miss" do
+    hit = false
+    Base.task.cached(:key_miss, :hit => lambda{ hit = true }) {
+      'a miss'
+    }.should == 'a miss'
+    hit.should be_false
+  end
+  it "should yield #hit on a cache hit" do
+    hit = false
+    Base.task.cached(:key_hit) { 'a hit' }
+    Base.task.cached(:key_hit, :hit => lambda{|value| hit = value })
+    hit.should == 'a hit'
+  end
+  it "should maintain the cached value" do
+    Base.task.cached(:key_another_hit) { 'another hit' }
+    Base.task.cached(:key_another_hit) { 'a replacement' }.should == 'another hit'
+  end
+end
+
 describe Task, "saved vars" do
   before {
     Base.task.vars.stub!(:saved_vars).and_return(Hashish.hash.merge(
