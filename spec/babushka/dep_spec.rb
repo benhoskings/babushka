@@ -312,6 +312,21 @@ describe Dep, '#basename' do
   end
 end
 
+describe Dep, '#cache_key' do
+  it "should work for parameterless deps" do
+    dep('cache key, no params').cache_key.should == Dep::Requirement.new('cache key, no params', [])
+  end
+  it "should work for parameterised deps with no args" do
+    dep('cache key, no args', :arg1, :arg2).cache_key.should == Dep::Requirement.new('cache key, no args', [nil, nil])
+  end
+  it "should work for parameterised deps with named args" do
+    dep('cache key, named args', :arg1, :arg2).with(:arg2 => 'value').cache_key.should == Dep::Requirement.new('cache key, named args', [nil, 'value'])
+  end
+  it "should work for parameterised deps positional args" do
+    dep('cache key, positional args', :arg1, :arg2).with('value', 'another').cache_key.should == Dep::Requirement.new('cache key, positional args', ['value', 'another'])
+  end
+end
+
 describe Dep, "params" do
   describe "non-symbol params" do
     it "should be rejected, singular" do

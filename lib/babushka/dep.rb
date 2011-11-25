@@ -140,6 +140,10 @@ module Babushka
       name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
+    def cache_key
+      Requirement.new(name, @params.map {|p| @args[p].try(:current_value) })
+    end
+
     def with *args
       @args = if args.map(&:class) == [Hash]
         parse_named_arguments(args.first)
