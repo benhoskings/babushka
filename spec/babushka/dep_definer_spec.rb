@@ -7,7 +7,7 @@ describe "source_template" do
   end
 end
 
-describe DepDefiner, 'defining' do
+describe DepDefiner, '#define!' do
   let(:a_dep) { dep('DepDefiner defining spec') }
 
   it "should return itself" do
