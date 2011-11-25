@@ -46,6 +46,13 @@ describe DepDefiner, 'defining' do
       DepDefiner.new(a_dep) { raise DepDefinitionError }.define!
     }.should raise_error(DepDefinitionError)
   end
+  it "shouldn't define twice" do
+    DepDefiner.new(a_dep).tap {|dd|
+      dd.should_receive(:define_params!).once
+      dd.define!
+      dd.define!
+    }
+  end
 end
 
 describe "args" do

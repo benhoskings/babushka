@@ -38,9 +38,11 @@ module Babushka
     def failed?; @failed end
 
     def define!
-      define_params!
-      instance_eval(&block) unless block.nil?
-      @loaded, @failed = true, false
+      unless loaded?
+        define_params!
+        instance_eval(&block) unless block.nil?
+        @loaded, @failed = true, false
+      end
     rescue StandardError => e
       raise e if e.is_a?(DepDefinitionError)
       dependency.send(:log_exception_in_dep, e)
