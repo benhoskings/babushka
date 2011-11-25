@@ -118,7 +118,7 @@ describe Dep, '.find_or_suggest' do
         @sub_dep = dep 'Dep.find_or_suggest sub-dep'
       }
       it "should find the sub dep" do
-        @sub_dep.should_receive :process
+        @sub_dep.should_receive :process!
         @namespaced_dep.process
       end
     end
@@ -129,7 +129,7 @@ describe Dep, '.find_or_suggest' do
         end
       }
       it "should find the sub dep" do
-        @sub_dep.should_receive :process
+        @sub_dep.should_receive :process!
         @namespaced_dep.process
       end
     end

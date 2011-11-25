@@ -91,6 +91,39 @@ describe Task, 'caching' do
   end
 end
 
+describe Task, 'dep caching' do
+  before {
+    dep 'caching child b', :arg_b1, :arg_b2
+    dep 'caching child c', :arg_c1
+    dep 'caching child a', :arg_a do
+      requires 'caching child b'.with(:arg_b2 => 'a value')
+      requires 'caching child c'.with('some value')
+    end
+    dep 'caching parent' do
+      requires 'caching child a'
+      requires 'caching child b'.with('more', 'values')
+      requires 'caching child c'.with('some value')
+    end
+  }
+  it "should run the deps the right number of times" do
+    Dep('caching parent').should_receive(:process_self).once
+    Dep('caching child a').should_receive(:process_self).once.and_return(true)
+    Dep('caching child b').should_receive(:process_self).twice.and_return(true)
+    Dep('caching child c').should_receive(:process_self).once.and_return(true)
+    Base.task.process(['caching parent'])
+  end
+  it "should cache the dep requirements" do
+    Base.task.process(['caching parent'])
+    Base.task.caches.should == {
+      Dep::Requirement.new('caching parent', []) => true,
+      Dep::Requirement.new('caching child a', [nil]) => true,
+      Dep::Requirement.new('caching child b', [nil, 'a value']) => true,
+      Dep::Requirement.new('caching child b', ['more', 'values']) => true,
+      Dep::Requirement.new('caching child c', ['some value']) => true
+    }
+  end
+end
+
 describe Task, "saved vars" do
   before {
     Base.task.vars.stub!(:saved_vars).and_return(Hashish.hash.merge(

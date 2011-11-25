@@ -226,10 +226,7 @@ module Babushka
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
     def process with_opts = {}
-      Base.task.opts.update with_opts
-      (cached? ? cached_result : cache_process(process!)).tap {
-        Base.sources.uncache! if with_opts[:top_level]
-      }
+      Base.task.cache { process_with_caching(with_opts) }
     end
 
     private
@@ -255,6 +252,15 @@ module Babushka
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
       end
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
+    end
+
+    def process_with_caching with_opts = {}
+      Base.task.opts.update with_opts
+      Base.task.cached(
+        cache_key, :hit => lambda {|value| log_cached(value) }
+      ) {
+        process!
+      }
     end
 
     def process!
@@ -298,7 +304,7 @@ module Babushka
     def process_requirements accessor = :requires
       requirements_for(accessor).send(Base.task.opt(:dry_run) ? :each : :all?) do |requirement|
         Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
-          dep.with(*requirement.args).process
+          dep.with(*requirement.args).send :process_with_caching
         end
       end
     end
@@ -378,16 +384,12 @@ module Babushka
       end
     end
 
-    def cached_result
-      cached_process.tap {|result|
-        if result
-          log "#{Logging::TickChar} #{name} (cached)".colorize('green')
-        elsif Base.task.opt(:dry_run)
-          log "~ #{name} (cached)".colorize('blue')
-        else
-          log "#{Logging::CrossChar} #{name} (cached)".colorize('red')
-        end
-      }
+    def log_cached result
+      if result
+        log "#{Logging::TickChar} #{name} (cached)".colorize('green')
+      elsif Base.task.opt(:dry_run)
+        log "~ #{name} (cached)".colorize('blue')
+      end
     end
     def cached?
       !@_cached_process.nil?

@@ -5,7 +5,7 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :opts, :vars, :persistent_log
+    attr_reader :opts, :vars, :caches, :persistent_log
     attr_accessor :reportable
 
     def initialize
