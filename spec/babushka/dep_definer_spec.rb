@@ -41,6 +41,11 @@ describe DepDefiner, 'defining' do
       dd.should be_failed
     }
   end
+  it "should allow DepDefinitionError to bubble up" do
+    lambda {
+      DepDefiner.new(a_dep) { raise DepDefinitionError }.define!
+    }.should raise_error(DepDefinitionError)
+  end
 end
 
 describe "args" do

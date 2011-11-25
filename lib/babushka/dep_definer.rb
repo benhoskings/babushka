@@ -42,6 +42,7 @@ module Babushka
       instance_eval(&block) unless block.nil?
       @loaded, @failed = true, false
     rescue StandardError => e
+      raise e if e.is_a?(DepDefinitionError)
       dependency.send(:log_exception_in_dep, e)
       @loaded, @failed = false, true
     end
