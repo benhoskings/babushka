@@ -66,14 +66,12 @@ module Babushka
         @dep_source = source
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register self
-        template if Base.sources.current_real_load_source.nil?
-        @dep_defined = @_cached_process = nil # false represents failure for these two.
+        @_cached_process = nil # false represents failure for these two.
       end
     end
 
     def context
-      define! if @context.nil?
-      @context
+      @context ||= template.context_class.new(self, &@block)
     end
 
     # Attempt to retrieve the template specified in +opts[:template]+. If the

@@ -128,7 +128,7 @@ describe Source do
 
   describe "loading deps with parameters" do
     let(:source) { Source.new('spec/deps/params').tap(&:load!) }
-    let(:requires) { source.deps.for('top-level dep with params').context.requires }
+    let(:requires) { source.deps.for('top-level dep with params').context.define!.requires }
     it "should store the right number of requirements" do
       requires.length.should == 2
     end

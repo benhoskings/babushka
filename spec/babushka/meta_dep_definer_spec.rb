@@ -74,13 +74,13 @@ describe "using" do
     it "should define the helper on the context class" do
       @meta.context_class.respond_to?(:a_helper).should be_false
       @meta.context_class.new(nil).respond_to?(:a_helper).should be_false
-      dep('dep1.template_test').context.respond_to?(:a_helper).should be_true
+      dep('dep1.template_test').context.define!.respond_to?(:a_helper).should be_true
     end
     it "should correctly define the helper method" do
       dep('dep2.template_test').context.a_helper_method.should == 'hello from the helper!'
     end
     it "should correctly define the helper" do
-      dep('dep2.template_test').context.a_helper.should == 'hello from the helper in the template!'
+      dep('dep2.template_test').context.define!.a_helper.should == 'hello from the helper in the template!'
     end
     it "should correctly define the met? block" do
       dep('dep3.template_test').send(:process_task, :met?).should == 'this dep is met.'
