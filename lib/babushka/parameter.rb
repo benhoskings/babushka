@@ -110,6 +110,10 @@ module Babushka
       end
     end
 
+    def current_value
+      @value
+    end
+
     def inspect
       "#<Babushka::Parameter:#{object_id} #{description}>"
     end

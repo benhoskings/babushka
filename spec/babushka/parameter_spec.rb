@@ -22,6 +22,15 @@ describe Parameter do
     end
   end
 
+  describe '#current_value' do
+    it "should return the value when the parameter is set" do
+      Parameter.for(:value, 'a value').current_value.should == 'a value'
+    end
+    it "should return nil when the parameter is unset" do
+      Parameter.for(:value).current_value.should be_nil
+    end
+  end
+
   describe "#==" do
     it "should behave like a string when it's set" do
       Parameter.new(:test, "a value").should == "a value"
