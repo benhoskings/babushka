@@ -228,18 +228,18 @@ describe Dep, "defining" do
     Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
   }
   it "should not define the dep when called without a block" do
-    dep('lazy defining test').dep_defined?.should == nil
+    dep('lazy defining test').context.should_not be_loaded
   end
   it "should not define the dep when called with a block" do
     dep('lazy defining test with block') do
       requires 'another dep'
-    end.dep_defined?.should == nil
+    end.context.should_not be_loaded
   end
   context "after running" do
     it "should be defined" do
       dep('lazy defining test with run').tap {|dep|
         dep.met?
-      }.dep_defined?.should == true
+      }.context.should be_loaded
     end
     context "with a template" do
       let!(:template) { meta 'lazy_defining_template' }
@@ -258,9 +258,9 @@ describe Dep, "defining" do
       dep('lazy defining test with errors') do
         nonexistent_method
       end.tap {|dep|
-        dep.dep_defined?.should == nil
+        dep.context.should_not be_loaded
         dep.met?
-      }.dep_defined?.should == false
+      }.context.should be_failed
     end
   end
   context "repeatedly" do

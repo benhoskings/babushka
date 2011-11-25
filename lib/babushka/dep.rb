@@ -90,11 +90,6 @@ module Babushka
       end
     end
 
-    # Returns true if +#define!+ has aready successfully run on this dep.
-    def dep_defined?
-      @dep_defined
-    end
-
     # Look up the dep specified by +dep_name+, yielding it to the block if it
     # was found.
     #
@@ -237,43 +232,6 @@ module Babushka
 
     private
 
-    def define_or_complain!
-      @dep_defined = begin
-        define!
-      rescue StandardError => e
-        log_exception_in_dep(e)
-        false
-      end
-    end
-
-    # Attempt to look up the template this dep was defined against (or if no
-    # template was specified, BaseTemplate), and then define the dep against
-    # it. If an error occurs, the backtrace point within the dep from which the
-    # exception was triggered is logged, as well as the actual exception point.
-    def define!
-      if dep_defined?
-        debug "#{name}: already defined."
-      elsif dep_defined? == false
-        debug "#{name}: defining already failed."
-      elsif template
-        debug "(defining #{name} against #{template.contextual_name})"
-        define_dep!
-      end
-      dep_defined?
-    end
-
-    # Create a context for this dep from its template, and then process the
-    # dep's outer block in that context.
-    #
-    # This results in the details of the dep being stored, like the
-    # implementation of +met?+ and +meet+, as well as its +requires+ list and
-    # any other items defined at the top level.
-    def define_dep!
-      @context = template.context_class.new self, &@block
-      context.define!
-      @dep_defined = true
-    end
-
     def self.base_template
       BaseTemplate
     end
@@ -299,11 +257,9 @@ module Babushka
 
     def process_and_cache
       log logging_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
-        if dep_defined? == false
+        if context.failed?
           # Only log about define errors if the define previously failed...
-          log_error "This dep isn't defined. Perhaps there was a load error?"
-        elsif !define_or_complain!
-          # ... not if it failed as part of this process, since that should log anyway.
+          log_error "This dep failed to load."
         elsif task.callstack.include? self
           log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
@@ -453,7 +409,7 @@ module Babushka
     end
 
     def defined_info
-      if dep_defined?
+      if context.loaded?
         "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{context.requires.join(', ')}]"
       else
         "(not defined yet)"
