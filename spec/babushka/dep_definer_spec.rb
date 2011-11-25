@@ -60,6 +60,35 @@ describe DepDefiner, '#define!' do
   end
 end
 
+describe DepDefiner, '#invoke' do
+  let(:a_dep) { dep('DepDefiner invoking spec') }
+  let(:definer) { DepDefiner.new(a_dep) }
+
+  it "should define and invoke when undefined" do
+    definer.should_receive(:define!)
+    definer.should_receive(:met?).and_return(lambda {})
+    definer.invoke(:met?)
+  end
+
+  it "should invoke only when already defined" do
+    definer.stub!(:loaded?).and_return(true)
+    definer.should_not_receive(:define!)
+    definer.should_receive(:met?).and_return(lambda {})
+    definer.invoke(:met?)
+  end
+
+  it "should not invoke when defining failed" do
+    definer.should_receive(:define_elements!).and_raise(StandardError)
+    definer.should_not_receive(:met?)
+    definer.invoke(:met?)
+  end
+
+  it "should call the task with a valid block" do
+    DepContext.new(a_dep) { }.invoke(:met?).should be_true
+    DepContext.new(a_dep) { met? { false } }.invoke(:met?).should be_false
+  end
+end
+
 describe "args" do
   describe "parsing style" do
     it "should parse as named when just a single hash is passed" do

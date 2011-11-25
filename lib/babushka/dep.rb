@@ -374,7 +374,7 @@ module Babushka
     def process_task task_name
       # log "calling #{name} / #{task_name}"
       track_block_for(task_name) if Base.task.opt(:track_blocks)
-      context.instance_eval(&context.send(task_name))
+      context.invoke(task_name)
     end
 
     def requirements_for list_name

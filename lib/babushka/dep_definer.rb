@@ -49,6 +49,11 @@ module Babushka
       dependency.send(:log_exception_in_dep, e)
     end
 
+    def invoke task_name
+      define! unless loaded?
+      send(task_name).call unless failed?
+    end
+
     def result message, opts = {}
       opts[:result].tap {
         dependency.result_message = message
