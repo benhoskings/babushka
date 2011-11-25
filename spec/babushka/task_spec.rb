@@ -141,6 +141,7 @@ end
 
 describe Task, "vars_for_save" do
   before {
+    Base.task.process [] # Clear out Base.task.vars
     Base.task.vars.stub!(:vars).and_return(standard_vars)
     @vars_for_save = Base.task.vars.for_save
   }
@@ -166,10 +167,9 @@ describe Task, "vars_for_save" do
     before {
       Base.task.vars.stub!(:saved_vars).and_return(standard_vars)
       Base.task.vars.stub!(:vars).and_return(standard_vars.reject {|k,v| %w[username versions vhost_type].include? k })
-      @new_vars_for_save = Base.task.vars.for_save
     }
     it "should preserve old values" do
-      (@vars_for_save.keys - @new_vars_for_save.keys).should == []
+      (@vars_for_save.keys - Base.task.vars.for_save.keys).should == []
     end
   end
   describe "referred values" do

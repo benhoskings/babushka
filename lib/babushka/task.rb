@@ -9,13 +9,13 @@ module Babushka
     attr_accessor :reportable
 
     def initialize
-      @vars = Vars.new
       @opts = Base.cmdline.opts.dup
       @running = false
     end
 
     def process dep_names, with_vars = {}
       raise "A task is already running." if running?
+      @vars = Vars.new
       @running = true
       Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep dep_name, with_vars }
