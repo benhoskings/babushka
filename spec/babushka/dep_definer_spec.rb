@@ -10,6 +10,11 @@ end
 describe DepDefiner, 'defining' do
   let(:a_dep) { dep('DepDefiner defining spec') }
 
+  it "should return itself" do
+    DepDefiner.new(a_dep).tap {|dd|
+      dd.define!.should == dd
+    }
+  end
   it "shouldn't define straight away" do
     DepDefiner.new(a_dep).tap {|dd|
       dd.should_not be_loaded
