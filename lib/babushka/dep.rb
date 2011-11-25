@@ -223,7 +223,7 @@ module Babushka
     # something is listening on port 80.
     def process with_opts = {}
       task.opts.update with_opts
-      (cached? ? cached_result : process_and_cache).tap {
+      (cached? ? cached_result : cache_process(process_and_cache)).tap {
         Base.sources.uncache! if with_opts[:top_level]
       }
     rescue UnmeetableDep => e
@@ -329,7 +329,7 @@ module Babushka
     end
 
     def run_met_task task_opts = {}
-      cache_process(process_task(:met?)).tap {|result|
+      process_task(:met?).tap {|result|
         log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
         self.result_message = nil
       }
