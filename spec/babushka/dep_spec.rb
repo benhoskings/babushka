@@ -266,8 +266,8 @@ describe Dep, "defining" do
   context "repeatedly" do
     it "should only ever define the dep once" do
       dep('lazy defining test with repetition').tap {|dep|
+        dep.context.should_receive(:define_elements!).once
         dep.met?
-        dep.context.should_receive(:define!).never
         dep.met?
       }
     end
