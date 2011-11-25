@@ -156,12 +156,12 @@ describe "args" do
       subject.args.map_values {|_,v| v.name }.should == {:a => :a}
     end
     it "should lazily create the missing parameter" do
-      subject.context.b.should be_an_instance_of(Parameter)
-      subject.context.b.name.should == :b
+      subject.context.define!.b.should be_an_instance_of(Parameter)
+      subject.context.define!.b.name.should == :b
     end
     it "should set only the paramters that were passed" do
-      subject.context.a.should be_set
-      subject.context.b.should_not be_set
+      subject.context.define!.a.should be_set
+      subject.context.define!.b.should_not be_set
     end
   end
 end
@@ -176,11 +176,11 @@ describe "methods in deps" do
     dep 'without helper method'
   }
   it "should only be defined on the specified dep" do
-    Dep('helper method test').context.should respond_to(:helper_test)
-    Dep('without helper method').context.should_not respond_to(:helper_test)
+    Dep('helper method test').context.define!.should respond_to(:helper_test)
+    Dep('without helper method').context.define!.should_not respond_to(:helper_test)
   end
   it "should return the right value" do
-    Dep('helper method test').context.helper_test.should == 'hello from the helper method!'
+    Dep('helper method test').context.define!.helper_test.should == 'hello from the helper method!'
   end
 end
 
@@ -200,6 +200,8 @@ describe "#on for scoping accepters" do
     end
   }
   it "should only allow choices that match" do
-    Dep('scoping').send(:payload)[:met?].should == {:osx => @lambda}
+    Dep('scoping').tap {|dep|
+      dep.context.define!
+    }.send(:payload)[:met?].should == {:osx => @lambda}
   end
 end
