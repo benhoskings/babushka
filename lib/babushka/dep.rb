@@ -226,7 +226,7 @@ module Babushka
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
     def process with_opts = {}
-      task.opts.update with_opts
+      Base.task.opts.update with_opts
       (cached? ? cached_result : cache_process(process!)).tap {
         Base.sources.uncache! if with_opts[:top_level]
       }
@@ -258,18 +258,18 @@ module Babushka
     end
 
     def process!
-      log logging_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
+      log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
         if context.failed?
           # Only log about define errors if the define previously failed...
           log_error "This dep failed to load."
-        elsif task.callstack.include? self
-          log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif Base.task.callstack.include? self
+          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
-          task.callstack.push self
+          Base.task.callstack.push self
           process_tree.tap {
-            task.callstack.pop
+            Base.task.callstack.pop
           }
         end
       end
@@ -296,7 +296,7 @@ module Babushka
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
     def process_requirements accessor = :requires
-      requirements_for(accessor).send(task.opt(:dry_run) ? :each : :all?) do |requirement|
+      requirements_for(accessor).send(Base.task.opt(:dry_run) ? :each : :all?) do |requirement|
         Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
           dep.with(*requirement.args).process
         end
@@ -309,7 +309,7 @@ module Babushka
     def process_self
       cd context.run_in do
         process_met_task(:initial => true) {
-          if task.opt(:dry_run)
+          if Base.task.opt(:dry_run)
             false # unmet
           else
             process_task(:prepare)
@@ -382,7 +382,7 @@ module Babushka
       cached_process.tap {|result|
         if result
           log "#{Logging::TickChar} #{name} (cached)".colorize('green')
-        elsif task.opt(:dry_run)
+        elsif Base.task.opt(:dry_run)
           log "~ #{name} (cached)".colorize('blue')
         else
           log "#{Logging::CrossChar} #{name} (cached)".colorize('red')
@@ -408,10 +408,6 @@ module Babushka
 
     def payload
       context.payload
-    end
-
-    def task
-      Base.task
     end
 
     public
