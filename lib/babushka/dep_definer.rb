@@ -44,9 +44,9 @@ module Babushka
       end
       self
     rescue StandardError => e
+      @loaded, @failed = false, true
       raise e if e.is_a?(DepDefinitionError)
       dependency.send(:log_exception_in_dep, e)
-      @loaded, @failed = false, true
     end
 
     def result message, opts = {}
