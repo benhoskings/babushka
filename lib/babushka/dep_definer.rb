@@ -35,11 +35,7 @@ module Babushka
 
     def define!
       define_params!
-
-      unless block.nil?
-        raise "Dep block arguments aren't supported anymore. Instead, specify parameter names as symbols after the dep name. More details here: http://github.com/benhoskings/babushka/commit/40054c2" if block.arity > 0
-        instance_eval(&block)
-      end
+      instance_eval(&block) unless block.nil?
     end
 
     def result message, opts = {}
