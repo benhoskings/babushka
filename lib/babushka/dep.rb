@@ -66,7 +66,6 @@ module Babushka
         @dep_source = source
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register self
-        @_cached_process = nil # false represents failure for these two.
       end
     end
 
@@ -163,12 +162,12 @@ module Babushka
     # have requirements that need to be met before the dep can perform its
     # +met?+ check.
     def met? *args
-      with(*args).process :dry_run => true, :top_level => true
+      with(*args).process :dry_run => true
     end
 
     # Entry point for a full met?/meet +#process+ run.
     def meet *args
-      with(*args).process :dry_run => false, :top_level => true
+      with(*args).process :dry_run => false
     end
 
     # Trigger a dep run with this dep at the top of the tree.
@@ -391,18 +390,6 @@ module Babushka
         log "~ #{name} (cached)".colorize('blue')
       end
     end
-    def cached?
-      !@_cached_process.nil?
-    end
-    def uncache!
-      @_cached_process = nil
-    end
-    def cached_process
-      @_cached_process
-    end
-    def cache_process value
-      @_cached_process = (value.nil? ? false : value)
-    end
 
     def suffixed?
       !opts[:template] && template != BaseTemplate
@@ -416,7 +403,7 @@ module Babushka
 
     def defined_info
       if context.loaded?
-        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{context.requires.join(', ')}]"
+        "<- [#{context.requires.join(', ')}]"
       else
         "(not defined yet)"
       end

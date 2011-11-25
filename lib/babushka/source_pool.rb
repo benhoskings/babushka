@@ -100,10 +100,6 @@ module Babushka
       )
     end
 
-    def uncache!
-      current.each {|source| source.deps.uncache! }
-    end
-
     def local_only?
       @local_only
     end
