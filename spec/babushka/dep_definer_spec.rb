@@ -53,7 +53,7 @@ describe DepDefiner, '#define!' do
   end
   it "shouldn't define twice" do
     DepDefiner.new(a_dep).tap {|dd|
-      dd.should_receive(:define_params!).once
+      dd.should_receive(:define_elements!).once
       dd.define!
       dd.define!
     }

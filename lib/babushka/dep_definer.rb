@@ -39,8 +39,7 @@ module Babushka
 
     def define!
       unless loaded?
-        define_params!
-        instance_eval(&block) unless block.nil?
+        define_elements!
         @loaded, @failed = true, false
       end
       self
@@ -81,6 +80,11 @@ module Babushka
     end
 
     private
+
+    def define_elements!
+      define_params!
+      instance_eval(&block) unless block.nil?
+    end
 
     def define_params!
       dependency.params.each {|param|
