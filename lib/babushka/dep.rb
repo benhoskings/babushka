@@ -406,10 +406,6 @@ module Babushka
       !opts[:template] && template != BaseTemplate
     end
 
-    def payload
-      context.payload
-    end
-
     public
 
     def inspect
