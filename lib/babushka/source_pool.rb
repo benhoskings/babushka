@@ -7,8 +7,8 @@ module Babushka
     SEPARATOR = ':'
 
     def current
-      @_cached_current ||= default.concat(standard)
-      @_cached_current.dup
+      @current ||= default.concat(standard)
+      @current.dup
     end
 
     def default
@@ -24,16 +24,16 @@ module Babushka
     end
 
     def anonymous
-      @_cached_anonymous ||= Source.new(nil, :name => 'anonymous')
+      @anonymous ||= Source.new(nil, :name => 'anonymous')
     end
     def core
-      @_cached_core ||= Source.new(Path.path / 'deps', :name => 'core')
+      @core ||= Source.new(Path.path / 'deps', :name => 'core')
     end
     def current_dir
-      @_cached_current_dir ||= Source.new('./babushka-deps', :name => 'current dir')
+      @current_dir ||= Source.new('./babushka-deps', :name => 'current dir')
     end
     def personal
-      @_cached_personal ||= Source.new('~/.babushka/deps', :name => 'personal')
+      @personal ||= Source.new('~/.babushka/deps', :name => 'personal')
     end
 
     def standard
