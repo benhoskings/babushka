@@ -70,6 +70,10 @@ module Babushka
       end
     end
 
+    def ref
+      @ref ||= GitRepo.new(Path.path).current_head if (Path.path / '.git').dir?
+    end
+
     def program_name
       @program_name ||= ENV['PATH'].split(':').include?(File.dirname($0)) ? File.basename($0) : $0
     end
