@@ -5,17 +5,17 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :opts, :vars, :persistent_log
+    attr_reader :opts, :vars, :caches, :persistent_log
     attr_accessor :reportable
 
     def initialize
-      @vars = Vars.new
       @opts = Base.cmdline.opts.dup
       @running = false
     end
 
     def process dep_names, with_vars = {}
       raise "A task is already running." if running?
+      @vars = Vars.new
       @running = true
       Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep dep_name, with_vars }
@@ -27,7 +27,7 @@ module Babushka
       Dep.find_or_suggest dep_name do |dep|
         log_dep(dep) {
           load_run_info_for dep, with_vars
-          dep.with(task_args_for(dep, with_vars)).process(:top_level => true).tap {|result|
+          dep.with(task_args_for(dep, with_vars)).process.tap {|result|
             save_run_info_for dep, result
           }
         }.tap {|result|
@@ -35,6 +35,25 @@ module Babushka
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
         }
+      end
+    end
+
+    def cache &block
+      was_caching, @caching, @caches = @caching, true, {}
+      block.call
+    ensure
+      @caching = was_caching
+    end
+
+    def cached key, opts = {}, &block
+      if !@caching
+        block.call
+      elsif @caches.has_key?(key)
+        @caches[key].tap {|value|
+          opts[:hit].call(value) if opts.has_key?(:hit)
+        }
+      else
+        @caches[key] = block.call
       end
     end
 

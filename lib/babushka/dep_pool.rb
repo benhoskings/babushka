@@ -36,9 +36,6 @@ module Babushka
     def clear!
       @pool = {}
     end
-    def uncache!
-      items.each {|i| i.send :uncache! }
-    end
 
     def register item
       raise "Already registered '#{item.name}'." if @pool.has_key?(item.name)

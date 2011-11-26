@@ -118,7 +118,7 @@ describe Dep, '.find_or_suggest' do
         @sub_dep = dep 'Dep.find_or_suggest sub-dep'
       }
       it "should find the sub dep" do
-        @sub_dep.should_receive :process
+        @sub_dep.should_receive :process!
         @namespaced_dep.process
       end
     end
@@ -129,7 +129,7 @@ describe Dep, '.find_or_suggest' do
         end
       }
       it "should find the sub dep" do
-        @sub_dep.should_receive :process
+        @sub_dep.should_receive :process!
         @namespaced_dep.process
       end
     end
@@ -309,6 +309,21 @@ describe Dep, '#basename' do
       Base.sources.anonymous.deps.clear!
       Base.sources.anonymous.templates.clear!
     }
+  end
+end
+
+describe Dep, '#cache_key' do
+  it "should work for parameterless deps" do
+    dep('cache key, no params').cache_key.should == Dep::Requirement.new('cache key, no params', [])
+  end
+  it "should work for parameterised deps with no args" do
+    dep('cache key, no args', :arg1, :arg2).cache_key.should == Dep::Requirement.new('cache key, no args', [nil, nil])
+  end
+  it "should work for parameterised deps with named args" do
+    dep('cache key, named args', :arg1, :arg2).with(:arg2 => 'value').cache_key.should == Dep::Requirement.new('cache key, named args', [nil, 'value'])
+  end
+  it "should work for parameterised deps positional args" do
+    dep('cache key, positional args', :arg1, :arg2).with('value', 'another').cache_key.should == Dep::Requirement.new('cache key, positional args', ['value', 'another'])
   end
 end
 

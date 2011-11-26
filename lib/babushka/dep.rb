@@ -66,7 +66,6 @@ module Babushka
         @dep_source = source
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register self
-        @_cached_process = nil # false represents failure for these two.
       end
     end
 
@@ -140,6 +139,10 @@ module Babushka
       name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
     end
 
+    def cache_key
+      Requirement.new(name, @params.map {|p| @args[p].try(:current_value) })
+    end
+
     def with *args
       @args = if args.map(&:class) == [Hash]
         parse_named_arguments(args.first)
@@ -159,12 +162,12 @@ module Babushka
     # have requirements that need to be met before the dep can perform its
     # +met?+ check.
     def met? *args
-      with(*args).process :dry_run => true, :top_level => true
+      with(*args).process :dry_run => true
     end
 
     # Entry point for a full met?/meet +#process+ run.
     def meet *args
-      with(*args).process :dry_run => false, :top_level => true
+      with(*args).process :dry_run => false
     end
 
     # Trigger a dep run with this dep at the top of the tree.
@@ -222,18 +225,7 @@ module Babushka
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
     def process with_opts = {}
-      task.opts.update with_opts
-      (cached? ? cached_result : process_and_cache).tap {
-        Base.sources.uncache! if with_opts[:top_level]
-      }
-    rescue UnmeetableDep => e
-      log_error e.message
-      log "I don't know how to fix that, so it's up to you. :)"
-      nil
-    rescue StandardError => e
-      log_exception_in_dep e
-      Base.task.reportable = e.is_a?(DepDefinitionError)
-      nil
+      Base.task.cache { process_with_caching(with_opts) }
     end
 
     private
@@ -261,22 +253,39 @@ module Babushka
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
     end
 
-    def process_and_cache
-      log logging_name, :closing_status => (task.opt(:dry_run) ? :dry_run : true) do
+    def process_with_caching with_opts = {}
+      Base.task.opts.update with_opts
+      Base.task.cached(
+        cache_key, :hit => lambda {|value| log_cached(value) }
+      ) {
+        process!
+      }
+    end
+
+    def process!
+      log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
         if context.failed?
           # Only log about define errors if the define previously failed...
           log_error "This dep failed to load."
-        elsif task.callstack.include? self
-          log_error "Oh crap, endless loop! (#{task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif Base.task.callstack.include? self
+          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
           log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
         else
-          task.callstack.push self
+          Base.task.callstack.push self
           process_tree.tap {
-            task.callstack.pop
+            Base.task.callstack.pop
           }
         end
       end
+    rescue UnmeetableDep => e
+      log_error e.message
+      log "I don't know how to fix that, so it's up to you. :)"
+      nil
+    rescue StandardError => e
+      log_exception_in_dep e
+      Base.task.reportable = e.is_a?(DepDefinitionError)
+      nil
     end
 
     # Process the tree descending from this dep (first the dependencies, then
@@ -292,9 +301,9 @@ module Babushka
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
     def process_requirements accessor = :requires
-      requirements_for(accessor).send(task.opt(:dry_run) ? :each : :all?) do |requirement|
+      requirements_for(accessor).send(Base.task.opt(:dry_run) ? :each : :all?) do |requirement|
         Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
-          dep.with(*requirement.args).process
+          dep.with(*requirement.args).send :process_with_caching
         end
       end
     end
@@ -305,7 +314,7 @@ module Babushka
     def process_self
       cd context.run_in do
         process_met_task(:initial => true) {
-          if task.opt(:dry_run)
+          if Base.task.opt(:dry_run)
             false # unmet
           else
             process_task(:prepare)
@@ -329,7 +338,7 @@ module Babushka
     end
 
     def run_met_task task_opts = {}
-      cache_process(process_task(:met?)).tap {|result|
+      process_task(:met?).tap {|result|
         log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
         self.result_message = nil
       }
@@ -374,40 +383,16 @@ module Babushka
       end
     end
 
-    def cached_result
-      cached_process.tap {|result|
-        if result
-          log "#{Logging::TickChar} #{name} (cached)".colorize('green')
-        elsif task.opt(:dry_run)
-          log "~ #{name} (cached)".colorize('blue')
-        else
-          log "#{Logging::CrossChar} #{name} (cached)".colorize('red')
-        end
-      }
-    end
-    def cached?
-      !@_cached_process.nil?
-    end
-    def uncache!
-      @_cached_process = nil
-    end
-    def cached_process
-      @_cached_process
-    end
-    def cache_process value
-      @_cached_process = (value.nil? ? false : value)
+    def log_cached result
+      if result
+        log "#{Logging::TickChar} #{name} (cached)".colorize('green')
+      elsif Base.task.opt(:dry_run)
+        log "~ #{name} (cached)".colorize('blue')
+      end
     end
 
     def suffixed?
       !opts[:template] && template != BaseTemplate
-    end
-
-    def payload
-      context.payload
-    end
-
-    def task
-      Base.task
     end
 
     public
@@ -418,7 +403,7 @@ module Babushka
 
     def defined_info
       if context.loaded?
-        "#{"(#{'un' unless cached_process}met) " if cached?}<- [#{context.requires.join(', ')}]"
+        "<- [#{context.requires.join(', ')}]"
       else
         "(not defined yet)"
       end

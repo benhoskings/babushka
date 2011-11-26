@@ -231,6 +231,6 @@ describe "#on for scoping accepters" do
   it "should only allow choices that match" do
     Dep('scoping').tap {|dep|
       dep.context.define!
-    }.send(:payload)[:met?].should == {:osx => @lambda}
+    }.context.payload[:met?].should == {:osx => @lambda}
   end
 end
