@@ -156,9 +156,7 @@ describe SourcePool, '#load_context' do
     end
   end
   context "with a template" do
-    let(:source) {
-      Source.new *make_source_remote('load_context')
-    }
+    let(:source) { Source.new(nil) }
     let!(:template) {
       Base.sources.load_context :source => source do
         meta 'load_context_template'

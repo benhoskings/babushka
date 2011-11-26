@@ -318,9 +318,8 @@ describe Source do
           @nameless = Source.new(@remote_1.first)
         }
         it "should use the basename as the name" do
-          File.directory?(tmp_prefix / 'sources/remote_1').should be_false
+          @nameless.should_receive(:git).with(@remote_1.first, :to => (tmp_prefix / 'sources/remote_1'), :log => true)
           @nameless.add!
-          File.directory?(tmp_prefix / 'sources/remote_1').should be_true
         end
         it "should set the name in the source" do
           @nameless.name.should == 'remote_1'
@@ -381,11 +380,11 @@ describe Source do
 
   describe "classification" do
     it "should treat file:// as public" do
-      (source = Source.new(*@remote_1)).add!
+      (source = Source.new(*@remote_1))
       [source.uri, source.name, source.type].should == [@remote_1.first, 'remote_1', :public]
     end
     it "should treat local paths as local" do
-      (source = Source.new(@remote_1.first.gsub(/^file:\/\//, ''), @remote_1.last)).add!
+      (source = Source.new(@remote_1.first.gsub(/^file:\/\//, ''), @remote_1.last))
       [source.uri, source.name, source.type].should == [@remote_1.first.gsub(/^file:\/\//, ''), 'remote_1', :local]
     end
   end
