@@ -1,5 +1,8 @@
 # babushka: test-driven sysadmin.
 
+- _docs: http://babushka.me_
+- _rdocs: http://babushka.me/rdoc_
+
 When you spend time researching something new, it's pretty easy to forget what you found, and have to re-research it again next time.
 
 A lot of the tech jobs we do manually aren't challenging or fun, but they're finicky and have to be done just right. They're chores. Things that are important to do, but that are better automated than done manually by us people, right? After all, that's what is supposed to happen in the future. And the future is good, because in the future, we'll all have jetpants. So, onward.
@@ -32,30 +35,30 @@ Or check that your rubygems install is looking good - latest version + gem sourc
 
 Things like rubygems and homebrew aren't hard to install on their own, but with babushka it's _really_ easy, and _fast_. But more importantly, you know the job is being done just right, every time.
 
-OK, something more complex now---a full nginx/passenger stack.
+OK, something more complex now---a vhosting nginx.
 
-    babushka benhoskings:'webserver configured'
+    babushka benhoskings:'configured.nginx'
 
 Then you can set up each virtualhost with
 
-    babushka benhoskings:'vhost configured'
+    babushka benhoskings:'vhost configured.nginx'
 
-That's how I set up all my production machines. If something isn't working, you have a list of things that aren't the culprit: everything in the output with a green √ beside it. Conversely, if babushka can detect the problem, the failing dep will have a red × beside it instead, which leads you straight to the cause of the problem. Test-driven sysadmin!
+That's how I set up all my production machines. If something isn't working, you have a list of things that aren't the culprit: everything in the output with a green ✓ beside it. Conversely, if babushka can detect the problem, the failing dep will have a red ✗ beside it instead, which leads you straight to the cause of the problem. Test-driven sysadmin!
 
 
 # nothing up my sleeve…
 
 Creating and sharing this knowledge is central to babushka. It's all very well to run `babushka rubygems` and have it do a job for you, but the real power is in babushka's ability to automate whatever chore you want, not just ones that others have thought of already.
 
-To that end, I've tried really hard to make the process quick and satisfying. If you spend a little bit of time getting the feel for how to efficiently use babushka's DSL, you'll be cranking out deps just like the `rubygems` and `homebrew` ones above.
+To that end, I've tried really hard to make the process quick and satisfying. If you spend a little bit of time getting the feel for babushka's DSL, you'll be cranking out deps just like the `rubygems` and `homebrew` ones above.
 
 
 ## yeah, but how?
 
 A dep is one single piece of a larger task. A little nugget of code that does just one thing, and does it right. Here's a babushka dep, at its most generic.
 
-    dep 'name' do
-      requires 'other deps', 'whatever they might be'
+    dep 'name', :argument do
+      requires 'other deps'.with('args'), 'whatever they might be'
       met? {
         # is this dependency already met?
       }
@@ -97,7 +100,7 @@ For example, Babushka ships with a meta dep that knows how to install TextMate b
 
     meta :tmbundle, :for => :osx do
       accepts_list_for :source
-
+      
       template {
         requires 'TextMate.app'
         def path
@@ -170,9 +173,9 @@ The best way manage your own source is to make <tt>~/.babushka/deps</tt> a git r
 
 To run deps from others' sources, you don't need to add the source explicitly. Just prefix the dep name with the correct username:
 
-    babushka freelancing-god:rvm
+    babushka conversation:coffeescript.src
 
-The dep source will be cloned into <tt>~/.babushka/sources/freelancing-god</tt>, or updated if it's already there, and then babushka will search for a dep called "rvm" within that source. Because of this partitioning, you don't have to worry about naming conflicts with other people; everything is per-source.
+The dep source will be cloned into <tt>~/.babushka/sources/conversation</tt>, or updated if it's already there, and then babushka will search for a dep called "coffeescript" within that source. Because of this partitioning, you don't have to worry about naming conflicts with other people; everything is per-source.
 
 If you want to rename a source, or add one with a custom URL, you can add sources manually like this:
 
