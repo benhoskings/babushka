@@ -48,7 +48,7 @@ module Babushka
     def initialize name, source, params, opts, block
       if name.empty?
         raise InvalidDepName, "Deps can't have empty names."
-      elsif /\A[[:print:]]+\z/i !~ name
+      elsif /[[:cntrl:]]/mu =~ name
         raise InvalidDepName, "The dep name '#{name}' contains nonprintable characters."
       elsif /\// =~ name
         raise InvalidDepName, "The dep name '#{name}' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/')."

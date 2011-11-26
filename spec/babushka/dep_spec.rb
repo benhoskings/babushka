@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'spec_helper'
 require 'dep_support'
 
@@ -13,6 +14,12 @@ describe "Dep.new" do
       Dep.new "carriage\rreturn", Base.sources.anonymous, [], {}, nil
     }.should raise_error(InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
+  end
+  it "should allow deps with unicode characters in their names" do
+    L{
+      Dep.new "☕script", Base.sources.anonymous, [], {}, nil
+    }.should_not raise_error
+    Dep("☕script").should be_an_instance_of(Dep)
   end
   it "should reject deps slashes in their names" do
     L{
