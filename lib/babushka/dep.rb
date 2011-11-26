@@ -265,8 +265,7 @@ module Babushka
     def process!
       log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
         if context.failed?
-          # Only log about define errors if the define previously failed...
-          log_error "This dep failed to load."
+          log_error "This dep previously failed to load."
         elsif Base.task.callstack.include? self
           log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
