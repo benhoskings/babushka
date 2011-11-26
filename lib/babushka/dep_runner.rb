@@ -28,10 +28,11 @@ module Babushka
       dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
 
       if dir_hash.keys.compact.length > 1
-        unmeetable "The commands for '#{name}' run from more than one place.\n" +
+        log_error "The commands for '#{name}' run from more than one place.\n" +
           dir_hash.values.map {|cmds|
             cmd_location_str_for cmds
           }.to_list(:oxford => true, :conj => 'but').end_with('.')
+        unmeetable unless confirm("Multiple installations might indicate a problem. Meet anyway?", :default => 'n')
       else
         cmds = dir_hash.values.first
         dir_hash[nil].blank?.tap {|result|
