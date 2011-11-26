@@ -4,7 +4,7 @@ describe "help" do
   context "with no verb" do
     before {
       [
-        "Babushka v#{Babushka::VERSION}, (c) 2011 Ben Hoskings <ben@hoskings.net>",
+        "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2011 Ben Hoskings <ben@hoskings.net>",
         "\nThe gist:",
         "  #{Base.program_name} <command> [options]",
         "\nAlso:",
@@ -35,7 +35,7 @@ describe "help" do
     let(:parser) { Cmdline::Parser.for(%w[help meet]) }
     before {
       [
-        "Babushka v#{Babushka::VERSION}, (c) 2011 Ben Hoskings <ben@hoskings.net>",
+        "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2011 Ben Hoskings <ben@hoskings.net>",
         "\nmeet - The main one: run a dep and all its dependencies."
       ].each {|line|
         Cmdline::Helpers.should_receive(:log).with(line)
