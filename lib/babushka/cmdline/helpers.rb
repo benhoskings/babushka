@@ -86,7 +86,7 @@ module Babushka
       end
 
       def github_autosource_regex
-        /^git\:\/\/github\.com\/(.*)\/babushka-deps(\.git)?/
+        /^\w+\:\/\/github\.com\/(.*)\/babushka-deps(\.git)?/
       end
 
       def search_webservice_for q
