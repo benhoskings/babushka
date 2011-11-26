@@ -13,7 +13,7 @@ describe Resource do
     Resource.type(archive_path / 'really_a_gzip.zip').should == :zip
   end
   it "should attempt to detect type via `file` when there is no extension" do
-    Resource.should_receive(:shell).with("file '/Users/ben/projects/babushka/babushka/spec/archives/zip_without_extension'").any_number_of_times.and_return('Zip archive data')
+    Resource.should_receive(:shell).with("file '#{archive_path / 'zip_without_extension'}'").any_number_of_times.and_return('Zip archive data')
     Resource.type(archive_path / 'zip_without_extension').should == :zip
   end
   it "should detect supported archive types" do
@@ -21,7 +21,7 @@ describe Resource do
     Resource.for(archive_path / 'archive.tbz2').should be_supported
   end
   it "should raise an error on unsupported types" do
-    Resource.should_receive(:shell).with("file '/Users/ben/projects/babushka/babushka/spec/archives/invalid_archive'").any_number_of_times.and_return('ASCII text')
+    Resource.should_receive(:shell).with("file '#{archive_path / 'invalid_archive'}'").any_number_of_times.and_return('ASCII text')
     L{
       Resource.for(archive_path / 'invalid_archive')
     }.should raise_error("Don't know how to extract invalid_archive.")
