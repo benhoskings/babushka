@@ -23,11 +23,11 @@ describe "babushka" do
       @vm.babushka('benhoskings:system') # once to set the locale
       @vm.should meet('benhoskings:system')
     end
-    it "should build ruby 1.9" do
-      @vm.should meet('benhoskings:ruby19.src')
+    it "should build a recent ruby" do
+      @vm.should meet('benhoskings:ruby.src')
     end
     it "should set up nginx" do
-      @vm.should meet('benhoskings:webserver running.nginx')
+      @vm.should meet('benhoskings:running.nginx')
     end
   end
 
