@@ -41,7 +41,7 @@ describe DepDefiner, '#define!' do
   end
   it "should fail with an invalid block" do
     DepDefiner.new(a_dep) { lol }.tap {|dd|
-      dd.define!
+      lambda { dd.define! }.should raise_error
       dd.should_not be_loaded
       dd.should be_failed
     }
@@ -86,7 +86,7 @@ describe DepDefiner, '#invoke' do
   it "should not invoke when defining failed" do
     definer.should_receive(:define_elements!).and_raise(StandardError)
     definer.should_not_receive(:met?)
-    definer.invoke(:met?)
+    lambda { definer.invoke(:met?) }.should raise_error
   end
 
   it "should call the task with a valid block" do

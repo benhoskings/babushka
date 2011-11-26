@@ -262,6 +262,23 @@ describe Dep, "defining" do
         dep.met?
       }.context.should be_failed
     end
+    it "should not attempt to run" do
+      dep('lazy defining test with errors') do
+        nonexistent_method
+      end.tap {|dep|
+        dep.should_not_receive(:process_deps)
+        dep.should_not_receive(:process_self)
+      }.met?
+    end
+    it "should not attempt to run later" do
+      dep('lazy defining test with errors') do
+        nonexistent_method
+      end.tap {|dep|
+        dep.met?
+        dep.should_not_receive(:process_deps)
+        dep.should_not_receive(:process_self)
+      }.met?
+    end
   end
   context "repeatedly" do
     it "should only ever define the dep once" do
