@@ -257,6 +257,18 @@ describe Dep, "defining" do
       end
     end
   end
+  context "with params" do
+    it "should run against subsequent parameters" do
+      parameter = Parameter.new(:arg)
+      dep('parameter preserving', :arg) {
+        arg.default!('a default value')
+      }.tap {|dep|
+        dep.met?('some other value')
+        dep.met?(parameter)
+      }
+      parameter.description.should == 'arg: [default!: "a default value"]'
+    end
+  end
   context "with errors" do
     before {
       Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
@@ -285,15 +297,6 @@ describe Dep, "defining" do
         dep.should_not_receive(:process_deps)
         dep.should_not_receive(:process_self)
       }.met?
-    end
-  end
-  context "repeatedly" do
-    it "should only ever define the dep once" do
-      dep('lazy defining test with repetition').tap {|dep|
-        dep.context.should_receive(:define_elements!).once
-        dep.met?
-        dep.met?
-      }
     end
   end
 end
@@ -371,6 +374,11 @@ describe Dep, "params" do
     L{
       dep('conflicting param names', :name).context.define!
     }.should raise_error(DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
+  end
+  it "should discard the context" do
+    dep('context discarding').tap {|dep|
+      dep.context.should_not == dep.with.context
+    }
   end
   it "should not pollute other deps" do
     dep('params test', :a_param)

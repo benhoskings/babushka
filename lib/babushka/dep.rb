@@ -151,6 +151,7 @@ module Babushka
       end.map_values {|k,v|
         Parameter.for(k, v)
       }
+      @context = nil # To re-evaluate parameter.default() and friends.
       self
     end
 
