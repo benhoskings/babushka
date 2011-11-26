@@ -46,17 +46,23 @@ describe DepDefiner, '#define!' do
       dd.should be_failed
     }
   end
-  it "should allow DepDefinitionError to bubble up" do
-    lambda {
-      DepDefiner.new(a_dep) { raise DepDefinitionError }.define!
-    }.should raise_error(DepDefinitionError)
-  end
   it "shouldn't define twice" do
     DepDefiner.new(a_dep).tap {|dd|
       dd.should_receive(:define_elements!).once
       dd.define!
       dd.define!
     }
+  end
+  it "should allow DepDefinitionError to bubble up" do
+    lambda {
+      DepDefiner.new(a_dep) { raise DepDefinitionError }.define!
+    }.should raise_error(DepDefinitionError)
+  end
+  it "shouldn't attempt re-defining after failure" do
+    DepDefiner.new(a_dep).tap {|dd|
+      dd.stub!(:failed?).and_return(true)
+      dd.should_not_receive(:define_elements!)
+    }.define!
   end
 end
 

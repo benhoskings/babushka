@@ -38,7 +38,7 @@ module Babushka
     def failed?; @failed end
 
     def define!
-      unless loaded?
+      unless loaded? || failed?
         define_elements!
         @loaded, @failed = true, false
       end
