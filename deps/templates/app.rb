@@ -1,3 +1,6 @@
+require 'rexml/document'
+require 'net/http'
+
 meta :app do
   accepts_list_for :source
   accepts_list_for :prefix, %w[~/Applications /Applications]
@@ -5,6 +8,7 @@ meta :app do
   accepts_list_for :provides, :name
   accepts_block_for :current_version do |path| nil end
   accepts_block_for :latest_version
+  accepts_value_for :sparkle
 
   def app_name_match
     provides.first.to_s.sub(/\.app$/, '*.app')
@@ -34,8 +38,24 @@ meta :app do
     set_version latest_value unless latest_value == true
   end
 
+  def get_source_from_sparkle
+    puts 'Fetching via sparkle at ' + sparkle
+    url = URI.parse(sparkle)
+    req = Net::HTTP::Get.new(url.path)
+    res = Net::HTTP.start(url.host, url.port) {|http|
+      http.request(req)
+    }
+    doc = REXML::Document.new res.body
+    [doc.elements['rss/channel/item/enclosure'].attributes['url']]
+  end
+
   template {
     prepare {
+      unless sparkle.blank?
+        def source
+          get_source_from_sparkle
+        end
+      end
       setup_source_uris
     }
 
