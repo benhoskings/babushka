@@ -8,7 +8,7 @@ describe "babushka" do
 
   context "basics" do
     it "should have installed babushka" do
-      @vm.run('babushka --version').should =~ /^[\d.]+$/
+      @vm.run('babushka --version').should =~ /^[\d.]+ \(\w{7}\)$/
     end
   end
 
