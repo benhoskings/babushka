@@ -18,7 +18,7 @@ dep 'up to date.babushka', :from, :path, :branch do
   met? {
     (!repo.behind?).tap {|result|
       if result
-        log_ok "babushka is up to date at revision #{repo.current_head}."
+        log_ok "babushka is up to date at #{repo.current_head}."
       else
         log "babushka can be updated: #{repo.current_head}..#{repo.repo_shell("git rev-parse --short origin/#{branch}")}"
       end
