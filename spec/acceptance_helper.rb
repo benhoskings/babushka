@@ -83,11 +83,13 @@ class VM
   end
 
   def image
-    connection.list_images.detect {|image| image[:name][cfg['image_name']] }
+    connection.list_images.detect {|image| image[:name][cfg['image_name']] } ||
+      raise(RuntimeError, "Couldn't find an image that matched '#{cfg['image_name']}'.")
   end
 
   def flavor
-    connection.list_flavors.detect {|flavor| flavor[:ram] == 256 }
+    connection.list_flavors.detect {|flavor| flavor[:ram] == 256 } ||
+      raise(RuntimeError, "Couldn't find the specs for a 256MB instance.")
   end
 
   def connection
