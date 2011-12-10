@@ -41,23 +41,27 @@ describe "parsing" do
     v.pieces.should == [1, 9, 2, 'p', 180]
     v.operator.should == '>='
   end
-  it "should reject invalid operators" do
-    L{
-      VersionStr.new('~ 0.2')
-    }.should raise_error(InvalidVersionOperator, "VersionStr.new('~ 0.2'): invalid operator '~'.")
-
-    L{
-      VersionStr.new('>> 0.2')
-    }.should raise_error(InvalidVersionOperator, "VersionStr.new('>> 0.2'): invalid operator '>>'.")
+  describe "invalid operators" do
+    it "should reject them" do
+      L{
+        VersionStr.new('~ 0.2')
+      }.should raise_error(InvalidVersionOperator, "VersionStr.new('~ 0.2'): invalid operator '~'.")
+      L{
+        VersionStr.new('>> 0.2')
+      }.should raise_error(InvalidVersionOperator, "VersionStr.new('>> 0.2'): invalid operator '>>'.")
+    end
   end
-  it "should reject bad version numbers" do
-    L{
-      VersionStr.new('0. 2')
-    }.should raise_error(InvalidVersionStr, "VersionStr.new('0. 2'): couldn't parse a version number.")
-
-    L{
-      VersionStr.new('0.2!')
-    }.should raise_error(InvalidVersionStr, "VersionStr.new('0.2!'): couldn't parse a version number.")
+  describe "invalid version numbers" do
+    it "should reject numbers containing spaces" do
+      L{
+        VersionStr.new('0. 2')
+      }.should raise_error(InvalidVersionStr, "VersionStr.new('0. 2'): couldn't parse a version number.")
+    end
+    it "should reject numbers containing unexpected chars" do
+      L{
+        VersionStr.new('0.2!')
+      }.should raise_error(InvalidVersionStr, "VersionStr.new('0.2!'): couldn't parse a version number.")
+    end
   end
 end
 
