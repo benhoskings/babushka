@@ -49,14 +49,19 @@ module Babushka
       versions = commands.select {|cmd|
         !cmd.version.nil?
       }.inject({}) {|hsh,cmd|
-        hsh[cmd] = (shell("#{cmd.name} --version") || '').split(/[\s\-]/).detect {|piece|
+        possible_versions = (shell("#{cmd.name} --version") || '').split(/[\s\-]/).map {|piece|
           begin
-            cmd.matches? piece.to_version
+            piece.to_version
           rescue VersionStrError
-            false
+            nil
           end
-        }
-        log "#{cmd.name} is #{hsh[cmd]}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+        }.compact
+        hsh[cmd] = possible_versions.detect {|piece| cmd.matches?(piece) }
+        if hsh[cmd] == cmd.version
+          log_ok "#{cmd.name} is #{cmd.version}."
+        else
+          log "#{cmd.name} is #{hsh[cmd] || possible_versions.first}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+        end
         hsh
       }
       versions.values.all?
