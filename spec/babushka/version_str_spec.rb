@@ -52,6 +52,11 @@ describe "parsing" do
     end
   end
   describe "invalid version numbers" do
+    it "should reject version numbers that don't contain any digits" do
+      L{
+        VersionStr.new('nginx')
+      }.should raise_error(InvalidVersionStr, "VersionStr.new('nginx'): couldn't parse a version number.")
+    end
     it "should reject numbers containing spaces" do
       L{
         VersionStr.new('0. 2')
