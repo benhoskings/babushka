@@ -50,7 +50,7 @@ module Babushka
 
     def invoke task_name
       define! unless loaded?
-      send(task_name).call unless failed?
+      instance_eval &send(task_name) unless failed?
     end
 
     def result message, opts = {}

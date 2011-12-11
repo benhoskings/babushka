@@ -124,4 +124,21 @@ describe "using" do
     end
     after { Base.sources.anonymous.templates.clear! }
   end
+
+  describe "calling accepted blocks" do
+    let(:a_meta) {
+      meta :acceptor_calling_test do
+        accepts_block_for(:testing) {
+          self
+        }
+      end
+    }
+    let(:a_dep) {
+      dep 'acceptor calling test', template: a_meta.name
+    }
+
+    it "should run the default block in the dep's context" do
+      a_dep.context.invoke(:testing).should == a_dep.context
+    end
+  end
 end

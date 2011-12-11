@@ -72,14 +72,14 @@ describe DepDefiner, '#invoke' do
 
   it "should define and invoke when undefined" do
     definer.should_receive(:define!)
-    definer.should_receive(:met?).and_return(lambda {})
+    definer.should_receive(:met?).and_return(lambda {|_| })
     definer.invoke(:met?)
   end
 
   it "should invoke only when already defined" do
     definer.stub!(:loaded?).and_return(true)
     definer.should_not_receive(:define!)
-    definer.should_receive(:met?).and_return(lambda {})
+    definer.should_receive(:met?).and_return(lambda {|_| })
     definer.invoke(:met?)
   end
 
