@@ -73,6 +73,7 @@ module Babushka
     source_pool
     vars
     parameter
+    path_checker
     dep_runner
     dep_definer
     dep_context
