@@ -74,7 +74,6 @@ module Babushka
     vars
     parameter
     path_checker
-    dep_runner
     dep_definer
     dep_context
     meta_dep
