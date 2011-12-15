@@ -19,9 +19,9 @@ module Babushka
           }.to_list(:oxford => true, :conj => 'but').end_with('.')
         unmeetable unless confirm("Multiple installations might indicate a problem. Meet anyway?", :default => 'n')
       else
-        cmds = dir_hash.values.first
         dir_hash[nil].blank?.tap {|result|
           if result
+            cmds = dir_hash.values.first
             log cmd_location_str_for(cmds).end_with('.') unless cmds.blank?
           else
             log "#{dir_hash[nil].map {|i| "'#{i}'" }.to_list} #{dir_hash[nil].length == 1 ? 'is' : 'are'} missing."
