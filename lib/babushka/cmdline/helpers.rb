@@ -2,11 +2,10 @@
 
 module Babushka
   module Cmdline
-    module Helpers
+    class Helpers
       extend LogHelpers
-      module_function
 
-      def print_version opts = {}
+      def self.print_version opts = {}
         if opts[:full]
           log "Babushka v#{VERSION} (#{Base.ref}), (c) 2011 Ben Hoskings <ben@hoskings.net>"
         else
@@ -14,7 +13,7 @@ module Babushka
         end
       end
 
-      def print_usage
+      def self.print_usage
         log "\nThe gist:"
         log "  #{Base.program_name} <command> [options]"
         log "\nAlso:"
@@ -23,14 +22,14 @@ module Babushka
         log "  #{Base.program_name} babushka        # Update babushka itself (what babushka.me/up does)"
       end
 
-      def print_handlers
+      def self.print_handlers
         log "\nCommands:"
         Handler.all.each {|handler|
           log "  #{handler.name.ljust(10)} #{handler.description}"
         }
       end
 
-      def print_examples
+      def self.print_examples
         log "\nExamples:"
         log "  # Inspect the 'system' dep (and all its sub-deps) without touching the system.".colorize('grey')
         log "  #{Base.program_name} system --dry-run"
@@ -43,12 +42,12 @@ module Babushka
         log "  #{Base.program_name} 'user setup' --debug"
       end
 
-      def print_notes
+      def self.print_notes
         log "\nCommands can be abbrev'ed, as long as they remain unique."
         log "  e.g. '#{Base.program_name} l' is short for '#{Base.program_name} list'."
       end
 
-      def search_results_for q
+      def self.search_results_for q
         YAML.load(search_webservice_for(q).body).sort_by {|i|
           -i[:runs_this_week]
         }.map {|i|
@@ -62,7 +61,7 @@ module Babushka
         }
       end
 
-      def print_search_results search_term, results
+      def self.print_search_results search_term, results
         log "The webservice knows about #{results.length} dep#{'s' unless results.length == 1} that match#{'es' if results.length == 1} '#{search_term}':"
         log ""
         Logging.log_table(
@@ -78,17 +77,17 @@ module Babushka
         end
       end
 
-      def github_autosource_regex
+      def self.github_autosource_regex
         /^\w+\:\/\/github\.com\/(.*)\/babushka-deps(\.git)?/
       end
 
-      def search_webservice_for q
+      def self.search_webservice_for q
         Net::HTTP.start('babushka.me') {|http|
           http.get URI.escape("/deps/search.yaml/#{q}")
         }
       end
 
-      def generate_list_for to_list, filter_str
+      def self.generate_list_for to_list, filter_str
         context = to_list == :deps ? Base.program_name : ':template =>'
         match_str = filter_str.try(:downcase)
         Base.sources.all_present.each {|source|
