@@ -60,10 +60,12 @@ module Babushka
     end
 
     def met message
+      log_warn "#{caller.first}: #met is deprecated and will be removed on 2012-02-01. Deps are considered met when met? evaluates to something truthy (use #log_ok if you like)." # deprecated
       result message, :result => true
     end
 
     def unmet message
+      log_warn "#{caller.first}: #met is deprecated and will be removed on 2012-02-01. Deps are considered unmet when met? evaluates to nil or false (use #log if you like)." # deprecated
       result message, :result => false
     end
 
