@@ -70,6 +70,11 @@ module Babushka
     end
 
     def unmeetable message
+      log_warn "#{caller.first}: #unmeetable has been renamed to #unmeetable! and will be removed on 2012-02-01." # deprecated
+      raise Babushka::UnmeetableDep, message
+    end
+
+    def unmeetable! message
       raise Babushka::UnmeetableDep, message
     end
 
