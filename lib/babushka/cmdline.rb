@@ -48,7 +48,6 @@ module Babushka
       opt       '--show-args',    "Show the arguments being passed between deps as they're run"
       opt       '--track-blocks', "Track deps' blocks in TextMate as they're run"
     }.run {|cmd|
-      # TODO: spec var parsing
       dep_names, vars = cmd.argv.partition {|arg| arg['='].nil? }
       if !(bad_var = vars.detect {|var| var[/^\w+=/].nil? }).nil?
         fail_with "'#{bad_var}' looks like a var but it doesn't make sense."
