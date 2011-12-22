@@ -90,7 +90,7 @@ describe Dep, '.find_or_suggest' do
   end
   context "namespaced" do
     before {
-      Dep.stub!(:suggest_value_for).and_return(nil)
+      Prompt.stub!(:suggest_value_for).and_return(nil)
       @source = Source.new(nil, :name => 'namespaced')
       Source.stub!(:present).and_return([@source])
       Base.sources.load_context :source => @source do

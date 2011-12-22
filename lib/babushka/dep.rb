@@ -17,7 +17,6 @@ module Babushka
     include LogHelpers
     extend LogHelpers
     include PathHelpers
-    extend SuggestHelpers
 
     # This class is used for deps that aren't defined against a meta dep. Using
     # this class with the default values it contains means that the code below
@@ -95,7 +94,7 @@ module Babushka
     def self.find_or_suggest dep_name, opts = {}, &block
       if (dep = Dep(dep_name, opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
-        suggestion = suggest_value_for(dep_name, Base.sources.current_names)
+        suggestion = Prompt.suggest_value_for(dep_name, Base.sources.current_names)
         Dep.find_or_suggest suggestion, opts, &block unless suggestion.nil?
       elsif block.nil?
         dep

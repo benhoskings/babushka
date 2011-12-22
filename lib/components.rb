@@ -25,7 +25,6 @@ module Babushka
     helpers/shell_helpers
     helpers/path_helpers
     helpers/run_helpers
-    helpers/suggest_helpers
     helpers/git_helpers
     helpers/uri_helpers
     popen
