@@ -1,37 +1,55 @@
 meta :app do
   accepts_list_for :source
   accepts_list_for :prefix, %w[~/Applications /Applications]
-  accepts_list_for :extra_source
-  accepts_list_for :provides, :name
+  accepts_value_for :provides, :name
   accepts_block_for :current_version do |path| nil end
-  accepts_block_for :latest_version
 
-  def app_name_match
-    provides.first.to_s.sub(/\.app$/, '*.app')
+  def app
+    VersionOf(provides)
   end
 
-  def check_version path
-    current = current_version.call(path)
-    if current.nil? || version.nil?
-      debug "Can't check versions without both current and latest."
-      true
-    elsif current >= version
-      log_ok "#{name} is up to date at #{current}."
-    else
-      log "#{name} could be updated from #{current} to #{version}."
-    end
+  def app_name_matcher
+    app.name.sub(/\.app$/, '*.app')
+  end
+
+  def app_location
+    prefix.find {|p|
+      (p.to_s / app_name_matcher).glob.select {|entry|
+        (entry / 'Contents/MacOS').exists?
+      }.first
+    }
   end
 
   def prefix_to_use
-    prefix.map(&:p).find {|pre|
-      pre.directory?
-    } || '/Applications'.p
+    prefix.map(&:p).find(&:directory?) || '/Applications'.p
   end
 
-  def discover_latest_version
-    latest_value = latest_version.call
-    # This 'true' check is to detect and ignore the default block.
-    set_version latest_value unless latest_value == true
+  def app_in_path?
+    app_location.tap {|path|
+      if path
+        log "Found #{app.name} in #{path}."
+      else
+        log "Couldn't find #{provides}."
+      end
+    }
+  end
+
+  def matching_version?
+    versions = [provides].versions.select {|p| !p.version.nil? }.inject({}) {|hsh,cmd|
+      detected_version = current_version.call(app_location / provides)
+      if detected_version.nil?
+        true # Can't determine current version.
+      else
+        hsh[cmd] = cmd.matches?(detected_version)
+        if hsh[cmd] == cmd.version
+          log_ok "#{cmd.name} is #{cmd.version}."
+        else
+          log "#{cmd.name} is #{detected_version}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+        end
+      end
+      hsh
+    }
+    versions.values.all?
   end
 
   template {
@@ -40,27 +58,23 @@ meta :app do
     }
 
     met? {
-      discover_latest_version
-      installed = app_dir app_name_match
-      (installed && check_version(installed)).tap {|result|
-        log "Found at #{installed}." if result
-      }
+      app_in_path? and matching_version?
     }
 
     meet {
       process_sources {|archive|
-        Dir.glob("**/#{app_name_match}").select {|entry|
+        Dir.glob("**/#{app_name_matcher}").select {|entry|
           (entry / 'Contents/MacOS').exists? # must be an app bundle itself
         }.reject {|entry|
           entry['.app/'] # mustn't be inside another app bundle
         }.map {|entry|
           pre = prefix_to_use
           target_path = pre / File.basename(entry)
-          if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
-            log_block("Found #{entry}, copying to #{pre}") {
+          log_block("Found #{entry}, copying to #{pre}") {
+            if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
               entry.p.copy target_path
-            }
-          end
+            end
+          }
         }
       }
     }
