@@ -17,7 +17,7 @@ dep 'repo.homebrew' do
   requires_when_unmet 'writable.fhs'.with(path), 'git'
   met? {
     if repo.exists? && !repo.include?('29d85578e75170a6c0eaebda4d701b46f1acf446')
-      unmeetable "There is a non-homebrew repo at #{path}."
+      unmeetable! "There is a non-homebrew repo at #{path}."
     else
       repo.exists?
     end

@@ -34,12 +34,12 @@ dep 'update would fast forward.babushka', :from, :path, :branch do
   requires 'on correct branch.babushka'.with(from, path, branch)
   met? {
     if !repo.repo_shell('git fetch origin')
-      unmeetable "Couldn't pull the latest code - check your internet connection."
+      unmeetable! "Couldn't pull the latest code - check your internet connection."
     else
       if !repo.remote_branch_exists?
-        unmeetable "The current branch, #{repo.current_branch}, isn't pushed to origin/#{repo.current_branch}."
+        unmeetable! "The current branch, #{repo.current_branch}, isn't pushed to origin/#{repo.current_branch}."
       elsif repo.ahead?
-        unmeetable "There are unpushed commits in #{repo.current_branch}."
+        unmeetable! "There are unpushed commits in #{repo.current_branch}."
       else
         true
       end
@@ -63,7 +63,7 @@ end
 dep 'repo clean.babushka', :from, :path do
   requires 'installed.babushka'.with(from, path)
   met? {
-    repo.clean? or unmeetable("There are local changes in #{repo.path}.")
+    repo.clean? or unmeetable!("There are local changes in #{repo.path}.")
   }
 end
 
@@ -74,12 +74,12 @@ dep 'in path.babushka', :from, :path do
   end
   setup {
     unless ENV['PATH'].split(':').map {|p| p.chomp('/') }.include?(bin_path)
-      unmeetable "The binary path alongside babushka, #{bin_path}, isn't in your $PATH."
+      unmeetable! "The binary path alongside babushka, #{bin_path}, isn't in your $PATH."
     end
   }
   met? { which 'babushka' }
   prepare {
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{bin_path} (to symlink babushka into the path)." unless bin_path.hypothetically_writable?
+    unmeetable! "The current user, #{shell('whoami')}, can't write to #{bin_path} (to symlink babushka into the path)." unless bin_path.hypothetically_writable?
   }
   meet {
     bin_path.mkdir
@@ -92,7 +92,7 @@ dep 'installed.babushka', :from, :path do
 
   requires 'ruby', 'git'
   setup {
-    unmeetable "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
+    unmeetable! "The current user, #{shell('whoami')}, can't write to #{repo.path}." unless repo.path.hypothetically_writable?
   }
   met? { repo.exists? }
   meet {

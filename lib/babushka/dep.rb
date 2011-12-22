@@ -199,7 +199,7 @@ module Babushka
     # example, if a dep detects that the existing version of a package is
     # broken in some way that requires manual intervention, then there's no
     # use running the +meet+ block. In this circumstance, you can call
-    # +#unmeetable+, which raises an +UnmeetableDep+ exception. Babushka will
+    # +#unmeetable!+, which raises an +UnmeetableDep+ exception. Babushka will
     # rescue it and consider the dep unmeetable (that is, it will just allow
     # the dep to fail without attempting to meet it).
     #
