@@ -8,6 +8,12 @@ module Babushka
     end
     module_function :handle
 
+    def fail_with message
+      log message if message.is_a? String
+      exit 1
+    end
+    module_function :fail_with
+
     class Handler
       def self.add name, description, opt_definer
         Handler.new(name, description, opt_definer).tap {|handler|

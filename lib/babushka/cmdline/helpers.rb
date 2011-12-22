@@ -2,13 +2,6 @@
 
 module Babushka
   module Cmdline
-    module_function
-
-    def fail_with message
-      log message if message.is_a? String
-      exit 1
-    end
-
     module Helpers
       extend LogHelpers
       module_function
