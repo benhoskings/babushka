@@ -2,26 +2,12 @@ module Babushka
   class PathChecker
     extend ShellHelpers
 
-    # TODO: solve cmd/app and string/version handling better.
     def self.in_path? provided_list
-      apps, command_names = [*provided_list].partition {|i| i.to_s[/\.app\/?$/] }
-      commands = command_names.versions
-      apps_in_path?(apps) and cmds_in_path?(commands) and matching_versions?(commands)
+      commands = [*provided_list].versions
+      cmds_in_path?(commands) and matching_versions?(commands)
     end
 
     private
-
-    def self.apps_in_path? apps
-      present, missing = [*apps].partition {|app_name| app_dir(app_name) }
-
-      missing.empty?.tap {|result|
-        if result
-          log "#{present.map {|i| "'#{i}'" }.to_list} #{present.length == 1 ? 'is' : 'are'} present." unless present.empty?
-        else
-          log "#{missing.map {|i| "'#{i}'" }.to_list} #{missing.length == 1 ? 'is' : 'are'}n't present anywhere in $PATH."
-        end
-      }
-    end
 
     def self.cmds_in_path? commands
       dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
@@ -64,14 +50,6 @@ module Babushka
         hsh
       }
       versions.values.all?
-    end
-
-    def self.app_dir app_name
-      prefix.find {|app_path|
-        (app_path.to_s / app_name).glob.select {|entry|
-          (entry / 'Contents/MacOS').exists?
-        }.first
-      }
     end
 
     def self.cmd_location_str_for cmds
