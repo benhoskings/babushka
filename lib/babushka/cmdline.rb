@@ -117,7 +117,7 @@ module Babushka
       elsif dep.load_path.nil?
         fail_with "Can't edit '#{dep.name}, since it wasn't loaded from a file."
       else
-        file, line = dep.context.file_and_line
+        file, line = dep.context.source_location
         editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('mate') || which('vim') || which('vi')
         case editor_var
         when /^mate/

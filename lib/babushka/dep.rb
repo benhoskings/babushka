@@ -376,7 +376,7 @@ module Babushka
 
     def track_block_for task_name
       if context.has_block? task_name
-        file, line = *context.file_and_line_for(task_name)
+        file, line = *context.source_location_for(task_name)
         shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
         sleep 2
       end

@@ -78,15 +78,15 @@ module Babushka
       raise Babushka::UnmeetableDep, message
     end
 
-    def file_and_line
-      get_file_and_line_for(block)
+    def source_location
+      get_source_location_for(block)
     end
 
-    def file_and_line_for block_name
-      get_file_and_line_for send(block_name) if has_block? block_name
+    def source_location_for block_name
+      get_source_location_for send(block_name) if has_block? block_name
     end
 
-    def get_file_and_line_for blk
+    def get_source_location_for blk
       blk.inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
     end
 
