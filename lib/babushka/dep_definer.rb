@@ -87,7 +87,11 @@ module Babushka
     end
 
     def get_source_location_for blk
-      blk.inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
+      if blk.respond_to?(:source_location) # Not present on cruby-1.8.
+        blk.source_location
+      else
+        blk.inspect.scan(/\#\<Proc\:0x[0-9a-f]+\@([^:]+):(\d+)>/).flatten
+      end
     end
 
     private
