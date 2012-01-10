@@ -149,12 +149,10 @@ module Babushka
 
       sudo_cmd = if current_username == as
         cmd # Don't sudo if we're already running as the specified user.
+      elsif opts[:su] || cmd[' |'] || cmd[' >']
+        "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
       else
-        if opts[:su] || cmd[' |'] || cmd[' >']
-          "sudo su - #{as} -c \"#{cmd.gsub('"', '\"')}\""
-        else
-          "sudo -u #{as} #{cmd}"
-        end
+        "sudo -u #{as} #{cmd}"
       end
 
       shell [env, sudo_cmd], opts.discard(:as, :sudo, :su), &block
