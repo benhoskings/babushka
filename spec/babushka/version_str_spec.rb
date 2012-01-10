@@ -70,6 +70,43 @@ describe "parsing" do
   end
 end
 
+describe 'validity' do
+  RSpec::Matchers.define :be_valid_version do
+    match do |maybe_version_str|
+      VersionStr.valid?(maybe_version_str).should be_true
+    end
+  end
+
+  it 'should detect valid version strings' do
+    [ 
+      '0.2', 
+      '0.3.10.2', 
+      '1.9.1-p243', 
+      '3.0.0.beta', 
+      '3.0.0.beta3', 
+      'R13B04', 
+      '>0.2', 
+      '>= 0.2', 
+      '~> 0.3.10.2', 
+      '= 0.2', 
+      '== 0.2', 
+      'V0.5.0',
+      '>= v.1.9.2p180'
+    ].each {|v| v.should be_valid_version }
+  end
+  it 'should detect invalid version strings' do
+    [
+      '~ 0.2',
+      '>> 0.2',
+      'nginx',
+      '0. 2',
+      '0.2!',
+      '',
+      nil
+    ].each{|v| v.should_not be_valid_version }
+  end
+end
+
 describe 'rendering' do
   it "should render just the version number with no operator" do
     VersionStr.new('0.3.1').to_s.should == '0.3.1'
