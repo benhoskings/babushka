@@ -134,7 +134,7 @@ describe "using" do
       end
     }
     let(:a_dep) {
-      dep 'acceptor calling test', template: a_meta.name
+      dep 'acceptor calling test', :template => a_meta.name
     }
 
     it "should run the default block in the dep's context" do
