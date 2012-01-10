@@ -143,7 +143,8 @@ module Babushka
         raise ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings."
       end
 
-      as = opts[:as] || (opts[:sudo].is_a?(String) ? opts[:sudo] : 'root')
+      raw_as = opts[:as] || opts[:sudo] || 'root'
+      as = raw_as == true ? 'root' : raw_as
       cmd = cmd.last
 
       sudo_cmd = if current_username == as

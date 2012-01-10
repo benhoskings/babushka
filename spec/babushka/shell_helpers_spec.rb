@@ -166,6 +166,11 @@ describe "sudo" do
       should_receive(:shell_cmd).with({}, 'whoami', {}).once
       shell('whoami', :sudo => 'batman')
     end
+    it "should not sudo with a :sudo => Parameter username" do
+      stub!(:current_username).and_return('batman')
+      should_receive(:shell_cmd).with({}, 'whoami', {}).once
+      shell('whoami', :sudo => Parameter.new('username').default!('batman'))
+    end
     it "should not sudo from #shell when :as is specified" do
       stub!(:current_username).and_return('root')
       should_receive(:shell_cmd).with({}, 'whoami', {}).once
