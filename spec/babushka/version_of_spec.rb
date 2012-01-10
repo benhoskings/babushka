@@ -25,6 +25,10 @@ describe "creation" do
     version_of(version_of('ruby', '1.8')).should == version_of('ruby', '1.8')
     version_of(version_of('ruby', '1.8'), '1.9').should == version_of('ruby', '1.9')
   end
+  it "should accept name with space" do
+    version_of('Google Chrome.app').name.should == 'Google Chrome.app'
+    version_of('Google Chrome.app').version.should == nil
+  end
 end
 
 describe "to_s" do
