@@ -10,7 +10,12 @@ module Babushka
         if rest.any?
           Babushka::VersionOf.new(*[first].concat(rest))
         elsif first.is_a?(String)
-          Babushka::VersionOf.new(*first.split(' ', 2))
+          name, version = first.split(' ', 2)
+          if version && VersionStr.valid?(version)
+            Babushka::VersionOf.new(name, version)
+          else
+            Babushka::VersionOf.new(first)
+          end
         elsif first.is_a?(Array)
           Babushka::VersionOf.new(*first)
         else

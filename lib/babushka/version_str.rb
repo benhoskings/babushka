@@ -8,6 +8,14 @@ module Babushka
     attr_reader :pieces, :operator, :version
     GemVersionOperators = %w[= == != > < >= <= ~>].freeze
 
+    def VersionStr.valid?(maybe_version_str)
+      return false if maybe_version_str.blank?
+      VersionStr.new(maybe_version_str)
+      true
+    rescue VersionStrError
+      false
+    end
+
     def <=> other
       other = other.to_version unless other.is_a? VersionStr
       max_length = [pieces.length, other.pieces.length].max
