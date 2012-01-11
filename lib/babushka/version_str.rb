@@ -8,12 +8,8 @@ module Babushka
     attr_reader :pieces, :operator, :version
     GemVersionOperators = %w[= == != > < >= <= ~>].freeze
 
-    def VersionStr.valid?(maybe_version_str)
-      return false if maybe_version_str.blank?
-      VersionStr.new(maybe_version_str)
-      true
-    rescue VersionStrError
-      false
+    def self.parseable_version? str
+      !str.nil? && !str[/\d/].nil?
     end
 
     def initialize str
@@ -21,7 +17,7 @@ module Babushka
 
       if !(@operator.nil? || GemVersionOperators.include?(@operator))
         raise InvalidVersionOperator, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
-      elsif @version.nil? || @version[/\d/].nil?
+      elsif !self.class.parseable_version?(@version)
         raise InvalidVersionStr, "VersionStr.new('#{str}'): couldn't parse a version number."
       else
         @pieces = @version.strip.scan(/\d+|[a-zA-Z]+|\w+/).map {|piece|

@@ -11,7 +11,7 @@ module Babushka
           Babushka::VersionOf.new(*[first].concat(rest))
         elsif first.is_a?(String)
           name, version = first.split(' ', 2)
-          if version && VersionStr.valid?(version)
+          if version && VersionStr.parseable_version?(version)
             Babushka::VersionOf.new(name, version)
           else
             Babushka::VersionOf.new(first)

@@ -70,40 +70,19 @@ describe "parsing" do
   end
 end
 
-describe 'validity' do
-  RSpec::Matchers.define :be_valid_version do
-    match do |maybe_version_str|
-      VersionStr.valid?(maybe_version_str).should be_true
-    end
+describe '#parseable_version?' do
+  it 'should not report emptyness as parseable' do
+    VersionStr.parseable_version?(nil).should be_false
+    VersionStr.parseable_version?('').should be_false
+    VersionStr.parseable_version?('  ').should be_false
   end
-
-  it 'should detect valid version strings' do
-    [ 
-      '0.2', 
-      '0.3.10.2', 
-      '1.9.1-p243', 
-      '3.0.0.beta', 
-      '3.0.0.beta3', 
-      'R13B04', 
-      '>0.2', 
-      '>= 0.2', 
-      '~> 0.3.10.2', 
-      '= 0.2', 
-      '== 0.2', 
-      'V0.5.0',
-      '>= v.1.9.2p180'
-    ].each {|v| v.should be_valid_version }
+  it "should not report digitless input as parseable" do
+    VersionStr.parseable_version?('nginx').should be_false
   end
-  it 'should detect invalid version strings' do
-    [
-      '~ 0.2',
-      '>> 0.2',
-      'nginx',
-      '0. 2',
-      '0.2!',
-      '',
-      nil
-    ].each{|v| v.should_not be_valid_version }
+  it "should not report input with digits as parseable" do
+    VersionStr.parseable_version?('3').should be_true
+    VersionStr.parseable_version?('R13B04').should be_true
+    VersionStr.parseable_version?('1.9.3-p0').should be_true
   end
 end
 
