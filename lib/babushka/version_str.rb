@@ -16,15 +16,6 @@ module Babushka
       false
     end
 
-    def <=> other
-      other = other.to_version unless other.is_a? VersionStr
-      max_length = [pieces.length, other.pieces.length].max
-      (0...max_length).to_a.pick {|index|
-        result = compare_pieces pieces[index], other.pieces[index]
-        result unless result == 0
-      } || 0
-    end
-
     def initialize str
       @operator, @version = str.strip.scan(/^([^\s\w\-\.]+)?\s*v?([\w\-\.]+)$/i).first
 
@@ -42,6 +33,15 @@ module Babushka
 
     def to_s
       @operator == '==' ? @version : "#{@operator} #{@version}"
+    end
+
+    def <=> other
+      other = other.to_version unless other.is_a? VersionStr
+      max_length = [pieces.length, other.pieces.length].max
+      (0...max_length).to_a.pick {|index|
+        result = compare_pieces pieces[index], other.pieces[index]
+        result unless result == 0
+      } || 0
     end
 
     define_method "!=" do |other|
