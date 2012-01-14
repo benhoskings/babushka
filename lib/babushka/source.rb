@@ -184,6 +184,7 @@ module Babushka
       elsif repo.exists? && repo.dirty?
         log "Not updating #{name} (#{path}) because there are local changes."
       elsif repo.exists? && repo.ahead?
+        @updated = false # So the ahead? check doesn't run again, for when there's no network.
         log "Not updating #{name} (#{path}) because it's ahead of origin."
       else
         git(uri, :to => path, :log => true).tap {|result|
