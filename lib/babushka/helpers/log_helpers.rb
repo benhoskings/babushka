@@ -86,7 +86,7 @@ module Babushka
       printable = !opts[:debug] || Base.task.opt(:debug)
       Logging.print_log Logging.indentation, printable unless opts[:indentation] == false
       if block_given?
-        Logging.print_log "#{message} {\n".colorize('grey'), printable
+        Logging.print_log "#{message} {".colorize('grey') + "\n", printable
         Logging.indent! if printable
         yield.tap {|result|
           Logging.undent! if printable
