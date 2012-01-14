@@ -16,6 +16,7 @@ module Babushka
 
       while Base.task.running? && (report = most_recent_report)
         post_report report
+        sleep 1 # A quick hack for now, so we don't dominate the railscamp server.
       end
     end
 
