@@ -54,6 +54,12 @@ describe "shell" do
         shell("pwd", :cd => (tmp_prefix / 'nonexistent'))
       }.should raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}")
     end
+    it "should raise when the path isn't a directory" do
+      L{
+        (tmp_prefix / 'notadir').touch
+        shell("pwd", :cd => (tmp_prefix / 'notadir'))
+      }.should raise_error(Errno::ENOTDIR, "Not a directory - #{tmp_prefix / 'notadir'}")
+    end
     context "with :create option" do
       it "should run in the specified directory" do
         shell("pwd", :cd => (tmp_prefix / 'dir_param'), :create => true).should == (tmp_prefix / 'dir_param').to_s

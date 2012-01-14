@@ -80,6 +80,8 @@ module Babushka
           else
             raise Errno::ENOENT, opts[:cd]
           end
+        elsif !opts[:cd].p.dir?
+          raise Errno::ENOTDIR, opts[:cd]
         end
       end
       shell_method = (opts[:as] || opts[:sudo]) ? :sudo : :shell_cmd
