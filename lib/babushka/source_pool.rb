@@ -50,9 +50,9 @@ module Babushka
       elsif dep_spec[/#{SEPARATOR}/] # If a source was specified, that's where we load from.
         source_name, dep_name = dep_spec.split(SEPARATOR, 2)
         source_for(source_name).find(dep_name)
-      elsif opts[:from]
+      elsif opts[:from] # Next, try opts[:from], the requiring dep's source.
         opts[:from].find(dep_spec) || dep_for(dep_spec)
-      else # Otherwise, load from the current source (opts[:from]) or the standard set.
+      else # Otherwise, try the standard set.
         matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_spec}'."
