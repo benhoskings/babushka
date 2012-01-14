@@ -22,7 +22,7 @@ module Babushka
     end
 
     def self.for_path path
-      remote = cd(path) { shell "git config remote.origin.url" }
+      remote = shell "git config remote.origin.url", :cd => path
       if remote.nil?
         Source.new path # local source
       else
