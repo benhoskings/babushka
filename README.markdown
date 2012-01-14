@@ -3,16 +3,14 @@
 - _docs: http://babushka.me_
 - _rdocs: http://babushka.me/rdoc_
 
-When you spend time researching something new, it's pretty easy to forget what you found, and have to re-research it again next time.
+A lot of the tech jobs we do manually aren't challenging or fun, but they're quite particular and have to be done just right -- they're chores. Things that are important to do, but that are better automated than done manually.
 
-A lot of the tech jobs we do manually aren't challenging or fun, but they're finicky and have to be done just right. They're chores. Things that are important to do, but that are better automated than done manually by us people, right? After all, that's what is supposed to happen in the future. And the future is good, because in the future, we'll all have jetpants. So, onward.
-
-The idea is this: you take a job that you'd rather not do manually, and describe it to babushka using its DSL. The way it works, babushka not only knows how to accomplish each part of the job, it also knows how to check if each part is already done. You're teaching babushka to achieve an end goal with whatever runtime conditions you throw at it, not just to perform the task that would get you there from the very start.
+That's what babushka is for. Once you describe a job using its DSL, babushka can not only accomplish each part of the job, but also check if each part is already satisfied. For each component of the job, a test, along with the code to make that test pass -- test-driven sysadmin.
 
 
 # installing
 
-Installing is really easy on supported systems (currently, OS X and Ubuntu). All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
+Installing is really easy. All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
 
 If you have curl (OS X):
 
@@ -22,6 +20,8 @@ If you have wget (Ubuntu):
 
     bash -c "`wget -O - babushka.me/up`"
 
+Babushka should run on any Unix. OS X and Ubuntu are fully supported, including their respective package managers, homebrew and apt. There is some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, but I'm not familiar with those systems so it might be incomplete. Patches are most welcome.
+
 
 # kicking the tyres
 
@@ -29,28 +29,32 @@ Once the install process has finished, you're ready to rock. If you have a Mac, 
 
     babushka homebrew
 
-Or check that your rubygems install is looking good - latest version + gem sources. This demonstrates how babushka works: it's the goal (rubygems set up well) that's important. You can safely run this whether rubygems is outdated, up to date, or missing, and babushka will work out what tasks need to be done in order to achieve the end goal. The `rubygems` dep handles that for us:
+Another example. Here's how you could check that your rubygems install is up to date and in the right place. This demonstrates how babushka works: it's the goal (rubygems set up well) that's important. You can safely run this whether rubygems is outdated, up to date, or missing, and babushka will work out what tasks need to be done in order to achieve the end goal. The `rubygems` dep handles that.
 
     babushka rubygems
 
 Things like rubygems and homebrew aren't hard to install on their own, but with babushka it's _really_ easy, and _fast_. But more importantly, you know the job is being done just right, every time.
 
-OK, something more complex now---a vhosting nginx.
+(These deps aren't special, they're just bundled along with babushka because I like to ship package manager support.)
+
+OK, something more complex now---a vhosting nginx. Since there's not much point configuring nginx until it's installed, this dep `requires` another called `nginx.src` that does the actual install (i.e. downloading and building the source). That means calling this one will include the installation if it's not already present (i.e. if `nginx.src` is unmet).
 
     babushka benhoskings:'configured.nginx'
 
-Then you can set up each virtualhost with
+Then you can set up each virtualhost with another dep (which itself requires `configured.nginx`). In fact, you could call just this one, and leave the one above: configuring a vhost requires the global config, which in turn requires the install.
+
+The idea is that you can talk solely about your actual goal, without regard for the dependencies -- they'll all be pulled in as required.
 
     babushka benhoskings:'vhost configured.nginx'
 
-That's how I set up all my production machines. If something isn't working, you have a list of things that aren't the culprit: everything in the output with a green ✓ beside it. Conversely, if babushka can detect the problem, the failing dep will have a red ✗ beside it instead, which leads you straight to the cause of the problem. Test-driven sysadmin!
+That's how I set up my production machines. If something isn't working, you have a list of things that _aren't_ the culprit: everything in the output with a green ✓ beside it. Conversely, if babushka can detect the problem, the failing dep will have a red ✗ beside it instead, which leads you straight to the cause of the problem. Test-driven sysadmin!
 
 
 # nothing up my sleeve…
 
 Creating and sharing this knowledge is central to babushka. It's all very well to run `babushka rubygems` and have it do a job for you, but the real power is in babushka's ability to automate whatever chore you want, not just ones that others have thought of already.
 
-To that end, I've tried really hard to make the process quick and satisfying. If you spend a little bit of time getting the feel for babushka's DSL, you'll be cranking out deps just like the `rubygems` and `homebrew` ones above.
+To that end, I've tried really hard to make the process quick and satisfying. If you spend a little bit of time getting the feel for babushka's DSL, you'll be cranking out deps just like the rubygems, homebrew, and nginx ones above.
 
 
 ## yeah, but how?
@@ -99,7 +103,7 @@ A lot of chores are variations on a theme like this, or just too cumbersome to d
 For example, Babushka ships with a meta dep that knows how to install TextMate bundles, given just the URL. All the actual logic, including the code for `met?` and `meet`, is wrapped up in the meta dep.
 
     meta :tmbundle, :for => :osx do
-      accepts_list_for :source
+      accepts_value_for :source
       
       template {
         requires 'TextMate.app'
@@ -107,17 +111,13 @@ For example, Babushka ships with a meta dep that knows how to install TextMate b
           '~/Library/Application Support/TextMate/Bundles' / name
         end
         met? { path.dir? }
-        before { shell "mkdir -p #{path.parent}" }
-        meet {
-          source.each {|uri|
-            git uri, :to => path
-          }
-        }
+        before { path.parent.mkdir }
+        meet { git source, :to => path }
         after { shell %Q{osascript -e 'tell app "TextMate" to reload bundles'} }
       }
     end
 
-Notice how the contents of the `template` block looks like a normal dep. That's cause it is---the meta dep is a factory, that takes values defined by `accepts_list_for` (in this case, `source`) and produces regular deps at runtime under the covers.
+Notice how the contents of the `template` block looks like a normal dep. That's cause it is---the meta dep is a factory, that accepts a value defined by `accepts_value_for` (in this case, `source`) and produces regular deps at runtime under the covers.
 
 Given the `tmbundle` meta dep, this dep handles the cucumber bundle:
 
@@ -137,28 +137,28 @@ If you already have TextMate installed, babushka notices and just installs the b
     Cucumber.tmbundle {
       TextMate.app {
         Found at /Applications/TextMate.app.
-      } √ TextMate.app
-      not already met.
-      Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
-      Cucumber.tmbundle met.
-    } √ Cucumber.tmbundle
+      } ✓ TextMate.app
+      meet {
+        Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
+      }
+    } ✓ Cucumber.tmbundle
 
 But if you don't have TextMate, that's an unmet dependency, so it gets pulled in too.
 
     Cucumber.tmbundle {
       TextMate.app {
-        not already met.
-        Downloading http://download-b.macromates.com/TextMate_1.5.9.dmg... done.
-        Attaching TextMate_1.5.9.dmg... done.
-        Found TextMate.app in the DMG, copying to /Applications... done.
-        Detaching TextMate_1.5.9.dmg... done.
+        meet {
+          Downloading http://download-b.macromates.com/TextMate_1.5.9.dmg... done.
+          Attaching TextMate_1.5.9.dmg... done.
+          Found TextMate.app in the DMG, copying to /Applications... done.
+          Detaching TextMate_1.5.9.dmg... done.
+        }
         Found at /Applications/TextMate.app.
-        TextMate.app met.
-      } √ TextMate.app
-      not already met.
-      Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
-      Cucumber.tmbundle met.
-    } √ Cucumber.tmbundle
+      } ✓ TextMate.app
+      meet {
+        Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
+      }
+    } ✓ Cucumber.tmbundle
 
 
 ## dep sources
