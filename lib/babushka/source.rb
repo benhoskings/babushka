@@ -160,7 +160,7 @@ module Babushka
           Base.sources.load_context :source => self, :path => f do
             begin
               load f
-            rescue Exception => e
+            rescue StandardError => e
               log_error "#{e.backtrace.first}: #{e.message}"
               log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
               debug e.backtrace * "\n"
