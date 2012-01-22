@@ -137,7 +137,7 @@ module Babushka
     end
 
     def track! branch
-      repo_shell("git checkout -t '#{branch}'")
+      repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(/^.*\//, '')}'")
     end
 
     def checkout! branch
