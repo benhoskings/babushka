@@ -332,7 +332,7 @@ describe GitRepo, '#branch!' do
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
   end
-  context "after tracking" do
+  context "after branching" do
     before { subject.branch! "next" }
     it "should have created a next branch" do
       subject.branches.should include('next')
