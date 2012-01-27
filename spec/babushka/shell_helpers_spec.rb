@@ -41,7 +41,7 @@ describe "shell" do
   context ":cd parameter" do
     before { (tmp_prefix / 'dir_param').mkdir }
     it "should run in the current directory when :cd isn't specified" do
-      shell("pwd").should == Dir.pwd
+      shell("pwd -P").should == Dir.pwd
     end
     it "should run in the specified directory" do
       shell("pwd", :cd => (tmp_prefix / 'dir_param')).should == (tmp_prefix / 'dir_param').to_s
