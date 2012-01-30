@@ -39,6 +39,10 @@ module Babushka
       }
     end
 
+    def cpus
+      raise "#{self.class}#cpus is unimplemented."
+    end
+
     def total_memory
       raise "#{self.class}#total_memory is unimplemented."
     end
@@ -123,6 +127,7 @@ module Babushka
     def release; version.match(/^\d+\.\d+/).to_s end
     def get_version_info; shell 'sw_vers' end
     def pkg_helper; BrewHelper end
+    def cpus; shell('sysctl -n hw.ncpu') end
     def total_memory; shell("sysctl -a").val_for("hw.memsize").to_i end
   end
 
@@ -159,6 +164,7 @@ module Babushka
     def flavour_str; flavour_str_map[system][flavour] end
     def version; 'unknown' end
     def release; version end
+    def cpus; shell("cat /proc/cpuinfo | grep '^processor\b' | wc -l") end
 
     def self.for_flavour
       (detect_using_release_file || LinuxSystemProfile).new
