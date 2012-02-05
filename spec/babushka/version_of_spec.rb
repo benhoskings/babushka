@@ -50,6 +50,21 @@ describe "to_s" do
   end
 end
 
+describe '#exact?' do
+  it "should be false when there is no version" do
+    version_of('ruby').should_not be_exact
+  end
+  it "should be true when there is a just version number" do
+    version_of('ruby', '1.8').should be_exact
+  end
+  it "should be true when the operator is ==" do
+    version_of('ruby', '== 1.8').should be_exact
+  end
+  it "should be false when the operator is not ==" do
+    version_of('ruby', '>= 1.8').should_not be_exact
+  end
+end
+
 describe "equality" do
   it "should compare to versionless strings" do
     version_of('ruby'       ).should     == version_of('ruby')

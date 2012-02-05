@@ -63,6 +63,10 @@ module Babushka
       [name, version].compact * joinery
     end
 
+    def exact?
+      !version.nil? && version.operator == '=='
+    end
+
     def inspect
       "#<VersionOf #{name}#{", v#{version}" unless version.nil?}>"
     end
