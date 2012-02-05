@@ -32,7 +32,7 @@ end
 puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
-  "#{'/private' if Base.host.osx?}/tmp/rspec/its_ok_if_a_test_deletes_this/babushka"
+  "/#{File.symlink?('/tmp') ? File.readlink('/tmp') : 'tmp'}/rspec/its_ok_if_a_test_deletes_this/babushka"
 end
 
 `rm -rf '#{tmp_prefix}'` if File.exists? tmp_prefix
