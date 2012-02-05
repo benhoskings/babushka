@@ -32,11 +32,10 @@ end
 puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
-  "/#{File.symlink?('/tmp') ? File.readlink('/tmp') : 'tmp'}/rspec/its_ok_if_a_test_deletes_this/babushka"
+  @@tmp_prefix ||= "/#{File.symlink?('/tmp') ? File.readlink('/tmp') : 'tmp'}/from_babushka_specs".tap {|path|
+    path.p.rm.mkdir
+  }
 end
-
-`rm -rf '#{tmp_prefix}'` if File.exists? tmp_prefix
-`mkdir -p '#{tmp_prefix}'` unless File.exists? tmp_prefix
 
 module Babushka
   class Resource
