@@ -1,4 +1,7 @@
 module Babushka
+  class UnknownSystemError < RuntimeError
+  end
+
   class SystemProfile
     include ShellHelpers
     extend ShellHelpers
@@ -9,7 +12,7 @@ module Babushka
         'Darwin' => OSXSystemProfile,
         'DragonFly' => DragonFlySystemProfile,
         'FreeBSD' => FreeBSDSystemProfile
-      }[shell('uname -s')].try(:for_flavour)
+      }[shell('uname -s')].try(:for_flavour) || UnknownSystem.new
     end
 
     def self.for_flavour
@@ -23,7 +26,6 @@ module Babushka
     def linux?; false end
     def osx?; false end
     def bsd?; false end
-    def pkg_helper; nil end
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
     # The extension that dynamic libraries are given on this system. On linux
@@ -113,7 +115,17 @@ module Babushka
         }
       }
     end
+  end
 
+  class UnknownSystem < SystemProfile
+    def description
+      "Unknown system"
+    end
+    def pkg_helper; nil end
+    def system; :unknown end
+    def flavour; :unknown end
+    def name; :unknown end
+    def pkg_helper_key; :unknown end
   end
 
   class OSXSystemProfile < SystemProfile

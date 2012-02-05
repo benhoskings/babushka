@@ -5,9 +5,9 @@ describe Babushka::SystemProfile, '.for_host' do
     Babushka::SystemProfile.should_receive(:shell).with("uname -s").and_return("Darwin")
     Babushka::SystemProfile.for_host.should be_an_instance_of(Babushka::OSXSystemProfile)
   end
-  it "should return nil on unknown boxes" do
+  it "should return UnknownSystem on unknown boxes" do
     Babushka::SystemProfile.should_receive(:shell).with("uname -s").and_return("LolOS")
-    Babushka::SystemProfile.for_host.should be_nil
+    Babushka::SystemProfile.for_host.should be_an_instance_of(Babushka::UnknownSystem)
   end
   context "on BSD boxes" do
     it "should return DragonFlySystemProfile on Dragonfly boxes" do
