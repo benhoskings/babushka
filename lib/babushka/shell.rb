@@ -19,7 +19,8 @@ module Babushka
 
     def initialize *cmd
       @opts = cmd.extract_options!
-      raise "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
+      raise ArgumentError, "You can't use :spinner and :progress together in Babushka::Shell." if opts[:spinner] && opts[:progress]
+      raise ArgumentError, "wrong number of arguments (0 for 1+)" if cmd.empty?
       @env = cmd.first.is_a?(Hash) ? cmd.shift : {}
       @cmd = cmd
       @progress = nil
