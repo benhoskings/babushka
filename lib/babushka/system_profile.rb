@@ -121,7 +121,9 @@ module Babushka
     def description
       "Unknown system"
     end
-    def pkg_helper; nil end
+    def pkg_helper
+      raise UnknownSystemError.new("Not sure how to use the package manager on this sytem.")
+    end
     def system; :unknown end
     def flavour; :unknown end
     def name; :unknown end
