@@ -307,7 +307,7 @@ module Babushka
       end
 
       if Base.task.opt(:dry_run)
-        requirements_for(accessor).each(&requirement_processor)
+        requirements_for(accessor).map(&requirement_processor).all?
       else
         requirements_for(accessor).all?(&requirement_processor)
       end

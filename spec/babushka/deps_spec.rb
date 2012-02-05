@@ -1,15 +1,44 @@
 require 'spec_helper'
 require 'dep_support'
 
-shared_examples_for "met?" do
+shared_examples_for "met? when met" do
   describe "met?" do
     before { Dep('a').met? }
-    it "should met?-check each dep exactly once" do
+    it "should met?-check deps that don't have failed subdeps" do
       %w[a b c d e f].each {|i| @yield_counts[i].should == @yield_counts_already_met }
     end
     it "shouldn't run the meet-only dep" do
       @yield_counts['g'].should == @yield_counts_none
     end
+  end
+end
+
+shared_examples_for "met? when unmet" do
+  describe "met?" do
+    before { Dep('a').met? }
+    it "should met?-check deps that don't have failed subdeps" do
+      %w[f].each {|i| @yield_counts[i].should == @yield_counts_already_met }
+    end
+    it "should not met?-check deps that have failed subdeps" do
+      %w[a b c d e].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
+    end
+    it "shouldn't run the meet-only dep" do
+      @yield_counts['g'].should == @yield_counts_none
+    end
+  end
+end
+
+describe "met? return value" do
+  before {
+    dep 'return value a' do
+      requires 'return value b'
+    end
+    dep 'return value b' do
+      met? { false }
+    end
+  }
+  it "should return false when subdeps are unmet" do
+    Dep('return value a').met?.should be_false
   end
 end
 
@@ -24,7 +53,7 @@ describe "an already met dep tree" do
     make_counter_dep :name => 'f'
     make_counter_dep :name => 'g'
   }
-  it_should_behave_like "met?"
+  it_should_behave_like "met? when met"
   describe "meet" do
     before { Dep('a').meet }
     it "should meet no deps" do
@@ -48,7 +77,7 @@ describe "an unmeetable dep tree" do
     make_counter_dep :name => 'f', :met? => L{ false }
     make_counter_dep :name => 'g', :met? => L{ false }
   }
-  it_should_behave_like "met?"
+  it_should_behave_like "met? when unmet"
   describe "meet" do
     before { Dep('a').meet }
     it "should fail on the bootom-most dep" do
@@ -67,15 +96,15 @@ end
 describe "a meetable dep tree" do
   before {
     setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:met?] > 1 }
-    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:met?] > 1 }
-    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:met?] > 1 }, :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:met?] > 1 }
-    make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ @yield_counts['e'][:met?] > 1 }
-    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:met?] > 1 }
-    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:met?] > 1 }
+    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:meet] > 0 }
+    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:meet] > 0 }
+    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:meet] > 0 }, :requires_when_unmet => %w[g]
+    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:meet] > 0 }
+    make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ @yield_counts['e'][:meet] > 0 }
+    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:meet] > 0 }
+    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:meet] > 0 }
   }
-  it_should_behave_like "met?"
+  it_should_behave_like "met? when unmet"
   describe "meet" do
     before { Dep('a').meet }
     it "should meet each dep exactly once" do
@@ -88,15 +117,15 @@ end
 describe "a partially meetable dep tree" do
   before {
     setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:met?] > 1 }
-    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:met?] > 1 }
-    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:met?] > 1 }, :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:met?] > 1 }
+    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:meet] > 0 }
+    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:meet] > 0 }
+    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:meet] > 0 }, :requires_when_unmet => %w[g]
+    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:meet] > 0 }
     make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ false }
-    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:met?] > 1 }
-    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:met?] > 1 }
+    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:meet] > 0 }
+    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:meet] > 0 }
   }
-  it_should_behave_like "met?"
+  it_should_behave_like "met? when unmet"
   describe "meet" do
     before { Dep('a').meet }
     it "should meet deps until one fails" do
