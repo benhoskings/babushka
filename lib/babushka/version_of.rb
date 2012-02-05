@@ -59,8 +59,10 @@ module Babushka
       end
     end
 
-    def to_s joinery = '-'
-      [name, version].compact * joinery
+    def to_s
+      # == joins with a dash to produce versions like 'rack-1.4.1'; anything
+      # else joins with space like 'rack >= 1.4'.
+      [name, version].compact * (exact? ? '-' : ' ')
     end
 
     def exact?

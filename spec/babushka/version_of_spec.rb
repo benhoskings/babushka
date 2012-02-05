@@ -44,8 +44,14 @@ describe "to_s" do
     end
   end
   describe "versioned" do
-    it "should be separated with -" do
+    it "should be separated with - when no operator is specified" do
       version_of('ruby', '1.8').to_s.should == 'ruby-1.8'
+    end
+    it "should be separated with - when the operator is ==" do
+      version_of('ruby', '== 1.8').to_s.should == 'ruby-1.8'
+    end
+    it "should be separated with - when no version is specified" do
+      version_of('ruby', '>= 1.8').to_s.should == 'ruby >= 1.8'
     end
   end
 end
