@@ -8,9 +8,6 @@ describe "cd" do
     `mkdir -p '#{@tmp_dir_2}'`
 
     @original_pwd = Dir.pwd
-
-    @nonexistent_dir = File.join(tmp_prefix, 'nonexistent')
-    Dir.rmdir(@nonexistent_dir) if File.directory?(@nonexistent_dir)
   end
 
   it "should yield if no dir is given" do
@@ -51,18 +48,23 @@ describe "cd" do
     }
     Dir.pwd.should == @original_pwd
   end
-  it "should fail on nonexistent dirs" do
-    L{ cd(@nonexistent_dir) }.should raise_error(Errno::ENOENT)
-  end
-  it "should create nonexistent dirs if :create => true is specified" do
-    cd(@nonexistent_dir, :create => true) {
-      Dir.pwd.should == @nonexistent_dir
+  context "nonexistent dirs" do
+    let(:nonexistent_dir) {
+      (tmp_prefix / 'nonexistent').tap(&:rm)
     }
-    Dir.pwd.should == @original_pwd
+    it "should fail on nonexistent dirs" do
+      L{ cd(nonexistent_dir) }.should raise_error(Errno::ENOENT)
+    end
+    it "should create nonexistent dirs if :create => true is specified" do
+      cd(nonexistent_dir, :create => true) {
+        Dir.pwd.should == nonexistent_dir
+      }
+      Dir.pwd.should == @original_pwd
+    end
+    after {
+      nonexistent_dir.rm
+    }
   end
-  after {
-    Dir.rmdir(@nonexistent_dir) if File.directory?(@nonexistent_dir)
-  }
 end
 
 describe "in_build_dir" do
