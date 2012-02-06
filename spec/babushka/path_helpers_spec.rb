@@ -34,13 +34,16 @@ describe "cd" do
   context "recursively" do
     let(:tmp_subdir) { (tmp_prefix / '2').tap(&:mkdir) }
     it "should work" do
+      has_yielded = false
       cd(tmp_prefix) {
         Dir.pwd.should == tmp_prefix
         cd(tmp_subdir) {
           Dir.pwd.should == tmp_subdir
+          has_yielded = true
         }
         Dir.pwd.should == tmp_prefix
       }
+      has_yielded.should be_true
       Dir.pwd.should == original_pwd
     end
   end
@@ -48,18 +51,20 @@ describe "cd" do
     let(:nonexistent_dir) {
       (tmp_prefix / 'nonexistent').tap(&:rm)
     }
-    it "should fail on nonexistent dirs" do
+    it "should fail" do
       L{ cd(nonexistent_dir) }.should raise_error(Errno::ENOENT)
     end
-    it "should create nonexistent dirs if :create => true is specified" do
-      cd(nonexistent_dir, :create => true) {
-        Dir.pwd.should == nonexistent_dir
+    context "when :create => true is specified" do
+      it "should create and cd" do
+        cd(nonexistent_dir, :create => true) {
+          Dir.pwd.should == nonexistent_dir
+        }
+        Dir.pwd.should == original_pwd
+      end
+      after {
+        nonexistent_dir.rm
       }
-      Dir.pwd.should == original_pwd
     end
-    after {
-      nonexistent_dir.rm
-    }
   end
 end
 
