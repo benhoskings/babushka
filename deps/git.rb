@@ -1,5 +1,5 @@
 dep 'git' do
-  requires {
+  requires_when_unmet {
     # Use the binary installer on OS X, so installing babushka
     # (which pulls in git) doesn't require a compiler.
     on :osx, 'git.installer'
