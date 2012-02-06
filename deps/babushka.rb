@@ -57,13 +57,13 @@ dep 'on correct branch.babushka', :from, :path, :branch do
     branch.default!(repo.current_branch) if repo.exists?
   }
   met? { repo.current_branch == branch.to_s }
-  meet { repo.checkout! branch }
+  meet { log_block("Switching to #{branch}") { repo.checkout! branch } }
 end
 
 dep 'branch exists.babushka', :from, :path, :branch do
   requires 'installed.babushka'.with(from, path)
   met? { repo.branches.include? branch.to_s }
-  meet { repo.track! "origin/#{branch}" }
+  meet { log_block("Checking out origin/#{branch}") { repo.track! "origin/#{branch}" } }
 end
 
 dep 'repo clean.babushka', :from, :path do
