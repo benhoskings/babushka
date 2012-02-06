@@ -8,15 +8,17 @@ module Babushka
     def pkg_cmd; 'port' end
     def manager_key; :macports end
 
-    def _install! pkgs, opts
+    private
+
+    def has_pkg? pkg
+      existing_packages.include? pkg.name.split(/\s+/, 2).first
+    end
+
+    def install_pkgs! pkgs, opts
       log_shell "Fetching #{pkgs.join(', ')}", "#{pkg_cmd} fetch #{pkgs.join(' ')}", :sudo => should_sudo?
       super
     end
 
-    private
-    def _has? pkg
-      existing_packages.include? pkg.name.split(/\s+/, 2).first
-    end
   end
   end
 end

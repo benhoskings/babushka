@@ -8,6 +8,10 @@ module Babushka
 
     private
 
+    def has_pkg? pkg_name
+      raw_shell("pacman -Q #{pkg_name}").stderr !~ /not found$/
+    end
+
     # NOTE By default, Arch has sudo's `tty_tickets` option enabled. This will
     # result in sudo asking for your password every single time it's run from
     # Babushka. If you find this annoying, please refer to
@@ -15,13 +19,10 @@ module Babushka
     #
     # tl;dr - Add the following line to /etc/sudoers:
     #         Defaults !tty_tickets
-    def _install! pkgs, opts
+    def install_pkgs! pkgs, opts
       log_shell "Downloading", "#{pkg_cmd} -S --noconfirm #{pkgs.join(' ')}", :sudo => should_sudo?
     end
 
-    def _has? pkg_name
-      raw_shell("pacman -Q #{pkg_name}").stderr !~ /not found$/
-    end
   end
   end
 end
