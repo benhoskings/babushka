@@ -15,8 +15,8 @@ module Babushka
     end
 
     def gem_path_for gem_name, version = nil
-      unless (detected_version = has?(VersionOf(gem_name, version), :log => false)).nil?
-        gem_root / VersionOf(gem_name, detected_version)
+      unless (detected_version = has?(Babushka.VersionOf(gem_name, version), :log => false)).nil?
+        gem_root / Babushka.VersionOf(gem_name, detected_version)
       end
     end
 
