@@ -29,6 +29,15 @@ module Babushka
       install_pkgs! [*pkgs].map {|pkg| Babushka.VersionOf(pkg) }, opts
     end
 
+    def handle_install! pkgs, opts = nil
+      if [*pkgs].empty?
+        log "Nothing to install on #{manager_key}-based systems."
+      else
+        update_pkg_lists_if_required
+        install! pkgs, opts
+      end
+    end
+
     def prefix
       cmd_dir(pkg_binary).p.dir
     end
