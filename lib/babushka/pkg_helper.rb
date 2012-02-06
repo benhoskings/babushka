@@ -27,7 +27,7 @@ module Babushka
     end
 
     def install! pkgs, opts = nil
-      install_pkg! [*pkgs].map {|pkg| VersionOf(pkg) }, opts
+      install_pkgs! [*pkgs].map {|pkg| VersionOf(pkg) }, opts
     end
 
     def prefix
@@ -73,7 +73,7 @@ module Babushka
       raise RuntimeError, "#{self.class.name}#has_pkg? is unimplemeneted."
     end
 
-    def install_pkg! pkgs, opts
+    def install_pkgs! pkgs, opts
       log_shell "Installing #{pkgs.to_list} via #{manager_key}", "#{pkg_cmd} -y install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
     end
 
