@@ -49,7 +49,7 @@ describe "cd" do
   end
   context "nonexistent dirs" do
     let(:nonexistent_dir) {
-      (tmp_prefix / 'nonexistent').tap(&:rm)
+      (tmp_prefix / 'missing').tap(&:rm)
     }
     it "should fail" do
       L{ cd(nonexistent_dir) }.should raise_error(Errno::ENOENT)

@@ -149,14 +149,14 @@ describe Prompt, "#get_path" do
   describe "with nonexistent path" do
     it "should fail" do
       Prompt.should_receive(:log).with("path", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return((tmp_prefix / 'nonexistent').to_s)
+      Prompt.should_receive(:read_from_prompt).and_return((tmp_prefix / 'missing').to_s)
       Prompt.should_receive(:log).with("Doesn't exist, or not a directory. path", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return(tmp_prefix)
       Prompt.get_path('path', :type => :path).should == tmp_prefix
     end
     it "should fail with a valid default" do
       Prompt.should_receive(:log).with("path [/tmp]", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return((tmp_prefix / 'nonexistent').to_s)
+      Prompt.should_receive(:read_from_prompt).and_return((tmp_prefix / 'missing').to_s)
       Prompt.should_receive(:log).with("Doesn't exist, or not a directory. path [/tmp]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return(tmp_prefix)
       Prompt.get_path('path', :type => :path, :default => '/tmp').should == tmp_prefix

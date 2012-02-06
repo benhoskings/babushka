@@ -252,7 +252,7 @@ describe Source do
         Source.new('spec/deps/good').should be_present
       end
       it "should be false for invalid paths" do
-        Source.new('spec/deps/nonexistent').should_not be_present
+        Source.new('spec/deps/missing').should_not be_present
       end
     end
     context "for remote repos" do
@@ -282,7 +282,7 @@ describe Source do
   describe "cloning" do
     context "unreadable sources" do
       before {
-        @source = Source.new(tmp_prefix / "nonexistent.git", :name => 'unreadable')
+        @source = Source.new(tmp_prefix / "missing.git", :name => 'unreadable')
         @source.add!
       }
       it "shouldn't work" do

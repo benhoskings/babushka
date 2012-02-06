@@ -10,7 +10,7 @@ describe "grep" do
     RunTester.grep('lol', 'spec/spec_helper.rb').should be_nil
   end
   it "should return nil for nonexistent files" do
-    RunTester.grep('lol', '/nonexistent').should be_nil
+    RunTester.grep('lol', '/missing').should be_nil
   end
 end
 

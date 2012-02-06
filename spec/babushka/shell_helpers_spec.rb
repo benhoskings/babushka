@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 SucceedingLs = 'ls /bin'
-FailingLs = 'ls /nonexistent'
+FailingLs = 'ls /missing'
 
 describe "shell" do
   it "should return something true on successful commands" do
@@ -51,8 +51,8 @@ describe "shell" do
     end
     it "should raise when the path is nonexistent" do
       L{
-        shell("pwd", :cd => (tmp_prefix / 'nonexistent'))
-      }.should raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'nonexistent'}")
+        shell("pwd", :cd => (tmp_prefix / 'missing'))
+      }.should raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'missing'}")
     end
     it "should raise when the path isn't a directory" do
       L{
@@ -234,7 +234,7 @@ describe "which" do
     which('ls').should == path
   end
   it "should return nil for nonexistent commands" do
-    which('nonexistent').should be_nil
+    which('missing').should be_nil
   end
   it "should handle command parameter passed as Symbol" do
     path = `which ls`.chomp
@@ -250,6 +250,6 @@ describe "cmd_dir" do
     cmd_dir('ruby').should == `which ruby`.chomp.gsub(/\/ruby$/, '')
   end
   it "should return nil for nonexistent commands" do
-    cmd_dir('nonexistent').should be_nil
+    cmd_dir('missing').should be_nil
   end
 end

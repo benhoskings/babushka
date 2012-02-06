@@ -557,7 +557,7 @@ describe "run_in" do
   it "should not run when run_in is set to a nonexistent directory" do
     ran_in = nil
     dep 'dep with run_in set' do
-      run_in tmp_prefix / 'nonexistent'
+      run_in tmp_prefix / 'missing'
       met? { ran_in = Dir.pwd }
     end.met?
     ran_in.should be_nil
