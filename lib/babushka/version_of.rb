@@ -25,6 +25,7 @@ module Babushka
   class VersionOf
     module Helpers
       def VersionOf first, *rest
+        # TODO: decide on the form for this and deprecate the others.
         Babushka.VersionOf(first, *rest)
       end
       module_function :VersionOf
