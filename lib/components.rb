@@ -52,7 +52,7 @@ module Babushka
     run_reporter
     bug_reporter
     pkg_helper
-    pkg_helpers/base_helper
+    pkg_helpers/unknown_pkg_helper
     pkg_helpers/apt_helper
     pkg_helpers/yum_helper
     pkg_helpers/brew_helper

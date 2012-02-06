@@ -115,7 +115,7 @@ module Babushka
     end
 
     def pkg_manager
-      BaseHelper
+      UnknownPkgHelper
     end
 
     def on platform, &blk

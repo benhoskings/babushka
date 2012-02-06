@@ -1,7 +1,4 @@
 module Babushka
-  class UnknownSystemError < RuntimeError
-  end
-
   class SystemProfile
     include ShellHelpers
     extend ShellHelpers
@@ -121,13 +118,10 @@ module Babushka
     def description
       "Unknown system"
     end
-    def pkg_helper
-      raise UnknownSystemError.new("Not sure how to use the package manager on this sytem.")
-    end
+    def pkg_helper; UnknownPkgHelper end
     def system; :unknown end
     def flavour; :unknown end
     def name; :unknown end
-    def pkg_helper_key; :unknown end
   end
 
   class OSXSystemProfile < SystemProfile
