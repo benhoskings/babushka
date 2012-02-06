@@ -50,6 +50,12 @@ end
 dep 'on correct branch.babushka', :from, :path, :branch do
   requires 'branch exists.babushka'.with(from, path, branch)
   requires_when_unmet 'repo clean.babushka'.with(from, path)
+
+  setup {
+    # Stay on the same branch unless one was specified.
+    repo = Babushka::GitRepo.new(path)
+    branch.default!(repo.current_branch) if repo.exists?
+  }
   met? { repo.current_branch == branch.to_s }
   meet { repo.checkout! branch }
 end
