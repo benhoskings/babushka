@@ -65,7 +65,7 @@ module Babushka
         # e.g. "/opt/ruby-enterprise/bin/ruby: Mach-O 64-bit executable x86_64"
         shell("file -L '#{ruby_path}'").sub(/.* /, '')
       else
-        Base.host.cpu_type
+        Babushka.host.cpu_type
       end
     end
 
