@@ -62,16 +62,6 @@ module Babushka
     end
   end
 
-  class VersionOf
-    # VersionOf#== should return false in testing unless other is also a VersionOf.
-    def == other
-      if other.is_a? VersionOf
-        name == other.name &&
-        version == other.version
-      end
-    end
-  end
-
   class Logging
     def self.print_log message, printable
       # Don't log while running specs.
