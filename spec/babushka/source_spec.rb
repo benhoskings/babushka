@@ -183,6 +183,7 @@ describe Source do
   end
 
   describe Source, ".for_path" do
+    let(:source) { Source.for_path(source_path) }
     context "on a file" do
       before {
         `mkdir -p "#{tmp_prefix / 'sources'}"`
@@ -195,39 +196,39 @@ describe Source do
       end
     end
     context "on a dir" do
+      let(:source_path) { tmp_prefix / 'ad_hoc_source' }
       before {
         `mkdir -p "#{tmp_prefix / 'ad_hoc_source'}"`
-        @source = Source.for_path(tmp_prefix / 'ad_hoc_source')
       }
       it "should work on a dir" do
-        @source.should be_present
-        @source.path.should == tmp_prefix / 'ad_hoc_source'
-        @source.name.should == 'ad_hoc_source'
+        source.should be_present
+        source.path.should == tmp_prefix / 'ad_hoc_source'
+        source.name.should == 'ad_hoc_source'
       end
     end
     context "on a git repo" do
+      let(:source_path) { Source.source_prefix / 'remote_1' }
       before {
         Source.new(@remote_1.first).add!
-        @source = Source.for_path(Source.source_prefix / 'remote_1')
       }
       it "should work on a git repo" do
-        @source.should be_present
-        @source.path.should == Source.source_prefix / 'remote_1'
-        @source.name.should == 'remote_1'
+        source.should be_present
+        source.path.should == Source.source_prefix / 'remote_1'
+        source.name.should == 'remote_1'
       end
-      after { @source.remove! }
+      after { source.remove! }
     end
     context "on a git repo with a custom name" do
+      let(:source_path) { Source.source_prefix / 'custom_name_test' }
       before {
         Source.new(@remote_1.first, :name => 'custom_name_test').add!
-        @source = Source.for_path(Source.source_prefix / 'custom_name_test')
       }
       it "should work on a git repo" do
-        @source.should be_present
-        @source.path.should == Source.source_prefix / 'custom_name_test'
-        @source.name.should == 'custom_name_test'
+        source.should be_present
+        source.path.should == Source.source_prefix / 'custom_name_test'
+        source.name.should == 'custom_name_test'
       end
-      after { @source.remove! }
+      after { source.remove! }
     end
   end
 
