@@ -9,7 +9,7 @@ module Babushka
     GemVersionOperators = %w[= == != > < >= <= ~>].freeze
 
     def self.parseable_version? str
-      !str.nil? && !str[/\d/].nil?
+      !str.nil? && !str[/\d|HEAD/].nil?
     end
 
     def initialize str
