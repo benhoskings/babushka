@@ -205,6 +205,9 @@ describe Source do
         source.path.should == tmp_prefix / 'ad_hoc_source'
         source.name.should == 'ad_hoc_source'
       end
+      it "should cache the source" do
+        Source.for_path(source_path).object_id.should == Source.for_path(source_path).object_id
+      end
     end
     context "on a git repo" do
       let(:source_path) { Source.source_prefix / 'remote_1' }
@@ -215,6 +218,9 @@ describe Source do
         source.should be_present
         source.path.should == Source.source_prefix / 'remote_1'
         source.name.should == 'remote_1'
+      end
+      it "should cache the source" do
+        Source.for_path(source_path).object_id.should == Source.for_path(source_path).object_id
       end
       after { source.remove! }
     end
@@ -227,6 +233,9 @@ describe Source do
         source.should be_present
         source.path.should == Source.source_prefix / 'custom_name_test'
         source.name.should == 'custom_name_test'
+      end
+      it "should cache the source" do
+        Source.for_path(source_path).object_id.should == Source.for_path(source_path).object_id
       end
       after { source.remove! }
     end

@@ -22,11 +22,14 @@ module Babushka
     end
 
     def self.for_path path
-      remote = shell "git config remote.origin.url", :cd => path
-      if remote.nil?
-        Source.new path # local source
-      else
-        Source.new remote, :name => default_name_for_uri(path) # remote source with custom path
+      @sources ||= {}
+      @sources[default_name_for_uri(path)] ||= begin
+        remote = shell "git config remote.origin.url", :cd => path
+        if remote.nil?
+          Source.new path # local source
+        else
+          Source.new remote, :name => default_name_for_uri(path) # remote source with custom path
+        end
       end
     end
 
