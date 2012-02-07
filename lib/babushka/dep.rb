@@ -269,8 +269,8 @@ module Babushka
         log_error "This dep previously failed to load."
       elsif Base.task.callstack.include? self
         log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-      elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
-        log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
+      elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
+        log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
       else
         Base.task.callstack.push self
         process_tree.tap {
