@@ -74,10 +74,20 @@ describe "lambda choosing" do
       on :ours, "this is ours"
       on :theirs, "this is theirs"
     }.choose(:ours).should == ["this is ours"]
+  end
+
+  it "should accept a custom choice method" do
+    LambdaChooser.new(nil, :ours, :theirs) {
+      via :ours, "this is ours"
+      via :theirs, "this is theirs"
+    }.choose(:ours, :via).should == ["this is ours"]
+  end
+
+  it "should still respond to #on when a custom method is passed" do
     LambdaChooser.new(nil, :ours, :theirs) {
       on :ours, "this is ours"
       on :theirs, "this is theirs"
-    }.choose(:ours, nil).should == ["this is ours"]
+    }.choose(:ours, :via).should == ["this is ours"]
   end
 
   it "should reject values and block together" do
