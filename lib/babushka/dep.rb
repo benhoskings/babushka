@@ -258,24 +258,24 @@ module Babushka
       Base.task.cached(
         cache_key, :hit => lambda {|value| log_cached(value) }
       ) {
-        process!
+        log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
+          process!
+        end
       }
     end
 
     def process!
-      log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
-        if context.failed?
-          log_error "This dep previously failed to load."
-        elsif Base.task.callstack.include? self
-          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-        elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
-          log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
-        else
-          Base.task.callstack.push self
-          process_tree.tap {
-            Base.task.callstack.pop
-          }
-        end
+      if context.failed?
+        log_error "This dep previously failed to load."
+      elsif Base.task.callstack.include? self
+        log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+      elsif !opts[:for].nil? && !Base.host.matches?(opts[:for])
+        log_ok "Not required on #{Base.host.differentiator_for opts[:for]}."
+      else
+        Base.task.callstack.push self
+        process_tree.tap {
+          Base.task.callstack.pop
+        }
       end
     rescue UnmeetableDep => e
       log_error e.message
