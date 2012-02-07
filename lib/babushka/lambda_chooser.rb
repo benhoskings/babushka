@@ -14,7 +14,7 @@ module Babushka
     end
 
     def choose choices, method_name = nil
-      self.class.send :alias_method, (method_name || :on), :process_choice
+      self.metaclass.send :alias_method, (method_name || :on), :process_choice
       block_result = instance_eval(&@block)
       @results.empty? ? block_result : [*choices].push(:otherwise).pick {|c| @results[c] }
     end
