@@ -54,14 +54,6 @@ meta :managed do
     Babushka.host.pkg_helper
   end
 
-  def chooser
-    Babushka.host.match_list
-  end
-
-  def chooser_choices
-    Babushka::PkgHelper.all_manager_keys + Babushka::SystemDefinitions.all_tokens
-  end
-
   template(&managed_template)
 end
 

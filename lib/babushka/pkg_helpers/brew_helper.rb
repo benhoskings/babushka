@@ -6,19 +6,6 @@ module Babushka
     def manager_key; :brew end
     def manager_dep; 'homebrew' end
 
-    def _install! pkgs, opts
-      check_for_formulas(pkgs) && pkgs.all? {|pkg|
-        log "Installing #{pkg} via #{manager_key}" do
-          shell(
-            "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
-            :sudo => should_sudo?,
-            :log => true,
-            :closing_status => :status_only
-          )
-        end
-      }
-    end
-
     def update_pkg_lists_if_required
       super.tap {|result|
         pkg_list_dir.touch if result
@@ -35,18 +22,23 @@ module Babushka
       super || !installed_pkgs_path.hypothetically_writable?
     end
 
-
     private
 
-    class LibraryDep
-      attr_reader :names
-      def initialize *names
-        @names = names
-      end
+    def has_pkg? pkg
+      versions_of(pkg).sort.reverse.detect {|version| pkg.matches? version }
     end
 
-    def _has? pkg
-      versions_of(pkg).sort.reverse.detect {|version| pkg.matches? version }
+    def install_pkgs! pkgs, opts
+      check_for_formulas(pkgs) && pkgs.all? {|pkg|
+        log "Installing #{pkg} via #{manager_key}" do
+          shell(
+            "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
+            :sudo => should_sudo?,
+            :log => true,
+            :closing_status => :status_only
+          )
+        end
+      }
     end
 
     def check_for_formulas pkgs

@@ -8,21 +8,21 @@ module Babushka
 
     private
 
-    def _install! pkgs, opts
-      pkgs.each {|pkg|
-        log_shell "Installing #{pkg} via #{manager_key}",
-          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
-          :sudo => should_sudo?
-      }
-    end
-
-    def _has? pkg
+    def has_pkg? pkg
       # Some example output:
       #   gunicorn==0.12.0
       raw_shell("pip freeze '#{pkg.name}'").stdout.split("\n").select {|line|
         line[/^#{Regexp.escape(pkg.name)}\=\=/]
       }.any? {|match|
         pkg.matches? match.scan(/\=\=(.*)$/).flatten.first
+      }
+    end
+
+    def install_pkgs! pkgs, opts
+      pkgs.each {|pkg|
+        log_shell "Installing #{pkg} via #{manager_key}",
+          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
+          :sudo => should_sudo?
       }
     end
 

@@ -8,7 +8,7 @@ module Babushka
 
     private
 
-    def _has? pkg_name
+    def has_pkg? pkg_name
       # Some example output, with 'wget' installed:
       #   fedora-13:  'wget.x86_64  1.12-2.fc13       @fedora'
       #   centos-5.5: 'wget.x86_64  1.11.4-2.el5_4.1  installed'

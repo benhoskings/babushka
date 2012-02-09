@@ -6,14 +6,6 @@ module Babushka
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
 
-    def _install! pkgs, opts
-      pkgs.each {|pkg|
-        log_shell "Installing #{pkg} via #{manager_key}",
-          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
-          :sudo => should_sudo?
-      }
-    end
-
     def gem_path_for gem_name, version = nil
       unless (detected_version = has?(Babushka.VersionOf(gem_name, version), :log => false)).nil?
         gem_root / Babushka.VersionOf(gem_name, detected_version)
@@ -93,8 +85,16 @@ module Babushka
 
     private
 
-    def _has? pkg
+    def has_pkg? pkg
       versions_of(pkg).sort.reverse.detect {|version| pkg.matches? version }
+    end
+
+    def install_pkgs! pkgs, opts
+      pkgs.each {|pkg|
+        log_shell "Installing #{pkg} via #{manager_key}",
+          "#{pkg_cmd} install #{cmdline_spec_for pkg} #{opts}",
+          :sudo => should_sudo?
+      }
     end
 
     def versions_of pkg

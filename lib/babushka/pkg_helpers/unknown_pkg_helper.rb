@@ -7,11 +7,11 @@ module Babushka
 
     private
 
-    def _install! pkgs, opts
+    def has_pkg? pkg
       raise UnmeetableDep, "This system's package manager (if it has one) isn't supported."
     end
 
-    def _has? pkg
+    def install_pkgs! pkgs, opts
       raise UnmeetableDep, "This system's package manager (if it has one) isn't supported."
     end
   end
