@@ -110,6 +110,6 @@ RSpec::Matchers.define :meet do |expected|
     vm.babushka(expected).should =~ /^\} ✓ #{Regexp.escape(expected)}\z/
   }
   failure_message_for_should {|vm|
-    "The '#{expected}' dep couldn't bet met."
+    "The '#{expected}' dep couldn't be met."
   }
 end
