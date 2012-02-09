@@ -27,7 +27,7 @@ module Babushka
       {
         :debian => 'http://archive.debian.org/debian',
         :ubuntu => 'http://archive.ubuntu.com/ubuntu'
-      }[Base.host.flavour]
+      }[Babushka.host.flavour]
     end
 
     private

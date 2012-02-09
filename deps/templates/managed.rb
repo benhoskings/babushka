@@ -51,11 +51,11 @@ meta :managed do
   accepts_list_for :cfg
 
   def pkg_manager
-    Babushka::Base.host.pkg_helper
+    Babushka.host.pkg_helper
   end
 
   def chooser
-    Babushka::Base.host.match_list
+    Babushka.host.match_list
   end
 
   def chooser_choices

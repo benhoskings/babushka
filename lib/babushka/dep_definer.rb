@@ -128,7 +128,7 @@ module Babushka
     end
 
     def chooser
-      Base.host.match_list
+      Babushka.host.match_list
     end
 
     def chooser_choices

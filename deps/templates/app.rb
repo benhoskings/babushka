@@ -5,7 +5,7 @@ meta :app do
   accepts_block_for :current_version do |path| nil end
 
   def app
-    VersionOf(provides)
+    Babushka.VersionOf(provides)
   end
 
   def app_name_matcher

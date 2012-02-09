@@ -400,9 +400,9 @@ end
 
 describe Dep, 'lambda lists' do
   before {
-    Babushka::Base.host.stub!(:name).and_return(:test_name)
-    Babushka::Base.host.stub!(:system).and_return(:test_system)
-    Babushka::Base.host.stub!(:pkg_helper_key).and_return(:test_helper)
+    Babushka.host.stub!(:name).and_return(:test_name)
+    Babushka.host.stub!(:system).and_return(:test_system)
+    Babushka.host.stub!(:pkg_helper_key).and_return(:test_helper)
 
     Babushka::SystemDefinitions.stub!(:all_names).and_return([:test_name, :other_name])
     Babushka::SystemDefinitions.stub!(:all_systems).and_return([:test_system, :other_system])

@@ -41,7 +41,7 @@ module Babushka
     end
 
     def default_block_for block_name
-      differentiator = Base.host.differentiator_for payload[block_name].keys
+      differentiator = Babushka.host.differentiator_for payload[block_name].keys
       L{
         debug "#{block_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
         true
@@ -65,7 +65,7 @@ module Babushka
     end
 
     def specific_block_for method_name
-      payload[method_name][(Base.host.match_list & payload[method_name].keys).first] ||
+      payload[method_name][(Babushka.host.match_list & payload[method_name].keys).first] ||
       default_blocks[method_name]
     end
   end

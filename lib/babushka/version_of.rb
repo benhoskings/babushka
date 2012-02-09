@@ -1,27 +1,34 @@
 module Babushka
+
+  def VersionOf first, *rest
+    # Convert the arguments into a VersionOf. If a single string argument is
+    # passed, try splitting it on space to separate name and version. Otherwise,
+    # pass the arguments as-is, splatting if required.
+    if rest.any?
+      Babushka::VersionOf.new(*[first].concat(rest))
+    elsif first.is_a?(String)
+      name, version = first.split(' ', 2)
+      if version && VersionStr.parseable_version?(version)
+        Babushka::VersionOf.new(name, version)
+      else
+        Babushka::VersionOf.new(first)
+      end
+    elsif first.is_a?(Array)
+      Babushka::VersionOf.new(*first)
+    else
+      Babushka::VersionOf.new(first)
+    end
+  end
+
+  module_function :VersionOf
+
   class VersionOf
     module Helpers
-      module_function
-
       def VersionOf first, *rest
-        # Convert the arguments into a VersionOf. If a single string argument is
-        # passed, try splitting it on space to separate name and version. Otherwise,
-        # pass the arguments as-is, splatting if required.
-        if rest.any?
-          Babushka::VersionOf.new(*[first].concat(rest))
-        elsif first.is_a?(String)
-          name, version = first.split(' ', 2)
-          if version && VersionStr.parseable_version?(version)
-            Babushka::VersionOf.new(name, version)
-          else
-            Babushka::VersionOf.new(first)
-          end
-        elsif first.is_a?(Array)
-          Babushka::VersionOf.new(*first)
-        else
-          Babushka::VersionOf.new(first)
-        end
+        # TODO: decide on the form for this and deprecate the others.
+        Babushka.VersionOf(first, *rest)
       end
+      module_function :VersionOf
     end
 
     attr_accessor :name, :version

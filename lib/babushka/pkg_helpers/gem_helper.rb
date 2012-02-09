@@ -15,8 +15,8 @@ module Babushka
     end
 
     def gem_path_for gem_name, version = nil
-      unless (detected_version = has?(VersionOf(gem_name, version), :log => false)).nil?
-        gem_root / VersionOf(gem_name, detected_version)
+      unless (detected_version = has?(Babushka.VersionOf(gem_name, version), :log => false)).nil?
+        gem_root / Babushka.VersionOf(gem_name, detected_version)
       end
     end
 
@@ -65,7 +65,7 @@ module Babushka
         # e.g. "/opt/ruby-enterprise/bin/ruby: Mach-O 64-bit executable x86_64"
         shell("file -L '#{ruby_path}'").sub(/.* /, '')
       else
-        Base.host.cpu_type
+        Babushka.host.cpu_type
       end
     end
 

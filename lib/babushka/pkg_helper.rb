@@ -3,7 +3,6 @@ module Babushka
   class << self
     include LogHelpers
     include ShellHelpers
-    include VersionOf::Helpers
 
     def pkg_binary; pkg_cmd end
 
@@ -16,16 +15,16 @@ module Babushka
     end
 
     def has? pkg, opts = {}
-      pkg = VersionOf(pkg)
+      pkg = Babushka.VersionOf(pkg)
       _has?(pkg).tap {|matching_version|
-        matching_pkg = VersionOf(pkg.name, (matching_version if matching_version.is_a?(VersionStr)))
+        matching_pkg = Babushka.VersionOf(pkg.name, (matching_version if matching_version.is_a?(VersionStr)))
         unless opts[:log] == false
           log "system #{matching_version ? "has" : "doesn't have"} #{matching_pkg} #{pkg_type}", :as => (:ok if matching_version)
         end
       }
     end
     def install! pkgs, opts = nil
-      _install! [*pkgs].map {|pkg| VersionOf(pkg) }, opts
+      _install! [*pkgs].map {|pkg| Babushka.VersionOf(pkg) }, opts
     end
     def _install! pkgs, opts
       log_shell "Installing #{pkgs.to_list} via #{manager_key}", "#{pkg_cmd} -y install #{pkgs.join(' ')} #{opts}", :sudo => should_sudo?
