@@ -11,6 +11,7 @@ end
 dep 'ruby.managed' do
   installs {
     via :maverick, %w[ruby ruby1.8-dev]
+    via :lenny, %w[ruby irb ruby1.8-dev libopenssl-ruby]
     via :apt, %w[ruby ruby1.8-dev libopenssl-ruby]
     via :yum, %w[ruby ruby-irb]
   }
