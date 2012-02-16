@@ -39,7 +39,9 @@ module Babushka
             '9.10'  => :karmic,
             '10.04' => :lucid,
             '10.10' => :maverick,
-            '11.04' => :natty
+            '11.04' => :natty,
+            '11.11' => :oneiric,
+            '12.04' => :precise
           },
           :debian => {
             '4.0' => :etch,
