@@ -57,11 +57,6 @@ dep 'npm' do
   }
 end
 
-dep 'nodejs.src' do
-  source 'https://github.com/joyent/node.git'
-  provides 'node >= 0.4', 'node-waf'
-end
-
 dep 'pip' do
   requires {
     on :osx, 'pip.src'

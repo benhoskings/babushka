@@ -7,6 +7,11 @@ end
 
 dep 'gettext.managed'
 
+dep 'nodejs.src' do
+  source 'https://github.com/joyent/node.git'
+  provides 'node >= 0.4', 'node-waf'
+end
+
 dep 'sudo' do
   requires {
     on :osx, 'sudo.external'
