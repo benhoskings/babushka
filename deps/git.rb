@@ -33,5 +33,6 @@ end
 
 dep 'git.src', :version do
   version.default!('1.7.9.1')
+  requires 'gettext.managed'
   source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
 end

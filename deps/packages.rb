@@ -5,6 +5,8 @@ dep 'curl.managed' do
   }
 end
 
+dep 'gettext.managed'
+
 dep 'sudo' do
   requires {
     on :osx, 'sudo.external'
