@@ -40,7 +40,8 @@ module Babushka
             '10.04' => :lucid,
             '10.10' => :maverick,
             '11.04' => :natty,
-            '11.10' => :oneiric
+            '11.10' => :oneiric,
+            '12.04' => :precise
           },
           :debian => {
             '4.0' => :etch,
@@ -83,7 +84,8 @@ module Babushka
             '10.04' => 'Lucid Lynx',
             '10.10' => 'Maverick Meerkat',
             '11.04' => 'Natty Narwhal',
-            '11.10' => 'Oneiric Ocelot'
+            '11.10' => 'Oneiric Ocelot',
+            '12.04' => 'Precise Pangolin'
           },
           :debian => {
             '5.0.4' => 'Lenny'
