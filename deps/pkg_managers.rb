@@ -8,8 +8,8 @@ end
 
 dep 'apt', :template => 'external' do
   requires {
-    on :ubuntu, 'main.apt_source', 'universe.apt_source'
-    on :debian, 'main.apt_source'
+    on :ubuntu, 'apt source'.with('main'), 'apt source'.with('universe')
+    on :debian, 'apt source'.with('main')
   }
   expects 'apt-get'
   otherwise {
@@ -24,33 +24,18 @@ dep 'pacman', :template => 'external' do
   }
 end
 
-meta :apt_source do
-  accepts_list_for :source_name
-  template {
-    met? {
-      source_name.all? {|name|
-        grep(/^deb .* #{Babushka.host.name} (\w+ )*#{Regexp.escape(name.to_s)}/, '/etc/apt/sources.list')
-      }
-    }
-    before {
-      # Don't edit sources.list unless we know how to edit it for this debian flavour and version.
-      Babushka::AptHelper.source_for_system and Babushka.host.name
-    }
-    meet {
-      source_name.each {|name|
-        append_to_file "deb #{Babushka::AptHelper.source_for_system} #{Babushka.host.name} #{name}", '/etc/apt/sources.list', :sudo => true
-      }
-    }
-    after { Babushka::AptHelper.update_pkg_lists }
+dep 'apt source', :source_name do
+  met? {
+    grep(/^deb .* #{Babushka.host.name} (\w+ )*#{Regexp.escape(source_name.to_s)}/, '/etc/apt/sources.list')
   }
-end
-
-dep 'main.apt_source' do
-  source_name 'main'
-end
-
-dep 'universe.apt_source' do
-  source_name 'universe'
+  before {
+    # Don't edit sources.list unless we know how to edit it for this debian flavour and version.
+    Babushka::AptHelper.source_for_system and Babushka.host.name
+  }
+  meet {
+    append_to_file "deb #{Babushka::AptHelper.source_for_system} #{Babushka.host.name} #{source_name}", '/etc/apt/sources.list', :sudo => true
+  }
+  after { Babushka::AptHelper.update_pkg_lists }
 end
 
 dep 'homebrew' do
