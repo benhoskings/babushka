@@ -14,6 +14,7 @@ dep 'ruby.managed' do
     via :squeeze, %w[ruby ruby1.8-dev libopenssl-ruby]
     via :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby]
     via :yum, %w[ruby ruby-irb]
+    otherwise 'ruby'
   }
   provides %w[ruby irb]
 end
