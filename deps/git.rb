@@ -3,6 +3,9 @@ dep 'git' do
     # Use the binary installer on OS X, so installing babushka
     # (which pulls in git) doesn't require a compiler.
     on :osx, 'git.installer'
+    # git-1.5 can't clone https:// repos properly. Let's build
+    # our own rather than monkeying with unstable debs.
+    on :lenny, 'git.src'
     otherwise 'git.managed'
   }
   met? { in_path? 'git >= 1.5' }
@@ -26,4 +29,9 @@ dep 'git.installer', :version do
       sudo "ln -sf /usr/local/git/bin/git* ."
     end
   }
+end
+
+dep 'git.src', :version do
+  version.default!('1.7.9.1')
+  source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
 end
