@@ -8,7 +8,7 @@ dep 'git' do
     on :lenny, 'git.src'
     otherwise 'git.managed'
   }
-  met? { in_path? 'git >= 1.5' }
+  met? { in_path? 'git >= 1.6' }
 end
 
 dep 'git.managed' do
