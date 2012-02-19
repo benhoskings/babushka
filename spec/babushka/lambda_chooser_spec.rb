@@ -12,14 +12,8 @@ describe "lambda choosing" do
     LambdaChooser.new(nil, :ours, :theirs) {
       on :ours, "this is ours"
       on :theirs, "this is theirs"
+      "block value should be ignored"
     }.choose(:ours, :on).should == ["this is ours"]
-    describe "with a block value" do
-      LambdaChooser.new(nil, :ours, :theirs) {
-        on :ours, "this is ours"
-        on :theirs, "this is theirs"
-        "block value"
-      }.choose(:ours, :on).should == ["this is ours"]
-    end
   end
 
   it "should pick the first choice from multiple choices" do
@@ -33,6 +27,30 @@ describe "lambda choosing" do
       on :ours, "this is ours"
       on :theirs, "this is theirs"
     }.choose([:ours, :yours], :on).should == ["this is ours"]
+  end
+
+  context "with multiple targets" do
+    it "should choose the specified call" do
+      LambdaChooser.new(nil, :ours, :theirs, :yours) {
+        on :ours, "this is ours"
+        on [:theirs, :yours], "this is theirs or yours"
+        "block value should be ignored"
+      }.choose(:yours, :on).should == ["this is theirs or yours"]
+    end
+    it "should pick the first choice from multiple choices" do
+      LambdaChooser.new(nil, :ours, :yours, :theirs) {
+        on :ours, "this is ours"
+        on [:theirs, :yours], "this is theirs or yours"
+      }.choose([:ours, :yours], :on).should == ["this is ours"]
+      LambdaChooser.new(nil, :ours, :yours, :theirs) {
+        on :ours, "this is ours"
+        on [:theirs, :yours], "this is theirs or yours"
+      }.choose([:theirs, :ours], :on).should == ["this is theirs or yours"]
+      LambdaChooser.new(nil, :ours, :yours, :theirs) {
+        on :ours, "this is ours"
+        on [:theirs, :yours], "this is theirs or yours"
+      }.choose([:yours, :ours], :on).should == ["this is theirs or yours"]
+    end
   end
 
   it "should reject :otherwise as a choice name" do

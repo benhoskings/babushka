@@ -23,17 +23,20 @@ module Babushka
       on :otherwise, first, *rest, &block
     end
 
-    def on choice, first = nil, *rest, &block
+    def on choices, first = nil, *rest, &block
       raise "You can supply values or a block, but not both." if first && block
-      raise "The choice '#{choice}' isn't valid." unless @possible_choices.include?(choice)
 
-      @results[choice] = if block
-        block
-      elsif first.is_a? Hash
-        first
-      else
-        [first].flatten(1).concat(rest)
-      end
+      [choices].flatten(1).each {|choice|
+        raise "The choice '#{choice}' isn't valid." unless @possible_choices.include?(choice)
+
+        @results[choice] = if block
+          block
+        elsif first.is_a? Hash
+          first
+        else
+          [first].flatten(1).concat(rest)
+        end
+      }
     end
 
   end
