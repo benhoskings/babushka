@@ -34,7 +34,7 @@ module Babushka
     attr_accessor :name, :version
 
     def initialize name, version = nil
-      @name = name.respond_to?(:name) ? name.name : name
+      @name = name.is_a?(VersionOf) ? name.name : name
       @version = if version.nil?
         name.version if name.respond_to?(:version)
       elsif version.is_a? VersionStr
