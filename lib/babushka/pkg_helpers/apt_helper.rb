@@ -8,6 +8,10 @@ module Babushka
     end
     def manager_key; :apt end
 
+    def manager_dep
+      'apt'
+    end
+
     def update_pkg_lists_if_required
       wait_for_dpkg
       if !File.exists? '/var/lib/apt/lists/lock'

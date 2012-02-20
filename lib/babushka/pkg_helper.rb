@@ -5,7 +5,10 @@ module Babushka
     include ShellHelpers
 
     def pkg_binary; pkg_cmd end
-    def manager_dep; manager_key.to_s end
+
+    def manager_dep
+      'package manager'.with(pkg_binary)
+    end
 
     def all_manager_keys
       [:apt, :brew, :macports, :yum, :binpkgsrc, :binports]

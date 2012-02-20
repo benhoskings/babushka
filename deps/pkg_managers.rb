@@ -1,3 +1,11 @@
+dep 'package manager', :cmd do
+  met? {
+    in_path?(cmd).tap {|result|
+      unmeetable! "The package manager's binary, #{cmd}, isn't in the $PATH." unless result
+    }
+  }
+end
+
 dep 'macports.src' do
   requires 'build tools'
   provides 'port'
@@ -17,13 +25,6 @@ dep 'apt', :template => 'external' do
   }
 end
 
-dep 'pacman', :template => 'external' do
-  expects 'pacman'
-  otherwise {
-    log "You seem to be running Arch Linux, but are missing the Pacman package manager. Something is very, very wrong here."
-  }
-end
-
 dep 'apt source', :source_name do
   met? {
     grep(/^deb .* #{Babushka.host.name} (\w+ )*#{Regexp.escape(source_name.to_s)}/, '/etc/apt/sources.list')
@@ -40,13 +41,6 @@ end
 
 dep 'homebrew' do
   requires 'binary.homebrew', 'build tools'
-end
-
-dep 'yum', :template => 'external' do
-  expects 'yum'
-  otherwise {
-    log "Your system doesn't seem to have Yum installed. Is it Redhat-based?"
-  }
 end
 
 dep 'npm' do
@@ -72,19 +66,5 @@ dep 'pip.src' do
   source 'http://pypi.python.org/packages/source/p/pip/pip-0.8.3.tar.gz'
   process_source {
     log_shell "Installing pip", "python setup.py install", :sudo => !which('python').p.writable?
-  }
-end
-
-dep 'binpkgsrc', :template => 'external' do
-  expects 'pkg_radd'
-  otherwise {
-    log "You seem to be running DragonflyBSD or NETBSD, but are missing the pkgsrc package manager. Something is very, very wrong here."
-  }
-end
-
-dep 'binports', :template => 'external' do
-  expects 'pkg_add'
-  otherwise {
-    log "You seem to be running FreeBSD, but are missing the ports package manager. Something is very, very wrong here."
   }
 end
