@@ -32,7 +32,7 @@ module Babushka
       elsif first.is_a? Hash
         first
       else
-        [*first].concat(rest)
+        [first].flatten(1).concat(rest)
       end
     end
 
