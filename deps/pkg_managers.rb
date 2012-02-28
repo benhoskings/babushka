@@ -14,14 +14,11 @@ dep 'macports.src' do
   after { log_shell "Running port selfupdate", "port selfupdate", :sudo => true }
 end
 
-dep 'apt', :template => 'external' do
+dep 'apt' do
+  requires 'package manager'.with('apt-get')
   requires {
     on :ubuntu, 'apt source'.with(:repo => 'main'), 'apt source'.with(:repo => 'universe')
     on :debian, 'apt source'.with(:repo => 'main')
-  }
-  expects 'apt-get'
-  otherwise {
-    log "Your system doesn't seem to have Apt installed. Is it Debian-based?"
   }
 end
 
