@@ -16,27 +16,13 @@ end
 
 dep 'apt', :template => 'external' do
   requires {
-    on :ubuntu, 'apt source'.with('main'), 'apt source'.with('universe')
-    on :debian, 'apt source'.with('main')
+    on :ubuntu, 'apt source'.with(:repo => 'main'), 'apt source'.with(:repo => 'universe')
+    on :debian, 'apt source'.with(:repo => 'main')
   }
   expects 'apt-get'
   otherwise {
     log "Your system doesn't seem to have Apt installed. Is it Debian-based?"
   }
-end
-
-dep 'apt source', :source_name do
-  met? {
-    grep(/^deb .* #{Babushka.host.name} (\w+ )*#{Regexp.escape(source_name.to_s)}/, '/etc/apt/sources.list')
-  }
-  before {
-    # Don't edit sources.list unless we know how to edit it for this debian flavour and version.
-    Babushka::AptHelper.source_for_system and Babushka.host.name
-  }
-  meet {
-    append_to_file "deb #{Babushka::AptHelper.source_for_system} #{Babushka.host.name} #{source_name}", '/etc/apt/sources.list', :sudo => true
-  }
-  after { Babushka::AptHelper.update_pkg_lists }
 end
 
 dep 'homebrew' do

@@ -1,7 +1,3 @@
-dep 'python-software-properties.managed' do
-  provides 'add-apt-repository'
-end
-
 meta :ppa do
   accepts_value_for :adds
   template {
