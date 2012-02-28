@@ -58,10 +58,21 @@ module Babushka
     end
 
     def source_sha
-      File.open(path.p) {|f|
-        first_line = f.gets
-        first_line[/\A#!/] ? f.gets : first_line
-      }.scan(/, from ([0-9a-f]{40})\./).flatten.first
+      unless File.readable?(path.p)
+        lines = sudo("head -2 #{path.p}").lines.to_a
+        # if first line starts with a hash bang return second line
+        if lines.count > 1 && lines[0][/\A#!/]
+          lines[1]
+        else
+          lines.count > 0 ? lines[0] : ''
+        end
+      else
+        File.open(path.p) {|f|
+          first_line = f.gets
+          first_line[/\A#!/] ? f.gets : first_line
+        }
+      end.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
   end
 end
+
