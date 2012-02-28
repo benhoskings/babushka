@@ -20,9 +20,12 @@ dep 'apt source', :uri, :release, :repo do
 end
 
 dep 'ppa', :spec do
+  def spec_path
+    spec.to_s.gsub(/^.*:/, '')
+  end
   def present_in_file? filename
     # e.g. deb http://ppa.launchpad.net/pitti/postgresql/ubuntu natty main
-    filename.p.read[/^deb https?:\/\/.*\/#{spec.gsub(/^.*:/, '')}\/#{Babushka.host.flavour}/]
+    filename.p.read[/^deb https?:\/\/.*\/#{spec_path}\/#{Babushka.host.flavour}/]
   end
   before {
     spec[/^\w+\:\w+/] or log_error("'#{spec}' doesn't look like 'ppa:something'.")
@@ -32,7 +35,7 @@ dep 'ppa', :spec do
       Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
-    append_to_file "deb http://ppa.launchpad.net/#{spec.gsub(/^.*:/, '')}/ubuntu #{Babushka.host.name} main",
+    append_to_file "deb http://ppa.launchpad.net/#{spec_path}/ubuntu #{Babushka.host.name} main",
       '/etc/apt/sources.list.d/babushka.list'
   }
   after {
