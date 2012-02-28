@@ -1,9 +1,4 @@
-dep 'python-software-properties.managed' do
-  provides 'add-apt-repository'
-end
-
 dep 'apt source', :uri, :release, :repo do
-  requires 'python-software-properties.managed'
   uri.default!(Babushka::AptHelper.source_for_system)
   release.default!(Babushka.host.name)
 
@@ -17,7 +12,7 @@ dep 'apt source', :uri, :release, :repo do
       Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
-    sudo "add-apt-repository #{uri} #{release} #{repo}"
+    append_to_file "deb #{uri} #{release} #{repo}", '/etc/apt/sources.list.d/babushka.list'
   }
   after {
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}."
@@ -25,7 +20,6 @@ dep 'apt source', :uri, :release, :repo do
 end
 
 dep 'ppa', :spec do
-  requires 'python-software-properties.managed'
   def present_in_file? filename
     # e.g. deb http://ppa.launchpad.net/pitti/postgresql/ubuntu natty main
     filename.p.read[/^deb https?:\/\/.*\/#{spec.gsub(/^.*:/, '')}\/#{Babushka.host.flavour}/]
@@ -38,7 +32,8 @@ dep 'ppa', :spec do
       Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
-    sudo "add-apt-repository #{spec}"
+    append_to_file "deb http://ppa.launchpad.net/#{spec.gsub(/^.*:/, '')}/ubuntu #{Babushka.host.name} main",
+      '/etc/apt/sources.list.d/babushka.list'
   }
   after {
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{spec}."
