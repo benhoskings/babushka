@@ -13,7 +13,8 @@ dep 'apt source', :uri, :release, :repo do
   end
 
   met? {
-    present_in_file?('/etc/apt/sources.list')
+    present_in_file?('/etc/apt/sources.list') or
+      Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
     sudo "add-apt-repository #{uri} #{release} #{repo}"
