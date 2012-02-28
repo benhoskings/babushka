@@ -25,7 +25,7 @@ dep 'ppa', :spec do
   end
   def present_in_file? filename
     # e.g. deb http://ppa.launchpad.net/pitti/postgresql/ubuntu natty main
-    filename.p.read[/^deb https?:\/\/.*\/#{spec_path}\/#{Babushka.host.flavour}/]
+    filename.p.read[/^deb https?:\/\/[^\/]+\/#{spec_path}\/#{Babushka.host.flavour}\b/]
   end
   before {
     spec[/^\w+\:\w+/] or log_error("'#{spec}' doesn't look like 'ppa:something'.")
