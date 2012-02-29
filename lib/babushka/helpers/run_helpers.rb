@@ -133,7 +133,7 @@ module Babushka
 
     def log_and_open message, url
       log "#{message} Hit Enter to open the download page.", :newline => false
-      read_from_prompt ' '
+      Prompt.send(:read_from_prompt, ' ')
       shell "open #{url}"
     end
 
