@@ -18,7 +18,7 @@ dep 'xcode commandline tools', :template => 'installer' do
   }
   provides %w[cc gcc c++ g++ llvm-gcc llvm-g++ clang] # compilers
   provides %w[ld libtool] # linkety link
-  provides %w[make automake autoconf] # configure and build tools
+  provides %w[make] # configure and build tools
   provides %w[cpp m4 nasm yacc bison] # misc - the preprocessor, assembler, grammar stuff
 end
 
