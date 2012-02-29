@@ -92,6 +92,11 @@ class Fancypath < Pathname
     readlines.grep(*args)
   end
 
+  def yaml
+    require 'yaml'
+    YAML.load_file self
+  end
+
   def readlink
     if !symlink?
       self

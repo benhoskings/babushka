@@ -117,6 +117,18 @@ describe Fancypath do
     it('returns the matches') { @file.grep(/cont/).should == ['content'] }
   end
 
+  describe "#yaml" do
+    before {
+      @file.write("
+        guise:
+          seriously: guise
+      ")
+    }
+    it('returns the file contents as yaml') {
+      @file.yaml.should == {'guise' => {'seriously' => 'guise'}}
+    }
+  end
+
   describe '#readlink' do
     before {
       @file.touch
