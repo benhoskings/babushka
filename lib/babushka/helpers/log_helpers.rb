@@ -56,6 +56,12 @@ module Babushka
       log message, opts.merge(:debug => !opts[:log]), &block
     end
 
+    def deprecated! date, instead = nil, example = nil
+      callpoint, method_name = caller[1].sub(/\:in `.*$/, ''), caller[0].scan(/`(\w+)'$/).flatten.first
+      log_warn "#{callpoint}: ##{method_name} has been deprecated and will be removed on #{date}."
+      log_warn "  -> Use #{instead} instead#{example ? ", e.g. #{example}" : '.'}" unless instead.nil?
+    end
+
     # Write +message+ to the log.
     #
     # By default, the log is written to STDOUT, and to ~/.babushka/logs/<dep_name>.
