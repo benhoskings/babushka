@@ -60,17 +60,17 @@ module Babushka
     end
 
     def met message
-      log_warn "#{caller.first}: #met is deprecated and will be removed on 2012-04-01. Deps are considered met when met? evaluates to something truthy (use #log_ok if you like)." # deprecated
+      deprecated! "2012-04-01", "a truthy return value from met?{} (maybe using #log_ok)"
       result message, :result => true
     end
 
     def unmet message
-      log_warn "#{caller.first}: #met is deprecated and will be removed on 2012-04-01. Deps are considered unmet when met? evaluates to nil or false (use #log if you like)." # deprecated
+      deprecated! "2012-04-01", "a falsey return value from met?{} (maybe using #log)"
       result message, :result => false
     end
 
     def unmeetable message
-      log_warn "#{caller.first}: #unmeetable has been renamed to #unmeetable! and will be removed on 2012-04-01." # deprecated
+      deprecated! "2012-04-01", "#unmeetable!"
       raise Babushka::UnmeetableDep, message
     end
 
