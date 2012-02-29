@@ -100,7 +100,7 @@ module Babushka
     end
 
     def failable_shell *cmd
-      log_error "#failable_shell has been renamed to #raw_shell." # deprecated
+      deprecated! '2012-04-01', '#raw_shell'
       raw_shell(*cmd)
     end
 

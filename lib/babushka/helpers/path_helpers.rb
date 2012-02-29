@@ -19,7 +19,7 @@ module Babushka
     end
 
     def in_dir dir, opts = {}, &block
-      log_error "#{caller.first}: #in_dir has been renamed to #cd." # deprecated
+      deprecated! '2012-04-01', '#cd'
       cd dir, opts, &block
     end
 
