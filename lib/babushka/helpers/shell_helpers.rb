@@ -70,7 +70,7 @@ module Babushka
       cmd = cmd.first if cmd.map(&:class) == [Array]
 
       if opts[:dir] # deprecated
-        log_error "#{caller.first}: #shell's :dir option has been renamed to :cd."
+        log_warn "#{caller.first}: #shell's :dir option has been renamed to :cd and will be removed on 2012-04-01."
         opts[:cd] = opts[:dir]
       end
       if opts[:cd]
