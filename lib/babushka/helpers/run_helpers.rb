@@ -72,7 +72,7 @@ module Babushka
     def change_with_sed keyword, from, to, file
       deprecated! '2012-05-01', "sed via #shell", "shell(\"sed -i '' -e 's/^#{Regexp.escape(keyword)}\\s+#{Regexp.escape(from)}\\b/#{keyword} #{to}/' '#{file}'\")"
       # Remove the incorrect setting if it's there
-      shell("#{sed} -ri 's/^#{keyword}\s+#{from}//' #{file}", :sudo => !File.writable?(file))
+      shell("sed -ri 's/^#{keyword}\s+#{from}//' #{file}", :sudo => !File.writable?(file))
       # Add the correct setting unless it's already there
       grep(/^#{keyword}\s+#{to}/, file) or shell("echo '#{keyword} #{to}' >> #{file}", :sudo => !File.writable?(file))
     end
