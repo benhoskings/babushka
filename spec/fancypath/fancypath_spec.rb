@@ -111,6 +111,12 @@ describe Fancypath do
     it('removes directory') { @dir.create.remove.should_not exist }
   end
 
+  describe "#grep" do
+    before { @file.write("some\ncontent") }
+    it('returns an empty array on no match') { @file.grep(/test/).should == [] }
+    it('returns the matches') { @file.grep(/cont/).should == ['content'] }
+  end
+
   describe '#readlink' do
     before {
       @file.touch

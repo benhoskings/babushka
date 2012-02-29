@@ -88,6 +88,10 @@ class Fancypath < Pathname
     super.chomp if exists?
   end
 
+  def grep *args
+    readlines.grep(*args)
+  end
+
   def readlink
     if !symlink?
       self
