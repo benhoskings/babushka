@@ -139,7 +139,7 @@ module Babushka
     def release; version.match(/^\d+\.\d+/).to_s end
     def get_version_info; shell 'sw_vers' end
     def pkg_helper; BrewHelper end
-    def cpus; shell('sysctl -n hw.ncpu') end
+    def cpus; shell('sysctl -n hw.ncpu').to_i end
     def total_memory; shell("sysctl -a").val_for("hw.memsize").to_i end
 
     def public_ip
@@ -183,7 +183,7 @@ module Babushka
     def flavour_str; flavour_str_map[system][flavour] end
     def version; 'unknown' end
     def release; version end
-    def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l") end
+    def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").to_i end
 
     def public_ip
       shell('ifconfig',
