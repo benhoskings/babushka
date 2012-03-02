@@ -184,6 +184,7 @@ module Babushka
     def version; 'unknown' end
     def release; version end
     def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").to_i end
+    def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).first.to_i end
 
     def public_ip
       shell('ifconfig',
@@ -222,7 +223,6 @@ module Babushka
       }
     end
     def pkg_helper; AptHelper end
-    def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).first.to_i end
   end
 
   class RedhatSystemProfile < LinuxSystemProfile
