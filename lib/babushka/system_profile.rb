@@ -46,6 +46,10 @@ module Babushka
       raise "#{self.class}#total_memory is unimplemented."
     end
 
+    def public_ip
+      raise "#{self.class}#public_ip is unimplemented."
+    end
+
     def description
       [
         (flavour_str unless flavour_str == system_str),
@@ -137,6 +141,13 @@ module Babushka
     def pkg_helper; BrewHelper end
     def cpus; shell('sysctl -n hw.ncpu') end
     def total_memory; shell("sysctl -a").val_for("hw.memsize").to_i end
+
+    def public_ip
+      shell('ifconfig',
+        shell('netstat -nr').val_for("default").scan(/\w+$/).first
+      ).val_for("inet").scan(/^[\d\.]+/).first
+    end
+
   end
 
   class BSDSystemProfile < SystemProfile
@@ -173,6 +184,12 @@ module Babushka
     def version; 'unknown' end
     def release; version end
     def cpus; shell("cat /proc/cpuinfo | grep '^processor\b' | wc -l") end
+
+    def public_ip
+      shell('ifconfig',
+        shell('netstat -nr').val_for("0.0.0.0").scan(/\w+$/).first
+      ).val_for("inet addr").scan(/^[\d\.]+/).first
+    end
 
     def self.for_flavour
       (detect_using_release_file || LinuxSystemProfile).new
