@@ -183,7 +183,7 @@ module Babushka
     def flavour_str; flavour_str_map[system][flavour] end
     def version; 'unknown' end
     def release; version end
-    def cpus; shell("cat /proc/cpuinfo | grep '^processor\b' | wc -l") end
+    def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l") end
 
     def public_ip
       shell('ifconfig',
