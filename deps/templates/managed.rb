@@ -40,7 +40,7 @@ managed_template = L{
     pkg_manager.update_pkg_lists_if_required
   }
   meet {
-    pkg_manager.install! packages
+    pkg_manager.install! packages, options.join(' ')
   }
 }
 
@@ -49,6 +49,7 @@ meta :managed do
   accepts_list_for :provides, :basename, :choose_with => :via
   accepts_list_for :service_name, :name
   accepts_list_for :cfg
+  accepts_list_for :options
 
   def pkg_manager
     Babushka.host.pkg_helper
