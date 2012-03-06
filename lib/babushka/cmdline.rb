@@ -45,6 +45,7 @@ module Babushka
     handle('meet', 'The main one: run a dep and all its dependencies.') {
       opt '-n', '--dry-run',      "Discover the curent state without making any changes"
       opt '-y', '--defaults',     "Assume the default value for all vars without prompting, where possible"
+      opt '-u', '--update',       "Update referenced sources before loading deps from them"
       opt       '--show-args',    "Show the arguments being passed between deps as they're run"
       opt       '--track-blocks', "Track deps' blocks in TextMate as they're run"
     }.run {|cmd|
