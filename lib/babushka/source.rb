@@ -148,10 +148,10 @@ module Babushka
       end
     end
 
-    def load!
+    def load! should_update = false
       unless @currently_loading
         @currently_loading = true
-        update! if cloneable?
+        update! if cloneable? && (!cloned? || should_update)
         load_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
