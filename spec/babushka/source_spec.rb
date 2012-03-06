@@ -390,7 +390,7 @@ describe Source do
 
   describe "updating" do
     before {
-      @source = Source.new(*@remote_1)
+      @source = Source.new(*@remote_2)
     }
     it "should update when the source isn't cloned" do
       @source.should_receive(:update!)
