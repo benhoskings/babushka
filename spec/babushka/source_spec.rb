@@ -96,6 +96,21 @@ describe Source do
     end
   end
 
+  describe Source, '#cloneable?' do
+    it "should work for implicit sources" do
+      Source.new(nil).should_not be_cloneable
+    end
+    it "should work for local sources" do
+      Source.new('~/.babushka/deps').should_not be_cloneable
+    end
+    it "should work for public sources" do
+      Source.new('git://github.com/benhoskings/babushka-deps.git').should be_cloneable
+    end
+    it "should work for private sources" do
+      Source.new('git@github.com:benhoskings/babushka-deps.git').should be_cloneable
+    end
+  end
+
   describe "loading deps" do
     context "with a good source" do
       before {
