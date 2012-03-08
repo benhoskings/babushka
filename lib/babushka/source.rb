@@ -151,6 +151,9 @@ module Babushka
     def load! should_update = false
       unless @currently_loading
         @currently_loading = true
+        if !@loaded && cloned? && !should_update
+          log "Behaviour change: not updating '#{name}'. To update sources as they're loaded, use the new '--update' option.".colorize('on grey')
+        end
         update! if cloneable? && (!cloned? || should_update)
         load_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
