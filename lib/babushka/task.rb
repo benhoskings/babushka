@@ -13,7 +13,7 @@ module Babushka
       @running = false
     end
 
-    def process dep_names, with_vars = {}
+    def process dep_names, with_vars
       raise "A task is already running." if running?
       @vars = Vars.new
       @running = true

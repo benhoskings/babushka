@@ -16,7 +16,7 @@ describe Task, "process" do
       Dep('task spec').should_receive(:process)
     }
     it "should run a dep when just the name is passed" do
-      Base.task.process ['task spec']
+      Base.task.process ['task spec'], {}
     end
   end
   describe "variable assignment" do
@@ -36,7 +36,7 @@ describe Task, "process" do
       @dep = dep('task spec arg passing, no args')
       @dep.should_receive(:with).with({}).and_return(@dep)
       @dep.should_receive(:process)
-      Base.task.process ['task spec arg passing, no args']
+      Base.task.process ['task spec arg passing, no args'], {}
     end
     it "should provide the values in with_vars as dep arguments with symbol names" do
       @dep = dep('task spec arg passing, 1 arg', :arg)
@@ -110,10 +110,10 @@ describe Task, 'dep caching' do
     Dep('caching child a').should_receive(:process_self).once.and_return(true)
     Dep('caching child b').should_receive(:process_self).twice.and_return(true)
     Dep('caching child c').should_receive(:process_self).once.and_return(true)
-    Base.task.process(['caching parent'])
+    Base.task.process ['caching parent'], {}
   end
   it "should cache the dep requirements" do
-    Base.task.process(['caching parent'])
+    Base.task.process ['caching parent'], {}
     Base.task.caches.should == {
       Dep::Requirement.new('caching parent', []) => true,
       Dep::Requirement.new('caching child a', [nil]) => true,
@@ -141,7 +141,7 @@ end
 
 describe Task, "vars_for_save" do
   before {
-    Base.task.process [] # Clear out Base.task.vars
+    Base.task.process [], {} # Clear out Base.task.vars
     Base.task.vars.stub!(:vars).and_return(standard_vars)
     @vars_for_save = Base.task.vars.for_save
   }

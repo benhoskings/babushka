@@ -41,7 +41,12 @@ module Babushka
     end
 
     def source_for name
-      all_present.detect {|source| source.name == name } || Source.for_remote(name)
+      (
+        all_present.detect {|source| source.name == name } ||
+        Source.for_remote(name)
+      ).tap {|source|
+        source.load!(Base.task.opt(:update))
+      }
     end
 
     def dep_for dep_spec, opts = {}

@@ -388,6 +388,26 @@ describe Source do
     end
   end
 
+  describe "updating" do
+    before {
+      @source = Source.new(*@remote_2)
+    }
+    it "should update when the source isn't cloned" do
+      @source.should_receive(:update!)
+      @source.load!
+    end
+    it "should not update when the source is already cloned" do
+      @source.stub!(:cloned?).and_return(true)
+      @source.should_not_receive(:update!)
+      @source.load!
+    end
+    it "should update when the source is already cloned and update is true" do
+      @source.stub!(:cloned?).and_return(true)
+      @source.should_receive(:update!)
+      @source.load!(true)
+    end
+  end
+
   describe "classification" do
     it "should treat file:// as public" do
       (source = Source.new(*@remote_1))
