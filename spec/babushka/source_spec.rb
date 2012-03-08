@@ -111,6 +111,28 @@ describe Source do
     end
   end
 
+  describe "#cloned?" do
+    it "should return false for implicit sources" do
+      Source.new(nil).should_not be_cloned
+    end
+    it "should return false for local sources" do
+      Source.new(nil).should_not be_cloned
+    end
+    context "for cloneable repos" do
+      subject { Source.new(*@remote_2) }
+      it "should not be cloned" do
+        subject.should_not be_cloned
+      end
+      it "should be cloned after loading" do
+        subject.load!
+        subject.should be_cloned
+      end
+      after {
+        subject.path.rm
+      }
+    end
+  end
+
   describe "loading deps" do
     context "with a good source" do
       before {

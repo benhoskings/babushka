@@ -118,7 +118,7 @@ module Babushka
       [:public, :private].include? type
     end
     def cloned?
-      File.directory? path / '.git'
+      cloneable? && File.directory?(path / '.git')
     end
     def present?
       cloneable? ? cloned? : path.exists?
