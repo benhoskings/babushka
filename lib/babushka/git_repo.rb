@@ -34,7 +34,7 @@ module Babushka
     # The full path to the root of the repo {path} is within, if it is within
     # one somewhere; otherwise nil.
     def self.repo_for path
-      maybe = shell("git rev-parse --git-dir", :cd => path) if path.p.dir?
+      maybe = shell?("git rev-parse --git-dir", :cd => path) if path.p.dir?
       maybe == '.git' ? path.p : maybe / '..' unless maybe.nil?
     end
 
