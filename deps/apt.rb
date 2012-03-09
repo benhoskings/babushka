@@ -12,7 +12,7 @@ dep 'apt source', :uri, :release, :repo do
       Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
-    append_to_file "deb #{uri} #{release} #{repo}", '/etc/apt/sources.list.d/babushka.list'
+    append_to_file "deb #{uri} #{release} #{repo}", '/etc/apt/sources.list.d/babushka.list', :sudo => true
   }
   after {
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}."
