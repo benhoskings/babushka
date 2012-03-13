@@ -32,6 +32,14 @@ module Babushka
       exists? && source_sha == sha_of(source)
     end
 
+    def source_sha
+      path.open {|f|
+        [f.gets, f.gets].compact.detect {|l|
+          l[/^#!/].nil? # The first line that isn't a hashbang
+        }
+      }.scan(/, from ([0-9a-f]{40})\./).flatten.first
+    end
+
     private
 
     def inkan_output_for source, opts = {}
@@ -54,14 +62,6 @@ module Babushka
       require 'digest/sha1'
       raise "Source doesn't exist: #{source.p}" unless source.p.exists?
       Digest::SHA1.hexdigest(source.p.read)
-    end
-
-    def source_sha
-      path.open {|f|
-        [f.gets, f.gets].compact.detect {|l|
-          l[/^#!/].nil? # The first line that isn't a hashbang
-        }
-      }.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
   end
 end
