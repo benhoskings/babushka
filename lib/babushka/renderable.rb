@@ -36,7 +36,7 @@ module Babushka
       path.open {|f|
         [f.gets, f.gets].compact.detect {|l|
           l[/^#!/].nil? # The first line that isn't a hashbang
-        }
+        } || ''
       }.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
 
