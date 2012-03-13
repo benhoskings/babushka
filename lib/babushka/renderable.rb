@@ -7,7 +7,7 @@ module Babushka
 
     attr_reader :path
     def initialize path
-      @path = path
+      @path = path.p
     end
 
     def render source, opts = {}
@@ -22,7 +22,7 @@ module Babushka
     end
 
     def exists?
-      path.p.exists?
+      path.exists?
     end
 
     def clean?
@@ -59,7 +59,7 @@ module Babushka
 
     def source_sha
       first_non_hashbang_line = shell(
-        'head', '-n2', path.p, :sudo => !path.p.readable?
+        'head', '-n2', path, :sudo => !path.readable?
       ).split("\n").detect {|l|
         l[/^#!/].nil?
       } || ''
