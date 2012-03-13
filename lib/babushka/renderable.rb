@@ -58,11 +58,13 @@ module Babushka
     end
 
     def source_sha
-      shell(
+      first_non_hashbang_line = shell(
         'head', '-n2', path.p, :sudo => !path.p.readable?
       ).split("\n").detect {|l|
-        l[/^#!/].nil? # The first non-hashbang line of the top two lines
-      }.scan(/, from ([0-9a-f]{40})\./).flatten.first
+        l[/^#!/].nil?
+      } || ''
+
+      first_non_hashbang_line.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
   end
 end
