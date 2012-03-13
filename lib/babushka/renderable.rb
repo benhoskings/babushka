@@ -11,9 +11,8 @@ module Babushka
     end
 
     def render source, opts = {}
-      shell("cat > '#{path}'",
-        :input => inkan_output_for(source, opts),
-        :sudo => opts[:sudo]
+      path.write(
+        inkan_output_for(source, opts)
       ).tap {|result|
         if result
           sudo "chmod #{opts[:perms]} '#{path}'" if opts[:perms]
@@ -58,13 +57,11 @@ module Babushka
     end
 
     def source_sha
-      first_non_hashbang_line = shell(
-        'head', '-n2', path, :sudo => !path.readable?
-      ).split("\n").detect {|l|
-        l[/^#!/].nil?
-      } || ''
-
-      first_non_hashbang_line.scan(/, from ([0-9a-f]{40})\./).flatten.first
+      path.open {|f|
+        [f.gets, f.gets].compact.detect {|l|
+          l[/^#!/].nil? # The first line that isn't a hashbang
+        }
+      }.scan(/, from ([0-9a-f]{40})\./).flatten.first
     end
   end
 end
