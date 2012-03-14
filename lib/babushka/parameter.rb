@@ -120,11 +120,11 @@ module Babushka
 
     def description
       if @value
-        "#{name}: #{@value.inspect}"
+        "#{name}: #{inspect_truncated(@value)}"
       elsif @default_bang
-        "#{name}: [default!: #{@default_bang.inspect}]"
+        "#{name}: [default!: #{inspect_truncated(@default_bang)}]"
       elsif @default
-        "#{name}: [default: #{@default.inspect}]"
+        "#{name}: [default: #{inspect_truncated(@default)}]"
       else
         "#{name}: [unset]"
       end
@@ -134,6 +134,10 @@ module Babushka
 
     def value
       @value ||= @default_bang || Prompt.get_value((@ask || name).to_s, prompt_opts)
+    end
+
+    def inspect_truncated value
+      value.inspect.sub(/^(.{50})(.{3}).*/m, '\1...')
     end
 
     def prompt_opts
