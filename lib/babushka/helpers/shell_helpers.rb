@@ -111,9 +111,9 @@ module Babushka
     # commands.
     def login_shell cmd, opts = {}, &block
       if shell('echo $SHELL').p.basename == 'zsh'
-        shell %Q{zsh -i -c "#{cmd.gsub('"', '\"')}"}, opts, &block
+        shell ['zsh', '-i', '-c', cmd], opts, &block
       else
-        shell %Q{bash -l -c "#{cmd.gsub('"', '\"')}"}, opts, &block
+        shell ['bash', '-l', '-c', cmd], opts, &block
       end
     end
 
