@@ -112,9 +112,15 @@ describe Fancypath do
   end
 
   describe "#grep" do
-    before { @file.write("some\ncontent") }
-    it('returns nil on no match') { @file.grep(/test/).should be_nil }
-    it('returns the matches') { @file.grep(/cont/).should == ['content'] }
+    before {
+      @file.write("some\ncontent")
+    }
+    it('returns nil on no match') {
+      @file.grep(/test/).should be_nil
+    }
+    it('returns the matches') {
+      @file.grep(/cont/).should == ['content']
+    }
   end
 
   describe "#yaml" do
