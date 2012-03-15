@@ -121,8 +121,11 @@ describe Fancypath do
     it('returns nil on no match') {
       @file.grep(/test/).should be_nil
     }
-    it('returns the matches') {
-      @file.grep(/cont/).should == ['content']
+    it('returns the matches with string parameter') {
+      @file.grep("content").should == ['content']
+    }
+    it('returns the matches with regexp parameter') {
+      @file.grep(/cont/).should == ['content', 'contentedness']
     }
   end
 
