@@ -115,6 +115,9 @@ describe Fancypath do
     before {
       @file.write("some\ncontent")
     }
+    it("returns nil when the file doesn't exist") {
+      (@dir / 'missing').grep(/test/).should be_nil
+    }
     it('returns nil on no match') {
       @file.grep(/test/).should be_nil
     }

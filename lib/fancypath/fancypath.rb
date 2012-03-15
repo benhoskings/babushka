@@ -89,8 +89,10 @@ class Fancypath < Pathname
   end
 
   def grep *args
-    matches = readlines.grep(*args)
-    matches unless matches.empty?
+    if exists?
+      matches = readlines.grep(*args)
+      matches unless matches.empty?
+    end
   end
 
   def yaml
