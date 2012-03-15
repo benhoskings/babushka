@@ -11,8 +11,9 @@ module Babushka
     end
 
     def render source, opts = {}
-      path.write(
-        inkan_output_for(source, opts)
+      shell("cat > '#{path}'",
+        :input => inkan_output_for(source, opts),
+        :sudo => opts[:sudo]
       ).tap {|result|
         if result
           sudo "chmod #{opts[:perms]} '#{path}'" if opts[:perms]
