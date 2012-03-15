@@ -90,7 +90,7 @@ class Fancypath < Pathname
 
   def grep *args
     if exists?
-      matches = readlines.grep(*args)
+      matches = read.split("\n").grep(*args)
       matches unless matches.empty?
     end
   end
