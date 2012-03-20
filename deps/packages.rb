@@ -7,9 +7,10 @@ end
 
 dep 'gettext.managed'
 
-dep 'nodejs.src' do
-  source 'https://github.com/joyent/node.git'
-  provides 'node >= 0.4', 'node-waf'
+dep 'nodejs.src', :version do
+  version.default!('0.6.13')
+  source "http://nodejs.org/dist/node-v#{version}.tar.gz"
+  provides "node ~> #{version}"
 end
 
 dep 'sudo' do
