@@ -83,7 +83,7 @@ module Babushka
     end
 
     def append_to_file text, file, opts = {}
-      deprecated! '2012-05-01', 'cat via #shell', "shell(\"cat >> '#{file}'\", #{opts.merge(:input => text).inspect.sub(/^\{/, '').sub(/\}$/, '')})"
+      deprecated! '2012-05-01', 'Fancypath#append', "'#{file}'.p.append(#{text.inspect})"
       text = text.to_s
       shell %Q{echo "\n# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}, opts
     end
