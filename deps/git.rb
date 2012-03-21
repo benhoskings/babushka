@@ -21,7 +21,7 @@ dep 'git.managed' do
 end
 
 dep 'git.installer', :version do
-  version.default!('1.7.8.4')
+  version.default!('1.7.9.4')
   source "http://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
   provides "git >= #{version}"
   after {
@@ -32,7 +32,7 @@ dep 'git.installer', :version do
 end
 
 dep 'git.src', :version do
-  version.default!('1.7.9.1')
+  version.default!('1.7.9.4')
   requires 'gettext.managed'
   source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
 end
