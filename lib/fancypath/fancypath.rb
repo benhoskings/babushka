@@ -181,11 +181,11 @@ class Fancypath < Pathname
       Dir["#{self}/#{arg}"].map { |p| self.class.new(p) }
     end
   end
-  
+
   def empty?
     directory? ? children.size == 0 : self.size == 0
   end
-  
+
   def owner
     Etc.getpwuid(File.stat(to_s).uid).name
   end
