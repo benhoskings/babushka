@@ -59,7 +59,7 @@ module Babushka
         }
       }
     end
-    
+
     def self.detect_type_by_contents path
       TYPES.keys.detect {|key|
         shell("file '#{path}'")[TYPES[key][:file_match]]
@@ -191,7 +191,7 @@ module Babushka
       output.scan(/\s+(\/Volumes\/[^\n]+)/).flatten.first
     end
   end
-  
+
   class Resource
     CLASSES = {
       :deb => FileResource,

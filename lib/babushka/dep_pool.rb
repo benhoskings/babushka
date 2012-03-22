@@ -9,7 +9,7 @@ module Babushka
     def count
       @pool.length
     end
-    
+
     def names
       @pool.keys
     end
