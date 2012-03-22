@@ -5,6 +5,6 @@ dep 'admins can sudo' do
 end
 
 dep 'admin group' do
-  met? { grep(/^admin\:/, '/etc/group') }
+  met? { '/etc/group'.p.grep(/^admin\:/) }
   meet { sudo 'groupadd admin' }
 end

@@ -7,7 +7,7 @@
 
 dep 'admin group' do
   # Returns a bool (i.e. "is this dep met?")
-  met? { grep /^admin\:/, '/etc/group' }
+  met? { '/etc/group'.p.grep(/^admin\:/) }
 
   # Blindly do whatever is required to meet the dep.
   meet { shell "groupadd admin" }
@@ -24,14 +24,14 @@ dep 'admins can sudo' do
   met? {
     # There are lots of helpers to do things like edit files, render configs.
     # Check the API for a full list.
-    grep /^%admin/, '/etc/sudoers'
+    !sudo('cat /etc/sudoers').split("\n").grep(/^%admin/).empty?
   }
 
   # The meet block should never do any checks. It should just unconditionally
   # make all the changes. If you find you need to use non-trivial
   # conditionals within meet {}, it probably means you should split this dep up
   # into smaller, more focused deps.
-  meet { append_to_file '%admin  ALL=(ALL) ALL', '/etc/sudoers' }
+  meet { append_to_file '%admin  ALL=(ALL) ALL', '/etc/sudoers', :sudo => true }
 end
 
 
@@ -77,10 +77,9 @@ dep 'ncurses.managed' do
   provides []
 end
 
-# As well as '.managed' templates, you can use '.gem' and others to write deps
-# that understand cross-platform package managers. There are also '.npm' and
-# '.pip' templates. If you build a new one, pull requests are very welcome.
-#
+# As well as '.managed' templates, you can use '.gem', '.npm' and '.pip' to
+# write deps that understand cross-platform package managers.
+
 # For example, to install the image_science gem, which needs the 'freeimage'
 # library and installs no commands:
 dep 'image_science.gem' do
@@ -102,6 +101,20 @@ dep 'postgres.managed' do
   # the output. Most commands support --version, and this provides a
   # consistent interface to it.
   provides 'psql ~> 9.0.0'
+end
+
+# Example of juggernaut installation via npm, which provides juggernaut command:
+dep 'juggernaut.npm' do
+  installs 'juggernaut'
+
+  provides 'juggernaut'
+end
+
+# Django installation via pip, which provides django-admin.py command:
+dep 'django.pip' do
+  installs 'Django'
+
+  provides 'django-admin.py'
 end
 
 # You can use the '.src' template to build and install programs from source.
@@ -137,7 +150,7 @@ dep 'fish.src' do
 
   # Specify configure args, to achieve e.g. ./configure --with-feature
   configure_args "--without-xsel"
-  
+
   # Do the build. Default:
   # build { shell "make" }
 
