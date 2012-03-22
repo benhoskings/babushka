@@ -104,7 +104,7 @@ For example, Babushka ships with a meta dep that knows how to install TextMate b
 
     meta :tmbundle, :for => :osx do
       accepts_value_for :source
-      
+
       template {
         requires 'TextMate.app'
         def path
