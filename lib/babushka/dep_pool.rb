@@ -21,9 +21,7 @@ module Babushka
     end
 
     def add_dep name, params, block
-      if self.for name
-        self.for name
-      else
+      self.for(name) || begin
         opts = params.extract_options!
         Dep.new name, @source, params, opts, block
       end
