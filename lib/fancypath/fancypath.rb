@@ -172,16 +172,12 @@ class Fancypath < Pathname
     self
   end
 
-  def mkdir
-    `mkdir -p '#{self}'`
-    self
-  end
-
   def create_dir
     mkpath unless exist?
     self
   end
   alias_method :create, :create_dir
+  alias_method :mkdir, :create_dir
 
   def copy(dest)
     `cp -pPR '#{self}' '#{dest}'`
