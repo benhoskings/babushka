@@ -12,7 +12,7 @@ dep 'apt source', :uri, :release, :repo do
       Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
-    append_to_file "deb #{uri} #{release} #{repo}", '/etc/apt/sources.list.d/babushka.list', :sudo => true
+    '/etc/apt/sources.list.d/babushka.list'.p.append("deb #{uri} #{release} #{repo}\n")
   }
   after {
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}."
@@ -35,8 +35,9 @@ dep 'ppa', :spec do
       Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
   }
   meet {
-    append_to_file "deb http://ppa.launchpad.net/#{spec_path}/ubuntu #{Babushka.host.name} main",
-      '/etc/apt/sources.list.d/babushka.list'
+    '/etc/apt/sources.list.d/babushka.list'.p.append(
+      "deb http://ppa.launchpad.net/#{spec_path}/ubuntu #{Babushka.host.name} main\n"
+    )
   }
   after {
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{spec}."
