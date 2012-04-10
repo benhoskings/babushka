@@ -2,6 +2,11 @@
 
 module Babushka
   module LogHelpers
+
+    # Make these helpers callable directly on LogHelpers,
+    # and private when included.
+    module_function
+
     # Log +message+ as an error. This is a shortcut for
     #   log(message, :as => :error)
     def log_error message, opts = {}, &block
