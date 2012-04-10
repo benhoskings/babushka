@@ -117,6 +117,20 @@ describe "raw_shell" do
   end
 end
 
+describe 'login_shell' do
+  it "should return something true on successful commands" do
+    login_shell('true').should_not be_nil
+  end
+  it "should return nil on failed commands" do
+    login_shell('false').should be_nil
+  end
+  it "should run as the given user" do
+    should_receive(:shell_cmd).with('echo $SHELL', {}).and_return('')
+    should_receive(:shell_cmd).with({}, "sudo -u batman bash -l -c 'whoami'", {}).once
+    login_shell('whoami', :as => 'batman')
+  end
+end
+
 describe 'argument behaviour' do
   context "with a single string" do
     it "should support compound commands" do
