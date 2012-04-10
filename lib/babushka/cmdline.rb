@@ -1,7 +1,7 @@
 # coding: utf-8
 
 module Babushka
-  module Cmdline
+  class Cmdline
     extend LogHelpers
 
     handle('global', "Options that are valid for any handler") {

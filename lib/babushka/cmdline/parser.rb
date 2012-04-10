@@ -1,7 +1,7 @@
 require 'optparse'
 
 module Babushka
-  module Cmdline
+  class Cmdline
     class Parser
       include LogHelpers
 

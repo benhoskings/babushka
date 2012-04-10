@@ -1,7 +1,7 @@
 # coding: utf-8
 
 module Babushka
-  module Cmdline
+  class Cmdline
     class Helpers
       extend LogHelpers
 
