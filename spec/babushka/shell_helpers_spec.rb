@@ -240,6 +240,10 @@ describe "which" do
     path = `which ls`.chomp
     which(:ls).should == path
   end
+  it "should handle command parameter passed as Symbol" do
+    path = `which ls`.chomp
+    ShellTester.which(:ls).should == path
+  end
 end
 
 describe "cmd_dir" do
