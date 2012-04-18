@@ -9,11 +9,13 @@ module Babushka
       def merge(key, value) Base.task.vars.merge(key, value) end
       def var(name, opts = {}) Base.task.vars.var(name, opts) end
       def define_var(name, opts = {}) Base.task.vars.define_var(name, opts) end
+      def default_for_ask(bool) Base.task.vars.default_for_ask(bool) end
     end
 
     def initialize
       @vars = Hashish.hash
       @saved_vars = Hashish.hash
+      @default_for_ask = true
     end
 
     def set key, value
@@ -25,6 +27,7 @@ module Babushka
 
     def var name, opts = {}
       define_var name, opts
+      opts[:ask] = @default_for_ask unless opts.has_key? :ask
       if vars[name.to_s].has_key? :value
         if vars[name.to_s][:value].respond_to? :call
           vars[name.to_s][:value].call
@@ -36,6 +39,10 @@ module Babushka
       else
         default_for name
       end
+    end
+
+    def default_for_ask(bool)
+      @default_for_ask = bool
     end
 
     def define_var name, opts = {}
