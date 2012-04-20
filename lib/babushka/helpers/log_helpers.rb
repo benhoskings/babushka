@@ -19,11 +19,6 @@ module Babushka
       log message, opts.merge(:as => :warning), &block
     end
 
-    def log_verbose message, opts = {}, &block
-      deprecated! "2012-04-01", '#log'
-      log message, opts, &block
-    end
-
     # Yield the block, writing a note to the log about it beforehand and
     # afterwards.
     #
