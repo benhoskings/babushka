@@ -99,11 +99,6 @@ module Babushka
       shell(*cmd) {|s| s }
     end
 
-    def failable_shell *cmd
-      deprecated! '2012-04-01', '#raw_shell'
-      raw_shell(*cmd)
-    end
-
     # Run +cmd+ in a separate interactive shell. This is useful for running
     # commands that depend on something shell-related that was changed during
     # this run, like changing the user's shell. It's also useful for running
