@@ -18,11 +18,6 @@ module Babushka
       end
     end
 
-    def in_dir dir, opts = {}, &block
-      deprecated! '2012-04-01', '#cd'
-      cd dir, opts, &block
-    end
-
     def in_build_dir path = '', &block
       cd Babushka::BuildPrefix / path, :create => true, &block
     end
