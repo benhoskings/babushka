@@ -120,7 +120,7 @@ module Babushka
 
     def render_erb erb, opts = {}
       if opts[:optional]
-        Babushka::Log.log_warn "#{caller.first}: #render_erb's :optional option has been deprecated and will be removed on 2012-05-01. I should never have added it: rendering a config shouldn't be optional."
+        Babushka::LogHelpers.log_warn "#{caller.first}: #render_erb's :optional option has been deprecated and will be removed on 2012-05-01. I should never have added it: rendering a config shouldn't be optional."
       end
 
       if (path = erb_path_for(erb)).nil?
