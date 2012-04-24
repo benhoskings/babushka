@@ -179,8 +179,4 @@ module Babushka
       @indentation_level -= 1
     end
   end
-
-  class Log
-    extend LogHelpers
-  end
 end
