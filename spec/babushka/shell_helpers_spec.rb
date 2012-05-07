@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-SucceedingLs = 'ls /bin'
-FailingLs = 'ls /missing'
+SUCCEEDING_LS = 'ls /bin'
+FAILING_LS = 'ls /missing'
 
 describe "shell" do
   it "should return something true on successful commands" do
@@ -21,7 +21,7 @@ describe "shell" do
   end
   it "should provide the shell to supplied blocks when the command succeeds" do
     (the_block = "").should_receive(:was_called)
-    shell(SucceedingLs) {|shell|
+    shell(SUCCEEDING_LS) {|shell|
       the_block.was_called
       shell.stdout.should include('bash')
       shell.stderr.should be_empty
@@ -29,7 +29,7 @@ describe "shell" do
   end
   it "should provide the shell to supplied blocks when the command fails" do
     (the_block = "").should_receive(:was_called)
-    shell(FailingLs) {|shell|
+    shell(FAILING_LS) {|shell|
       the_block.was_called
       shell.stdout.should be_empty
       shell.stderr.should include("No such file or directory")
@@ -74,22 +74,22 @@ end
 describe "shell?" do
   it "should return the output for successful commands" do
     shell?('echo lol').should == 'lol'
-    shell?(SucceedingLs).should be_true
+    shell?(SUCCEEDING_LS).should be_true
   end
   it "should return false for failed commands" do
     shell?('false').should be_false
-    shell?(FailingLs).should be_false
+    shell?(FAILING_LS).should be_false
   end
 end
 
 describe "shell!" do
   it "should return the output for successful commands" do
     shell!('echo lol').should == 'lol'
-    shell!(SucceedingLs).should be_true
+    shell!(SUCCEEDING_LS).should be_true
   end
   it "should return false for failed commands" do
     L{ shell!('false') }.should raise_error(Shell::ShellCommandFailed, "Shell command failed: 'false'")
-    L{ shell!(FailingLs) }.should raise_error(Shell::ShellCommandFailed)
+    L{ shell!(FAILING_LS) }.should raise_error(Shell::ShellCommandFailed)
   end
 end
 
@@ -99,12 +99,12 @@ describe "raw_shell" do
     raw_shell('false').should be_a(Shell)
   end
   it "should return stdout for succeeding commands" do
-    shell = raw_shell(SucceedingLs)
+    shell = raw_shell(SUCCEEDING_LS)
     shell.stdout.should include("bash")
     shell.stderr.should be_empty
   end
   it "should return stderr for failed commands" do
-    shell = raw_shell(FailingLs)
+    shell = raw_shell(FAILING_LS)
     shell.stdout.should be_empty
     shell.stderr.should include("No such file or directory")
   end
