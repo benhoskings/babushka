@@ -26,7 +26,9 @@ module Babushka
       @progress = nil
     end
 
-    def ok?; result == 0 end
+    def ok?
+      result == 0
+    end
 
     def run &block
       @stdout, @stderr = '', ''
