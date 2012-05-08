@@ -104,16 +104,11 @@ dep 'postgres.managed' do
 end
 
 # Example of juggernaut installation via npm, which provides juggernaut command:
-dep 'juggernaut.npm' do
-  installs 'juggernaut'
-
-  provides 'juggernaut'
-end
+dep 'juggernaut.npm'
 
 # Django installation via pip, which provides django-admin.py command:
 dep 'django.pip' do
   installs 'Django'
-
   provides 'django-admin.py'
 end
 
@@ -155,5 +150,5 @@ dep 'fish.src' do
   # build { shell "make" }
 
   # Do the install. Default:
-  # build { sudo "make install" }
+  # install { sudo "make install" }
 end
