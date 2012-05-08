@@ -160,7 +160,7 @@ module Babushka
     #   which('babushka') #=> nil
     #
     # This is roughly equivalent to using `which` or `type` on the shell.
-    # However, because those commands' behaviour and ouptut vary across
+    # However, because those commands' behaviour and output vary across
     # platforms and shells, we instead use the logic in #cmd_dir.
     def which cmd_name
       matching_dir = cmd_dir(cmd_name)
