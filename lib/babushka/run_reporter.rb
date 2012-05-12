@@ -16,7 +16,6 @@ module Babushka
 
       while Base.task.running? && (report = most_recent_report)
         post_report report
-        sleep 1 # A quick hack for now, so we don't dominate the railscamp server.
       end
     end
 
@@ -25,7 +24,14 @@ module Babushka
 
     def post_report report
       submit_report_to_webservice(report.p.read).tap {|result|
-        report.p.rm if result
+        if result
+          report.p.rm
+        else
+          # Wait for a moment before trying again, so persistent problems don't
+          # slam babushka.me (if it's rejecting the data) or peg our CPU (if
+          # the network is down).
+          sleep 1
+        end
       }
     end
 
