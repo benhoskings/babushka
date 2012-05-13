@@ -5,7 +5,7 @@ dep 'curl.bin' do
   }
 end
 
-dep 'gettext.managed'
+dep 'gettext.lib'
 
 dep 'nodejs.src', :version do
   version.default!('0.6.13')
