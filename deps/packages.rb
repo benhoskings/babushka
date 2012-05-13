@@ -1,4 +1,4 @@
-dep 'curl.managed' do
+dep 'curl.bin' do
   installs {
     via :apt, 'curl', 'libcurl4-openssl-dev'
     via :yum, 'curl'

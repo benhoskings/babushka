@@ -1,7 +1,7 @@
 dep 'rubygems', :version do
   version.default!('1.8.10')
   requires 'ruby'
-  requires_when_unmet 'curl.managed'
+  requires_when_unmet 'curl.bin'
   met? {
     # We check for ruby here too to make sure `ruby` and `gem` run from the same place.
     in_path? ["gem >= #{version}", 'ruby']
