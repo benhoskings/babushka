@@ -6,12 +6,12 @@ dep 'git' do
     # git-1.5 can't clone https:// repos properly. Let's build
     # our own rather than monkeying with unstable debs.
     on :lenny, 'git.src'
-    otherwise 'git.managed'
+    otherwise 'git.bin'
   }
   met? { in_path? 'git >= 1.6' }
 end
 
-dep 'git.managed' do
+dep 'git.bin' do
   installs {
     via :macports, 'git-core +svn +bash_completion'
     via :apt, 'git-core'

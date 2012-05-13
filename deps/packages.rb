@@ -16,7 +16,7 @@ end
 dep 'sudo' do
   requires {
     on :osx, 'sudo.external'
-    otherwise 'sudo.managed'
+    otherwise 'sudo.bin'
   }
 end
 
@@ -27,4 +27,4 @@ dep 'sudo.external' do
   }
 end
 
-dep 'sudo.managed'
+dep 'sudo.bin'

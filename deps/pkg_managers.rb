@@ -37,11 +37,11 @@ end
 dep 'pip' do
   requires {
     on :osx, 'pip.src'
-    otherwise 'pip.managed'
+    otherwise 'pip.bin'
   }
 end
 
-dep 'pip.managed' do
+dep 'pip.bin' do
   installs 'python-pip'
 end
 

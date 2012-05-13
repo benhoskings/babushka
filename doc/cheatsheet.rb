@@ -47,7 +47,7 @@ dep 'wget.managed'
 
 # To tweak the package, there are some package-specific methods you can use.
 
-dep 'git.managed' do
+dep 'git.bin' do
   # Use 'installs' to list the packages this dep should install. You can pass
   # an array, or any number of splatted arguments.
   # It defaults to the package name - in this case, it would default to 'git'.
