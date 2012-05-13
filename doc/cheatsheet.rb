@@ -39,11 +39,16 @@ end
 # templates to wrap up met?/meet logic and focus the DSL for whatever task you
 # like.
 
-# The 'managed' dep knows how to use the package manager. You don't have to
-# tell it what kind of system you're on because babushka works that out.
-# Currently it knows how to use homebrew (on OS X), apt (on Debian/Ubuntu),
-# yum (on Fedora/CentOS), pacman (on Arch).
-dep 'wget.managed'
+# The 'bin' and 'lib' templates are for installing binaries and libraries via
+# the system's package manager. Their logic is simple:
+# - in the met? block, 'bin' checks whether its binaries are in the path, and
+#   'lib' checks whether its libraries' packages are installed;
+# - in the meet block, both 'bin' and 'lib' just ask PkgHelper to install the
+#   appropriate packages via the system's package manager.
+# You don't have to tell them what kind of system you're on because babushka
+# works that out. Currently PkgHelper knows how to use homebrew (on OS X),
+# apt (on Debian/Ubuntu), yum (on Fedora/CentOS), and pacman (on Arch).
+dep 'wget.bin'
 
 # To tweak the package, there are some package-specific methods you can use.
 
@@ -54,7 +59,7 @@ dep 'git.bin' do
   installs 'git-core'
 end
 
-dep 'ruby.managed' do
+dep 'ruby.bin' do
   # You can split any of these lists per-system with a block, like so:
   installs {
     via :brew, 'ruby'
@@ -67,17 +72,16 @@ dep 'ruby.managed' do
   provides %w[ruby irb ri rdoc]
 end
 
-dep 'ncurses.managed' do
+# To install a library, you don't need to worry about setting 'provides', because
+# a library provides no binaries. Just list the packages involved.
+dep 'ncurses.lib' do
   installs {
     via :apt, 'libncurses5-dev', 'libncursesw5-dev'
     via :brew, 'ncursesw'
   }
-  # The 'provides' value defaults to the package name too. For libraries (like
-  # ncurses), just make it an empty list:
-  provides []
 end
 
-# As well as '.managed' templates, you can use '.gem', '.npm' and '.pip' to
+# As well as the 'bin' and 'lib' templates, you can use 'gem', 'npm', and 'pip' to
 # write deps that understand cross-platform package managers.
 
 # For example, to install the image_science gem, which needs the 'freeimage'
@@ -93,9 +97,9 @@ dep 'unicorn.gem' do
   installs 'unicorn ~> 0.4.0'
 end
 
-# Those version operators aren't just for gem versions, though - you can use
+# Those version operators aren't just for gem versions, though -- you can use
 # them on other packages, and to check versions in other situations.
-dep 'postgres.managed' do
+dep 'postgres.bin' do
   installs 'postgresql'
   # This checks the installed version by running `psql --version` and parsing
   # the output. Most commands support --version, and this provides a
@@ -103,10 +107,13 @@ dep 'postgres.managed' do
   provides 'psql ~> 9.0.0'
 end
 
-# Example of juggernaut installation via npm, which provides juggernaut command:
+# Here's an example of installing an npm package. It's much the same as the
+# others -- just set #installs and #provides as required. Here we're installing
+# 'juggernaut', which provides a binary of the same name.
 dep 'juggernaut.npm'
 
-# Django installation via pip, which provides django-admin.py command:
+# The same applies to pip too. The django pip needs to be customised though,
+# because the package name and binary don't fit the convention.
 dep 'django.pip' do
   installs 'Django'
   provides 'django-admin.py'
