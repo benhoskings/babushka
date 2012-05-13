@@ -21,7 +21,7 @@ dep 'git.bin' do
 end
 
 dep 'git.installer', :version do
-  version.default!('1.7.9.4')
+  version.default!('1.7.10.1')
   source "http://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
   provides "git >= #{version}"
   after {
