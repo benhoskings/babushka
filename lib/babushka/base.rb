@@ -32,7 +32,7 @@ module Babushka
 
     # deprecated
     def host
-      Babushka::LogHelpers.log_warn "#{caller.first}: Babushka::Base.host has been deprecated and will be removed on 2012-04-01. Use Babushka.host instead."
+      Babushka::LogHelpers.deprecated! "2012-04-01", :method_name => 'Babushka::Base.host', :instead => "Babushka.host"
       Babushka.host
     end
 
