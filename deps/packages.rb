@@ -1,9 +1,4 @@
-dep 'curl.bin' do
-  installs {
-    via :apt, 'curl', 'libcurl4-openssl-dev'
-    otherwise 'curl'
-  }
-end
+dep 'curl.bin'
 
 dep 'gettext.lib'
 
