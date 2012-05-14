@@ -135,7 +135,7 @@ class Fancypath < Pathname
   end
 
   def select(*args)
-    Babushka::LogHelpers.deprecated! '2012-10-23', 'Fancypath#glob', "#{to_s.inspect}.p.glob(#{args.first.inspect})"
+    Babushka::LogHelpers.deprecated! '2012-10-23', :instead => 'Fancypath#glob', :example => "#{to_s.inspect}.p.glob(#{args.first.inspect})"
     return args.map { |arg| select(arg) }.flatten.uniq if args.size > 1
 
     case arg = args.first
