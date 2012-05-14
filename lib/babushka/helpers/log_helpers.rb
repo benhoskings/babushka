@@ -57,9 +57,9 @@ module Babushka
     end
 
     def deprecated! date, opts = {}
-      callpoint = caller[1].sub(/\:in `.*$/, '')
+      callpoint = "#{caller[1].sub(/\:in `.*$/, '')}: " unless opts[:callpoint] == false
       opts[:method_name] ||= "##{caller[0].scan(/`(\w+)'$/).flatten.first}"
-      log_warn "#{callpoint}: #{opts[:method_name]} has been deprecated and will be removed on #{date}."
+      log_warn "#{callpoint}#{opts[:method_name]} has been deprecated and will be removed on #{date}."
       log_warn "  -> Use #{opts[:instead]} instead#{opts[:example] ? ", e.g. #{opts[:example]}" : '.'}" unless opts[:instead].nil?
     end
 
