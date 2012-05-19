@@ -2,10 +2,7 @@ dep 'ruby' do
   met? {
     in_path? ['ruby >= 1.8.6', 'irb']
   }
-  requires_when_unmet {
-    on :osx, 'ruby.external'
-    otherwise 'ruby.bin'
-  }
+  requires_when_unmet 'ruby.bin'
 end
 
 dep 'ruby.bin' do
@@ -16,9 +13,4 @@ dep 'ruby.bin' do
     otherwise 'ruby'
   }
   provides %w[ruby irb]
-end
-
-dep 'ruby.external' do
-  expects 'ruby >= 1.8.6', 'irb'
-  otherwise { log_error "This system should already have ruby on it." }
 end
