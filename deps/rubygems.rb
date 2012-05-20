@@ -1,5 +1,5 @@
 dep 'rubygems', :version do
-  version.default!('1.8.10')
+  version.default!('1.8.23')
   requires 'ruby'
   requires_when_unmet 'curl.bin'
   met? {
