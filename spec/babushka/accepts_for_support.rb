@@ -7,10 +7,10 @@ class AcceptsForTest
     @payload = {}
   end
   def chooser
-    :macports
+    :brew
   end
   def chooser_choices
-    [:apt, :macports]
+    [:apt, :brew]
   end
   def default_formats
     %w[html xml js json]
@@ -44,11 +44,11 @@ def test_value_lambdas
       via :apt, "git-core"
     } => nil,
     L{
-      via :macports, 'ruby'
+      via :brew, 'ruby'
       via :apt, 'git-core'
     } => 'ruby',
     L{
-      via :macports, 'something else'
+      via :brew, 'something else'
       via :apt, 'some apt packages'
     } => 'something else'
   }
@@ -61,11 +61,11 @@ def test_list_lambdas
       via :apt, %w[ruby irb ri rdoc]
     } => [],
     L{
-      via :macports, 'ruby'
+      via :brew, 'ruby'
       via :apt, %w[ruby irb ri rdoc]
     } => ['ruby'],
     L{
-      via :macports, 'something else'
+      via :brew, 'something else'
       via :apt, 'some apt packages'
     } => ['something else']
   }
