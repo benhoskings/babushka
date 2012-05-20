@@ -32,7 +32,7 @@ dep 'git.installer', :version do
 end
 
 dep 'git.src', :version do
-  version.default!('1.7.9.4')
+  version.default!('1.7.10.2')
   requires 'gettext.lib'
   source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
 end
