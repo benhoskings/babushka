@@ -6,14 +6,6 @@ dep 'package manager', :cmd do
   }
 end
 
-dep 'macports.src' do
-  requires 'build tools'
-  provides 'port'
-  prefix '/opt/local'
-  source "http://distfiles.macports.org/MacPorts/MacPorts-1.8.0.tar.gz"
-  after { log_shell "Running port selfupdate", "port selfupdate", :sudo => true }
-end
-
 dep 'apt' do
   requires 'package manager'.with('apt-get')
   requires {
