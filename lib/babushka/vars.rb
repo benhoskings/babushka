@@ -5,10 +5,47 @@ module Babushka
     attr_reader :vars, :saved_vars
 
     module Helpers
-      def set(key, value) Base.task.vars.set(key, value) end
-      def merge(key, value) Base.task.vars.merge(key, value) end
-      def var(name, opts = {}) Base.task.vars.var(name, opts) end
-      def define_var(name, opts = {}) Base.task.vars.define_var(name, opts) end
+      def set(key, value)
+        deprecated! '2012-12-12', :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
+        Base.task.vars.set(key, value)
+      end
+      def merge(key, value)
+        deprecated! '2012-12-12', :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
+        Base.task.vars.merge(key, value)
+      end
+      def var(name, opts = {})
+        print_var_deprecation_for('#var', name, opts)
+        Base.task.vars.var(name, opts)
+      end
+      def define_var(name, opts = {})
+        print_var_deprecation_for('#define_var', name, opts)
+        Base.task.vars.define_var(name, opts)
+      end
+      def print_var_deprecation_for method_name, var_name, opts
+        option_names_map = {
+          :default => :default,
+          :message => :ask,
+          :choices => :choose,
+          :choice_descriptions => :choose
+        }
+        param_opts = opts.slice(*option_names_map.keys).keys.map {|key|
+          opt_value = opts[key].respond_to?(:call) ? '...' : opts[key].inspect
+          "#{option_names_map[key]}(#{opt_value})"
+        }
+        example = if param_opts.empty?
+          "dep 'blah', :#{name} do ... end"
+        else
+          "
+dep 'blah', :#{var_name} do
+  #{[var_name].concat(param_opts).join('.')}
+end"
+        end
+        deprecated! '2012-12-12',
+          :skip => 2,
+          :method_name => method_name,
+          :instead => 'a dep parameter',
+          :example => example
+      end
     end
 
     def initialize
