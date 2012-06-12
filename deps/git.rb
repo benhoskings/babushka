@@ -1,11 +1,11 @@
-dep 'git', :version do
+dep 'git' do
   requires_when_unmet {
     # Use the binary installer on OS X, so installing babushka
     # (which pulls in git) doesn't require a compiler.
-    on :osx, 'git.installer'.with(version)
+    on :osx, 'git.installer'
     # git-1.5 can't clone https:// repos properly. Let's build
     # our own rather than monkeying with unstable debs.
-    on :lenny, 'git.src'.with(version)
+    on :lenny, 'git.src'
     otherwise 'git.bin'
   }
   met? { in_path? 'git >= 1.6' }
