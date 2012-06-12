@@ -4,7 +4,8 @@
   'git.managed'     => 'git.bin',
   'pip.managed'     => 'pip.bin',
   'ruby.managed'    => 'ruby.bin',
-  'sudo.managed'    => 'sudo.bin'
+  'sudo.managed'    => 'sudo.bin',
+  'sudo'            => 'sudo.bin'
 }.each_pair {|old_name, new_name|
 
   dep old_name do

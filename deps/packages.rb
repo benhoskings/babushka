@@ -8,18 +8,4 @@ dep 'nodejs.src', :version do
   provides "node ~> #{version}"
 end
 
-dep 'sudo' do
-  requires {
-    on :osx, 'sudo.external'
-    otherwise 'sudo.bin'
-  }
-end
-
-dep 'sudo.external' do
-  expects 'sudo'
-  otherwise {
-    log_error "Your system seems to be missing sudo."
-  }
-end
-
 dep 'sudo.bin'
