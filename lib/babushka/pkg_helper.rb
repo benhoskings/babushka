@@ -11,7 +11,7 @@ module Babushka
     end
 
     def all_manager_keys
-      [:apt, :pacman, :brew, :yum, :binpkgsrc, :binports]
+      [:apt, :pacman, :brew, :macports, :yum, :binpkgsrc, :binports]
     end
 
     def present?
