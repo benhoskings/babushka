@@ -13,7 +13,6 @@ end
 
 dep 'git.bin' do
   installs {
-    via :macports, 'git-core +svn +bash_completion'
     via :apt, 'git-core'
     via :binpkgsrc, 'scmgit'
     otherwise 'git'

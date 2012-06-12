@@ -145,7 +145,7 @@ describe "accepts_list_for input processing" do
     test_lists.each_pair {|input, expected|
       it "should return #{expected.inspect} when passed #{input.inspect} within a lambda" do
         l = L{
-          via :macports, input
+          via :brew, input
         }
         list = AcceptsForTest.new
         list.records &l
@@ -157,12 +157,12 @@ describe "accepts_list_for input processing" do
   describe "nested lambdas" do
     it "should choose recursively" do
       l = L{
-        via :macports do
-          via :macports, "haha, excellent"
+        via :brew do
+          via :brew, "haha, excellent"
           via :apt, ":|"
         end
         via :apt do
-          via :macports, "no, not this one"
+          via :brew, "no, not this one"
           via :apt, "OK this one is just completely wrong"
         end
       }
