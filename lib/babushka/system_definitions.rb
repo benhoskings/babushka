@@ -48,7 +48,8 @@ module Babushka
             '5.0' => :lenny,
             '6.0' => :squeeze,
             '7.0' => :wheezy
-          }
+          },
+          :arch => {}
         },
         :bsd => {
           :dragonfly => {},
