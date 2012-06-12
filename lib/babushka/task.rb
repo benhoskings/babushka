@@ -31,7 +31,7 @@ module Babushka
             save_run_info_for dep, result
           }
         }.tap {|result|
-          $stderr.puts "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
+          log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
           BugReporter.report dep if reportable
         }

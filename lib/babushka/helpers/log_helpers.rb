@@ -7,6 +7,12 @@ module Babushka
     # and private when included.
     module_function
 
+    # Log to STDERR. This isn't babushka-style logging; it's just here so it's
+    # easily stubbable during testing.
+    def log_stderr message
+      $stderr.puts message
+    end
+
     # Log +message+ as an error. This is a shortcut for
     #   log(message, :as => :error)
     def log_error message, opts = {}, &block
