@@ -59,17 +59,19 @@ dep 'git.bin' do
   installs 'git-core'
 end
 
-dep 'ruby.bin' do
+dep 'ruby', :template => 'bin' do
   # You can split any of these lists per-system with a block, like so:
   installs {
-    via :brew, 'ruby'
-    via :apt, %w[ruby irb ri rdoc ruby1.8-dev libopenssl-ruby]
+    via [:lenny, :hardy, :lucid], %w[ruby irb ruby1.8-dev libopenssl-ruby]
+    via :apt, %w[ruby ruby1.8-dev]
+    via :yum, %w[ruby ruby-irb]
+    otherwise 'ruby'
   }
   # Use 'provides' to specify the executeables this package should add to the
   # PATH. Babushka checks both that the commands are available, and that they
   # all run from the same path (so, for example, you're not running
   # /usr/bin/gem against /usr/local/bin/ruby).
-  provides %w[ruby irb ri rdoc]
+  provides 'ruby >= 1.8.6', 'irb'
 end
 
 # To install a library, you don't need to worry about setting 'provides', because

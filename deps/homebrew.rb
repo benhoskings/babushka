@@ -9,7 +9,7 @@ end
 
 dep 'binary.homebrew' do
   requires 'repo.homebrew'
-  met? { which 'brew' }
+  met? { in_path? 'brew' }
   meet { log_shell "Resetting to HEAD", "git reset --hard", :cd => path }
 end
 
