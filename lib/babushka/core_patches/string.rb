@@ -1,5 +1,5 @@
 class String
-  # Return a Dep::Requirement that specifies the dep that should later be
+  # Return a DepRequirement that specifies the dep that should later be
   # called, and the arguments that should be passed. This allows requiring
   # deps with a less noisy syntax, and the lookup is lazy (it happens at
   # the point the dep is invoked, from its parent dep in
@@ -9,7 +9,7 @@ class String
   #     requires 'user exists'.with(username)
   #   end
   def with *args
-    Babushka::Dep::Requirement.new(self, args)
+    Babushka::DepRequirement.new(self, args)
   end
 
   # Returns true iff +other+ appears exactly at the start of +self+.

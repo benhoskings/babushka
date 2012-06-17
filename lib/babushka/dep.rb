@@ -13,6 +13,16 @@ module Babushka
   class DepArgumentError < DepDefinitionError
   end
 
+  # A DepRequirement is a representation of a dep being called - its name,
+  # along with the arguments that will be passed to it.
+  #
+  # DepRequirement is used internally by babushka when deps are required with
+  # arguments using "name".with(args). This allows babushka to delay loading
+  # the dep in question until the moment it's called.
+  class DepRequirement < Struct.new(:name, :args)
+  end
+
+
   class Dep
     include LogHelpers
     extend LogHelpers
@@ -27,15 +37,6 @@ module Babushka
       def self.contextual_name; name end
       def self.suffixed?; false end
       def self.context_class; DepContext end
-    end
-
-    # A Requirement is a representation of a dep being called - its name, along
-    # with the arguments that will be passed to it.
-    #
-    # Requirement is used internally by babushka when deps are required with
-    # arguments using "name".with(args). This allows babushka to delay loading
-    # the dep in question until the moment it's called.
-    class Requirement < Struct.new(:name, :args)
     end
 
     attr_reader :name, :params, :args, :opts, :vars, :dep_source, :load_path
@@ -139,7 +140,7 @@ module Babushka
     end
 
     def cache_key
-      Requirement.new(name, @params.map {|p| @args[p].try(:current_value) })
+      DepRequirement.new(name, @params.map {|p| @args[p].try(:current_value) })
     end
 
     def with *args
@@ -357,10 +358,10 @@ module Babushka
 
     def requirements_for list_name
       context.send(list_name).map {|dep_or_requirement|
-        if dep_or_requirement.is_a?(Requirement)
+        if dep_or_requirement.is_a?(DepRequirement)
           dep_or_requirement
         else
-          Requirement.new(dep_or_requirement, [])
+          DepRequirement.new(dep_or_requirement, [])
         end
       }
     end

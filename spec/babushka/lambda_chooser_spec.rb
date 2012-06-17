@@ -141,12 +141,12 @@ describe "lambda choosing" do
     }
   end
 
-  it "should return Dep::Requirement input intact" do
+  it "should return DepRequirement input intact" do
     LambdaChooser.new(nil, :ours, :theirs) {
       on :ours, 'a dep'.with('an arg'), 'another dep'.with('another arg')
     }.choose(:ours, :on).should == [
-      Dep::Requirement.new('a dep', ['an arg']),
-      Dep::Requirement.new('another dep', ['another arg'])
+      DepRequirement.new('a dep', ['an arg']),
+      DepRequirement.new('another dep', ['another arg'])
     ]
   end
 

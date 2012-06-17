@@ -115,11 +115,11 @@ describe Task, 'dep caching' do
   it "should cache the dep requirements" do
     Base.task.process ['caching parent'], {}
     Base.task.caches.should == {
-      Dep::Requirement.new('caching parent', []) => true,
-      Dep::Requirement.new('caching child a', [nil]) => true,
-      Dep::Requirement.new('caching child b', [nil, 'a value']) => true,
-      Dep::Requirement.new('caching child b', ['more', 'values']) => true,
-      Dep::Requirement.new('caching child c', ['some value']) => true
+      DepRequirement.new('caching parent', []) => true,
+      DepRequirement.new('caching child a', [nil]) => true,
+      DepRequirement.new('caching child b', [nil, 'a value']) => true,
+      DepRequirement.new('caching child b', ['more', 'values']) => true,
+      DepRequirement.new('caching child c', ['some value']) => true
     }
   end
 end

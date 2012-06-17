@@ -341,16 +341,16 @@ end
 
 describe Dep, '#cache_key' do
   it "should work for parameterless deps" do
-    dep('cache key, no params').cache_key.should == Dep::Requirement.new('cache key, no params', [])
+    dep('cache key, no params').cache_key.should == DepRequirement.new('cache key, no params', [])
   end
   it "should work for parameterised deps with no args" do
-    dep('cache key, no args', :arg1, :arg2).cache_key.should == Dep::Requirement.new('cache key, no args', [nil, nil])
+    dep('cache key, no args', :arg1, :arg2).cache_key.should == DepRequirement.new('cache key, no args', [nil, nil])
   end
   it "should work for parameterised deps with named args" do
-    dep('cache key, named args', :arg1, :arg2).with(:arg2 => 'value').cache_key.should == Dep::Requirement.new('cache key, named args', [nil, 'value'])
+    dep('cache key, named args', :arg1, :arg2).with(:arg2 => 'value').cache_key.should == DepRequirement.new('cache key, named args', [nil, 'value'])
   end
   it "should work for parameterised deps positional args" do
-    dep('cache key, positional args', :arg1, :arg2).with('value', 'another').cache_key.should == Dep::Requirement.new('cache key, positional args', ['value', 'another'])
+    dep('cache key, positional args', :arg1, :arg2).with('value', 'another').cache_key.should == DepRequirement.new('cache key, positional args', ['value', 'another'])
   end
 end
 
@@ -435,8 +435,8 @@ describe Dep, '#requirements_for' do
   it "should have the right number of requirements" do
     requirements.length.should == 3
   end
-  it "should return a Requirement for all the required deps" do
-    requirements.each {|c| c.should be_an_instance_of(Babushka::Dep::Requirement) }
+  it "should return a DepRequirement for all the required deps" do
+    requirements.each {|c| c.should be_an_instance_of(Babushka::DepRequirement) }
   end
   it "should contain the right dep names" do
     requirements.map(&:name).should == ['a dep', 'another dep', 'a third']

@@ -170,7 +170,7 @@ describe Source do
       requires.length.should == 2
     end
     it "should store the right kinds of objects" do
-      requires.map(&:class).should == [String, Babushka::Dep::Requirement]
+      requires.map(&:class).should == [String, Babushka::DepRequirement]
     end
     it "should store string requirements properly" do
       requires.first.should == 'a dep without params'
