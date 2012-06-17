@@ -26,7 +26,6 @@ module Babushka
   class Dep
     include LogHelpers
     extend LogHelpers
-    include PathHelpers
 
     # This class is used for deps that aren't defined against a meta dep. Using
     # this class with the default values it contains means that the code below
@@ -318,23 +317,21 @@ module Babushka
     # the method that implements the met? -> meet -> met? logic that is what
     # deps are all about. For details, see the documentation for Dep#process.
     def process_self
-      cd context.run_in do
-        process_met_task(:initial => true) {
-          if Base.task.opt(:dry_run)
-            false # unmet
+      process_met_task(:initial => true) {
+        if Base.task.opt(:dry_run)
+          false # unmet
+        else
+          process_task(:prepare)
+          if !process_requirements(:requires_when_unmet)
+            false # install-time deps unmet
           else
-            process_task(:prepare)
-            if !process_requirements(:requires_when_unmet)
-              false # install-time deps unmet
-            else
-              log 'meet' do
-                process_task(:before) and process_task(:meet) and process_task(:after)
-              end
-              process_met_task
+            log 'meet' do
+              process_task(:before) and process_task(:meet) and process_task(:after)
             end
+            process_met_task
           end
-        }
-      end
+        end
+      }
     end
 
     def process_met_task task_opts = {}, &block

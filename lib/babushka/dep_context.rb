@@ -5,7 +5,6 @@ module Babushka
 
     accepts_list_for :requires
     accepts_list_for :requires_when_unmet
-    accepts_value_for :run_in
 
     accepts_block_for :setup
     accepts_block_for :met?
