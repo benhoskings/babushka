@@ -4,66 +4,47 @@ meta :babushka do
   end
 end
 
-dep 'babushka', :from, :path, :branch do
-  requires 'up to date.babushka'.with(from, path, branch)
+dep 'babushka', :from, :path, :version, :branch do
+  ref = if branch.set?
+    deprecated! '2012-12-20', :method_name => "the :branch parameter to 'babushka'", :instead => ':version'
+    branch
+  else
+    version.default!('master')
+  end
+  requires 'up to date.babushka'.with(from, path, ref)
   requires 'in path.babushka'.with(from, path)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
   path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
-  branch.default!('master')
 end
 
-dep 'up to date.babushka', :from, :path, :branch do
+dep 'up to date.babushka', :from, :path, :ref do
   requires 'repo clean.babushka'.with(from, path)
-  requires 'update would fast forward.babushka'.with(from, path, branch)
-  met? {
-    (!repo.behind?).tap {|result|
-      if result
-        log_ok "babushka is up to date at #{repo.current_head}."
-      else
-        log "babushka can be updated: #{repo.current_head}..#{repo.repo_shell("git rev-parse --short origin/#{branch}")}"
-      end
-    }
-  }
-  meet {
-    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..origin/#{branch}")}"
-    repo.reset_hard! "origin/#{branch}"
-  }
-end
-
-dep 'update would fast forward.babushka', :from, :path, :branch do
-  requires 'on correct branch.babushka'.with(from, path, branch)
+  def refspec
+    # Prepend "origin/" if the result is a valid remote branch.
+    qualified_ref = if repo.all_branches.include?("origin/#{ref}")
+      "origin/#{ref}"
+    else
+      ref
+    end
+    repo.resolve(qualified_ref)
+  end
   met? {
     if !repo.repo_shell('git fetch origin')
       unmeetable! "Couldn't pull the latest code - check your internet connection."
     else
-      if !repo.remote_branch_exists?
-        unmeetable! "The current branch, #{repo.current_branch}, isn't pushed to origin/#{repo.current_branch}."
-      elsif repo.ahead?
-        unmeetable! "There are unpushed commits in #{repo.current_branch}."
-      else
-        true
-      end
+      (repo.current_head == refspec).tap {|result|
+        if result
+          log_ok "babushka is up to date at #{repo.current_head}."
+        else
+          log "babushka can be updated: #{repo.current_head}..#{refspec}"
+        end
+      }
     end
   }
-end
-
-dep 'on correct branch.babushka', :from, :path, :branch do
-  requires 'branch exists.babushka'.with(from, path, branch)
-  requires_when_unmet 'repo clean.babushka'.with(from, path)
-
-  setup {
-    # Stay on the same branch unless one was specified.
-    repo = Babushka::GitRepo.new(path)
-    branch.default!(repo.current_branch) if repo.exists?
+  meet {
+    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..#{refspec}")}"
+    repo.detach!(refspec)
   }
-  met? { repo.current_branch == branch.to_s }
-  meet { log_block("Switching to #{branch}") { repo.checkout! branch } }
-end
-
-dep 'branch exists.babushka', :from, :path, :branch do
-  requires 'installed.babushka'.with(from, path)
-  met? { repo.branches.include? branch.to_s }
-  meet { log_block("Checking out origin/#{branch}") { repo.track! "origin/#{branch}" } }
 end
 
 dep 'repo clean.babushka', :from, :path do

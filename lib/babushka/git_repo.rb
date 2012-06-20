@@ -156,7 +156,17 @@ module Babushka
 
     # An array of the names of all the local branches in this repo.
     def branches
-      repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+      names = repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+      names - ['(no branch)']
+    end
+
+    def all_branches
+      names = repo_shell('git branch -a').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+      (names - ['(no branch)']).reject {|i|
+        i['/origin/HEAD ->']
+      }.map {|i|
+        i.sub(/^remotes\//, '')
+      }
     end
 
     # The name of the branch that's currently checked out, if any. If there
@@ -175,6 +185,11 @@ module Babushka
     # The full 40 character SHA of the current HEAD.
     def current_full_head
       repo_shell("git rev-parse HEAD")
+    end
+
+    # The short SHA of the commit that +refspec+ currently refers to.
+    def resolve refspec
+      repo_shell("git rev-parse --short #{refspec}")
     end
 
     # True if origin contains a branch of the same name as the current local
@@ -208,10 +223,15 @@ module Babushka
       repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(/^.*\//, '')}'")
     end
 
-    # Check out the supplied branch (or ref of any kind, as accepted by
-    # `git checkout`).
-    def checkout! branch
-      repo_shell("git checkout '#{branch}'")
+    # Check out the supplied refspec, detaching the HEAD if the named ref
+    # isn't a branch.
+    def checkout! refspec
+      repo_shell("git checkout '#{refspec}'")
+    end
+
+    # Check out the supplied refspec, detaching the HEAD.
+    def detach! refspec
+      repo_shell("git checkout --detach '#{refspec}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and

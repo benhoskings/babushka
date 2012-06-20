@@ -159,11 +159,59 @@ describe GitRepo, '#branches' do
         end
       end
     end
+    context "with a detached HEAD" do
+      before {
+        repo_context('a') { shell "git checkout origin/next~" }
+      }
+      it "should not include the '(no branch)' entry" do
+        subject.branches.should == ['master', 'next']
+      end
+    end
   end
   context "on a repo with no commits" do
     before { stub_commitless_repo 'a' }
     it "should return no branches" do
       subject.branches.should == []
+    end
+  end
+end
+
+describe GitRepo, '#all_branches' do
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  context "on a repo with commits" do
+    before(:all) { stub_repo 'a' }
+    it "should return the only branch in a list" do
+      subject.all_branches.should == ["master", "origin/master", "origin/next"]
+    end
+    context "after creating another branch" do
+      before {
+        repo_context('a') { shell "git checkout -b next" }
+      }
+      it "should return both branches" do
+        subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
+      end
+      context "after changing back to master" do
+        before {
+          repo_context('a') { shell "git checkout master" }
+        }
+        it "should return both branches" do
+          subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
+        end
+      end
+    end
+    context "with a detached HEAD" do
+      before {
+        repo_context('a') { shell "git checkout origin/next~" }
+      }
+      it "should not include the '(no branch)' entry" do
+        subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
+      end
+    end
+  end
+  context "on a repo with no commits" do
+    before { stub_commitless_repo 'a' }
+    it "should return no branches" do
+      subject.all_branches.should == []
     end
   end
 end
@@ -205,6 +253,14 @@ describe GitRepo, '#current_full_head' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
     subject.current_full_head.should =~ /^[0-9a-f]{40}$/
+  end
+end
+
+describe GitRepo, '#resolve' do
+  before { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return a full commit id" do
+    subject.resolve('master').should =~ /^[0-9a-f]{7,40}$/
   end
 end
 
@@ -368,15 +424,45 @@ describe GitRepo, '#checkout!' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should already have a next branch" do
-    subject.branches.should =~ %w[master next]
-    subject.current_branch.should == 'next'
-  end
-  context "after checking out" do
-    before { subject.checkout! "master" }
-    it "should be on the master branch now" do
-      subject.current_branch.should == 'master'
+  describe "checking out a branch" do
+    it "should already have a next branch" do
+      subject.branches.should =~ %w[master next]
+      subject.current_branch.should == 'next'
     end
+    context "after checking out" do
+      before {
+        subject.checkout! "master"
+      }
+      it "should be on the master branch now" do
+        subject.current_branch.should == 'master'
+      end
+    end
+  end
+  describe "checking out a ref" do
+    before {
+      subject.checkout! 'origin/next~'
+    }
+    it "should detach the HEAD" do
+      subject.branches.should =~ %w[master next]
+      subject.current_branch.should =~ /^[0-9a-f]{40}$/
+    end
+  end
+end
+
+describe GitRepo, '#detach!' do
+  before(:all) {
+    stub_repo 'a'
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should detach the HEAD when a branch is supplied" do
+    subject.detach! "next"
+    subject.current_branch.should =~ /^[0-9a-f]{40}$/
+    subject.current_branch.starts_with?(subject.resolve('next')).should be_true
+  end
+  it "should detach the HEAD when a ref is supplied" do
+    subject.detach! 'origin/next~'
+    subject.current_branch.should =~ /^[0-9a-f]{40}$/
+    subject.current_branch.starts_with?(subject.resolve('origin/next~')).should be_true
   end
 end
 
