@@ -177,6 +177,11 @@ module Babushka
       repo_shell("git rev-parse HEAD")
     end
 
+    # The short SHA of the commit that +refspec+ currently refers to.
+    def resolve refspec
+      repo_shell("git rev-parse --short #{refspec}")
+    end
+
     # True if origin contains a branch of the same name as the current local
     # branch.
     def remote_branch_exists?
