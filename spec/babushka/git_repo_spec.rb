@@ -159,6 +159,14 @@ describe GitRepo, '#branches' do
         end
       end
     end
+    context "with a detached HEAD" do
+      before {
+        repo_context('a') { shell "git checkout origin/next~" }
+      }
+      it "should not include the '(no branch)' entry" do
+        subject.branches.should == ['master', 'next']
+      end
+    end
   end
   context "on a repo with no commits" do
     before { stub_commitless_repo 'a' }

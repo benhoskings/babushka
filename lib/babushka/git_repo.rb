@@ -156,7 +156,8 @@ module Babushka
 
     # An array of the names of all the local branches in this repo.
     def branches
-      repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+      names = repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+      names - ['(no branch)']
     end
 
     # The name of the branch that's currently checked out, if any. If there
