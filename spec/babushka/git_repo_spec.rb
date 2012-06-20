@@ -384,14 +384,27 @@ describe GitRepo, '#checkout!' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should already have a next branch" do
-    subject.branches.should =~ %w[master next]
-    subject.current_branch.should == 'next'
+  describe "checking out a branch" do
+    it "should already have a next branch" do
+      subject.branches.should =~ %w[master next]
+      subject.current_branch.should == 'next'
+    end
+    context "after checking out" do
+      before {
+        subject.checkout! "master"
+      }
+      it "should be on the master branch now" do
+        subject.current_branch.should == 'master'
+      end
+    end
   end
-  context "after checking out" do
-    before { subject.checkout! "master" }
-    it "should be on the master branch now" do
-      subject.current_branch.should == 'master'
+  describe "checking out a ref" do
+    before {
+      subject.checkout! 'origin/next~'
+    }
+    it "should detach the HEAD" do
+      subject.branches.should =~ %w[master next]
+      subject.current_branch.should =~ /^[0-9a-f]{40}$/
     end
   end
 end

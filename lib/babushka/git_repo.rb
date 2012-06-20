@@ -214,10 +214,10 @@ module Babushka
       repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(/^.*\//, '')}'")
     end
 
-    # Check out the supplied branch (or ref of any kind, as accepted by
-    # `git checkout`).
-    def checkout! branch
-      repo_shell("git checkout '#{branch}'")
+    # Check out the supplied refspec, detaching the HEAD if the named ref
+    # isn't a branch.
+    def checkout! refspec
+      repo_shell("git checkout '#{refspec}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
