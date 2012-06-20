@@ -15,7 +15,12 @@ end
 dep 'up to date.babushka', :from, :path, :ref do
   requires 'repo clean.babushka'.with(from, path)
   def refspec
-    qualified_ref = ref['/'].nil? ? "origin/#{ref}" : ref
+    # Prepend "origin/" if the result is a valid remote branch.
+    qualified_ref = if repo.all_branches.include?("origin/#{ref}")
+      "origin/#{ref}"
+    else
+      ref
+    end
     repo.resolve(qualified_ref)
   end
   met? {
