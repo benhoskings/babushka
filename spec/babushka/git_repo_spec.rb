@@ -409,6 +409,23 @@ describe GitRepo, '#checkout!' do
   end
 end
 
+describe GitRepo, '#detach!' do
+  before(:all) {
+    stub_repo 'a'
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should detach the HEAD when a branch is supplied" do
+    subject.detach! "next"
+    subject.current_branch.should =~ /^[0-9a-f]{40}$/
+    subject.current_branch.starts_with?(subject.resolve('next')).should be_true
+  end
+  it "should detach the HEAD when a ref is supplied" do
+    subject.detach! 'origin/next~'
+    subject.current_branch.should =~ /^[0-9a-f]{40}$/
+    subject.current_branch.starts_with?(subject.resolve('origin/next~')).should be_true
+  end
+end
+
 describe GitRepo, '#reset_hard!' do
   before {
     stub_repo 'a'
