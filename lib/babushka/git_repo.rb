@@ -160,6 +160,15 @@ module Babushka
       names - ['(no branch)']
     end
 
+    def all_branches
+      names = repo_shell('git branch -a').split("\n").map {|l| l.sub(/^[* ]+/, '') }
+      (names - ['(no branch)']).reject {|i|
+        i['/origin/HEAD ->']
+      }.map {|i|
+        i.sub(/^remotes\//, '')
+      }
+    end
+
     # The name of the branch that's currently checked out, if any. If there
     # is no current branch (i.e. if the HEAD is detached), the HEAD's SHA is
     # returned instead.
