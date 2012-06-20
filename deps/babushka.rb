@@ -4,19 +4,19 @@ meta :babushka do
   end
 end
 
-dep 'babushka', :from, :path, :branch do
-  requires 'up to date.babushka'.with(from, path, branch)
+dep 'babushka', :from, :path, :version do
+  requires 'up to date.babushka'.with(from, path, version)
   requires 'in path.babushka'.with(from, path)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
   path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
-  branch.default!('master')
+  version.default!('master')
 end
 
-dep 'up to date.babushka', :from, :path, :branch do
+dep 'up to date.babushka', :from, :path, :ref do
   requires 'repo clean.babushka'.with(from, path)
   def refspec
-    qualified_branch = branch['/'].nil? ? "origin/#{branch}" : branch
-    repo.resolve(qualified_branch)
+    qualified_ref = ref['/'].nil? ? "origin/#{ref}" : ref
+    repo.resolve(qualified_ref)
   end
   met? {
     if !repo.repo_shell('git fetch origin')
