@@ -39,7 +39,7 @@ module Babushka
     def log_block message, opts = {}, &block
       log "#{message}...", :newline => false
       block.call.tap {|result|
-        log result ? ' done.' : ' failed', :as => (result ? nil : :error), :indentation => false
+        log result ? " #{opts[:success] || 'done'}." : " #{opts[:failure] || 'failed'}", :as => (result ? nil : :error), :indentation => false
       }
     end
 
