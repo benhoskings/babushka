@@ -74,6 +74,13 @@ module Babushka
       end
     end
 
+    def repo_shell? cmd, opts = {}
+      if !exists?
+        raise GitRepoError, "There is no repo at #{@path}."
+      else
+        shell? cmd, opts.merge(:cd => root)
+      end
+    end
 
 
     # True if the repo is clean, i.e. when the content in its index and working
