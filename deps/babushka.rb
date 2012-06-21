@@ -18,28 +18,30 @@ dep 'babushka', :from, :path, :version, :branch do
 end
 
 dep 'up to date.babushka', :from, :path, :ref do
-  requires 'repo clean.babushka'.with(from, path)
-  def refspec
+  def qualified_ref
     # Prepend "origin/" if the result is a valid remote branch.
-    qualified_ref = if repo.all_branches.include?("origin/#{ref}")
+    if repo.all_branches.include?("origin/#{ref}")
       "origin/#{ref}"
     else
       ref
     end
+  end
+
+  def refspec
     repo.resolve(qualified_ref)
   end
+
+  requires 'repo clean.babushka'.with(from, path)
+  requires 'resolvable ref.babushka'.with(from, path, qualified_ref)
+
   met? {
-    if !repo.repo_shell('git fetch origin')
-      unmeetable! "Couldn't pull the latest code - check your internet connection."
-    else
-      (repo.current_head == refspec).tap {|result|
-        if result
-          log_ok "babushka is up to date at #{repo.current_head}."
-        else
-          log "babushka can be updated: #{repo.current_head}..#{refspec}"
-        end
-      }
-    end
+    (repo.current_head == refspec).tap {|result|
+      if result
+        log_ok "babushka is up to date at #{repo.current_head}."
+      else
+        log "babushka can be updated: #{repo.current_head}..#{refspec}"
+      end
+    }
   }
   meet {
     log "#{repo.repo_shell("git diff --stat #{repo.current_head}..#{refspec}")}"
@@ -51,6 +53,28 @@ dep 'repo clean.babushka', :from, :path do
   requires 'installed.babushka'.with(from, path)
   met? {
     repo.clean? or unmeetable!("There are local changes in #{repo.path}.")
+  }
+end
+
+dep 'resolvable ref.babushka', :from, :path, :ref do
+  met? {
+    if !@fetched && ref['origin/']
+      false # Always fetch before resolving a remote ref.
+    else
+      repo.resolve(ref).tap {|result|
+        if result
+          log_ok "#{ref} resolves to #{result}."
+        else
+          log "#{ref} doesn't resolve to a ref."
+        end
+      }
+    end
+  }
+  meet {
+    result = log_block "Fetching #{from}", :failure => "failed, check your internet connection." do
+      @fetched = true
+      repo.repo_shell?('git fetch origin')
+    end
   }
 end
 
