@@ -227,6 +227,6 @@ Thanks to my rubyist friends who've helped with brainstorming and testing---the 
 
 Babushka is licensed under the BSD license, except for the following exception:
 
-lib/support/levenshtein.rb, which is licensed under the MIT license.
+lib/babushka/levenshtein.rb, which is licensed under the MIT license.
 
-The BSD license can be found in full in the LICENSE file, and the MIT license at the top of lib/support/levenshtein.rb.
+The BSD license can be found in full in the LICENSE file, and the MIT license at the top of lib/babushka/levenshtein.rb.
