@@ -13,7 +13,7 @@ module Babushka
       dir_hash = [*commands].group_by {|cmd| cmd_dir(cmd.name) }
 
       if dir_hash.keys.compact.length > 1
-        log_error "The commands for '#{name}' run from more than one place."
+        log_error "These commands run from more than one place."
         log_error dir_hash.values.map {|cmds|
             cmd_location_str_for cmds
           }.to_list(:oxford => true, :conj => 'but').end_with('.')
