@@ -4,6 +4,7 @@ module Babushka
   ExternalComponents = %w[
     fancypath/fancypath
     inkan/inkan
+    levenshtein/levenshtein
   ]
 
   Components = %w[
@@ -40,7 +41,6 @@ module Babushka
     accepts_value_for
     accepts_block_for
     colorizer
-    levenshtein
     cmdline/parser
     cmdline/handler
     cmdline/helpers
