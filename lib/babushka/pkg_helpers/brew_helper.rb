@@ -91,9 +91,6 @@ module Babushka
     def formulas_path
       prefix / 'Library/Formula'
     end
-    def formula_path_for pkg
-      formulas_path / pkg.to_s.end_with('.rb')
-    end
     def homebrew_lib_path
       prefix / 'Library/Homebrew'
     end
