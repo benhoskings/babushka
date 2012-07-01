@@ -38,7 +38,6 @@ module Babushka
 
     def install_pkgs! pkgs, opts
       wait_for_dpkg
-      log_shell "Downloading", "#{pkg_cmd} -y -d install #{pkgs.join(' ')}", :sudo => should_sudo?
       super
     end
 
