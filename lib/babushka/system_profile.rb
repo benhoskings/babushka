@@ -94,17 +94,6 @@ module Babushka
     def our_flavour_names
       SystemDefinitions.names[system][flavour].values
     end
-
-    def flavour_str_map
-      # Only required for names that can't be auto-capitalized,
-      # e.g. :ubuntu => 'Ubuntu' isn't required.
-      {
-        :linux => {
-          :centos => 'CentOS',
-          :redhat => 'Red Hat'
-        }
-      }
-    end
   end
 
   class UnknownSystem < SystemProfile
@@ -165,7 +154,7 @@ module Babushka
     def system; :linux end
     def system_str; 'Linux' end
     def flavour; :unknown end
-    def flavour_str; flavour_str_map[system][flavour] end
+    def flavour_str; 'Linux' end
     def version; 'unknown' end
     def release; version end
     def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").to_i end
@@ -194,6 +183,12 @@ module Babushka
 
   class RedhatSystemProfile < LinuxSystemProfile
     def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
+    def flavour_str
+      {
+        :centos => 'CentOS',
+        :redhat => 'Red Hat'
+      }[flavour]
+    end
     def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
     def get_version_info; File.read '/etc/redhat-release' end
     def pkg_helper; YumHelper end
