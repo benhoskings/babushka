@@ -221,7 +221,7 @@ end
 
 describe "#on for scoping accepters" do
   before {
-    Babushka.stub!(:host).and_return OSXSystemProfile.for_flavour
+    Babushka.stub!(:host).and_return OSXSystemProfile.new
     Babushka.host.stub!(:version).and_return '10.6.7'
     @lambda = lambda = L{ 'hello from the lambda' }
     @other_lambda = other_lambda = L{ 'hello from the other lambda' }
