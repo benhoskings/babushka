@@ -20,9 +20,10 @@ module Babushka
       @_version_info ||= get_version_info
     end
 
-    def linux?; false end
-    def osx?; false end
-    def bsd?; false end
+    def linux?; system == :linux end
+    def osx?;   system == :osx end
+    def bsd?;   system == :bsd end
+
     def pkg_helper; UnknownPkgHelper end
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
@@ -129,7 +130,6 @@ module Babushka
   end
 
   class OSXSystemProfile < SystemProfile
-    def osx?; true end
     def library_ext; 'bundle' end
     def system; :osx end
     def system_str; 'Mac OS X' end
@@ -151,7 +151,6 @@ module Babushka
   end
 
   class BSDSystemProfile < SystemProfile
-    def bsd?; true end
     def system; :bsd end
     def system_str; 'BSD' end
     def flavour; :unknown end
@@ -176,7 +175,6 @@ module Babushka
   end
 
   class LinuxSystemProfile < SystemProfile
-    def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
     def flavour; :unknown end
