@@ -49,6 +49,7 @@ module Babushka
     renderable
     system_definitions
     system_profile
+    system_detector
     run_reporter
     bug_reporter
     pkg_helper

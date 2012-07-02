@@ -3,19 +3,6 @@ module Babushka
     include ShellHelpers
     extend ShellHelpers
 
-    def self.for_host
-      {
-        'Linux' => LinuxSystemProfile,
-        'Darwin' => OSXSystemProfile,
-        'DragonFly' => DragonFlySystemProfile,
-        'FreeBSD' => FreeBSDSystemProfile
-      }[shell('uname -s')].try(:for_flavour) || UnknownSystem.new
-    end
-
-    def self.for_flavour
-      new
-    end
-
     def version_info
       @_version_info ||= get_version_info
     end
@@ -188,24 +175,6 @@ module Babushka
       shell('ifconfig',
         shell('netstat -nr').val_for("0.0.0.0").scan(/\w+$/).first
       ).val_for("inet addr").scan(/^[\d\.]+/).first
-    end
-
-    def self.for_flavour
-      (detect_using_release_file || LinuxSystemProfile).new
-    end
-
-    private
-
-    def self.detect_using_release_file
-      {
-        'debian_version' => DebianSystemProfile,
-        'redhat-release' => RedhatSystemProfile,
-        'arch-release'   => ArchSystemProfile,
-        # 'gentoo-release' =>
-        # 'SuSE-release'   =>
-      }.selekt {|release_file, system_profile|
-        File.exists? "/etc/#{release_file}"
-      }.values.first
     end
   end
 
