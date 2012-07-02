@@ -23,6 +23,7 @@ module Babushka
     def linux?; false end
     def osx?; false end
     def bsd?; false end
+    def pkg_helper; UnknownPkgHelper end
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
     # The extension that dynamic libraries are given on this system. On linux
@@ -122,7 +123,6 @@ module Babushka
     def description
       "Unknown system"
     end
-    def pkg_helper; UnknownPkgHelper end
     def system; :unknown end
     def flavour; :unknown end
     def name; :unknown end
