@@ -19,8 +19,9 @@ end
 
 dep 'up to date.babushka', :from, :path, :ref do
   def qualified_ref
-    # Prepend "origin/" if the result is a valid remote branch.
-    if repo.all_branches.include?("origin/#{ref}")
+    # Prepend "origin/" we're installing from scratch, or if the result is a
+    # valid remote branch.
+    if repo.exists? && repo.all_branches.include?("origin/#{ref}")
       "origin/#{ref}"
     else
       ref
