@@ -50,6 +50,7 @@ module Babushka
     system_definitions
     system_profile
     system_detector
+    system_matcher
     run_reporter
     bug_reporter
     pkg_helper
