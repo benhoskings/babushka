@@ -169,3 +169,12 @@ describe String, "val_for" do
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
   end
 end
+
+describe String, '#colorized?' do
+  it "should return false for regular strings" do
+    "babushka".should_not be_colorized
+  end
+  it "should return true for strings containing ANSI color sequences" do
+    "\e[0;32;29mbabushka\e[0m".should be_colorized
+  end
+end

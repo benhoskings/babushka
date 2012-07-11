@@ -85,6 +85,10 @@ class String
     Babushka::VersionStr.new self
   end
 
+  def colorized?
+    self[/\e\[\d/]
+  end
+
   # Return a new string with the contents of this string surrounded in escape
   # sequences such that it will render as described in +description+.
   # Some examples:
