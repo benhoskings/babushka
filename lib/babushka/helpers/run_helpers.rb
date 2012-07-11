@@ -41,7 +41,7 @@ module Babushka
     end
 
     def change_line line, replacement, filename
-      deprecated! '2012-09-01', :instead => "sed via #shell", :example => "shell(\"sed -i '' -e 's/^#{Regexp.escape(line)}$/#{replacement}/' '#{filename}'\")"
+      deprecated! '2012-09-01', :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(line)}$/#{replacement}/' '#{filename}'\")"
       path = filename.p
 
       log "Patching #{path}"
@@ -70,7 +70,7 @@ module Babushka
     end
 
     def change_with_sed keyword, from, to, file
-      deprecated! '2012-09-01', :instead => "sed via #shell", :example => "shell(\"sed -i '' -e 's/^#{Regexp.escape(keyword)}\\s+#{Regexp.escape(from)}\\b/#{keyword} #{to}/' '#{file}'\")"
+      deprecated! '2012-09-01', :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(keyword)}\\s+#{Regexp.escape(from)}\\b/#{keyword} #{to}/' '#{file}'\")"
       # Remove the incorrect setting if it's there
       shell("sed -ri 's/^#{keyword}\s+#{from}//' #{file}", :sudo => !File.writable?(file))
       # Add the correct setting unless it's already there
