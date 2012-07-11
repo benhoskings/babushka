@@ -3,7 +3,7 @@
   'gettext.managed' => 'gettext.lib',
   'git.managed'     => 'git.bin',
   'pip.managed'     => 'pip.bin',
-  'ruby.managed'    => 'ruby.bin',
+  'ruby.managed'    => 'ruby',
   'sudo.managed'    => 'sudo.bin',
   'sudo'            => 'sudo.bin'
 }.each_pair {|old_name, new_name|
