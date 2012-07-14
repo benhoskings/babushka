@@ -203,6 +203,7 @@ module Babushka
         'debian_version' => DebianSystemProfile,
         'redhat-release' => RedhatSystemProfile,
         'arch-release'   => ArchSystemProfile,
+        'system-release' => FedoraSystemProfile,
         # 'gentoo-release' =>
         # 'SuSE-release'   =>
       }.selekt {|release_file, system_profile|
@@ -230,6 +231,10 @@ module Babushka
     def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
     def get_version_info; File.read '/etc/redhat-release' end
     def pkg_helper; YumHelper end
+  end
+
+  class FedoraSystemProfile < RedhatSystemProfile
+    def get_version_info; File.read '/etc/system-release' end
   end
 
   class ArchSystemProfile < LinuxSystemProfile
