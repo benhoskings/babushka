@@ -189,6 +189,13 @@ module Babushka
       repo_shell("git rev-parse --short HEAD")
     end
 
+    # The long SHA of a branch's remote's current HEAD. Alternate remote's can
+    # be specified in the opts hash
+    def remote_head(branch, opts={})
+      opts = {:remote => "origin"}.merge(opts)
+      repo_shell("git ls-remote #{opts[:remote]} #{branch}")
+    end
+
     # The full 40 character SHA of the current HEAD.
     def current_full_head
       repo_shell("git rev-parse HEAD")
