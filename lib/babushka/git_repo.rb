@@ -112,11 +112,26 @@ module Babushka
       !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
     end
 
+
+    # True if we're ahead of the identically named remote branch, or if the
+    # remote doens't exist
+    def ahead_of_remote?
+      !remote_branch_exists? ||
+      !repo_shell("git rev-list #{remote_head current_branch}..HEAD").split("\n").empty?
+    end
+
     # True if there are any commits in the current branch's corresponding remote
     # branch that aren't also present locally, if the remote branch exists.
     def behind?
       remote_branch_exists? &&
       !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
+    end
+
+    # True if the identically named remote branch has commits that the local
+    # branch doesn't include, if the remote branch exists
+    def behind_remote?
+      remote_branch_exists? &&
+      !repo_shell("git rev-list HEAD..#{remote_head current_branch}").split("\n").empty?
     end
 
     # True if the repo is partway through a rebase of some kind. This could be
