@@ -201,9 +201,9 @@ module Babushka
       repo_shell("git rev-parse HEAD")
     end
 
-    # The short SHA of the commit that +refspec+ currently refers to.
-    def resolve refspec
-      repo_shell?("git rev-parse --short #{refspec}")
+    # The short SHA of the commit that +ref+ currently refers to.
+    def resolve ref
+      repo_shell?("git rev-parse --short #{ref}")
     end
 
     # True if origin contains a branch of the same name as the current local
@@ -237,21 +237,21 @@ module Babushka
       repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(/^.*\//, '')}'")
     end
 
-    # Check out the supplied refspec, detaching the HEAD if the named ref
+    # Check out the supplied ref, detaching the HEAD if the named ref
     # isn't a branch.
-    def checkout! refspec
-      repo_shell("git checkout '#{refspec}'")
+    def checkout! ref
+      repo_shell("git checkout '#{ref}'")
     end
 
-    # Check out the supplied refspec, detaching the HEAD.
-    def detach! refspec
-      repo_shell("git checkout --detach '#{refspec}'")
+    # Check out the supplied ref, detaching the HEAD.
+    def detach! ref
+      repo_shell("git checkout --detach '#{ref}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
-    def reset_hard! refspec = 'HEAD'
-      repo_shell("git reset --hard #{refspec}")
+    def reset_hard! ref = 'HEAD'
+      repo_shell("git reset --hard #{ref}")
     end
 
     def inspect
