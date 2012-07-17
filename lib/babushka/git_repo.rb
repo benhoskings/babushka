@@ -258,6 +258,11 @@ module Babushka
       "#<GitRepo:#{root} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
     end
 
+    # Update all remotes so that behind? and friends have up to date data
+    def fetch!
+      repo_shell("git fetch --all")
+    end
+
     private
 
     def error_message_for git_error
