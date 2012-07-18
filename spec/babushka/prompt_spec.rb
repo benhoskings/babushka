@@ -177,8 +177,8 @@ describe "'y' input" do
   context "unintentional" do
     it "should ask for the value again with a custom log message" do
       Prompt.should_receive(:log).with("value", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return('y')
-      Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
+      Prompt.should_receive(:read_from_prompt).and_return('yes')
+      Prompt.should_receive(:log).with("Wait, do you mean the literal value 'yes' [n]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('n')
       Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('value')

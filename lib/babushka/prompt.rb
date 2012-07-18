@@ -140,7 +140,7 @@ module Babushka
         opts[:retry] || "That wasn't valid"
       elsif value.blank? && !(opts[:default] && opts[:default].empty?)
         "That was blank"
-      elsif !opts[:confirmation] && value == 'y' && !confirm("Wait, do you mean the literal value 'y'?", :default => 'n', :always_ask => true)
+      elsif !opts[:confirmation] && %w[y yes].include?(value) && !confirm("Wait, do you mean the literal value '#{value}'?", :default => 'n', :always_ask => true)
         "Thought so :) Hit enter for the [default]"
       end
 
