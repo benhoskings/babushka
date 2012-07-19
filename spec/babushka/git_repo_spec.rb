@@ -59,7 +59,7 @@ describe GitRepo, 'without a repo' do
   it "should not exist" do
     subject.exists?.should be_false
   end
-  [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
+  [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?, :ahead_of_remote?, :behind?, :behind_remote?].each {|method|
     it "should raise on #{method}" do
       L{ subject.send(method) }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/missing'}.")
     end
