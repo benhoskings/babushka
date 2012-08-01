@@ -199,6 +199,14 @@ module Babushka
       repo_shell?("git rev-parse --short #{refspec}")
     end
 
+    # The remote assigned to branch in the git config, or 'origin' if none
+    # is set. This is the remote that git pushes to and fetches from for this
+    # branch by default, and the branch that comparisons like #ahead? and
+    # #behind? are made against.
+    def remote_for branch
+      repo_shell?("git config branch.#{branch}.remote") || 'origin'
+    end
+
     # True if origin contains a branch of the same name as the current local
     # branch.
     def remote_branch_exists?

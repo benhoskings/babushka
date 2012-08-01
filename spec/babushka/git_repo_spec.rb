@@ -264,6 +264,20 @@ describe GitRepo, '#resolve' do
   end
 end
 
+describe GitRepo, '#remote_for' do
+  before(:all) {
+    stub_repo 'a'
+    subject.repo_shell('git config branch.next.remote upstream')
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return the remote when it's set in the config" do
+    subject.remote_for('next').should == 'upstream'
+  end
+  it "should return 'origin' when no remote is set" do
+    subject.remote_for('lolbranch').should == 'origin'
+  end
+end
+
 describe GitRepo, '#ahead?' do
   before(:all) {
     stub_repo 'a'
