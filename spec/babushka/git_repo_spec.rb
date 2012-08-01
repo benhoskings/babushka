@@ -240,6 +240,23 @@ describe GitRepo, '#current_branch' do
   end
 end
 
+describe GitRepo, '#current_remote_branch' do
+  before(:all) { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return the namespaced remote branch" do
+    subject.current_remote_branch.should == 'origin/master'
+  end
+  context "after switching to a custom branch" do
+    before {
+      subject.repo_shell('git checkout -b next')
+      subject.repo_shell('git config branch.next.remote upstream')
+    }
+    it "should return 'origin' when no remote is set" do
+      subject.current_remote_branch.should == 'upstream/next'
+    end
+  end
+end
+
 describe GitRepo, '#current_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -261,6 +278,20 @@ describe GitRepo, '#resolve' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
     subject.resolve('master').should =~ /^[0-9a-f]{7,40}$/
+  end
+end
+
+describe GitRepo, '#remote_for' do
+  before(:all) {
+    stub_repo 'a'
+    subject.repo_shell('git config branch.next.remote upstream')
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return the remote when it's set in the config" do
+    subject.remote_for('next').should == 'upstream'
+  end
+  it "should return 'origin' when no remote is set" do
+    subject.remote_for('lolbranch').should == 'origin'
   end
 end
 
@@ -304,6 +335,15 @@ describe GitRepo, '#ahead?' do
         subject.remote_branch_exists?.should be_true
         subject.should_not be_ahead
       end
+      context "when the remote doesn't exist" do
+        before {
+          subject.repo_shell('git config branch.topic.remote upstream')
+        }
+        it "should be ahead" do
+          subject.remote_branch_exists?.should be_false
+          subject.should be_ahead
+        end
+      end
     end
   end
 end
@@ -330,6 +370,15 @@ describe GitRepo, '#behind?' do
     it "should not be behind" do
       subject.remote_branch_exists?.should be_true
       subject.should_not be_behind
+    end
+    context "when the remote doesn't exist" do
+      before {
+        subject.repo_shell('git config branch.next.remote upstream')
+      }
+      it "should be ahead" do
+        subject.remote_branch_exists?.should be_false
+        subject.should be_ahead
+      end
     end
   end
 end

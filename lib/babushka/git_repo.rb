@@ -109,14 +109,14 @@ module Babushka
     # remote doesn't exist.
     def ahead?
       !remote_branch_exists? ||
-      !repo_shell("git rev-list origin/#{current_branch}..").split("\n").empty?
+      !repo_shell("git rev-list #{current_remote_branch}..").split("\n").empty?
     end
 
     # True if there are any commits in the current branch's corresponding remote
     # branch that aren't also present locally, if the remote branch exists.
     def behind?
       remote_branch_exists? &&
-      !repo_shell("git rev-list ..origin/#{current_branch}").split("\n").empty?
+      !repo_shell("git rev-list ..#{current_remote_branch}").split("\n").empty?
     end
 
     # True if the repo is partway through a rebase of some kind. This could be
@@ -183,6 +183,14 @@ module Babushka
       repo_shell("cat .git/HEAD").strip.sub(/^.*refs\/heads\//, '')
     end
 
+    # The namespaced name of the remote branch that the current local branch
+    # is tracking, or on origin if the branch isn't tracking an explicit
+    # remote branch.
+    def current_remote_branch
+      branch = current_branch
+      "#{remote_for(branch)}/#{branch}"
+    end
+
     # The short SHA of the repo's current HEAD. This is usually 7 characters,
     # but is longer when extra characters are required to disambiguate it.
     def current_head
@@ -199,11 +207,20 @@ module Babushka
       repo_shell?("git rev-parse --short #{refspec}")
     end
 
+    # The remote assigned to branch in the git config, or 'origin' if none
+    # is set. This is the remote that git pushes to and fetches from for this
+    # branch by default, and the branch that comparisons like #ahead? and
+    # #behind? are made against.
+    def remote_for branch
+      repo_shell?("git config branch.#{branch}.remote") || 'origin'
+    end
+
     # True if origin contains a branch of the same name as the current local
     # branch.
     def remote_branch_exists?
       repo_shell('git branch -a').split("\n").map(&:strip).detect {|b|
-        b[/^(remotes\/)?origin\/#{current_branch}$/]
+        # The output looks like origin/master or remotes/origin/master.
+        b[/^(remotes\/)?#{current_remote_branch}$/]
       }
     end
 
