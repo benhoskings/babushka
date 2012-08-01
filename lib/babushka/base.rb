@@ -8,7 +8,7 @@ module Babushka
   # will be used, which should work for most operations but will fail on deps
   # that attempt to use the package manager, etc.
   def host
-    @host ||= Babushka::SystemProfile.for_host
+    @host ||= Babushka::SystemDetector.profile_for_host
   end
   module_function :host
 

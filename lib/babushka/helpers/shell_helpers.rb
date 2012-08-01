@@ -2,6 +2,10 @@ module Babushka
   module ShellHelpers
     include LogHelpers
 
+    # Make these helpers callable directly on ShellHelpers,
+    # and private when included.
+    module_function
+
     # Run +cmd+.
     #
     # If the command succeeds (i.e. returns 0), its output will be returned
@@ -205,8 +209,6 @@ module Babushka
         shell *cmd.dup.push(opts.merge(:spinner => true)), &block
       end
     end
-
-    private
 
     def shell_cmd *cmd, &block
       Shell.new(*cmd).run(&block)

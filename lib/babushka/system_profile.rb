@@ -3,26 +3,22 @@ module Babushka
     include ShellHelpers
     extend ShellHelpers
 
-    def self.for_host
-      {
-        'Linux' => LinuxSystemProfile,
-        'Darwin' => OSXSystemProfile,
-        'DragonFly' => DragonFlySystemProfile,
-        'FreeBSD' => FreeBSDSystemProfile
-      }[shell('uname -s')].try(:for_flavour) || UnknownSystem.new
+    def matcher
+      @matcher ||= SystemMatcher.new(system, flavour, name, pkg_helper_key)
     end
 
-    def self.for_flavour
-      new
-    end
+    def matches?(specs)           matcher.matches?(specs) end
+    def match_list()              matcher.list end
+    def differentiator_for(specs) matcher.distinguish_from(specs) end
 
     def version_info
       @_version_info ||= get_version_info
     end
 
-    def linux?; false end
-    def osx?; false end
-    def bsd?; false end
+    def linux?; system == :linux end
+    def osx?;   system == :osx end
+    def bsd?;   system == :bsd end
+
     def pkg_helper; UnknownPkgHelper end
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
@@ -66,57 +62,6 @@ module Babushka
     def name_str
       (SystemDefinitions.descriptions[system][flavour] || {})[release]
     end
-
-    def match_list
-      [name, flavour, pkg_helper_key, system, :all].compact
-    end
-
-    def matches? specs
-      [*specs].any? {|spec| first_nonmatch_for(spec).nil? }
-    end
-
-    def first_nonmatch_for spec
-      if spec == :all
-        nil
-      elsif SystemDefinitions.all_systems.include? spec
-        spec == system ? nil : :system
-      elsif PkgHelper.all_manager_keys.include? spec
-        spec == pkg_helper_key ? nil : :pkg_helper
-      elsif our_flavours.include? spec
-        spec == flavour ? nil : :flavour
-      elsif our_flavour_names.include? spec
-        spec == name ? nil : :name
-      else
-        :system
-      end
-    end
-
-    def differentiator_for specs
-      nonmatches = [*specs].map {|spec|
-        first_nonmatch_for spec
-      }.sort_by {|spec|
-        [:system, :flavour, :name].index spec
-      }.compact
-      send "#{nonmatches.last}_str" unless nonmatches.empty?
-    end
-
-    def our_flavours
-      SystemDefinitions.names[system].keys
-    end
-    def our_flavour_names
-      SystemDefinitions.names[system][flavour].values
-    end
-
-    def flavour_str_map
-      # Only required for names that can't be auto-capitalized,
-      # e.g. :ubuntu => 'Ubuntu' isn't required.
-      {
-        :linux => {
-          :centos => 'CentOS',
-          :redhat => 'Red Hat'
-        }
-      }
-    end
   end
 
   class UnknownSystem < SystemProfile
@@ -129,7 +74,6 @@ module Babushka
   end
 
   class OSXSystemProfile < SystemProfile
-    def osx?; true end
     def library_ext; 'bundle' end
     def system; :osx end
     def system_str; 'Mac OS X' end
@@ -151,7 +95,6 @@ module Babushka
   end
 
   class BSDSystemProfile < SystemProfile
-    def bsd?; true end
     def system; :bsd end
     def system_str; 'BSD' end
     def flavour; :unknown end
@@ -176,11 +119,10 @@ module Babushka
   end
 
   class LinuxSystemProfile < SystemProfile
-    def linux?; true end
     def system; :linux end
     def system_str; 'Linux' end
     def flavour; :unknown end
-    def flavour_str; flavour_str_map[system][flavour] end
+    def flavour_str; 'Linux' end
     def version; 'unknown' end
     def release; version end
     def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").to_i end
@@ -190,25 +132,6 @@ module Babushka
       shell('ifconfig',
         shell('netstat -nr').val_for("0.0.0.0").scan(/\w+$/).first
       ).val_for("inet addr").scan(/^[\d\.]+/).first
-    end
-
-    def self.for_flavour
-      (detect_using_release_file || LinuxSystemProfile).new
-    end
-
-    private
-
-    def self.detect_using_release_file
-      {
-        'debian_version' => DebianSystemProfile,
-        'redhat-release' => RedhatSystemProfile,
-        'arch-release'   => ArchSystemProfile,
-        'system-release' => FedoraSystemProfile,
-        # 'gentoo-release' =>
-        # 'SuSE-release'   =>
-      }.selekt {|release_file, system_profile|
-        File.exists? "/etc/#{release_file}"
-      }.values.first
     end
   end
 
@@ -228,6 +151,12 @@ module Babushka
 
   class RedhatSystemProfile < LinuxSystemProfile
     def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
+    def flavour_str
+      {
+        :centos => 'CentOS',
+        :redhat => 'Red Hat'
+      }[flavour]
+    end
     def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
     def get_version_info; File.read '/etc/redhat-release' end
     def pkg_helper; YumHelper end
