@@ -219,7 +219,8 @@ module Babushka
     # branch.
     def remote_branch_exists?
       repo_shell('git branch -a').split("\n").map(&:strip).detect {|b|
-        b[/^(remotes\/)?origin\/#{current_branch}$/]
+        # The output looks like origin/master or remotes/origin/master.
+        b[/^(remotes\/)?#{current_remote_branch}$/]
       }
     end
 

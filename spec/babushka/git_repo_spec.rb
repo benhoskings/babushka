@@ -335,6 +335,15 @@ describe GitRepo, '#ahead?' do
         subject.remote_branch_exists?.should be_true
         subject.should_not be_ahead
       end
+      context "when the remote doesn't exist" do
+        before {
+          subject.repo_shell('git config branch.topic.remote upstream')
+        }
+        it "should be ahead" do
+          subject.remote_branch_exists?.should be_false
+          subject.should be_ahead
+        end
+      end
     end
   end
 end
@@ -361,6 +370,15 @@ describe GitRepo, '#behind?' do
     it "should not be behind" do
       subject.remote_branch_exists?.should be_true
       subject.should_not be_behind
+    end
+    context "when the remote doesn't exist" do
+      before {
+        subject.repo_shell('git config branch.next.remote upstream')
+      }
+      it "should be ahead" do
+        subject.remote_branch_exists?.should be_false
+        subject.should be_ahead
+      end
     end
   end
 end
