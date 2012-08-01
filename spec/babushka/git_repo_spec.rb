@@ -240,6 +240,23 @@ describe GitRepo, '#current_branch' do
   end
 end
 
+describe GitRepo, '#current_remote_branch' do
+  before(:all) { stub_repo 'a' }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return the namespaced remote branch" do
+    subject.current_remote_branch.should == 'origin/master'
+  end
+  context "after switching to a custom branch" do
+    before {
+      subject.repo_shell('git checkout -b next')
+      subject.repo_shell('git config branch.next.remote upstream')
+    }
+    it "should return 'origin' when no remote is set" do
+      subject.current_remote_branch.should == 'upstream/next'
+    end
+  end
+end
+
 describe GitRepo, '#current_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }

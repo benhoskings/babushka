@@ -183,6 +183,14 @@ module Babushka
       repo_shell("cat .git/HEAD").strip.sub(/^.*refs\/heads\//, '')
     end
 
+    # The namespaced name of the remote branch that the current local branch
+    # is tracking, or on origin if the branch isn't tracking an explicit
+    # remote branch.
+    def current_remote_branch
+      branch = current_branch
+      "#{remote_for(branch)}/#{branch}"
+    end
+
     # The short SHA of the repo's current HEAD. This is usually 7 characters,
     # but is longer when extra characters are required to disambiguate it.
     def current_head
