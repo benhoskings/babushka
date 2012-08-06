@@ -44,11 +44,15 @@ module Babushka
             nil
           end
         }.compact
-        hsh[cmd] = possible_versions.detect {|piece| cmd.matches?(piece) }
-        if hsh[cmd] == cmd.version
-          log_ok "#{cmd.name} is #{cmd.version}."
+        if potential_versions.empty?
+          # No potential versions to check against.
         else
-          log "#{cmd.name} is #{hsh[cmd] || possible_versions.first}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+          hsh[cmd] = potential_versions.detect {|piece| cmd.matches?(piece) }
+          if hsh[cmd] == cmd.version
+            log_ok "#{cmd.name} is #{cmd.version}."
+          else
+            log "#{cmd.name} is #{hsh[cmd] || potential_versions.first}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
+          end
         end
         hsh
       }
