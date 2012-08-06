@@ -2,10 +2,11 @@ meta :app do
   accepts_list_for :source
   accepts_list_for :prefix, %w[~/Applications /Applications]
   accepts_value_for :provides, :name
+  accepts_value_for :version, nil
   accepts_block_for :current_version do |path| nil end
 
   def app
-    Babushka.VersionOf(provides)
+    Babushka.VersionOf(provides, version)
   end
 
   def app_name_matcher
