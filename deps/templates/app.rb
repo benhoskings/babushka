@@ -34,31 +34,16 @@ meta :app do
     }
   end
 
-  def matching_version?
-    versions = [provides].versions.select {|p| !p.version.nil? }.inject({}) {|hsh,cmd|
-      detected_version = current_version.call(app_location / provides)
-      if detected_version.nil?
-        true # Can't determine current version.
-      else
-        hsh[cmd] = cmd.matches?(detected_version)
-        if hsh[cmd] == cmd.version
-          log_ok "#{cmd.name} is #{cmd.version}."
-        else
-          log "#{cmd.name} is #{detected_version}, which is#{"n't" unless hsh[cmd]} #{cmd.version}.", :as => (:ok if hsh[cmd])
-        end
-      end
-      hsh
-    }
-    versions.values.all?
-  end
-
   template {
     prepare {
       setup_source_uris
     }
 
     met? {
-      app_in_path? and matching_version?
+      app_in_path? and
+      Babushka::PathChecker.matching_versions?([app]) {|cmd|
+        current_version.call(app_location / provides)
+      }
     }
 
     meet {
