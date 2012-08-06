@@ -4,7 +4,10 @@ module Babushka
 
     def self.in_path? provided_list
       commands = [*provided_list].versions
-      cmds_in_path?(commands) and matching_versions?(commands)
+
+      cmds_in_path?(commands) and matching_versions?(commands) {|cmd|
+        shell("#{cmd.name} --version")
+      }
     end
 
     private
@@ -34,7 +37,7 @@ module Babushka
       versions = commands.select {|cmd|
         !cmd.version.nil?
       }.inject({}) {|hsh,cmd|
-        possible_versions = (shell("#{cmd.name} --version") || '').split(/[\s\-]/).map {|piece|
+        potential_versions = (yield(cmd) || '').split(/[\s\-]/).map {|piece|
           begin
             piece.to_version
           rescue VersionStrError
