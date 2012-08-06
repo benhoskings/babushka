@@ -54,6 +54,15 @@ describe Parameter do
     end
   end
 
+  describe "#to_a" do
+    it "should delegate to the value" do
+      Parameter.new(:test, %w[a value]).to_a.should == %w[a value]
+    end
+    it "should convert non-array values to arrays" do
+      Parameter.new(:test, 1..3).to_a.should == [1, 2, 3]
+    end
+  end
+
   describe "#to_str" do
     it "should delegate to the value" do
       File.exists?(Parameter.new(:path, "/bin")).should be_true

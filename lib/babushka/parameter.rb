@@ -102,6 +102,10 @@ module Babushka
       value.to_s
     end
 
+    def to_a
+      value.to_a
+    end
+
     def to_str
       if !value.respond_to?(:to_str)
         raise TypeError, "Can't coerce #{value}:#{value.class.name} into a String"
