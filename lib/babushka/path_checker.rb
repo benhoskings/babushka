@@ -37,13 +37,7 @@ module Babushka
       versions = commands.select {|cmd|
         !cmd.version.nil?
       }.inject({}) {|hsh,cmd|
-        potential_versions = (yield(cmd) || '').split(/[\s\-]/).map {|piece|
-          begin
-            piece.to_version
-          rescue VersionStrError
-            nil
-          end
-        }.compact
+        potential_versions = match_potential_versions(yield(cmd))
         if potential_versions.empty?
           # No potential versions to check against.
         else
@@ -57,6 +51,16 @@ module Babushka
         hsh
       }
       versions.values.all?
+    end
+
+    def self.match_potential_versions str
+      (str || '').split(/[\s\-]/).map {|piece|
+        begin
+          piece.to_version
+        rescue VersionStrError
+          nil
+        end
+      }.compact
     end
 
     def self.cmd_location_str_for cmds
