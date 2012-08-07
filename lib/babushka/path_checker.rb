@@ -3,7 +3,7 @@ module Babushka
     extend ShellHelpers
 
     def self.in_path? provided_list
-      commands = [*provided_list].versions
+      commands = [provided_list].flatten(1).versions
 
       cmds_in_path?(commands) and matching_versions?(commands) {|cmd|
         shell("#{cmd.name} --version")
