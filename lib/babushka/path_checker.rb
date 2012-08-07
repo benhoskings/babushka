@@ -54,7 +54,7 @@ module Babushka
     end
 
     def self.match_potential_versions str
-      (str || '').split(/[\s\-]/).map {|piece|
+      (str || '').split(/[^\w\.\-]+/).map {|piece|
         begin
           piece.to_version
         rescue VersionStrError
