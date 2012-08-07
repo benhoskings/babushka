@@ -23,5 +23,13 @@ contains support for command-line editing').should == ['9.1.3']
         'ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-darwin12.0.0]'
       ).should == ['1.9.3p194', '2012-04-20', '35410', 'x86_64-darwin12.0.0']
     end
+
+    context "when a dotted version is supplied" do
+      it "should only match against dotted potential versions" do
+        PathChecker.match_potential_versions(
+          'ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-darwin12.0.0]', '1.9.3p0'
+        ).should == ['1.9.3p194', 'x86_64-darwin12.0.0']
+      end
+    end
   end
 end
