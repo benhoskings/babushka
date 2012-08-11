@@ -104,7 +104,7 @@ class Fancypath < Pathname
   # Querying the file the path refers to.
 
   def read
-    super.chomp if exists?
+    super if exists?
   end
 
   def tail(bytes)
