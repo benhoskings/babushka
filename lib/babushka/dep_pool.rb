@@ -30,7 +30,7 @@ module Babushka
     end
 
     def add_template name, in_opts, block
-      MetaDep.for name, @source, in_opts, &block
+      DepTemplate.for name, @source, in_opts, &block
     end
 
     def clear!
