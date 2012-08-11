@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 def version_of *args
-  Babushka.VersionOf *args
+  Babushka.VersionOf(*args)
 end
 
 describe "creation" do
