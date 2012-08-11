@@ -3,19 +3,19 @@ require 'dep_definer_support'
 
 describe "accepts_block_for behaviour" do
   before {
-    Dep.stub!(:base_template).and_return(TestTemplate)
+    Babushka.host.stub!(:match_list).and_return([:osx])
     setup_test_lambdas
     dep 'default'
   }
 
   it "should define a declarer" do
     Dep('default').context.should_not respond_to(:test_defining)
-    TestDepContext.accepts_block_for :test_defining
+    DepContext.accepts_block_for :test_defining
     Dep('default').context.should respond_to(:test_defining)
   end
 
   it "should return lambda" do
-    TestDepContext.accepts_block_for :test_defining
+    DepContext.accepts_block_for :test_defining
     lambda = L{ 'blah' }
     value_from_block = nil
     dep 'returning test' do
@@ -36,7 +36,7 @@ describe "accepts_block_for behaviour" do
 
   it "should use default blocks when no specific one is specified" do
     lambda = L{ 'default value' }
-    TestDepContext.accepts_block_for :test_defaults, &lambda
+    DepContext.accepts_block_for :test_defaults, &lambda
     value_from_block = nil
     dep 'default test' do
       value_from_block = test_defaults
@@ -49,7 +49,7 @@ end
 
 describe "accepts_list_for behaviour" do
   before {
-    Babushka.stub!(:host).and_return FakeOSXSystemProfile.new
+    Babushka.host.stub!(:match_list).and_return([:osx])
     dep 'test build tools' do
       requires {
         on :osx, 'xcode tools'

@@ -3,7 +3,7 @@ require 'dep_definer_support'
 
 describe "source_template" do
   it "should return BaseTemplate" do
-    TestDepContext.source_template.should == Dep::BaseTemplate
+    DepContext.source_template.should == Dep::BaseTemplate
   end
 end
 
