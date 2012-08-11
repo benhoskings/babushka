@@ -219,23 +219,23 @@ describe "methods in deps" do
 end
 
 describe "#on for scoping accepters" do
+  let!(:the_lambda) { L{ 'hello from the lambda' } }
+  let!(:other_lambda) { L{ 'hello from the other lambda' } }
   before {
+    local_lambda, other_local_lambda = the_lambda, other_lambda
     Babushka.stub!(:host).and_return OSXSystemProfile.new
-    Babushka.host.stub!(:version).and_return '10.6.7'
-    @lambda = lambda = L{ 'hello from the lambda' }
-    @other_lambda = other_lambda = L{ 'hello from the other lambda' }
     dep 'scoping' do
       on :osx do
-        met?(&lambda)
+        met?(&local_lambda)
       end
       on :linux do
-        met?(&other_lambda)
+        met?(&other_local_lambda)
       end
     end
   }
   it "should only allow choices that match" do
     Dep('scoping').tap {|dep|
       dep.context.define!
-    }.context.payload[:met?].should == {:osx => @lambda}
+    }.context.payload[:met?].should == {:osx => the_lambda}
   end
 end
