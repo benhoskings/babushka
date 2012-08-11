@@ -8,10 +8,12 @@ module Babushka
       def default_blocks
         merged_default_blocks_for self
       end
+
       def merged_default_blocks_for klass
         parent_values = klass == DepDefiner ? {} : merged_default_blocks_for(klass.superclass)
         parent_values.merge(default_blocks_for(klass))
       end
+
       def default_blocks_for klass
         (@@default_blocks ||= Hashish.hash)[klass]
       end

@@ -3,10 +3,12 @@ class TestDepContext < DepContext
     :osx # hardcode this for testing
   end
 end
+
 class TestTemplate
   def self.contextual_name; name end
   def self.context_class; TestDepContext end
 end
+
 class FakeOSXSystemProfile < OSXSystemProfile
   def version; '10.6.7' end
   def get_version_info; '' end

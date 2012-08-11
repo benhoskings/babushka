@@ -56,6 +56,7 @@ module Babushka
         _cmd_dir.starts_with?(prefix)
       end
     end
+
     def should_sudo?
       !File.writable?(bin_path)
     end

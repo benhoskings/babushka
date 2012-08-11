@@ -91,9 +91,11 @@ module Babushka
     def _by_babushka
       "by babushka-#{VERSION} at #{Time.now}"
     end
+
     def edited_by_babushka
       "This line edited #{_by_babushka}"
     end
+
     def added_by_babushka nlines
       if nlines == 1
         "This line added #{_by_babushka}"

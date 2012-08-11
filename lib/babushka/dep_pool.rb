@@ -13,9 +13,11 @@ module Babushka
     def names
       @pool.keys
     end
+
     def items
       @pool.values
     end
+
     def for spec
       spec.respond_to?(:name) ? @pool[spec.name] : @pool[spec]
     end

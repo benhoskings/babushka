@@ -88,6 +88,7 @@ module Babushka
     def prefix
       self.class.source_prefix
     end
+
     def path
       if implicit? || local?
         @uri
@@ -103,6 +104,7 @@ module Babushka
     def updated_at
       Time.now - File.mtime(path)
     end
+
     def description_pieces
       [
         name,
@@ -111,21 +113,27 @@ module Babushka
         ("#{updated_at.round.xsecs} ago" if cloneable?)
       ]
     end
+
     def type
       @type
     end
+
     def cloneable?
       [:public, :private].include? type
     end
+
     def cloned?
       cloneable? && File.directory?(path / '.git')
     end
+
     def present?
       cloneable? ? cloned? : path.exists?
     end
+
     def local?
       type == :local
     end
+
     def implicit?
       type == :implicit
     end

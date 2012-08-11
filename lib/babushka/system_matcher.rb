@@ -46,6 +46,7 @@ module Babushka
     def our_flavours
       SystemDefinitions.names[system].keys
     end
+
     def our_flavour_names
       SystemDefinitions.names[system][flavour].values
     end

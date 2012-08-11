@@ -3,10 +3,11 @@ module Babushka
   class << self
     def pkg_type; :deb end
     def pkg_cmd; "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND='noninteractive' #{pkg_binary}" end
+    def manager_key; :apt end
+
     def pkg_binary
       @_cached_pkg_binary ||= which('aptitude') ? 'aptitude' : 'apt-get'
     end
-    def manager_key; :apt end
 
     def manager_dep
       'apt'
@@ -44,6 +45,7 @@ module Babushka
     def pkg_update_timeout
       3600 * 24 # 1 day
     end
+
     def pkg_list_dir
       '/var/lib/apt/lists'.p
     end

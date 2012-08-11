@@ -154,6 +154,7 @@ module Babushka
     def extract_command
       "tar -#{extract_option(type)}xf '#{path}'"
     end
+
     def extract_option type
       {
         :tar => '',
