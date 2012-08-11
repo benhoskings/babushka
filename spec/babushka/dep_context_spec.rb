@@ -19,7 +19,7 @@ describe "accepts_block_for behaviour" do
     lambda = L{ 'blah' }
     value_from_block = nil
     dep 'returning test' do
-      value_from_block = test_defining &lambda
+      value_from_block = test_defining(&lambda)
     end.met?
     value_from_block.should == lambda
   end
