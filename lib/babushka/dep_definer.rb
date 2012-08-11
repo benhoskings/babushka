@@ -32,6 +32,7 @@ module Babushka
       @payload = {}
       @block = block
       @loaded, @failed = false, false
+      @current_platform = nil
     end
 
     def loaded?; @loaded end
@@ -50,7 +51,7 @@ module Babushka
 
     def invoke task_name
       define! unless loaded?
-      instance_eval &send(task_name) unless failed?
+      instance_eval(&send(task_name)) unless failed?
     end
 
     def result message, opts = {}
