@@ -27,12 +27,3 @@ def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
   on = opts[:on].nil? ? :all : Babushka.host.system
   Dep('accepts_block_for').context.define!.payload[accepter_name][on].should == value
 end
-
-def make_test_deps
-  dep 'test build tools' do
-    requires {
-      on :osx, 'xcode tools'
-      on :linux, 'build-essential', 'autoconf'
-    }
-  end
-end

@@ -50,7 +50,12 @@ end
 describe "accepts_list_for behaviour" do
   before {
     Babushka.stub!(:host).and_return FakeOSXSystemProfile.new
-    make_test_deps
+    dep 'test build tools' do
+      requires {
+        on :osx, 'xcode tools'
+        on :linux, 'build-essential', 'autoconf'
+      }
+    end
   }
   it "should choose requires for the correct system" do
     Dep('test build tools').context.define!.requires.should == ['xcode tools']
