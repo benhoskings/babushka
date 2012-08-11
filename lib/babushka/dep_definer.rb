@@ -119,6 +119,10 @@ module Babushka
       UnknownPkgHelper
     end
 
+    def current_platform
+      @current_platform
+    end
+
     def on platform, &blk
       if [*chooser].include? platform
         @current_platform = platform

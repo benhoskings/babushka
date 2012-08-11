@@ -58,7 +58,7 @@ module Babushka
       raise "#{method_name} only accepts args like :on => :linux (as well as a block arg)." unless args.empty? || args.first.is_a?(Hash)
 
       payload[method_name] ||= {}
-      chosen_on = (args.first || {})[:on] || @current_platform || :all
+      chosen_on = (args.first || {})[:on] || current_platform || :all
       payload[method_name][chosen_on] = block
     end
 
