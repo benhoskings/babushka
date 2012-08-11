@@ -29,7 +29,8 @@ describe "creation" do
     version_of('Google Chrome.app').name.should == 'Google Chrome.app'
     version_of('Google Chrome.app').version.should == nil
   end
-  it "should accept name with space and version"
+  # TODO: This is tricky, e.g. splitting "Sublime Text 2 >= 2.0.1".
+  # it "should accept name with space and version"
 end
 
 describe "to_s" do
