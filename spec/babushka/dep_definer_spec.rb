@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'dep_definer_support'
 
 describe "source_template" do
   it "should return BaseTemplate" do

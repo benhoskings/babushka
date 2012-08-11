@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'dep_definer_support'
 
 describe "name checks" do
   describe "invalid names" do

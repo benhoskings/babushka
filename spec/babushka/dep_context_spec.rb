@@ -1,10 +1,19 @@
 require 'spec_helper'
-require 'dep_definer_support'
 
 describe "accepts_block_for behaviour" do
+  let(:lambda_hello) { L{ "hello world!" } }
+
+  def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
+    DepContext.accepts_block_for accepter_name
+    dep 'accepts_block_for' do
+      send accepter_name, opts, &lambda
+    end
+    on = opts[:on].nil? ? :all : Babushka.host.system
+    Dep('accepts_block_for').context.define!.payload[accepter_name][on].should == value
+  end
+
   before {
     Babushka.host.stub!(:match_list).and_return([:osx])
-    setup_test_lambdas
     dep 'default'
   }
 
@@ -25,13 +34,13 @@ describe "accepts_block_for behaviour" do
   end
 
   it "should accept and return a block" do
-    test_accepts_block_for_response :test_response, @lambda_hello, @lambda_hello
+    test_accepts_block_for_response :test_response, lambda_hello, lambda_hello
   end
   it "should accept and return a block for this system" do
-    test_accepts_block_for_response :test_this_system, @lambda_hello, @lambda_hello, :on => Babushka.host.system
+    test_accepts_block_for_response :test_this_system, lambda_hello, lambda_hello, :on => Babushka.host.system
   end
   it "should return nothing on a non-specified system" do
-    test_accepts_block_for_response :test_other_system, @lambda_hello, nil, :on => :missing
+    test_accepts_block_for_response :test_other_system, lambda_hello, nil, :on => :missing
   end
 
   it "should use default blocks when no specific one is specified" do
