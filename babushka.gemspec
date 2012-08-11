@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'babushka'
-  s.version     = '0.0.1'
+  s.version     = '0.0.2'
   s.summary     = "Test-driven sysadmin."
   s.description = ""
   s.authors     = ["Ben Hoskings"]
@@ -16,6 +16,6 @@ is built for.
 
 To install babushka, run this command:
 
-    bash -c "`curl babushka.me/up`"
+    bash -c "`curl https://babushka.me/up`"
   }
 end
