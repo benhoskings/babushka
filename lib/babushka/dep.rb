@@ -95,7 +95,7 @@ module Babushka
       if (dep = Dep(dep_name, opts)).nil?
         log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         suggestions = Base.sources.current_names.similar_to(dep_name.to_s)
-        log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey')
+        log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey') if suggestions.any?
       elsif block.nil?
         dep
       else
