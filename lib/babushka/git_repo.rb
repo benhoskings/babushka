@@ -112,11 +112,26 @@ module Babushka
       !repo_shell("git rev-list #{current_remote_branch}..").split("\n").empty?
     end
 
+
+    # True if we're ahead of the identically named remote branch, or if the
+    # remote doens't exist
+    def ahead_of_remote?
+      !remote_branch_exists? ||
+      !repo_shell("git rev-list #{remote_head current_branch}..HEAD").split("\n").empty?
+    end
+
     # True if there are any commits in the current branch's corresponding remote
     # branch that aren't also present locally, if the remote branch exists.
     def behind?
       remote_branch_exists? &&
       !repo_shell("git rev-list ..#{current_remote_branch}").split("\n").empty?
+    end
+
+    # True if the identically named remote branch has commits that the local
+    # branch doesn't include, if the remote branch exists
+    def behind_remote?
+      remote_branch_exists? &&
+      !repo_shell("git rev-list HEAD..#{remote_head current_branch}").split("\n").empty?
     end
 
     # True if the repo is partway through a rebase of some kind. This could be
@@ -197,14 +212,21 @@ module Babushka
       repo_shell("git rev-parse --short HEAD")
     end
 
+    # The long SHA of a branch's remote's current HEAD. Alternate remote's can
+    # be specified in the opts hash
+    def remote_head(branch, opts={})
+      opts = {:remote => "origin"}.merge(opts)
+      repo_shell("git ls-remote #{opts[:remote]} #{branch}")
+    end
+
     # The full 40 character SHA of the current HEAD.
     def current_full_head
       repo_shell("git rev-parse HEAD")
     end
 
-    # The short SHA of the commit that +refspec+ currently refers to.
-    def resolve refspec
-      repo_shell?("git rev-parse --short #{refspec}")
+    # The short SHA of the commit that +ref+ currently refers to.
+    def resolve ref
+      repo_shell?("git rev-parse --short #{ref}")
     end
 
     # The remote assigned to branch in the git config, or 'origin' if none
@@ -247,25 +269,30 @@ module Babushka
       repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(/^.*\//, '')}'")
     end
 
-    # Check out the supplied refspec, detaching the HEAD if the named ref
+    # Check out the supplied ref, detaching the HEAD if the named ref
     # isn't a branch.
-    def checkout! refspec
-      repo_shell("git checkout '#{refspec}'")
+    def checkout! ref
+      repo_shell("git checkout '#{ref}'")
     end
 
-    # Check out the supplied refspec, detaching the HEAD.
-    def detach! refspec
-      repo_shell("git checkout --detach '#{refspec}'")
+    # Check out the supplied ref, detaching the HEAD.
+    def detach! ref
+      repo_shell("git checkout --detach '#{ref}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
-    def reset_hard! refspec = 'HEAD'
-      repo_shell("git reset --hard #{refspec}")
+    def reset_hard! ref = 'HEAD'
+      repo_shell("git reset --hard #{ref}")
     end
 
     def inspect
       "#<GitRepo:#{root} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+    end
+
+    # Update all remotes so that behind? and friends have up to date data
+    def fetch!
+      repo_shell("git fetch --all")
     end
 
     private
