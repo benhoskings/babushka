@@ -40,14 +40,16 @@ meta :app do
   end
 
   def get_source_from_sparkle
-    puts 'Fetching via sparkle at ' + sparkle
-    url = URI.parse(sparkle)
-    req = Net::HTTP::Get.new(url.path)
-    res = Net::HTTP.start(url.host, url.port) {|http|
-      http.request(req)
-    }
-    doc = REXML::Document.new res.body
-    [doc.elements['rss/channel/item/enclosure'].attributes['url']]
+    sparkle_url = log_block 'Querying sparkle' do
+      url = URI.parse(sparkle)
+      res = Net::HTTP.start(url.host, url.port) {|http|
+        http.get(url.path)
+      }
+      doc = REXML::Document.new(res.body)
+      doc.elements['rss/channel/item/enclosure'].attributes['url']
+    end
+
+    [sparkle_url]
   end
 
   template {
