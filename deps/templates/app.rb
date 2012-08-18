@@ -1,6 +1,3 @@
-require 'rexml/document'
-require 'net/http'
-
 meta :app do
   accepts_list_for :source
   accepts_list_for :prefix, %w[~/Applications /Applications]
@@ -40,6 +37,9 @@ meta :app do
   end
 
   def get_source_from_sparkle
+    require 'rexml/document'
+    require 'net/http'
+
     sparkle_url = log_block 'Querying sparkle' do
       url = URI.parse(sparkle)
       res = Net::HTTP.start(url.host, url.port) {|http|
