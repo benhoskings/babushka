@@ -9,18 +9,22 @@ module Babushka
         deprecated! '2012-12-12', :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
         Base.task.vars.set(key, value)
       end
+
       def merge(key, value)
         deprecated! '2012-12-12', :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
         Base.task.vars.merge(key, value)
       end
+
       def var(name, opts = {})
         print_var_deprecation_for('#var', name, opts)
         Base.task.vars.var(name, opts)
       end
+
       def define_var(name, opts = {})
         print_var_deprecation_for('#define_var', name, opts)
         Base.task.vars.define_var(name, opts)
       end
+
       def print_var_deprecation_for method_name, var_name, opts
         option_names_map = {
           :default => :default,
@@ -56,6 +60,7 @@ end"
     def set key, value
       vars[key.to_s][:value] = value
     end
+
     def merge key, value
       set key, ((vars[key.to_s] || {})[:value] || {}).merge(value)
     end

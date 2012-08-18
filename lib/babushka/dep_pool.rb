@@ -13,9 +13,11 @@ module Babushka
     def names
       @pool.keys
     end
+
     def items
       @pool.values
     end
+
     def for spec
       spec.respond_to?(:name) ? @pool[spec.name] : @pool[spec]
     end
@@ -28,7 +30,7 @@ module Babushka
     end
 
     def add_template name, in_opts, block
-      MetaDep.for name, @source, in_opts, &block
+      DepTemplate.for name, @source, in_opts, &block
     end
 
     def clear!

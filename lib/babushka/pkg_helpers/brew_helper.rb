@@ -81,6 +81,7 @@ module Babushka
     def pkg_update_timeout
       3600 # 1 hour
     end
+
     def pkg_list_dir
       prefix
     end
@@ -88,9 +89,11 @@ module Babushka
     def installed_pkgs_path
       prefix / 'Cellar'
     end
+
     def formulas_path
       prefix / 'Library/Formula'
     end
+
     def homebrew_lib_path
       prefix / 'Library/Homebrew'
     end

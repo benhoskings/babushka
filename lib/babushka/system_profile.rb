@@ -59,6 +59,7 @@ module Babushka
     def name
       (SystemDefinitions.names[system][flavour] || {})[release]
     end
+
     def name_str
       (SystemDefinitions.descriptions[system][flavour] || {})[release]
     end
@@ -68,6 +69,7 @@ module Babushka
     def description
       "Unknown system"
     end
+
     def system; :unknown end
     def flavour; :unknown end
     def name; :unknown end
@@ -141,29 +143,37 @@ module Babushka
     def version; version_info.val_for 'Release' end
     def name; version_info.val_for('Codename').to_sym end
     def get_version_info; ensure_lsb_release and shell('lsb_release -a') end
+    def pkg_helper; AptHelper end
+
     def ensure_lsb_release
       which('lsb_release') or log("Babushka uses `lsb_release` to learn about debian-based systems.") {
         AptHelper.install!('lsb-release')
       }
     end
-    def pkg_helper; AptHelper end
   end
 
   class RedhatSystemProfile < LinuxSystemProfile
-    def flavour; version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym end
+    def flavour
+      version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym
+    end
+
     def flavour_str
       {
         :centos => 'CentOS',
         :redhat => 'Red Hat'
       }[flavour]
     end
-    def version; version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1] end
-    def get_version_info; File.read '/etc/redhat-release' end
+
+    def version
+      version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1]
+    end
+
+    def get_version_info; File.read('/etc/redhat-release') end
     def pkg_helper; YumHelper end
   end
 
   class FedoraSystemProfile < RedhatSystemProfile
-    def get_version_info; File.read '/etc/system-release' end
+    def get_version_info; File.read('/etc/system-release') end
   end
 
   class ArchSystemProfile < LinuxSystemProfile

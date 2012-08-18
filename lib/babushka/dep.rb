@@ -27,17 +27,6 @@ module Babushka
     include LogHelpers
     extend LogHelpers
 
-    # This class is used for deps that aren't defined against a meta dep. Using
-    # this class with the default values it contains means that the code below
-    # can be simpler, because at the code level everything is defined against
-    # a 'template' of some sort; some are just BaseTemplate, and some are
-    # actual meta deps.
-    class BaseTemplate
-      def self.contextual_name; name end
-      def self.suffixed?; false end
-      def self.context_class; DepContext end
-    end
-
     attr_reader :name, :params, :args, :opts, :vars, :dep_source, :load_path
     attr_accessor :result_message
 
@@ -135,7 +124,7 @@ module Babushka
     # suffix, if any. Unlike +#basename+, this method will return anything that
     # looks like a template suffix, even if it doesn't match a template.
     def suffix
-      name.scan(MetaDep::TEMPLATE_NAME_MATCH).flatten.first
+      name.scan(DepTemplate::TEMPLATE_NAME_MATCH).flatten.first
     end
 
     def cache_key

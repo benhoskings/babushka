@@ -26,12 +26,15 @@ module Babushka
     def anonymous
       @anonymous ||= Source.new(nil, :name => 'anonymous')
     end
+
     def core
       @core ||= Source.new(Path.path / 'deps', :name => 'core')
     end
+
     def current_dir
       @current_dir ||= Source.new('./babushka-deps', :name => 'current dir')
     end
+
     def personal
       @personal ||= Source.new('~/.babushka/deps', :name => 'personal')
     end
@@ -127,12 +130,15 @@ module Babushka
     def current_real_load_source
       current_load_context[:source]
     end
+
     def current_load_source
       current_real_load_source || Base.sources.anonymous
     end
+
     def current_load_path
       current_load_context[:path].try(:p)
     end
+
     def current_load_opts
       current_load_context[:opts] || {}
     end

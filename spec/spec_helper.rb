@@ -49,13 +49,17 @@ module Babushka
     def remove!
       !cloneable? || !File.exists?(path) || `rm -rf '#{path}'`
     end
+
     private
+
     def self.sources_yml
       tmp_prefix / 'sources.yml'
     end
+
     def self.source_prefix
       tmp_prefix / 'sources'
     end
+
     def self.for_remote name
       Source.new(default_remote_for(name), :name => name).tap {|source|
         source.stub!(:update!) # don't hit the network to update sources during specs.

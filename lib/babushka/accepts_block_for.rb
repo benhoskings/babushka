@@ -8,10 +8,12 @@ module Babushka
       def default_blocks
         merged_default_blocks_for self
       end
+
       def merged_default_blocks_for klass
         parent_values = klass == DepDefiner ? {} : merged_default_blocks_for(klass.superclass)
         parent_values.merge(default_blocks_for(klass))
       end
+
       def default_blocks_for klass
         (@@default_blocks ||= Hashish.hash)[klass]
       end
@@ -56,7 +58,7 @@ module Babushka
       raise "#{method_name} only accepts args like :on => :linux (as well as a block arg)." unless args.empty? || args.first.is_a?(Hash)
 
       payload[method_name] ||= {}
-      chosen_on = (args.first || {})[:on] || @current_platform || :all
+      chosen_on = (args.first || {})[:on] || current_platform || :all
       payload[method_name][chosen_on] = block
     end
 

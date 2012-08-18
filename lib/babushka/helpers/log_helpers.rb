@@ -177,13 +177,16 @@ module Babushka
     def self.indentation
       ' ' * indentation_level * 2
     end
+
     def self.indentation_level
       @indentation_level ||= 0
     end
+
     def self.indent!
       @indentation_level ||= 0
       @indentation_level += 1
     end
+
     def self.undent!
       @indentation_level ||= 0
       @indentation_level -= 1

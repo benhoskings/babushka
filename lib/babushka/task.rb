@@ -11,6 +11,7 @@ module Babushka
     def initialize
       @opts = Base.cmdline.opts.dup
       @running = false
+      @caching = false
     end
 
     def process dep_names, with_vars

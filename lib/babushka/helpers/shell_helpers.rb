@@ -206,7 +206,7 @@ module Babushka
     def log_shell message, *cmd, &block
       opts = cmd.extract_options!
       log_block message do
-        shell *cmd.dup.push(opts.merge(:spinner => true)), &block
+        shell(*cmd.dup.push(opts.merge(:spinner => true)), &block)
       end
     end
 

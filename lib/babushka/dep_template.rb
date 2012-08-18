@@ -1,5 +1,24 @@
 module Babushka
-  class MetaDep
+  # A BaseTemplate is just a blank, passthrough template -- all it does is
+  # return DepContext as the context against which standard (i.e. untemplated)
+  # deps are defined.
+  class BaseTemplate
+    def self.contextual_name; name end
+    def self.suffixed?; false end
+    def self.context_class; DepContext end
+  end
+
+  # This class represents a template against which deps can be defined. The
+  # resulting deps are structured just like regular ones, except for the context
+  # against which they were defined.
+  #
+  # Standard deps are defined against DepContext, which makes just the basic dep
+  # DSL available, i.e. requires/met?/meet, etc. Templated deps are defined against
+  # a subclass of TemplatedDepContext as built by +build_context+.
+  #
+  # This means that when a templated dep is defined, the context will be a superset
+  # of that of a standard dep -- the normal stuff, plus whatever the template adds.
+  class DepTemplate
     include LogHelpers
 
     INVALID_NAMES = %w[base]
@@ -54,7 +73,7 @@ module Babushka
     end
 
     def build_context block
-      Class.new(MetaDepContext, &block).tap {|context|
+      Class.new(TemplatedDepContext, &block).tap {|context|
         shadow = self
         context.metaclass.send :define_method, :source_template do
           shadow

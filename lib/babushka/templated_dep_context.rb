@@ -1,5 +1,5 @@
 module Babushka
-  class MetaDepContext < DepContext
+  class TemplatedDepContext < DepContext
 
     def self.template &block
       @template = block unless block.nil?

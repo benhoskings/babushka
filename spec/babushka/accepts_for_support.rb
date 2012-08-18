@@ -1,23 +1,30 @@
 class AcceptsForTest
   include AcceptsListFor
   include AcceptsValueFor
+
   attr_reader :payload
+
   def initialize name = nil
     @name = name
     @payload = {}
   end
+
   def chooser
     :brew
   end
+
   def chooser_choices
     [:apt, :brew]
   end
+
   def default_formats
     %w[html xml js json]
   end
+
   def default_format
     "json"
   end
+
   accepts_value_for :package, :choose_with => :via
   accepts_value_for :renders, "a default response", :choose_with => :via
   accepts_value_for :format, :default_format, :choose_with => :via

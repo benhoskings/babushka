@@ -76,7 +76,7 @@ module Babushka
     path_checker
     dep_definer
     dep_context
-    meta_dep
-    meta_dep_context
+    dep_template
+    templated_dep_context
   ]
 end

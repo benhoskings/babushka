@@ -72,7 +72,7 @@ dep 'resolvable ref.babushka', :from, :path, :ref do
     end
   }
   meet {
-    result = log_block "Fetching #{from}", :failure => "failed, check your internet connection." do
+    log_block "Fetching #{from}", :failure => "failed, check your internet connection." do
       @fetched = true
       repo.repo_shell?('git fetch origin')
     end
