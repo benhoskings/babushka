@@ -1,6 +1,8 @@
 module Babushka
   class SourceError < StandardError
   end
+  class SourceLoadError < LoadError
+  end
   class Source
     include GitHelpers
     include LogHelpers
@@ -172,6 +174,8 @@ module Babushka
         debug "Loaded #{deps.count} deps from #{path}."
         @loaded = true
       end
+    rescue StandardError => e
+      raise SourceLoadError.new(e.message).tap {|raised| raised.set_backtrace(e.backtrace) }
     end
 
     def update!

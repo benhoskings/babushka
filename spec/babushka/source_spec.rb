@@ -154,7 +154,7 @@ describe Source do
         @source = Source.new('spec/deps/bad')
       }
       it "should raise an error" do
-        expect { @source.load! }.to raise_error
+        expect { @source.load! }.to raise_error(Babushka::SourceLoadError)
       end
     end
   end
