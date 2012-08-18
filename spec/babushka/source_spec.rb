@@ -152,11 +152,9 @@ describe Source do
     context "with a source with errors" do
       before {
         @source = Source.new('spec/deps/bad')
-        @source.load!
       }
-      it "should recover from load errors" do
-        @source.deps.names.should include('broken test dep 1')
-        @source.deps.names.should include('test dep 1')
+      it "should raise an error" do
+        expect { @source.load! }.to raise_error
       end
     end
   end
