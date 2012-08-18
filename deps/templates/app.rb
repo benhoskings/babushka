@@ -4,6 +4,7 @@ meta :app do
   accepts_value_for :provides, :name
   accepts_value_for :version, nil
   accepts_block_for :current_version do |path| nil end
+  accepts_list_for :sparkle
 
   def app
     Babushka.VersionOf(provides, version)
@@ -35,8 +36,25 @@ meta :app do
     }
   end
 
+  def get_source_from_sparkle
+    require 'rexml/document'
+    require 'net/http'
+
+    log_block 'Querying sparkle' do
+      sparkle.map {|uri|
+        Net::HTTP.get(URI.parse(uri))
+      }.map {|response|
+        REXML::Document.new(response)
+      }.map {|doc|
+        doc.elements['rss/channel/item/enclosure'].attributes['url']
+      }
+    end
+  end
+
   template {
     prepare {
+      # Append any sparkle URLs found to the list of sources to process.
+      source get_source_from_sparkle
       setup_source_uris
     }
 
