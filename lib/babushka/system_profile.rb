@@ -9,7 +9,10 @@ module Babushka
 
     def matches?(specs)           matcher.matches?(specs) end
     def match_list()              matcher.list end
-    def differentiator_for(specs) matcher.distinguish_from(specs) end
+    def differentiator_for(specs)
+      differentiator = matcher.differentiator_for(specs)
+      send("#{differentiator}_str") unless differentiator.nil?
+    end
 
     def version_info
       @_version_info ||= get_version_info

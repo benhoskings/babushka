@@ -16,13 +16,12 @@ module Babushka
       [*specs].any? {|spec| first_nonmatch_for(spec).nil? }
     end
 
-    def distinguish_from specs
-      nonmatches = [*specs].map {|spec|
+    def differentiator_for specs
+      [*specs].map {|spec|
         first_nonmatch_for spec
       }.sort_by {|spec|
         [:system, :flavour, :name].index spec
-      }.compact
-      send "#{nonmatches.last}_str" unless nonmatches.empty?
+      }.compact.last
     end
 
     private
