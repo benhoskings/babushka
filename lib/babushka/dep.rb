@@ -82,7 +82,7 @@ module Babushka
     # this same method on the one chosen by the user, if any.
     def self.find_or_suggest dep_name, opts = {}, &block
       if (dep = Dep(dep_name, opts)).nil?
-        log "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
+        log_stderr "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
         suggestions = Base.sources.current_names.similar_to(dep_name.to_s)
         log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey') if suggestions.any?
       elsif block.nil?
