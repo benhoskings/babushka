@@ -222,8 +222,11 @@ describe "#on for scoping accepters" do
   let!(:the_lambda) { L{ 'hello from the lambda' } }
   let!(:other_lambda) { L{ 'hello from the other lambda' } }
   before {
-    local_lambda, other_local_lambda = the_lambda, other_lambda
     Babushka.stub!(:host).and_return OSXSystemProfile.new
+    Babushka.host.stub!(:match_list).and_return([:osx])
+
+    local_lambda, other_local_lambda = the_lambda, other_lambda
+
     dep 'scoping' do
       on :osx do
         met?(&local_lambda)
