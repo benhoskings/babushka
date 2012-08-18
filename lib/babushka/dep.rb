@@ -300,16 +300,16 @@ module Babushka
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
     def process_requirements accessor = :requires
-      requirement_processor = lambda do |requirement|
-        Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
-          dep.with(*requirement.args).send :process_with_caching
-        end
-      end
-
       if Base.task.opt(:dry_run)
-        requirements_for(accessor).map(&requirement_processor).all?
+        requirements_for(accessor).map {|r| process_requirement(r) }.all?
       else
-        requirements_for(accessor).all?(&requirement_processor)
+        requirements_for(accessor).all? {|r| process_requirement(r) }
+      end
+    end
+
+    def process_requirement requirement
+      Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
+        dep.with(*requirement.args).send :process_with_caching
       end
     end
 
