@@ -52,17 +52,17 @@ meta :app do
   end
 
   template {
-    prepare {
-      # Append any sparkle URLs found to the list of sources to process.
-      source get_source_from_sparkle
-      setup_source_uris
-    }
-
     met? {
       app_in_path? and
       Babushka::PathChecker.matching_versions?([app]) {|cmd|
         current_version.call(app_location / provides)
       }
+    }
+
+    prepare {
+      # Append any sparkle URLs found to the list of sources to process.
+      source get_source_from_sparkle
+      setup_source_uris
     }
 
     meet {
