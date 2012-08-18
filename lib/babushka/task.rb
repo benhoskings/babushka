@@ -20,6 +20,8 @@ module Babushka
       @running = true
       Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep dep_name, with_vars }
+    rescue SourceLoadError => e
+      Babushka::Logging.log_exception(e)
     ensure
       @running = false
     end
@@ -108,8 +110,10 @@ module Babushka
       log_path_for(dep).open('w') {|f|
         f.sync = true
         @persistent_log = f
-        yield.tap { @persistent_log = nil }
+        yield
       }
+    ensure
+      @persistent_log = nil
     end
 
     def log_prefix

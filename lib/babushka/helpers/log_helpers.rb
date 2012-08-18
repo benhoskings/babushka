@@ -142,6 +142,11 @@ module Babushka
       end
     end
 
+    def self.log_exception exception
+      log_error "#{exception.backtrace.first}: #{exception.message}"
+      debug exception.backtrace * "\n"
+    end
+
     def self.log_table headings, rows
       all_rows = rows.map {|row|
         row.map(&:to_s)

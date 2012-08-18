@@ -217,6 +217,17 @@ module Babushka
       Base.task.cache { process_with_caching(with_opts) }
     end
 
+    def process_with_caching with_opts = {}
+      Base.task.opts.update with_opts
+      Base.task.cached(
+        cache_key, :hit => lambda {|value| log_cached(value) }
+      ) {
+        log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
+          process!
+        end
+      }
+    end
+
     private
 
     def self.base_template
@@ -240,17 +251,6 @@ module Babushka
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
       end
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
-    end
-
-    def process_with_caching with_opts = {}
-      Base.task.opts.update with_opts
-      Base.task.cached(
-        cache_key, :hit => lambda {|value| log_cached(value) }
-      ) {
-        log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
-          process!
-        end
-      }
     end
 
     def process!
@@ -289,17 +289,19 @@ module Babushka
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
     def process_requirements accessor = :requires
-      requirement_processor = lambda do |requirement|
-        Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
-          dep.with(*requirement.args).send :process_with_caching
-        end
-      end
-
       if Base.task.opt(:dry_run)
-        requirements_for(accessor).map(&requirement_processor).all?
+        requirements_for(accessor).map {|r| process_requirement(r) }.all?
       else
-        requirements_for(accessor).all?(&requirement_processor)
+        requirements_for(accessor).all? {|r| process_requirement(r) }
       end
+    end
+
+    def process_requirement requirement
+      Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
+        dep.with(*requirement.args).process_with_caching
+      end
+    rescue SourceLoadError => e
+      Babushka::Logging.log_exception(e)
     end
 
     # Process this dep, assuming all its requirements are satisfied. This is
@@ -361,10 +363,9 @@ module Babushka
     end
 
     def log_exception_in_dep e
-      log_error e.message
+      Babushka::Logging.log_exception(e)
       advice = e.is_a?(DepDefinitionError) ? "Looks like a problem with '#{name}' - check" : "Check"
       log "#{advice} #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-      debug e.backtrace * "\n"
     end
 
     def track_block_for task_name

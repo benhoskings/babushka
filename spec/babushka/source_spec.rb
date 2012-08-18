@@ -131,6 +131,15 @@ describe Source do
     end
   end
 
+  describe '#clear!' do
+    let(:source) { Source.new(nil) }
+    it "should clear the deps and templates" do
+      source.deps.should_receive(:clear!)
+      source.templates.should_receive(:clear!)
+      source.clear!
+    end
+  end
+
   describe "loading deps" do
     context "with a good source" do
       before {
@@ -152,11 +161,10 @@ describe Source do
     context "with a source with errors" do
       before {
         @source = Source.new('spec/deps/bad')
-        @source.load!
       }
-      it "should recover from load errors" do
-        @source.deps.names.should include('broken test dep 1')
-        @source.deps.names.should include('test dep 1')
+      it "should raise an error" do
+        expect { @source.load! }.to raise_error(Babushka::SourceLoadError)
+        @source.deps.count.should == 0
       end
     end
   end

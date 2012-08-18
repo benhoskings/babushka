@@ -1,6 +1,8 @@
 module Babushka
   class SourceError < StandardError
   end
+  class SourceLoadError < LoadError
+  end
   class Source
     include GitHelpers
     include LogHelpers
@@ -158,6 +160,11 @@ module Babushka
       end
     end
 
+    def clear!
+      deps.clear!
+      templates.clear!
+    end
+
     def load! should_update = false
       unless @currently_loading
         @currently_loading = true
@@ -174,18 +181,15 @@ module Babushka
       unless @loaded
         path.p.glob('**/*.rb').each {|f|
           Base.sources.load_context :source => self, :path => f do
-            begin
-              load f
-            rescue StandardError => e
-              log_error "#{e.backtrace.first}: #{e.message}"
-              log "Check #{(e.backtrace.detect {|l| l[f] } || f).sub(/\:in [^:]+$/, '')}."
-              debug e.backtrace * "\n"
-            end
+            load f
           end
         }
-        debug "Loaded #{deps.count} deps from #{path}." unless deps.count.zero?
+        debug "Loaded #{deps.count} deps from #{path}."
         @loaded = true
       end
+    rescue StandardError => e
+      clear!
+      raise SourceLoadError.new(e.message).tap {|raised| raised.set_backtrace(e.backtrace) }
     end
 
     def update!
