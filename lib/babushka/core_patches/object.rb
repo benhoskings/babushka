@@ -11,7 +11,7 @@ class Object
   # neatly working with an object in some way before returning it:
   #   def valmorphanize
   #     process.tap {|result|
-  #       log "Oops!" unless result
+  #       log_error "Oops!" unless result
   #     }
   #   end
   def tap &block

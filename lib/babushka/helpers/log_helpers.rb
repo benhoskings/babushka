@@ -7,10 +7,10 @@ module Babushka
     # and private when included.
     module_function
 
-    # Log to STDERR. This isn't babushka-style logging; it's just here so it's
-    # easily stubbable during testing.
-    def log_stderr message
-      $stderr.puts message
+    # Log +message+ to STDERR. This is a shortcut for
+    #   log(message, :as => :error)
+    def log_stderr message, opts = {}, &block
+      log message, opts.merge(:as => :stderr), &block
     end
 
     # Log +message+ as an error. This is a shortcut for
@@ -100,9 +100,9 @@ module Babushka
       # now = Time.now
       # print "#{now.to_i}.#{now.usec}: ".ljust(20) unless opts[:debug]
       printable = !opts[:debug] || Base.task.opt(:debug)
-      Logging.print_log Logging.indentation, printable unless opts[:indentation] == false
+      Logging.print_log(Logging.indentation, printable, false) unless opts[:indentation] == false
       if block_given?
-        Logging.print_log "#{message} {".colorize('grey') + "\n", printable
+        Logging.print_log("#{message} {".colorize('grey') + "\n", printable, false)
         Logging.indent! if printable
         yield.tap {|result|
           Logging.undent! if printable
@@ -115,7 +115,7 @@ module Babushka
         message = message.colorize 'yellow' if opts[:as] == :warning
         message = message.colorize 'bold' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
-        Logging.print_log message, printable
+        Logging.print_log(message, printable, opts[:as])
         $stdout.flush
         nil
       end
@@ -170,8 +170,14 @@ module Babushka
 
     private
 
-    def self.print_log message, printable
-      print message if printable
+    def self.print_log message, printable, as
+      if !printable
+        # Only written to the log file.
+      elsif [:error, :stderr].include?(as)
+        $stderr.print message
+      elsif !Base.task.opt(:silent)
+        $stdout.print message
+      end
       write_to_persistent_log message
     end
 

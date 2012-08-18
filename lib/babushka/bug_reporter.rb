@@ -39,16 +39,16 @@ module Babushka
       if response.is_a? Net::HTTPSuccess
         gist_id = response.body.scan(/<repo>(\d+)<\/repo>/).flatten.first
         if gist_id.nil?
-          log "Done, but the report's URL couldn't be parsed. Here's some info:"
-          log response.body
+          log_stderr "Done, but the report's URL couldn't be parsed. Here's some info:"
+          log_stderr response.body
         else
           log "You can view the report at http://gist.github.com/#{gist_id} - thanks :)"
         end
       else
-        log "Deary me, the bug report couldn't be submitted! Would you mind emailing these two files:"
-        log '  ' + Base.task.var_path_for(dep)
-        log '  ' + Base.task.log_path_for(dep)
-        log "to ben@hoskings.net? Thanks."
+        log_stderr "Deary me, the bug report couldn't be submitted! Would you mind emailing these two files:"
+        log_stderr '  ' + Base.task.var_path_for(dep)
+        log_stderr '  ' + Base.task.log_path_for(dep)
+        log_stderr "to ben@hoskings.net? Thanks."
       end
     end
   end

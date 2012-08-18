@@ -67,13 +67,8 @@ module Babushka
     end
   end
 
-  module LogHelpers
-    def log_stderr message
-      # Don't log while running specs.
-    end
-  end
   class Logging
-    def self.print_log message, printable
+    def self.print_log message, printable, as
       # Don't log while running specs.
     end
   end
