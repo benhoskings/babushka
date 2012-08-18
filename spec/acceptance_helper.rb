@@ -7,8 +7,8 @@ require 'cloudservers'
 require 'spec_helper'
 
 class Babushka::Logging
-  def self.print_log message, printable
-    print message if printable
+  def self.write_to_persistent_log message
+    # Don't overwrite logs when running acceptance specs.
   end
 end
 
