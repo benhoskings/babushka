@@ -100,9 +100,9 @@ module Babushka
       # now = Time.now
       # print "#{now.to_i}.#{now.usec}: ".ljust(20) unless opts[:debug]
       printable = !opts[:debug] || Base.task.opt(:debug)
-      Logging.print_log Logging.indentation, printable unless opts[:indentation] == false
+      Logging.print_log(Logging.indentation, printable) unless opts[:indentation] == false
       if block_given?
-        Logging.print_log "#{message} {".colorize('grey') + "\n", printable
+        Logging.print_log("#{message} {".colorize('grey') + "\n", printable)
         Logging.indent! if printable
         yield.tap {|result|
           Logging.undent! if printable
@@ -115,7 +115,7 @@ module Babushka
         message = message.colorize 'yellow' if opts[:as] == :warning
         message = message.colorize 'bold' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
-        Logging.print_log message, printable
+        Logging.print_log(message, printable)
         $stdout.flush
         nil
       end
