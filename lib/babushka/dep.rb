@@ -311,6 +311,8 @@ module Babushka
       Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
         dep.with(*requirement.args).process_with_caching
       end
+    rescue SourceLoadError => e
+      Babushka::Logging.log_exception(e)
     end
 
     # Process this dep, assuming all its requirements are satisfied. This is
