@@ -175,7 +175,7 @@ module Babushka
         # Only written to the log file.
       elsif [:error, :stderr].include?(as)
         $stderr.print message
-      else
+      elsif !Base.task.opt(:silent)
         $stdout.print message
       end
       write_to_persistent_log message

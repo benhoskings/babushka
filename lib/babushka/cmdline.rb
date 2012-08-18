@@ -8,6 +8,7 @@ module Babushka
       opt '-v', '--version',     "Print the current version"
       opt '-h', '--help',        "Show this information"
       opt '-d', '--debug',       "Show more verbose logging, and realtime shell command output"
+      opt '-s', '--silent',      "Only log errors, running silently on success"
       opt       '--[no-]color',
                 '--[no-]colour', "Disable color in the output"
     }

@@ -45,6 +45,7 @@ describe "help" do
     -v, --version                    Print the current version
     -h, --help                       Show this information
     -d, --debug                      Show more verbose logging, and realtime shell command output
+    -s, --silent                     Only log errors, running silently on success
         --[no-]color, --[no-]colour  Disable color in the output
     -n, --dry-run                    Discover the curent state without making any changes
     -y, --defaults                   Assume the default value for all vars without prompting, where possible
