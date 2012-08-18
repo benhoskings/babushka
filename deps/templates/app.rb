@@ -4,7 +4,7 @@ meta :app do
   accepts_value_for :provides, :name
   accepts_value_for :version, nil
   accepts_block_for :current_version do |path| nil end
-  accepts_value_for :sparkle
+  accepts_list_for :sparkle
 
   def app
     Babushka.VersionOf(provides, version)
@@ -40,16 +40,15 @@ meta :app do
     require 'rexml/document'
     require 'net/http'
 
-    sparkle_url = log_block 'Querying sparkle' do
-      url = URI.parse(sparkle)
-      res = Net::HTTP.start(url.host, url.port) {|http|
-        http.get(url.path)
+    log_block 'Querying sparkle' do
+      sparkle.map {|uri|
+        Net::HTTP.get(URI.parse(uri))
+      }.map {|response|
+        REXML::Document.new(response)
+      }.map {|doc|
+        doc.elements['rss/channel/item/enclosure'].attributes['url']
       }
-      doc = REXML::Document.new(res.body)
-      doc.elements['rss/channel/item/enclosure'].attributes['url']
     end
-
-    [sparkle_url]
   end
 
   template {
