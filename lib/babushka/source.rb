@@ -152,6 +152,11 @@ module Babushka
       end
     end
 
+    def clear!
+      deps.clear!
+      templates.clear!
+    end
+
     def load! should_update = false
       unless @currently_loading
         @currently_loading = true
@@ -175,6 +180,7 @@ module Babushka
         @loaded = true
       end
     rescue StandardError => e
+      clear!
       raise SourceLoadError.new(e.message).tap {|raised| raised.set_backtrace(e.backtrace) }
     end
 
