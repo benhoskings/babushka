@@ -187,7 +187,7 @@ module Babushka
         debug "Loaded #{deps.count} deps from #{path}."
         @loaded = true
       end
-    rescue StandardError => e
+    rescue StandardError, SyntaxError => e
       clear!
       raise SourceLoadError.new(e.message).tap {|raised| raised.set_backtrace(e.backtrace) }
     end
