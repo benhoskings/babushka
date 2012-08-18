@@ -228,6 +228,17 @@ module Babushka
       Base.task.cache { process_with_caching(with_opts) }
     end
 
+    def process_with_caching with_opts = {}
+      Base.task.opts.update with_opts
+      Base.task.cached(
+        cache_key, :hit => lambda {|value| log_cached(value) }
+      ) {
+        log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
+          process!
+        end
+      }
+    end
+
     private
 
     def self.base_template
@@ -251,17 +262,6 @@ module Babushka
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
       end
       params.inject({}) {|hsh,param| hsh[param] = args.shift; hsh }
-    end
-
-    def process_with_caching with_opts = {}
-      Base.task.opts.update with_opts
-      Base.task.cached(
-        cache_key, :hit => lambda {|value| log_cached(value) }
-      ) {
-        log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
-          process!
-        end
-      }
     end
 
     def process!
@@ -309,7 +309,7 @@ module Babushka
 
     def process_requirement requirement
       Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).send :process_with_caching
+        dep.with(*requirement.args).process_with_caching
       end
     end
 
