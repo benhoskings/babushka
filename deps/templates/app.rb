@@ -53,11 +53,8 @@ meta :app do
 
   template {
     prepare {
-      unless sparkle.blank?
-        def source
-          get_source_from_sparkle
-        end
-      end
+      # Append any sparkle URLs found to the list of sources to process.
+      source get_source_from_sparkle
       setup_source_uris
     }
 
