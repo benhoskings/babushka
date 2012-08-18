@@ -19,6 +19,8 @@ module Babushka
       @running = true
       Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep dep_name, with_vars }
+    rescue SourceLoadError => e
+      Babushka::Logging.log_exception(e)
     ensure
       @running = false
     end
