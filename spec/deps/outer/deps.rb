@@ -1,9 +1,7 @@
 dep 'test dep 1' do
-  
 end
 
 dep 'externally templated', :template => 'nested source:test_template' do
-  
 end
 
 meta 'local_template' do
