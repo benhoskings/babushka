@@ -107,8 +107,10 @@ module Babushka
       log_path_for(dep).open('w') {|f|
         f.sync = true
         @persistent_log = f
-        yield.tap { @persistent_log = nil }
+        yield
       }
+    ensure
+      @persistent_log = nil
     end
 
     def log_prefix
