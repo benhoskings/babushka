@@ -372,10 +372,9 @@ module Babushka
     end
 
     def log_exception_in_dep e
-      log_error e.message
+      Babushka::Logging.log_exception(e)
       advice = e.is_a?(DepDefinitionError) ? "Looks like a problem with '#{name}' - check" : "Check"
       log "#{advice} #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-      debug e.backtrace * "\n"
     end
 
     def track_block_for task_name
