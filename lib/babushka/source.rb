@@ -175,7 +175,7 @@ module Babushka
             end
           end
         }
-        debug "Loaded #{deps.count} deps from #{path}." unless deps.count.zero?
+        debug "Loaded #{deps.count} deps from #{path}."
         @loaded = true
       end
     end
