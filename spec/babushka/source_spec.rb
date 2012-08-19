@@ -444,15 +444,4 @@ describe Source do
       @source.load!(true)
     end
   end
-
-  describe "classification" do
-    it "should treat file:// as public" do
-      (source = Source.new(*@remote_1))
-      [source.uri, source.name, source.type].should == [@remote_1.first, 'remote_1', :public]
-    end
-    it "should treat local paths as local" do
-      (source = Source.new(@remote_1.first.gsub(/^file:\/\//, ''), @remote_1.last))
-      [source.uri, source.name, source.type].should == [@remote_1.first.gsub(/^file:\/\//, ''), 'remote_1', :local]
-    end
-  end
 end
