@@ -17,19 +17,14 @@ dep 'xcode tools', :template => 'external' do
   }
 end
 
-dep 'xcode commandline tools', :template => 'installer' do
-  # These pkgs consist of the packages inside the Xcode installer that contain the
-  # commandline tools and compiler toolchain. They're not a custom build - they're
-  # unmodified from the original Xcode install; just a subset (i.e. excluding the
-  # packages for things like Interface Builder and Xcode.app).
-  #
-  # See http://github.com/kennethreitz/osx-gcc-installer for more info.
-  source {
-    on :lion,         'https://github.com/downloads/kennethreitz/osx-gcc-installer/GCC-10.7-v2.pkg'
-    on :snow_leopard, 'https://github.com/downloads/kennethreitz/osx-gcc-installer/GCC-10.6.pkg'
+dep 'xcode commandline tools', :template => 'external' do
+  # See http://kennethreitz.com/xcode-gcc-and-homebrew.html
+  expects %w[cc gcc c++ g++ llvm-gcc llvm-g++ clang] # compilers
+  expects %w[ld libtool] # linkety link
+  expects %w[make] # configure and build tools
+  expects %w[cpp m4 nasm yacc bison] # misc - the preprocessor, assembler, grammar stuff
+  otherwise {
+    log_and_open "Install Command Line Tools for Xcode, and then run Babushka again.",
+                 "http://developer.apple.com/downloads"
   }
-  provides %w[cc gcc c++ g++ llvm-gcc llvm-g++ clang] # compilers
-  provides %w[ld libtool] # linkety link
-  provides %w[make] # configure and build tools
-  provides %w[cpp m4 nasm yacc bison] # misc - the preprocessor, assembler, grammar stuff
 end
