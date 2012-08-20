@@ -19,14 +19,6 @@ describe Source do
     it "should label nil paths as implicit" do
       Source.discover_uri_and_type(nil).should == [nil, :implicit]
     end
-    it "should treat URLs containing auth info as private" do
-      [
-        'http://ben@server.org/benhoskings/babushka.git',
-        'https://ben:secret@server.org/benhoskings/babushka.git'
-      ].each {|uri|
-        Source.discover_uri_and_type(uri).should == [uri, :private]
-      }
-    end
     it "should treat git:// as public" do
       [
         'git://github.com/benhoskings/babushka-deps.git',
