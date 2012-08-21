@@ -24,7 +24,9 @@ module Babushka
 
     def post_report report
       submit_report_to_webservice(report.p.read).tap {|result|
-        if result
+        if result.is_a?(Net::HTTPSuccess) || result.is_a?(Net::HTTPNotAcceptable)
+          # Remove the run on success, and on validation error: retrying
+          # won't help that anyway.
           report.p.rm
         else
           # Wait for a moment before trying again, so persistent problems don't
@@ -40,7 +42,7 @@ module Babushka
       Net::HTTP.start('babushka.me') {|http|
         http.open_timeout = http.read_timeout = 5
         http.post '/runs.json', data
-      }.is_a?(Net::HTTPSuccess)
+      }
     rescue Errno::EADDRNOTAVAIL, Errno::ECONNREFUSED, SocketError
       log_error "Couldn't connect to the babushka webservice." unless Base.task.running?
     rescue Timeout::Error, Errno::ETIMEDOUT
