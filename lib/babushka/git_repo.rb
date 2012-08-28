@@ -4,6 +4,18 @@ module Babushka
   class GitRepoExists < GitRepoError
   end
 
+  class GitAbilities
+    def self.checkout_can_detach?
+      git_version >= '1.7.5'
+    end
+
+    def self.git_version
+      Babushka::PathChecker.match_potential_versions(
+        Babushka::ShellHelpers.shell('git --version')
+      ).first
+    end
+  end
+
   # Provides some wrapper methods for interacting concisely with a git
   # repository.
   #
