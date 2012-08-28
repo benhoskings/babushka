@@ -271,7 +271,7 @@ module Babushka
       if Babushka::GitAbilities.checkout_can_detach?
         repo_shell("git checkout --detach '#{refspec}'")
       else
-        checkout!(refspec)
+        checkout!(resolve(refspec))
       end
     end
 
