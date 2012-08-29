@@ -106,6 +106,8 @@ class Fancypath < Pathname
 
   # Querying the file the path refers to.
 
+  alias_method :read!, :read
+
   def read
     super if exists?
   end
