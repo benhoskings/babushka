@@ -4,18 +4,6 @@ module Babushka
   class GitRepoExists < GitRepoError
   end
 
-  class GitAbilities
-    def self.checkout_can_detach?
-      git_version >= '1.7.5'
-    end
-
-    def self.git_version
-      Babushka::PathChecker.match_potential_versions(
-        Babushka::ShellHelpers.shell('git --version')
-      ).first
-    end
-  end
-
   # Provides some wrapper methods for interacting concisely with a git
   # repository.
   #
@@ -268,11 +256,7 @@ module Babushka
     # Check out the supplied refspec, detaching the HEAD (if the installed git
     # version supports doing that).
     def detach! refspec
-      if Babushka::GitAbilities.checkout_can_detach?
-        repo_shell("git checkout --detach '#{refspec}'")
-      else
-        checkout!(resolve(refspec))
-      end
+      repo_shell("git checkout '#{resolve(refspec)}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
