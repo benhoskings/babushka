@@ -504,9 +504,9 @@ describe GitRepo, '#detach!' do
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should detach the HEAD when a branch is supplied" do
-    subject.detach! "next"
+    subject.detach! "master"
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
-    subject.current_branch.starts_with?(subject.resolve('next')).should be_true
+    subject.current_branch.starts_with?(subject.resolve('master')).should be_true
   end
   it "should detach the HEAD when a ref is supplied" do
     subject.detach! 'origin/next~'
