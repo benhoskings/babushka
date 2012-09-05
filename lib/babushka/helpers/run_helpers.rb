@@ -121,13 +121,9 @@ module Babushka
     end
 
     def render_erb erb, opts = {}
-      if opts[:optional]
-        deprecated! "2012-05-01", :method_name => "#render_erb's :optional option"
-      end
-
       if (path = erb_path_for(erb)).nil?
         log_error "If you use #render_erb within a dynamically defined dep, you have to give the full path to the erb template."
-      elsif !File.exists?(path) && !opts[:optional]
+      elsif !File.exists?(path)
         log_error "Couldn't find erb to render at #{path}."
       elsif File.exists?(path)
         Renderable.new(opts[:to]).render(path, opts.merge(:context => self)).tap {|result|
