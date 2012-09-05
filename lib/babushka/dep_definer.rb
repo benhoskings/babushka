@@ -61,18 +61,15 @@ module Babushka
     end
 
     def met message
-      deprecated! "2012-06-22", :instead => "a truthy return value from met?{} (maybe using #log_ok)"
-      result message, :result => true
+      removed! :instead => "a truthy return value from met?{} (maybe using #log_ok)"
     end
 
     def unmet message
-      deprecated! "2012-06-22", :instead => "a falsey return value from met?{} (maybe using #log)"
-      result message, :result => false
+      removed! :instead => "a falsey return value from met?{} (maybe using #log)"
     end
 
     def unmeetable message
-      deprecated! "2012-06-22", :instead => "#unmeetable!"
-      raise Babushka::UnmeetableDep, message
+      removed! :instead => "#unmeetable!"
     end
 
     def unmeetable! message

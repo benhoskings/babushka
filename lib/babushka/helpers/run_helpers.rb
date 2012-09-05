@@ -5,87 +5,39 @@ module Babushka
     include PathHelpers
 
     def hostname
-      deprecated! '2012-09-01', :instead => "#shell directly", :example => "shell('hostname -f')"
-      shell 'hostname -f'
+      removed! :instead => "#shell directly", :example => "shell('hostname -f')"
     end
 
     def rake cmd, &block
-      deprecated! '2012-09-01', :instead => "#shell directly", :example => "shell({'RAILS_ENV' => env}, 'rake #{cmd}')"
-      sudo "rake #{cmd} RAILS_ENV=#{var :app_env}", :as => var(:username), &block
+      removed! :instead => "#shell directly", :example => "shell({'RAILS_ENV' => env}, 'rake #{cmd}')"
     end
 
     def bundle_rake cmd, &block
-      deprecated! '2012-09-01', :instead => "#shell directly", :example => "shell({'RAILS_ENV' => 'env'}, 'bundle exec #{cmd}')"
-      cd var(:rails_root) do
-        shell "bundle exec rake #{cmd} --trace RAILS_ENV=#{var :app_env}", :as => var(:username), :log => true, &block
-      end
+      removed! :instead => "#shell directly", :example => "shell({'RAILS_ENV' => 'env'}, 'bundle exec #{cmd}')"
     end
 
     def check_file file_name, method_name
-      deprecated! '2012-09-01', :instead => "Fancypath##{method_name}", :example => "path.p.#{method_name}"
-      File.send(method_name, file_name).tap {|result|
-        log_error "#{file_name} failed #{method_name.to_s.sub(/[?!]$/, '')} check." unless result
-      }
+      removed! :instead => "Fancypath##{method_name}", :example => "path.p.#{method_name}"
     end
 
     def grep pattern, file
-      deprecated! '2012-09-01', :instead => 'Fancypath#grep', :example => "#{file.inspect}.p.grep(#{pattern.inspect})"
-      if (path = file.p).exists?
-        output = if pattern.is_a? String
-          path.readlines.select {|l| l[pattern] }
-        elsif pattern.is_a? Regexp
-          path.readlines.grep pattern
-        end
-        output unless output.blank?
-      end
+      removed! :instead => 'Fancypath#grep', :example => "#{file.inspect}.p.grep(#{pattern.inspect})"
     end
 
     def change_line line, replacement, filename
-      deprecated! '2012-09-01', :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(line)}$/#{replacement}/' '#{filename}'\")"
-      path = filename.p
-
-      log "Patching #{path}"
-      shell "cat > #{path}", :as => path.owner, :input => path.readlines.map {|l|
-        l.gsub(/^(\s*)(#{Regexp.escape(line)})/, "\\1# #{edited_by_babushka}\n\\1# was: \\2\n\\1#{replacement}")
-      }.join("")
+      removed! :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(line)}$/#{replacement}/' '#{filename}'\")"
     end
 
     def insert_into_file insert_before, path, lines, opts = {}
-      deprecated! '2012-09-01', :instead => "a template with #render_erb"
-      opts.defaults! :comment_char => '#', :insert_after => nil
-      nlines = lines.split("\n").length
-      before, after = path.p.readlines.cut {|l| l.strip == insert_before.strip }
-
-      log "Patching #{path}"
-      if after.empty? || (opts[:insert_after] && before.last.strip != opts[:insert_after].strip)
-        log_error "Couldn't find the spot to write to in #{path}."
-      else
-        shell "cat > #{path}", :as => path.owner, :sudo => !File.writable?(path), :input => [
-          before,
-          added_by_babushka(nlines).start_with(opts[:comment_char] + ' ').end_with("\n"),
-          lines.end_with("\n"),
-          after
-        ].join
-      end
+      removed! :instead => "a template with #render_erb"
     end
 
     def change_with_sed keyword, from, to, file
-      deprecated! '2012-09-01', :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(keyword)}\\s+#{Regexp.escape(from)}\\b/#{keyword} #{to}/' '#{file}'\")"
-      # Remove the incorrect setting if it's there
-      shell("sed -ri 's/^#{keyword}\s+#{from}//' #{file}", :sudo => !File.writable?(file))
-      # Add the correct setting unless it's already there
-      grep(/^#{keyword}\s+#{to}/, file) or shell("echo '#{keyword} #{to}' >> #{file}", :sudo => !File.writable?(file))
-    end
-
-    def sed
-      deprecated! '2012-09-01', :instead => "'sed'"
-      Babushka.host.linux? ? 'sed' : 'gsed'
+      removed! :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(keyword)}\\s+#{Regexp.escape(from)}\\b/#{keyword} #{to}/' '#{file}'\")"
     end
 
     def append_to_file text, file, opts = {}
-      deprecated! '2012-09-01', :instead => 'Fancypath#append', :example => "'#{file}'.p.append(#{text.inspect})"
-      text = text.to_s
-      shell %Q{echo "\n# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}, opts
+      removed! :instead => 'Fancypath#append', :example => "'#{file}'.p.append(#{text.inspect})"
     end
 
     def _by_babushka
@@ -115,9 +67,7 @@ module Babushka
     end
 
     def yaml path
-      deprecated! "2012-05-01", :instead => 'Fancypath#yaml', :example => "'#{path}'.p.yaml"
-      require 'yaml'
-      YAML.load_file path.p
+      removed! :instead => 'Fancypath#yaml', :example => "'#{path}'.p.yaml"
     end
 
     def render_erb erb, opts = {}
@@ -145,16 +95,11 @@ module Babushka
     end
 
     def log_and_open message, url
-      deprecated! '2012-09-01', :instead => "a plain #log with the URL", :example => "log('Download here: http://website.org')"
-      log "#{message} Hit Enter to open the download page.", :newline => false
-      Prompt.send(:read_from_prompt, ' ')
-      shell "open #{url}"
+      removed! :instead => "a plain #log with the URL", :example => "log('Download here: http://website.org')"
     end
 
     def mysql cmd, username = 'root', include_password = true
-      deprecated! '2012-09-01', :instead => "#shell directly", :example => "shell('mysql', '-u', username, :input => cmd.end_with(';'))"
-      password_segment = "--password='#{var :db_password}'" if include_password
-      shell "echo \"#{cmd.gsub('"', '\"').end_with(';')}\" | mysql -u #{username} #{password_segment}"
+      removed! :instead => "#shell directly", :example => "shell('mysql', '-u', username, :input => cmd.end_with(';'))"
     end
   end
 end
