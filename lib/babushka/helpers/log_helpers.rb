@@ -72,6 +72,14 @@ module Babushka
       log ''
     end
 
+    def removed! opts = {}
+      opts[:method_name] ||= "##{caller[0].scan(/`(\w+)'$/).flatten.first}"
+      warning = "#{opts[:method_name]} has been removed after being deprecated."
+      instead = " Use #{opts[:instead]} instead#{opts[:example] ? ", e.g.:" : '.'}" unless opts[:instead].nil?
+      message = ["#{warning}#{instead}", opts[:example]].compact.join("\n")
+      raise NoMethodError.new(message)
+    end
+
     # Write +message+ to the log.
     #
     # By default, the log is written to STDOUT, and to ~/.babushka/logs/<dep_name>.
