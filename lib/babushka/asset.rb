@@ -8,16 +8,16 @@ module Babushka
     include PathHelpers
 
     def self.detect_type_by_extension path
-      TYPES.keys.detect {|key|
-        TYPES[key][:exts].any? {|extension|
+      ASSET_TYPES.keys.detect {|key|
+        ASSET_TYPES[key][:exts].any? {|extension|
           path.has_extension? extension
         }
       }
     end
 
     def self.detect_type_by_contents path
-      TYPES.keys.detect {|key|
-        shell("file '#{path}'")[TYPES[key][:file_match]]
+      ASSET_TYPES.keys.detect {|key|
+        shell("file '#{path}'")[ASSET_TYPES[key][:file_match]]
       }
     end
 
@@ -25,21 +25,11 @@ module Babushka
       detect_type_by_extension(path) || detect_type_by_contents(path)
     end
 
-    TYPES = {
-      :deb => {:file_match => 'Debian binary package', :exts => %w[deb]},
-      :pkg => {:file_match => 'xar archive', :exts => %w[pkg]},
-      :tar => {:file_match => 'tar archive', :exts => %w[tar]},
-      :gzip => {:file_match => 'gzip compressed data', :exts => %w[tgz tar.gz]},
-      :bzip2 => {:file_match => 'bzip2 compressed data', :exts => %w[tbz2 tar.bz2]},
-      :zip => {:file_match => 'Zip archive data', :exts => %w[zip]},
-      :dmg => {:file_match => 'VAX COFF executable not stripped', :exts => %w[dmg]}
-    }
-
     attr_reader :path, :name
 
     def initialize path, opts = {}
       @path = path.p
-      @name = TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/\.#{t}$/, '') }
+      @name = ASSET_TYPES[type][:exts].inject(filename) {|fn,t| fn.gsub(/\.#{t}$/, '') }
     end
 
     def filename
@@ -149,23 +139,25 @@ module Babushka
   end
 
   class Asset
-    CLASSES = {
-      :deb => FileAsset,
-      :pkg => FileAsset,
-      :tar => TarAsset,
-      :gzip => TarAsset,
-      :bzip2 => TarAsset,
-      :zip => ZipAsset,
-      :dmg => DmgAsset
+    ASSET_TYPES = {
+      :deb =>   {:exts => %w[deb],          :class => FileAsset, :file_match => 'Debian binary package'},
+      :pkg =>   {:exts => %w[pkg],          :class => FileAsset, :file_match => 'xar archive'},
+      :tar =>   {:exts => %w[tar],          :class => TarAsset,  :file_match => 'tar archive'},
+      :gzip =>  {:exts => %w[tgz tar.gz],   :class => TarAsset,  :file_match => 'gzip compressed data'},
+      :bzip2 => {:exts => %w[tbz2 tar.bz2], :class => TarAsset,  :file_match => 'bzip2 compressed data'},
+      :zip =>   {:exts => %w[zip],          :class => ZipAsset,  :file_match => 'Zip archive data'},
+      :dmg =>   {:exts => %w[dmg],          :class => DmgAsset,  :file_match => 'VAX COFF executable not stripped'}
     }
 
     def self.for path, opts = {}
       path = path.p
       filename = path.basename.to_s
       raise AssetError, "The archive #{filename} does not exist." unless path.exists?
-      klass = CLASSES[type(path)]
-      raise AssetError, "Don't know how to extract #{filename}." if klass.nil?
-      klass.new(path, opts)
+      if (asset_type = ASSET_TYPES[type(path)]).nil?
+        raise AssetError, "Don't know how to extract #{filename}."
+      else
+        asset_type[:class].new(path, opts)
+      end
     end
   end
 
