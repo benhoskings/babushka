@@ -55,7 +55,7 @@ module Babushka
     end
 
     def extract &block
-      cd(archive_prefix, :create => true) { process_extract(&block) }
+      cd(build_prefix, :create => true) { process_extract(&block) }
     end
 
     def process_extract &block
@@ -92,7 +92,7 @@ module Babushka
       end
     end
 
-    def archive_prefix
+    def build_prefix
       BuildPrefix
     end
   end
