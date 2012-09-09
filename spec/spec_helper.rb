@@ -39,7 +39,7 @@ def tmp_prefix
 end
 
 module Babushka
-  class Resource
+  class Asset
     def archive_prefix
       tmp_prefix / 'archives'
     end

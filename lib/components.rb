@@ -32,6 +32,7 @@ module Babushka
     shell
     git_repo
     resource
+    asset
     prompt
     lambda_chooser
     ip
