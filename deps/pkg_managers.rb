@@ -19,7 +19,7 @@ dep 'homebrew' do
 end
 
 dep 'npm' do
-  requires 'nodejs.src'
+  requires 'nodejs.bin'
   met? { which 'npm' }
   meet {
     log_shell "Installing npm", "curl http://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh"
