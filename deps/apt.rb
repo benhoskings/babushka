@@ -23,7 +23,7 @@ dep 'ppa', :spec do
   requires 'python-software-properties.bin'
   def spec_name
     log_error("'#{spec}' doesn't look like 'ppa:something'.") unless spec[/^ppa\:\w+/]
-    spec.sub(/^ppa\:/, '')
+    spec.to_s.sub(/^ppa\:/, '')
   end
   def ppa_release_file
     # This may be hardcoded to some extent, but I'm calling YAGNI on it for now.
