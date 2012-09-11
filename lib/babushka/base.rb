@@ -30,10 +30,8 @@ module Babushka
       @cmdline ||= Cmdline::Parser.for(ARGV)
     end
 
-    # deprecated
     def host
-      Babushka::LogHelpers.deprecated! "2012-04-01", :method_name => 'Babushka::Base.host', :instead => "Babushka.host"
-      Babushka.host
+      Babushka::LogHelpers.removed! :method_name => 'Babushka::Base.host', :instead => "Babushka.host"
     end
 
     # +sources+ is an instance of Babushka::SourcePool, contains all the

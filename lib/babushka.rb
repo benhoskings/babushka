@@ -13,7 +13,7 @@ module Babushka
     def self.bin() File.dirname(binary) end
     def self.path() File.dirname(bin) end
     def self.lib() File.join(path, 'lib') end
-    def self.run_from_path?() ENV['PATH'].split(':').include? File.dirname($0) end
+    def self.run_from_path?() ENV['PATH'].split(':').include?(File.dirname($0)) end
   end
 end
 
