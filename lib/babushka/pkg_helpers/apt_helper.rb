@@ -31,7 +31,8 @@ module Babushka
 
     private
 
-    def has_pkg? pkg_name
+    def has_pkg? pkg
+      pkg_name = pkg.name.sub(/\=.*$/, '') # Strip versions like git=1.7.11
       wait_for_dpkg
       status = raw_shell("dpkg -s #{pkg_name}").stdout.val_for('Status')
       status && status.split(' ').include?('installed')
