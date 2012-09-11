@@ -58,7 +58,7 @@ module Babushka
     # nonexistent path when you initialize a GitRepo, and then call {clone!}
     # on it.
     def exists?
-      !root.nil? && root.exists?
+      !root.nil? && git_dir.exists?
     end
 
     # Run +cmd+ on the shell, changing to this repo's {root}. If the repo
