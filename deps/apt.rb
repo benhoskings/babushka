@@ -20,26 +20,24 @@ dep 'apt source', :uri, :release, :repo do
 end
 
 dep 'ppa', :spec do
-  def spec_path
-    spec.to_s.gsub(/^.*:/, '')
+  requires 'python-software-properties.bin'
+  def spec_name
+    log_error("'#{spec}' doesn't look like 'ppa:something'.") unless spec[/^ppa\:\w+/]
+    spec.sub(/^ppa\:/, '')
   end
-  def present_in_file? filename
-    # e.g. deb http://ppa.launchpad.net/pitti/postgresql/ubuntu natty main
-    filename.p.read[/^deb https?:\/\/[^\/]+\/#{spec_path}\/#{Babushka.host.flavour}\b/]
+  def ppa_release_file
+    # This may be hardcoded to some extent, but I'm calling YAGNI on it for now.
+    "ppa.launchpad.net_#{spec_name.gsub('/', '_')}_ubuntu_dists_#{Babushka.host.name}_Release"
   end
-  before {
-    spec[/^\w+\:\w+/] or log_error("'#{spec}' doesn't look like 'ppa:something'.")
-  }
   met? {
-    present_in_file?('/etc/apt/sources.list') or
-      Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
+    ('/var/lib/apt/lists/' / ppa_release_file).exists?
   }
   meet {
-    '/etc/apt/sources.list.d/babushka.list'.p.append(
-      "deb http://ppa.launchpad.net/#{spec_path}/ubuntu #{Babushka.host.name} main\n"
-    )
+    log_shell "Adding #{spec}", "add-apt-repository '#{spec}'", :spinner => true
+    log_shell "Updating apt lists to load #{spec}.", "apt-get update"
   }
-  after {
-    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{spec}."
-  }
+end
+
+dep 'python-software-properties.bin' do
+  provides 'add-apt-repository'
 end
