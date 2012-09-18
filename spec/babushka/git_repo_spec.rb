@@ -54,7 +54,7 @@ describe GitRepo, 'creation' do
   end
 end
 
-describe GitRepo, 'without a repo' do
+describe GitRepo, 'without a dir' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/missing') }
   it "should not exist" do
     subject.exists?.should be_false
@@ -65,11 +65,35 @@ describe GitRepo, 'without a repo' do
     end
   }
   context "with lazy eval" do
-    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy') }
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy_dir') }
     it "should fail before the repo is created, but work afterwards" do
       subject.exists?.should be_false
-      L{ subject.clean? }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy'}.")
-      stub_repo 'lazy'
+      L{ subject.clean? }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_dir'}.")
+      stub_repo 'lazy_dir'
+      subject.exists?.should be_true
+      subject.should be_clean
+    end
+  end
+end
+
+describe GitRepo, 'without a repo' do
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/empty') }
+  before { (tmp_prefix / 'repos/empty').mkdir }
+
+  it "should not exist" do
+    subject.exists?.should be_false
+  end
+  [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
+    it "should raise on #{method}" do
+      L{ subject.send(method) }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/empty'}.")
+    end
+  }
+  context "with lazy eval" do
+    subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy_repo') }
+    it "should fail before the repo is created, but work afterwards" do
+      subject.exists?.should be_false
+      L{ subject.clean? }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_repo'}.")
+      stub_repo 'lazy_repo'
       subject.exists?.should be_true
       subject.should be_clean
     end
