@@ -35,7 +35,12 @@ module Babushka
     # one somewhere; otherwise nil.
     def self.repo_for path
       maybe = shell?("git rev-parse --git-dir", :cd => path) if path.p.dir?
-      maybe == '.git' ? path.p : maybe / '..' unless maybe.nil?
+
+      if maybe == '.git'
+        path.p
+      elsif !maybe.nil?
+        maybe / '..'
+      end
     end
 
     def initialize path
