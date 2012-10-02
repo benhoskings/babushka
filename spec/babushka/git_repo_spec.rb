@@ -529,3 +529,25 @@ describe GitRepo, '#reset_hard!' do
     subject.should be_clean
   end
 end
+
+describe GitRepo, '#refspecs' do
+  before(:all) {
+    stub_repo 'a'
+  }
+  subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should return an empty array when there are no remotes" do
+    subject.repo_shell("git remote | xargs git remote rm")
+    subject.refspecs.should be_empty
+  end
+
+  it "should return the default refspec" do
+    subject.repo_shell("git remote add origin /tmp/origin")
+    subject.refspecs.should == ["+refs/heads/*:refs/remotes/origin/*"]
+  end
+
+  it "should return all refspecs when more are added" do
+    new_refspec = "+refs/assets/*:refs/assets/origin/*"
+    subject.repo_shell("git config --add remote.origin.fetch #{new_refspec}")
+    subject.refspecs.should == ["+refs/heads/*:refs/remotes/origin/*", new_refspec]
+  end
+end

@@ -269,6 +269,12 @@ module Babushka
       "#<GitRepo:#{root} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
     end
 
+    # Return an array of +refspecs+ the current repo has for a given remote,
+    # defaulting to origin.
+    def refspecs remote="origin"
+      repo_shell("git config --get-all remote.#{remote}.fetch").lines.map(&:chomp) rescue []
+    end
+
     private
 
     def error_message_for git_error
