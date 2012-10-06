@@ -19,11 +19,22 @@ dep 'homebrew' do
 end
 
 dep 'npm' do
+  requires {
+    on :osx, 'npm.src'
+    otherwise 'npm.bin'
+  }
+end
+
+dep 'npm.src' do
   requires 'nodejs.bin'
   met? { which 'npm' }
   meet {
     log_shell "Installing npm", "curl https://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh"
   }
+end
+
+dep 'npm.bin' do
+  provides 'npm >= 1.1'
 end
 
 dep 'pip' do
