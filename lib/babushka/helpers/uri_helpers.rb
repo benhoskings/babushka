@@ -21,12 +21,7 @@ module Babushka
     end
 
     def handle_source uri, &block
-      uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
-      if uri.scheme == 'git'
-        git uri, &block
-      else # Pass any other protocol to `curl`.
-        Resource.extract uri, &block
-      end
+      Resource.extract uri, &block
     end
 
   end
