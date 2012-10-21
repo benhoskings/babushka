@@ -22,13 +22,10 @@ module Babushka
 
     def handle_source uri, &block
       uri = uri_processor(:parse).call(uri) unless uri.is_a?(URI)
-      case uri.scheme
-      when 'git'
+      if uri.scheme == 'git'
         git uri, &block
-      when 'http', 'https', 'ftp', nil # We let `curl` work out the protocol if it's nil.
+      else # Pass any other protocol to `curl`.
         Resource.extract uri, &block
-      else
-        log_error "Babushka can't handle #{uri.scheme}:// URLs yet. But it can if you write a patch! :)"
       end
     end
 
