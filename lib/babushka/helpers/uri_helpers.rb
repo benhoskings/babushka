@@ -16,11 +16,12 @@ module Babushka
     end
 
     def process_sources &block
-      @extra_uris.each {|uri| handle_source uri } unless @extra_uris.nil?
-      @uris.all? {|uri| handle_source uri, &block } unless @uris.nil?
+      @extra_uris.each {|uri| Resource.extract(uri) } unless @extra_uris.nil?
+      @uris.all? {|uri| Resource.extract(uri, &block) } unless @uris.nil?
     end
 
     def handle_source uri, &block
+      deprecated! '2013-04-21', :instead => 'Resource.extract(uri) { ... }'
       Resource.extract uri, &block
     end
 
