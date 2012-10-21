@@ -42,7 +42,8 @@ module Babushka
           download URI.escape(location), location.p.basename
         else
           success = log_block "Downloading #{url}" do
-            shell %Q{curl -# -o "#{filename}.tmp" "#{url}" && mv -f "#{filename}.tmp" "#{filename}"}, :progress => /[\d\.]+%/
+            shell('curl', '-#', '-o', "#{filename}.tmp", url.to_s, :progress => /[\d\.]+%/) &&
+            shell('mv', '-f', "#{filename}.tmp", filename)
           end
           filename if success
         end
