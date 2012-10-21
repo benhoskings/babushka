@@ -15,13 +15,15 @@ meta :installer do
     # end
     #
     meet {
-      process_sources {|archive|
-        Dir.glob("**/*pkg").select {|entry|
-          entry[/\.m?pkg$/] # Everything ending in .pkg or .mpkg
-        }.reject {|entry|
-          entry[/\.m?pkg\//] # and isn't inside another package
-        }.map {|entry|
-          log_shell "Installing #{entry}", "installer -target / -pkg '#{entry}'", :sudo => true
+      source.each {|uri|
+        Babushka::Resource.extract(uri) {|archive|
+          Dir.glob("**/*pkg").select {|entry|
+            entry[/\.m?pkg$/] # Everything ending in .pkg or .mpkg
+          }.reject {|entry|
+            entry[/\.m?pkg\//] # and isn't inside another package
+          }.map {|entry|
+            log_shell "Installing #{entry}", "installer -target / -pkg '#{entry}'", :sudo => true
+          }
         }
       }
     }

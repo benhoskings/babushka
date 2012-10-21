@@ -10,6 +10,7 @@ module Babushka
     end
 
     def process_sources &block
+      deprecated! '2013-04-21', :instead => 'sources.each {|uri| Resource.extract(uri) { ... } }'
       uris = source.map(&uri_processor(:escape)).map(&uri_processor(:parse))
       extra_uris = extra_source.map(&uri_processor(:escape)).map(&uri_processor(:parse)) if respond_to?(:extra_source)
 
