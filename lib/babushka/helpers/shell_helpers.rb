@@ -2,8 +2,7 @@ module Babushka
   module ShellHelpers
     include LogHelpers
 
-    # Make these helpers callable directly on ShellHelpers,
-    # and private when included.
+    # Make these helpers directly callable, and private when included.
     module_function
 
     # Run +cmd+.

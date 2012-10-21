@@ -2,9 +2,7 @@
 
 module Babushka
   module LogHelpers
-
-    # Make these helpers callable directly on LogHelpers,
-    # and private when included.
+    # Make these helpers directly callable, and private when included.
     module_function
 
     # Log +message+ to STDERR. This is a shortcut for
