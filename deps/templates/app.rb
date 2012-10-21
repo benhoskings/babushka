@@ -62,7 +62,6 @@ meta :app do
     prepare {
       # Append any sparkle URLs found to the list of sources to process.
       source get_source_from_sparkle
-      setup_source_uris
     }
 
     meet {
