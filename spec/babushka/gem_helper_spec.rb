@@ -40,9 +40,9 @@ describe Babushka::GemHelper do
 
   describe '.should_sudo?' do
     before {
-      gem_helper.stub!(
-        :gem_root => '/path/to/gems'.p,
-        :bin_path => '/path/to/bins'.p
+      Babushka.ruby.stub!(
+        :gem_dir => '/path/to/gems'.p,
+        :bin_dir => '/path/to/bins'.p
       )
     }
 
@@ -56,19 +56,19 @@ describe Babushka::GemHelper do
         File.should_receive(:writable?).with('/path/to/bins').and_return(true)
       }
       it "should return false if the gem dir does not exist" do
-        gem_helper.gem_root.should_receive(:exists?).and_return(false)
+        Babushka.ruby.gem_dir.should_receive(:exists?).and_return(false)
         gem_helper.should_sudo?.should be_false
       end
       context "when the gem dir exists" do
         before {
-          gem_helper.gem_root.should_receive(:exists?).and_return(true)
+          Babushka.ruby.gem_dir.should_receive(:exists?).and_return(true)
         }
         it "should return true if the gem dir is not writeable" do
-          gem_helper.gem_root.should_receive(:writable?).and_return(false)
+          Babushka.ruby.gem_dir.should_receive(:writable?).and_return(false)
           gem_helper.should_sudo?.should be_true
         end
         it "should return false if the gem dir is writeable" do
-          gem_helper.gem_root.should_receive(:writable?).and_return(true)
+          Babushka.ruby.gem_dir.should_receive(:writable?).and_return(true)
           gem_helper.should_sudo?.should be_false
         end
       end
