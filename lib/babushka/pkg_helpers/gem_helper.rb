@@ -6,6 +6,12 @@ module Babushka
     def manager_key; :gem end
     def manager_dep; 'rubygems' end
 
+    def install! pkgs, opts = nil
+      super.tap {
+        shell!('rbenv rehash') if Babushka.ruby.rbenv?
+      }
+    end
+
     def gem_path_for gem_name, version = nil
       unless (detected_version = has?(Babushka.VersionOf(gem_name, version), :log => false)).nil?
         Babushka.ruby.gem_dir / Babushka.VersionOf(gem_name, detected_version)
