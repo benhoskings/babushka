@@ -37,6 +37,7 @@ module Babushka
     end
 
     def ruby_wrapper_path
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_wrapper_path'
       if Babushka.ruby.path.to_s['/.rvm/rubies/'].nil?
         Babushka.ruby.path
       else
@@ -51,6 +52,7 @@ module Babushka
     end
 
     def ruby_arch
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_arch'
       if RUBY_PLATFORM =~ /universal/
         "universal"
       elsif RUBY_PLATFORM == "java"
@@ -64,6 +66,7 @@ module Babushka
     end
 
     def ruby_binary_slug
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_binary_slug'
       [
         (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
         RUBY_VERSION,
@@ -73,6 +76,7 @@ module Babushka
     end
 
     def slug_for ruby
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.slug_for'
       shell %Q{#{ruby} -e "require '#{Babushka::Path.lib / 'babushka'}'; puts Babushka::GemHelper.ruby_binary_slug"}
     end
 
