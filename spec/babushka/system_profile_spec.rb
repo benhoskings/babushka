@@ -5,6 +5,17 @@ describe Babushka::SystemProfile do
     Babushka::SystemDetector.profile_for_host
   }
 
+  describe '#cpu_type' do
+    it "should return the type reported by `uname`" do
+      subject.should_receive(:shell).with('uname -m').and_return('x86')
+      subject.cpu_type.should == 'x86'
+    end
+    it "should substitute 'x86_64' for 'amd64'" do
+      subject.should_receive(:shell).with('uname -m').and_return('amd64')
+      subject.cpu_type.should == 'x86_64'
+    end
+  end
+
   describe SystemProfile, '#public_ip' do
     context "on OS X" do
       before {

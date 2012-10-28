@@ -30,8 +30,7 @@ module Babushka
     def library_ext; 'so' end
 
     def cpu_type
-      shell('uname -p').tap {|result|
-        result.replace shell('uname -m') if result[/unknown|\s/]
+      shell('uname -m').tap {|result|
         # These replacements are taken from PhusionPassenger::PlatformInfo.cpu_architectures
         result.replace 'x86' if result[/^i.86$/]
         result.replace 'x86_64' if result == 'amd64'
