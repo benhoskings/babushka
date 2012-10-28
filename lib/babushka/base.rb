@@ -12,6 +12,11 @@ module Babushka
   end
   module_function :host
 
+  def ruby
+    @ruby ||= Babushka::CurrentRuby.new
+  end
+  module_function :ruby
+
   class Base
   class << self
 

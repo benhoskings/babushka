@@ -8,37 +8,40 @@ module Babushka
 
     def gem_path_for gem_name, version = nil
       unless (detected_version = has?(Babushka.VersionOf(gem_name, version), :log => false)).nil?
-        gem_root / Babushka.VersionOf(gem_name, detected_version)
+        Babushka.ruby.gem_dir / Babushka.VersionOf(gem_name, detected_version)
       end
     end
 
     def bin_path
-      # The directory in which the binaries from gems are found. This is
-      # sometimes different to where `gem` itself is running from.
-      env_info.val_for('EXECUTABLE DIRECTORY').p
+      Babushka.ruby.bin_dir
     end
 
     def gem_root
-      gemdir / 'gems'
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.gem_root', :instead => 'Babushka.ruby.gem_dir'
+      Babushka.ruby.gem_dir
     end
 
     def gemspec_dir
-      gemdir / 'specifications'
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.gemspec_dir', :instead => 'Babushka.ruby.gemspec_dir'
+      Babushka.ruby.gemspec_dir
     end
 
     def gemdir
-      env_info.val_for('INSTALLATION DIRECTORY')
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.gemdir'
+      Babushka.ruby.send(:gem_env).val_for('INSTALLATION DIRECTORY')
     end
 
     def ruby_path
-      env_info.val_for('RUBY EXECUTABLE').p
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_path', :instead => 'Babushka.ruby.path'
+      Babushka.ruby.path
     end
 
     def ruby_wrapper_path
-      if ruby_path.to_s['/.rvm/rubies/'].nil?
-        ruby_path
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_wrapper_path'
+      if Babushka.ruby.path.to_s['/.rvm/rubies/'].nil?
+        Babushka.ruby.path
       else
-        ruby_path.sub(
+        Babushka.ruby.path.sub(
           # /Users/ben/.rvm/rubies/ruby-1.9.2-p0/bin/ruby
           /^(.*)\/\.rvm\/rubies\/([^\/]+)\/bin\/ruby/
         ) {
@@ -49,19 +52,21 @@ module Babushka
     end
 
     def ruby_arch
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_arch'
       if RUBY_PLATFORM =~ /universal/
         "universal"
       elsif RUBY_PLATFORM == "java"
         "java"
       elsif RUBY_PLATFORM =~ /darwin/
         # e.g. "/opt/ruby-enterprise/bin/ruby: Mach-O 64-bit executable x86_64"
-        shell("file -L '#{ruby_path}'").sub(/.* /, '')
+        shell("file -L '#{Babushka.ruby.path}'").sub(/.* /, '')
       else
         Babushka.host.cpu_type
       end
     end
 
     def ruby_binary_slug
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.ruby_binary_slug'
       [
         (defined?(RUBY_ENGINE) ? RUBY_ENGINE : 'ruby'),
         RUBY_VERSION,
@@ -71,15 +76,17 @@ module Babushka
     end
 
     def slug_for ruby
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.slug_for'
       shell %Q{#{ruby} -e "require '#{Babushka::Path.lib / 'babushka'}'; puts Babushka::GemHelper.ruby_binary_slug"}
     end
 
     def should_sudo?
-      super || (gem_root.exists? && !gem_root.writable?)
+      super || (Babushka.ruby.gem_dir.exists? && !Babushka.ruby.gem_dir.writable?)
     end
 
     def version
-      env_info.val_for('RUBYGEMS VERSION').to_version
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.version', :instead => 'Babushka.ruby.gem_version'
+      Babushka.ruby.gem_version
     end
 
 
@@ -109,11 +116,7 @@ module Babushka
     end
 
     def gemspecs_for pkg_name
-      gemspec_dir.glob("#{pkg_name}-*.gemspec")
-    end
-
-    def env_info
-      @_cached_env_info ||= shell('gem env')
+      Babushka.ruby.gemspec_dir.glob("#{pkg_name}-*.gemspec")
     end
   end
   end
