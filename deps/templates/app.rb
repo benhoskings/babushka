@@ -62,22 +62,23 @@ meta :app do
     prepare {
       # Append any sparkle URLs found to the list of sources to process.
       source get_source_from_sparkle
-      setup_source_uris
     }
 
     meet {
-      process_sources {|archive|
-        Dir.glob("**/#{app_name_matcher}").select {|entry|
-          (entry / 'Contents/MacOS').exists? # must be an app bundle itself
-        }.reject {|entry|
-          entry['.app/'] # mustn't be inside another app bundle
-        }.map {|entry|
-          pre = prefix_to_use
-          target_path = pre / File.basename(entry)
-          log_block("Found #{entry}, copying to #{pre}") {
-            if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
-              entry.p.copy target_path
-            end
+      source.each {|uri|
+        Babushka::Resource.extract(uri) {|archive|
+          Dir.glob("**/#{app_name_matcher}").select {|entry|
+            (entry / 'Contents/MacOS').exists? # must be an app bundle itself
+          }.reject {|entry|
+            entry['.app/'] # mustn't be inside another app bundle
+          }.map {|entry|
+            pre = prefix_to_use
+            target_path = pre / File.basename(entry)
+            log_block("Found #{entry}, copying to #{pre}") {
+              if !target_path.exists? || confirm("Overwrite #{target_path}?") { target_path.rm }
+                entry.p.copy target_path
+              end
+            }
           }
         }
       }

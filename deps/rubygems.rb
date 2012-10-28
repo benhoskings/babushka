@@ -7,7 +7,7 @@ dep 'rubygems', :version do
     in_path? ["gem >= #{version}", 'ruby']
   }
   meet {
-    handle_source "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz" do
+    Resource.extract "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz" do
       log_shell "Installing rubygems-#{version}", "ruby setup.rb", :spinner => true, :sudo => !File.writable?(which('ruby'))
     end
   }

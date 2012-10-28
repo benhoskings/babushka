@@ -1,5 +1,8 @@
 module Babushka
   module PathHelpers
+    # Make these helpers directly callable, and private when included.
+    module_function
+
     def cd dir, opts = {}, &block
       if dir.nil?
         yield Dir.pwd.p
@@ -10,7 +13,7 @@ module Babushka
           yield path
         else
           Dir.chdir path do
-            debug "in dir #{dir} (#{path})" do
+            LogHelpers.debug "in dir #{dir} (#{path})" do
               yield path
             end
           end

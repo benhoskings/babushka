@@ -1,11 +1,9 @@
 meta :installer do
   accepts_list_for :source
-  accepts_list_for :extra_source
   accepts_list_for :provides, :basename, :choose_with => :via
   accepts_list_for :prefix, %w[~/Applications /Applications]
 
   template {
-    prepare { setup_source_uris }
     met? { in_path?(provides) }
 
     # At the moment, we just try to install every .[m]pkg in the archive.
@@ -17,13 +15,15 @@ meta :installer do
     # end
     #
     meet {
-      process_sources {|archive|
-        Dir.glob("**/*pkg").select {|entry|
-          entry[/\.m?pkg$/] # Everything ending in .pkg or .mpkg
-        }.reject {|entry|
-          entry[/\.m?pkg\//] # and isn't inside another package
-        }.map {|entry|
-          log_shell "Installing #{entry}", "installer -target / -pkg '#{entry}'", :sudo => true
+      source.each {|uri|
+        Babushka::Resource.extract(uri) {|archive|
+          Dir.glob("**/*pkg").select {|entry|
+            entry[/\.m?pkg$/] # Everything ending in .pkg or .mpkg
+          }.reject {|entry|
+            entry[/\.m?pkg\//] # and isn't inside another package
+          }.map {|entry|
+            log_shell "Installing #{entry}", "installer -target / -pkg '#{entry}'", :sudo => true
+          }
         }
       }
     }

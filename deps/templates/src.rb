@@ -35,8 +35,16 @@ meta :src do
 
   template {
     requires 'build tools', 'curl.bin'
-    prepare { setup_source_uris }
     met? { in_path?(provides) }
-    meet { process_sources { invoke(:process_source) } }
+    meet {
+      extra_source.each {|uri|
+        Babushka::Resource.extract(uri)
+      }
+      source.each {|uri|
+        Babushka::Resource.extract(uri) {|archive|
+          invoke(:process_source)
+        }
+      }
+    }
   }
 end
