@@ -47,6 +47,7 @@ module Babushka
     cmdline
     base
     renderable
+    current_ruby
     system_definitions
     system_profile
     system_detector

@@ -13,25 +13,24 @@ module Babushka
     end
 
     def bin_path
-      # The directory in which the binaries from gems are found. This is
-      # sometimes different to where `gem` itself is running from.
-      env_info.val_for('EXECUTABLE DIRECTORY').p
+      Babushka.ruby.bin_dir
     end
 
     def gem_root
-      gemdir / 'gems'
+      Babushka.ruby.gem_dir
     end
 
     def gemspec_dir
-      gemdir / 'specifications'
+      Babushka.ruby.gemspec_dir
     end
 
     def gemdir
-      env_info.val_for('INSTALLATION DIRECTORY')
+      deprecated! '2013-04-28', :method_name => 'Babushka::GemHelper.gemdir'
+      Babushka.ruby.send(:gem_env).val_for('INSTALLATION DIRECTORY')
     end
 
     def ruby_path
-      env_info.val_for('RUBY EXECUTABLE').p
+      Babushka.ruby.path
     end
 
     def ruby_wrapper_path
@@ -79,7 +78,7 @@ module Babushka
     end
 
     def version
-      env_info.val_for('RUBYGEMS VERSION').to_version
+      Babushka.ruby.gem_version
     end
 
 
@@ -110,10 +109,6 @@ module Babushka
 
     def gemspecs_for pkg_name
       gemspec_dir.glob("#{pkg_name}-*.gemspec")
-    end
-
-    def env_info
-      @_cached_env_info ||= shell('gem env')
     end
   end
   end

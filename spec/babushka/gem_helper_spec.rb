@@ -29,12 +29,7 @@ describe Babushka::GemHelper do
 
   describe "gem_path_for" do
     let(:prefix) { '/Library/Ruby/Gems/1.8/gems' }
-    before {
-      gem_helper.stub!(:env_info).and_return(%q{
-  RubyGems Environment:
-    - INSTALLATION DIRECTORY: /Library/Ruby/Gems/1.8
-  })
-    }
+    before { Babushka.ruby.stub!(:gem_dir).and_return(prefix) }
     it "should return the correct path" do
       gem_helper.gem_path_for('hammock').should == prefix / 'hammock-0.3.9'
       gem_helper.gem_path_for('hammock', '0.3.9').should == prefix / 'hammock-0.3.9'
