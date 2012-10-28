@@ -18,6 +18,28 @@ RubyGems Environment:
     end
   end
 
+  describe '#rbenv?' do
+    it "should return true when ruby is running via rbenv" do
+      Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/Users/steve/.rbenv/shims/ruby')
+      current_ruby.rbenv?.should be_true
+    end
+    it "should return false otherwise" do
+      Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/usr/local/bin/ruby')
+      current_ruby.rbenv?.should be_false
+    end
+  end
+
+  describe '#rvm?' do
+    it "should return true when ruby is running via rvm" do
+      Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/Users/steve/.rvm/rubies/ruby-1.9.3-p194/bin/ruby')
+      current_ruby.rvm?.should be_true
+    end
+    it "should return false otherwise" do
+      Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/usr/local/bin/ruby')
+      current_ruby.rvm?.should be_false
+    end
+  end
+
   describe '#bin_dir' do
     it "should return the path containing the ruby binary" do
       current_ruby.bin_dir.should == '/usr/local/bin'

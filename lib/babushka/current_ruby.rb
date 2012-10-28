@@ -5,6 +5,14 @@ module Babushka
       @path ||= Babushka::ShellHelpers.which('ruby').p
     end
 
+    def rbenv?
+      path.to_s[%r{\brbenv/}]
+    end
+
+    def rvm?
+      path.to_s[%r{\brvm/}]
+    end
+
     def bin_dir
       # The directory in which the binaries from gems are found. This is
       # sometimes different to where `gem` itself is running from.
