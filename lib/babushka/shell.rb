@@ -65,10 +65,10 @@ module Babushka
         1_000.times { break if stdout.ready_for_read? || stderr.ready_for_read? }
 
         loop {
+          read_from stderr, @stderr, :stderr
           read_from stdout, @stdout do
             print " #{%w[| / - \\][spinner_offset = ((spinner_offset + 1) % 4)]}\b\b" if should_spin
           end
-          read_from stderr, @stderr, :stderr
 
           if stdout.closed? && stderr.closed?
             break
