@@ -2,8 +2,8 @@ module Babushka
   class Open3
     def self.popen3 cmd, opts = {}, &block
       pipe_in, pipe_out, pipe_err = IO::pipe, IO::pipe, IO::pipe
-      near = { :in => pipe_in[1], :out => pipe_out[0], :err => pipe_err[0] }
-      far = { :in => pipe_in[0], :out => pipe_out[1], :err => pipe_err[1] }
+      near = {:in => pipe_in[1], :out => pipe_out[0], :err => pipe_err[0]}
+      far  = {:in => pipe_in[0], :out => pipe_out[1], :err => pipe_err[1]}
 
       pid = fork {
         reopen_pipe_for :read, pipe_in, STDIN
