@@ -22,7 +22,7 @@ end
 dep 'git.installer', :version do
   version.default!('1.7.11')
   requires 'layout.fhs'.with('/usr/local')
-  source "http://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
+  source "https://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
   provides "git >= #{version}"
   after {
     sudo "ln -sf /usr/local/git/bin/git* /usr/local/bin"
