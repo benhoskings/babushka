@@ -1,14 +1,14 @@
 module Babushka
   class Open3
     def self.popen3 cmd, opts = {}, &block
-      pipes = { :in => IO::pipe, :out => IO::pipe, :err => IO::pipe }
-      near = { :in => pipes[:in][1], :out => pipes[:out][0], :err => pipes[:err][0] }
-      far = { :in => pipes[:in][0], :out => pipes[:out][1], :err => pipes[:err][1] }
+      pipe_in, pipe_out, pipe_err = IO::pipe, IO::pipe, IO::pipe
+      near = { :in => pipe_in[1], :out => pipe_out[0], :err => pipe_err[0] }
+      far = { :in => pipe_in[0], :out => pipe_out[1], :err => pipe_err[1] }
 
       pid = fork {
-        reopen_pipe_for :read, pipes[:in], STDIN
-        reopen_pipe_for :write, pipes[:out], STDOUT
-        reopen_pipe_for :write, pipes[:err], STDERR
+        reopen_pipe_for :read, pipe_in, STDIN
+        reopen_pipe_for :write, pipe_out, STDOUT
+        reopen_pipe_for :write, pipe_err, STDERR
 
         Dir.chdir opts[:chdir] if opts[:chdir]
         ENV.update opts[:env] if opts[:env]
