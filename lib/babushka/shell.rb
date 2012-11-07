@@ -2,6 +2,8 @@ module Babushka
   class Shell
     include LogHelpers
 
+    BUF_SIZE = 1024
+
     class ShellCommandFailed < StandardError
       attr_reader :cmd, :stdout, :stderr
       def initialize cmd, stdout, stderr
@@ -49,20 +51,20 @@ module Babushka
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
       Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
-        unless @opts[:input].nil?
-          stdin << @opts[:input]
-          stdin.close
-        end
+        input = @opts[:input].dup rescue nil
 
         spinner_offset = -1
         should_spin = @opts[:spinner] && !Base.task.opt(:debug)
 
-        fds = []
-        fds << stdout unless stdout.closed?
-        fds << stderr unless stderr.closed?
+        rfds = []
+        rfds << stdout unless stdout.closed?
+        rfds << stderr unless stderr.closed?
+
+        wfds = []
+        wfds << stdin unless input.nil?
 
         loop {
-          rs,_,_  = IO.select(fds, [], [])
+          rs,ws,_  = IO.select(rfds, wfds, [])
           rs.each do |fd|
             case fd
             when stdout
@@ -73,11 +75,23 @@ module Babushka
               read_from stderr, @stderr, :stderr
             end
           end
+          ws.each do |fd|
+            case fd
+            when stdin
+              stdin.write(input.slice!(0..BUF_SIZE))
+            end
+          end
 
-          fds.delete(stdout) if stdout.closed?
-          fds.delete(stderr) if stderr.closed?
+          rfds.delete(stdout) if stdout.closed?
+          rfds.delete(stderr) if stderr.closed?
 
-          break if fds.empty?
+          if input == ""
+            stdin.close()
+            wfds.delete(stdin)
+            input = nil
+          end
+
+          break if rfds.empty?
         }
       end
     end
