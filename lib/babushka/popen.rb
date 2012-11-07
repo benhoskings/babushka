@@ -2,8 +2,11 @@ module Babushka
   class Open3
     def self.popen3 cmd, opts = {}, &block
       pipe_in, pipe_out, pipe_err = IO::pipe, IO::pipe, IO::pipe
-      near = {:in => pipe_in[1], :out => pipe_out[0], :err => pipe_err[0]}
-      far  = {:in => pipe_in[0], :out => pipe_out[1], :err => pipe_err[1]}
+
+      # To write to the process' STDIN, and read from its STDOUT/ERR.
+      near = [pipe_in[1], pipe_out[0], pipe_err[0]]
+      # The other ends, connected to the process.
+      far  = [pipe_in[0], pipe_out[1], pipe_err[1]]
 
       pid = fork {
         reopen_pipe_for :read, pipe_in, STDIN
@@ -16,14 +19,14 @@ module Babushka
         exec(*cmd)
       }
 
-      far.values.each(&:close)
-      near.values.each {|p| p.sync = true }
+      near.each {|p| p.sync = true }
+      far.each(&:close)
 
       begin
-        yield near[:in], near[:out], near[:err]
+        yield(*near)
         Process.waitpid2(pid).last.exitstatus
       ensure
-        near.values.each {|p| p.close unless p.closed? }
+        near.each {|p| p.close unless p.closed? }
       end
     end
 
