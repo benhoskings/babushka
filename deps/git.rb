@@ -20,7 +20,7 @@ dep 'git.bin' do
 end
 
 dep 'git.installer', :version do
-  version.default!('1.7.11')
+  version.default!('1.8.0')
   requires 'layout.fhs'.with('/usr/local')
   source "https://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
   provides "git >= #{version}"
@@ -30,7 +30,7 @@ dep 'git.installer', :version do
 end
 
 dep 'git.src', :version do
-  version.default!('1.7.11')
+  version.default!('1.8.0')
   requires 'gettext.lib'
   source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
 end
