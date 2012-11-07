@@ -16,6 +16,8 @@ dep 'git', :version do
 end
 
 dep 'git.bin', :version do
+  # Accept any packaged git that's new enough to have proper https:// support.
+  version.default!('1.6')
   installs {
     via :apt, 'git-core'
     via :binpkgsrc, 'scmgit'
