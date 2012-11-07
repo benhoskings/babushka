@@ -49,13 +49,13 @@ module Babushka
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
       Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
-        unless @opts[:input].nil?
-          stdin << @opts[:input]
+        unless opts[:input].nil?
+          stdin << opts[:input]
           stdin.close
         end
 
         spinner_offset = -1
-        should_spin = @opts[:spinner] && !Base.task.opt(:debug)
+        should_spin = opts[:spinner] && !Base.task.opt(:debug)
 
         # For very short-running commands, check for output in a tight loop.
         # The sleep below would at least halve the speed of quick #shell calls.
@@ -86,15 +86,15 @@ module Babushka
         output = nil
         # Try reading less than a full line (up to just a backspace) if we're
         # looking for progress output.
-        output = io.gets("\r") if @opts[:progress]
+        output = io.gets("\r") if opts[:progress]
         output = io.gets if output.nil?
 
         if output.nil?
           io.close
         else
-          debug output.chomp, :log => @opts[:log], :as => log_as
+          debug output.chomp, :log => opts[:log], :as => log_as
           buf << output
-          if @opts[:progress] && (@progress = output[@opts[:progress]])
+          if opts[:progress] && (@progress = output[opts[:progress]])
             print " #{@progress}#{"\b" * (@progress.length + 1)}"
           end
           yield if block_given?
@@ -103,9 +103,9 @@ module Babushka
     end
 
     def popen_opts
-      {}.tap {|opts|
-        opts[:chdir] = @opts[:cd].p.to_s if @opts[:cd]
-        opts[:env] = @env if @env
+      {}.tap {|opts_to_pass|
+        opts_to_pass[:chdir] = opts[:cd].p.to_s if opts[:cd]
+        opts_to_pass[:env] = env if env
       }
     end
   end
