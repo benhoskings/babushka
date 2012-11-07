@@ -97,23 +97,21 @@ module Babushka
     end
 
     def read_from io, buf, log_as = nil
-      while !io.closed? && io.ready_for_read?
-        output = nil
-        # Try reading less than a full line (up to just a backspace) if we're
-        # looking for progress output.
-        output = io.gets("\r") if @opts[:progress]
-        output = io.gets if output.nil?
+      output = nil
+      # Try reading less than a full line (up to just a backspace) if we're
+      # looking for progress output.
+      output = io.gets("\r") if @opts[:progress]
+      output = io.gets if output.nil?
 
-        if output.nil?
-          io.close
-        else
-          debug output.chomp, :log => @opts[:log], :as => log_as
-          buf << output
-          if @opts[:progress] && (@progress = output[@opts[:progress]])
-            print " #{@progress}#{"\b" * (@progress.length + 1)}"
-          end
-          yield if block_given?
+      if output.nil?
+        io.close
+      else
+        debug output.chomp, :log => @opts[:log], :as => log_as
+        buf << output
+        if @opts[:progress] && (@progress = output[@opts[:progress]])
+          print " #{@progress}#{"\b" * (@progress.length + 1)}"
         end
+        yield if block_given?
       end
     end
 
