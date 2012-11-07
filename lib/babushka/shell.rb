@@ -51,8 +51,8 @@ module Babushka
       Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
         unless @opts[:input].nil?
           stdin << @opts[:input]
-          stdin.close
         end
+        stdin.close
 
         spinner_offset = -1
         should_spin = @opts[:spinner] && !Base.task.opt(:debug)
