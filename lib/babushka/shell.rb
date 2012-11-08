@@ -17,7 +17,7 @@ module Babushka
       end
     end
 
-    attr_reader :cmd, :opts, :env, :result, :stdout, :stderr
+    attr_reader :cmd, :opts, :env, :input, :result, :stdout, :stderr
 
     def initialize *cmd
       @opts = cmd.extract_options!
@@ -25,6 +25,12 @@ module Babushka
       raise ArgumentError, "wrong number of arguments (0 for 1+)" if cmd.empty?
       @env = cmd.first.is_a?(Hash) ? cmd.shift : {}
       @cmd = cmd
+      @input = if opts[:input].respond_to?(:read)
+        opts[:input]
+      elsif !opts[:input].nil?
+        StringIO.new(opts[:input])
+      end
+
       @progress = nil
       @spinner_offset = -1
       @should_spin = opts[:spinner] && !Base.task.opt(:debug)
@@ -53,10 +59,8 @@ module Babushka
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
       Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err, thread|
-        input = opts[:input].dup rescue nil
-
         read_fds = [pipe_err, pipe_out].reject {|p| p.closed? }
-        write_fds = [pipe_in].reject {|p| input.nil? }
+        write_fds = input.nil? ? [] : [pipe_in]
 
         until read_fds.empty?
           to_read, to_write, _  = IO.select(read_fds, write_fds, [])
@@ -68,19 +72,16 @@ module Babushka
               read_from pipe_err, stderr, :stderr
             end
           end
-          to_write.each do |fd|
-            case fd
-            when pipe_in
-              pipe_in.write(input.slice!(0..BUF_SIZE))
-            end
-          end
 
           read_fds.reject! {|p| p.closed? }
 
-          if input == ""
-            pipe_in.close()
+          if input.nil? || to_write.empty?
+            # Nothing to write.
+          elsif (buf = input.read(BUF_SIZE)).nil?
+            pipe_in.close
             write_fds.delete(pipe_in)
-            input = nil
+          else
+            pipe_in.write(buf)
           end
         end
       end
