@@ -64,14 +64,9 @@ module Babushka
 
         until read_fds.empty?
           to_read, to_write, _  = IO.select(read_fds, write_fds, [])
-          to_read.each do |fd|
-            case fd
-            when pipe_out
-              read_from pipe_out, stdout
-            when pipe_err
-              read_from pipe_err, stderr, :stderr
-            end
-          end
+
+          read_from(pipe_out, stdout) if to_read.include?(pipe_out)
+          read_from(pipe_err, stderr, :stderr) if to_read.include?(pipe_err)
 
           read_fds.reject! {|p| p.closed? }
 
