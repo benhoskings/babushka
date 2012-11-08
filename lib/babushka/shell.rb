@@ -52,39 +52,39 @@ module Babushka
 
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
-      Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
+      Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err, thread|
         input = opts[:input].dup rescue nil
 
         rfds = []
-        rfds << stderr unless stderr.closed?
-        rfds << stdout unless stdout.closed?
+        rfds << pipe_err unless pipe_err.closed?
+        rfds << pipe_out unless pipe_out.closed?
 
         wfds = []
-        wfds << stdin unless input.nil?
+        wfds << pipe_in unless input.nil?
 
         loop {
           rs,ws,_  = IO.select(rfds, wfds, [])
           rs.each do |fd|
             case fd
-            when stdout
-              read_from stdout, @stdout
-            when stderr
-              read_from stderr, @stderr, :stderr
+            when pipe_out
+              read_from pipe_out, stdout
+            when pipe_err
+              read_from pipe_err, stderr, :stderr
             end
           end
           ws.each do |fd|
             case fd
-            when stdin
-              stdin.write(input.slice!(0..BUF_SIZE))
+            when pipe_in
+              pipe_in.write(input.slice!(0..BUF_SIZE))
             end
           end
 
-          rfds.delete(stdout) if stdout.closed?
-          rfds.delete(stderr) if stderr.closed?
+          rfds.delete(pipe_out) if pipe_out.closed?
+          rfds.delete(pipe_err) if pipe_err.closed?
 
           if input == ""
-            stdin.close()
-            wfds.delete(stdin)
+            pipe_in.close()
+            wfds.delete(pipe_in)
             input = nil
           end
 
