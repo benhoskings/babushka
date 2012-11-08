@@ -63,7 +63,7 @@ module Babushka
         write_fds = input.nil? ? [] : [pipe_in]
 
         until read_fds.empty?
-          to_read, to_write, _  = IO.select(read_fds, write_fds, [])
+          to_read, to_write, _ = IO.select(read_fds, write_fds, [])
 
           read_from(pipe_out, stdout) if to_read.include?(pipe_out)
           read_from(pipe_err, stderr, :stderr) if to_read.include?(pipe_err)
