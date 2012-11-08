@@ -26,6 +26,8 @@ module Babushka
       @env = cmd.first.is_a?(Hash) ? cmd.shift : {}
       @cmd = cmd
       @progress = nil
+      @spinner_offset = -1
+      @should_spin = opts[:spinner] && !Base.task.opt(:debug)
     end
 
     def ok?
@@ -53,9 +55,6 @@ module Babushka
       Babushka::Open3.popen3 @cmd, popen_opts do |stdin,stdout,stderr,thread|
         input = opts[:input].dup rescue nil
 
-        spinner_offset = -1
-        should_spin = opts[:spinner] && !Base.task.opt(:debug)
-
         rfds = []
         rfds << stderr unless stderr.closed?
         rfds << stdout unless stdout.closed?
@@ -68,9 +67,7 @@ module Babushka
           rs.each do |fd|
             case fd
             when stdout
-              read_from stdout, @stdout do
-                print " #{%w[| / - \\][spinner_offset = ((spinner_offset + 1) % 4)]}\b\b" if should_spin
-              end
+              read_from stdout, @stdout
             when stderr
               read_from stderr, @stderr, :stderr
             end
@@ -108,10 +105,12 @@ module Babushka
       else
         debug output.chomp, :log => opts[:log], :as => log_as
         buf << output
-        if opts[:progress] && (@progress = output[opts[:progress]])
+
+        if @should_spin
+          print " #{%w[| / - \\][@spinner_offset = ((@spinner_offset + 1) % 4)]}\b\b"
+        elsif opts[:progress] && (@progress = output[opts[:progress]])
           print " #{@progress}#{"\b" * (@progress.length + 1)}"
         end
-        yield if block_given?
       end
     end
 
