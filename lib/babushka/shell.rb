@@ -55,12 +55,12 @@ module Babushka
       Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err, thread|
         input = opts[:input].dup rescue nil
 
-        rfds = [pipe_err, pipe_out].reject {|p| p.closed? }
-        wfds = [pipe_in].reject {|p| input.nil? }
+        read_fds = [pipe_err, pipe_out].reject {|p| p.closed? }
+        write_fds = [pipe_in].reject {|p| input.nil? }
 
-        until rfds.empty?
-          rs,ws,_  = IO.select(rfds, wfds, [])
-          rs.each do |fd|
+        until read_fds.empty?
+          to_read, to_write, _  = IO.select(read_fds, write_fds, [])
+          to_read.each do |fd|
             case fd
             when pipe_out
               read_from pipe_out, stdout
@@ -68,18 +68,18 @@ module Babushka
               read_from pipe_err, stderr, :stderr
             end
           end
-          ws.each do |fd|
+          to_write.each do |fd|
             case fd
             when pipe_in
               pipe_in.write(input.slice!(0..BUF_SIZE))
             end
           end
 
-          rfds.reject! {|p| p.closed? }
+          read_fds.reject! {|p| p.closed? }
 
           if input == ""
             pipe_in.close()
-            wfds.delete(pipe_in)
+            write_fds.delete(pipe_in)
             input = nil
           end
         end
