@@ -60,7 +60,12 @@ module Babushka
       debug "$ #{@cmd.join(' ')}".colorize('grey')
       Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err, thread|
         read_fds = [pipe_err, pipe_out].reject {|p| p.closed? }
-        write_fds = input.nil? ? [] : [pipe_in]
+        write_fds = if input.nil?
+          pipe_in.close
+          []
+        else
+          [pipe_in]
+        end
 
         until read_fds.empty?
           to_read, to_write, _ = IO.select(read_fds, write_fds, [])

@@ -26,7 +26,7 @@ describe Shell, '#result' do
 end
 
 describe Shell do
-  it "closes stdin in subprocesses" do
+  it "should close stdin, so subprocesses don't wait for input forever" do
     Timeout::timeout(1) do
       Shell.new('cat', {}).run(&:result).should == 0
     end
