@@ -2,7 +2,7 @@ module Babushka
   class Shell
     include LogHelpers
 
-    BUF_SIZE = 1024
+    BUF_SIZE = 1024 * 16
 
     class ShellCommandFailed < StandardError
       attr_reader :cmd, :stdout, :stderr
