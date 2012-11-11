@@ -2,6 +2,20 @@ meta :babushka do
   def repo
     Babushka::GitRepo.new(path)
   end
+
+  def qualified_ref
+    # Prepend "origin/" we're installing from scratch, or if the result is a
+    # valid remote branch.
+    if repo.exists? && repo.all_branches.include?("origin/#{ref}")
+      "origin/#{ref}"
+    else
+      ref
+    end
+  end
+
+  def resolved_ref
+    repo.resolve(qualified_ref)
+  end
 end
 
 dep 'babushka', :from, :path, :version, :branch do
@@ -18,20 +32,6 @@ dep 'babushka', :from, :path, :version, :branch do
 end
 
 dep 'up to date.babushka', :from, :path, :ref do
-  def qualified_ref
-    # Prepend "origin/" we're installing from scratch, or if the result is a
-    # valid remote branch.
-    if repo.exists? && repo.all_branches.include?("origin/#{ref}")
-      "origin/#{ref}"
-    else
-      ref
-    end
-  end
-
-  def resolved_ref
-    repo.resolve(qualified_ref)
-  end
-
   requires 'repo clean.babushka'.with(from, path)
   requires 'resolvable ref.babushka'.with(from, path, qualified_ref)
 
