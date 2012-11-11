@@ -28,7 +28,7 @@ dep 'up to date.babushka', :from, :path, :ref do
     end
   end
 
-  def refspec
+  def resolved_ref
     repo.resolve(qualified_ref)
   end
 
@@ -36,17 +36,17 @@ dep 'up to date.babushka', :from, :path, :ref do
   requires 'resolvable ref.babushka'.with(from, path, qualified_ref)
 
   met? {
-    (repo.current_head == refspec).tap {|result|
+    (repo.current_head == resolved_ref).tap {|result|
       if result
         log_ok "babushka is up to date at #{repo.current_head}."
       else
-        log "babushka can be updated: #{repo.current_head}..#{refspec}"
+        log "babushka can be updated: #{repo.current_head}..#{resolved_ref}"
       end
     }
   }
   meet {
-    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..#{refspec}")}"
-    repo.detach!(refspec)
+    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..#{resolved_ref}")}"
+    repo.detach!(resolved_ref)
   }
 end
 
