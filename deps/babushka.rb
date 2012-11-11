@@ -33,7 +33,7 @@ end
 
 dep 'up to date.babushka', :from, :path, :ref do
   requires 'repo clean.babushka'.with(from, path)
-  requires 'resolvable ref.babushka'.with(from, path, qualified_ref)
+  requires 'resolvable ref.babushka'.with(from, path, ref)
 
   met? {
     (repo.current_head == resolved_ref).tap {|result|
@@ -59,10 +59,10 @@ end
 
 dep 'resolvable ref.babushka', :from, :path, :ref do
   met? {
-    if !@fetched && ref['origin/']
+    if !@fetched && qualified_ref['origin/']
       false # Always fetch before resolving a remote ref.
     else
-      repo.resolve(ref).tap {|result|
+      resolved_ref.tap {|result|
         if result
           log_ok "#{ref} resolves to #{result}."
         else
