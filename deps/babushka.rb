@@ -2,6 +2,20 @@ meta :babushka do
   def repo
     Babushka::GitRepo.new(path)
   end
+
+  def qualified_ref
+    # Prepend "origin/" we're installing from scratch, or if the result is a
+    # valid remote branch.
+    if repo.exists? && repo.all_branches.include?("origin/#{ref}")
+      "origin/#{ref}"
+    else
+      ref
+    end
+  end
+
+  def resolved_ref
+    repo.resolve(qualified_ref)
+  end
 end
 
 dep 'babushka', :from, :path, :version, :branch do
@@ -18,35 +32,21 @@ dep 'babushka', :from, :path, :version, :branch do
 end
 
 dep 'up to date.babushka', :from, :path, :ref do
-  def qualified_ref
-    # Prepend "origin/" we're installing from scratch, or if the result is a
-    # valid remote branch.
-    if repo.exists? && repo.all_branches.include?("origin/#{ref}")
-      "origin/#{ref}"
-    else
-      ref
-    end
-  end
-
-  def refspec
-    repo.resolve(qualified_ref)
-  end
-
   requires 'repo clean.babushka'.with(from, path)
-  requires 'resolvable ref.babushka'.with(from, path, qualified_ref)
+  requires 'resolvable ref.babushka'.with(from, path, ref)
 
   met? {
-    (repo.current_head == refspec).tap {|result|
+    (repo.current_head == resolved_ref).tap {|result|
       if result
         log_ok "babushka is up to date at #{repo.current_head}."
       else
-        log "babushka can be updated: #{repo.current_head}..#{refspec}"
+        log "babushka can be updated: #{repo.current_head}..#{resolved_ref}"
       end
     }
   }
   meet {
-    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..#{refspec}")}"
-    repo.detach!(refspec)
+    log "#{repo.repo_shell("git diff --stat #{repo.current_head}..#{resolved_ref}")}"
+    repo.detach!(resolved_ref)
   }
 end
 
@@ -59,10 +59,10 @@ end
 
 dep 'resolvable ref.babushka', :from, :path, :ref do
   met? {
-    if !@fetched && ref['origin/']
+    if !@fetched && qualified_ref['origin/']
       false # Always fetch before resolving a remote ref.
     else
-      repo.resolve(ref).tap {|result|
+      resolved_ref.tap {|result|
         if result
           log_ok "#{ref} resolves to #{result}."
         else
