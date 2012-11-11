@@ -120,6 +120,9 @@ describe Parameter do
     it "should take precedence over default values" do
       Parameter.new(:unset).default!('default!').default('default').to_s.should == 'default!'
     end
+    it "should not set the parameter when returned" do
+      Parameter.new(:unset).default!('default!').tap(&:to_s).should_not be_set
+    end
   end
 
   describe "asking for values" do

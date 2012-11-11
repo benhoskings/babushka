@@ -137,7 +137,11 @@ module Babushka
   private
 
     def value
-      @value ||= @default_bang || Prompt.get_value((@ask || name).to_s, prompt_opts)
+      @value || @default_bang || prompted_value
+    end
+
+    def prompted_value
+      @prompted_value ||= Prompt.get_value((@ask || name).to_s, prompt_opts)
     end
 
     def inspect_truncated value
