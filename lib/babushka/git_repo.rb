@@ -236,8 +236,8 @@ module Babushka
     end
 
     # Create a new local branch called +branch+, switching to it.
-    def branch! branch
-      repo_shell("git branch '#{branch}'")
+    def branch! branch, ref=nil
+      repo_shell("git checkout -b '#{branch}' '#{ref || "HEAD"}'")
     end
 
     # Create a new local tracking branch for +branch+, which should be specified
