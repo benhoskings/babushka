@@ -14,7 +14,6 @@ module Babushka
     core_patches/hash
     core_patches/hashish
     core_patches/integer
-    core_patches/io
     core_patches/numeric
     core_patches/bytes
     core_patches/object
