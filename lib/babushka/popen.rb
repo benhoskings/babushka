@@ -1,14 +1,17 @@
 module Babushka
   class Open3
     def self.popen3 cmd, opts = {}, &block
-      pipes = { :in => IO::pipe, :out => IO::pipe, :err => IO::pipe }
-      near = { :in => pipes[:in][1], :out => pipes[:out][0], :err => pipes[:err][0] }
-      far = { :in => pipes[:in][0], :out => pipes[:out][1], :err => pipes[:err][1] }
+      pipe_in, pipe_out, pipe_err = IO::pipe, IO::pipe, IO::pipe
+
+      # To write to the process' STDIN, and read from its STDOUT/ERR.
+      near = [pipe_in[1], pipe_out[0], pipe_err[0]]
+      # The other ends, connected to the process.
+      far  = [pipe_in[0], pipe_out[1], pipe_err[1]]
 
       pid = fork {
-        reopen_pipe_for :read, pipes[:in], STDIN
-        reopen_pipe_for :write, pipes[:out], STDOUT
-        reopen_pipe_for :write, pipes[:err], STDERR
+        reopen_pipe_for :read, pipe_in, STDIN
+        reopen_pipe_for :write, pipe_out, STDOUT
+        reopen_pipe_for :write, pipe_err, STDERR
 
         Dir.chdir opts[:chdir] if opts[:chdir]
         ENV.update opts[:env] if opts[:env]
@@ -16,14 +19,14 @@ module Babushka
         exec(*cmd)
       }
 
-      far.values.each(&:close)
-      near.values.each {|p| p.sync = true }
+      near.each {|p| p.sync = true }
+      far.each(&:close)
 
       begin
-        yield near[:in], near[:out], near[:err]
+        yield(*near)
         Process.waitpid2(pid).last.exitstatus
       ensure
-        near.values.each {|p| p.close unless p.closed? }
+        near.each {|p| p.close unless p.closed? }
       end
     end
 
