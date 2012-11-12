@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'timeout'
 
 describe Shell, "arguments" do
   it "should reject calls with no arguments, since exec will explode anyway" do
@@ -21,5 +22,13 @@ describe Shell, '#result' do
   end
   it "should return non-zero on failure" do
     Shell.new('false', {}).run(&:result).should == 1
+  end
+end
+
+describe Shell do
+  it "closes stdin in subprocesses" do
+    Timeout::timeout(1) do
+      Shell.new('cat', {}).run(&:result).should == 0
+    end
   end
 end
