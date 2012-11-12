@@ -223,13 +223,8 @@ module Babushka
     # True if origin contains a branch of the same name as the current local
     # branch.
     def remote_branch_exists?
-      repo_shell('git branch -a').split("\n").map(&:strip).detect {|b|
-        # The output looks like origin/master or remotes/origin/master.
-        b[/^(remotes\/)?#{current_remote_branch}$/]
-      }
+      repo_shell?("git rev-parse refs/remotes/#{current_remote_branch}")
     end
-
-
 
     # Clone the remote at +from+ to this GitRepo's path. The path must be
     # nonexistent; an error is raised if the local repo already exists.
