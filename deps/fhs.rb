@@ -6,26 +6,26 @@ meta :fhs do
   end
 end
 
-dep 'writable.fhs', :path do
-  requires 'layout.fhs'.with(path)
+dep 'writable.fhs', :_path do
+  requires 'layout.fhs'.with(_path)
   requires_when_unmet 'admins can sudo'
   met? {
-    _, nonwritable = subpaths.partition {|subpath| File.writable_real?(path / subpath) }
+    _, nonwritable = subpaths.partition {|subpath| File.writable_real?(_path / subpath) }
     nonwritable.empty?.tap {|result|
-      log "Some directories within #{path} aren't writable by #{shell 'whoami'}." unless result
+      log "Some directories within #{_path} aren't writable by #{shell 'whoami'}." unless result
     }
   }
   meet {
-    confirm "About to enable write access to #{path} for admin users - is that OK?" do
+    confirm "About to enable write access to #{_path} for admin users - is that OK?" do
       subpaths.each {|subpath|
-        sudo %Q{chgrp admin '#{path / subpath}'}
-        sudo %Q{chmod g+w '#{path / subpath}'}
+        sudo %Q{chgrp admin '#{_path / subpath}'}
+        sudo %Q{chmod g+w '#{_path / subpath}'}
       }
     end
   }
 end
 
-dep 'layout.fhs', :path do
-  met? { subpaths.all? {|subpath| File.directory?(path / subpath) } }
-  meet { sudo "mkdir -p #{subpaths.map {|subpath| "'#{path / subpath}'" }.join(' ')}" }
+dep 'layout.fhs', :_path do
+  met? { subpaths.all? {|subpath| File.directory?(_path / subpath) } }
+  meet { sudo "mkdir -p #{subpaths.map {|subpath| "'#{_path / subpath}'" }.join(' ')}" }
 end
