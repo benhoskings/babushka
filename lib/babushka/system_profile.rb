@@ -7,8 +7,9 @@ module Babushka
       @matcher ||= SystemMatcher.new(system, flavour, name, pkg_helper_key)
     end
 
-    def matches?(specs)           matcher.matches?(specs) end
-    def match_list()              matcher.list end
+    def matches?(specs) matcher.matches?(specs) end
+    def match_list()    matcher.list end
+
     def differentiator_for(specs)
       differentiator = matcher.differentiator_for(specs)
       send("#{differentiator}_str") unless differentiator.nil?
