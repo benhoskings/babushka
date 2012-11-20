@@ -4,7 +4,7 @@ dep 'apt source', :uri, :release, :repo do
 
   def present_in_file? filename
     # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
-    src = Regexp.escape(uri).sub('//archive', '//(?:..\.)?archive')
+    src = Regexp.escape(uri).sub('//archive', '//(?:..\.)?archive') << '(?:/)?'
     filename.p.exists? &&
     filename.p.read[/^deb\s+#{src}\s+#{release}\b.*\b#{repo}\b/]
   end
