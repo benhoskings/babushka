@@ -3,9 +3,10 @@ dep 'apt source', :uri, :release, :repo do
   release.default!(Babushka.host.name)
 
   def present_in_file? filename
-    filename.p.exists? &&
     # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
-    filename.p.read[/^deb\s+#{Regexp.escape(uri)}\s+#{release}\b.*\b#{repo}\b/]
+    src = Regexp.escape(uri).sub('//archive', '//(?:..\.)?archive')
+    filename.p.exists? &&
+    filename.p.read[/^deb\s+#{src}\s+#{release}\b.*\b#{repo}\b/]
   end
 
   met? {
