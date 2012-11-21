@@ -20,6 +20,11 @@ module Babushka
   class Base
   class << self
 
+    @@start_time = Time.now
+    def start_time
+      @@start_time
+    end
+
     # +task+ represents the overall job that is being run, and the parts that
     # are external to running the corresponding dep tree itself - logging, and
     # var loading and saving in particular.
