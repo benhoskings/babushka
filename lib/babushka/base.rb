@@ -82,7 +82,10 @@ module Babushka
     end
 
     def ref
-      @ref ||= GitRepo.new(Path.path).current_head if (Path.path / '.git').dir?
+      @ref ||= begin
+        repo = GitRepo.new(Path.path)
+        repo.current_head if repo.exists?
+      end
     end
 
     def program_name
