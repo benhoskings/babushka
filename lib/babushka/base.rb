@@ -81,6 +81,10 @@ module Babushka
       end
     end
 
+    def runtime_info
+      @runtime_info ||= "babushka@#{ref} | #{ShellHelpers.which('ruby')}@#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}"
+    end
+
     def ref
       @ref ||= begin
         repo = GitRepo.new(Path.path)
