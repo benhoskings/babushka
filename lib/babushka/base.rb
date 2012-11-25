@@ -20,6 +20,8 @@ module Babushka
   class Base
   class << self
 
+    # The time at which babushka was loaded. This is used in LogHelpers to
+    # print profiling information via the '--profile' commandline option.
     @@start_time = Time.now
     def start_time
       @@start_time
