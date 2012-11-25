@@ -462,15 +462,15 @@ describe GitRepo, '#branch!' do
     subject.branches.should_not include('next')
   end
   context "after branching" do
-    before { subject.branch! "next" }
-    it "should have created a next branch" do
+    before(:all) { subject.branch! "next" }
+    it "should have created the branch" do
       subject.branches.should include('next')
     end
     it "should not be tracking anything" do
       subject.repo_shell('git config branch.next.remote').should be_nil
     end
-    it "should have checked out the next branch" do
-      subject.current_branch.should == "next"
+    it "should not have checked out the branch" do
+      subject.current_branch.should == "master"
     end
   end
 end

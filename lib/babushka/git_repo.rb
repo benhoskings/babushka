@@ -235,9 +235,10 @@ module Babushka
       }
     end
 
-    # Create a new local branch called +branch+, switching to it.
+    # Create a new local branch called +branch+ with +ref+ (defaulting to
+    # HEAD) as its tip.
     def branch! branch, ref=nil
-      repo_shell("git checkout -b '#{branch}' '#{ref || "HEAD"}'")
+      repo_shell("git branch '#{branch}' '#{ref || "HEAD"}'")
     end
 
     # Create a new local tracking branch for +branch+, which should be specified
