@@ -52,7 +52,7 @@ describe "help" do
     -u, --update                     Update referenced sources before loading deps from them
         --show-args                  Show the arguments being passed between deps as they're run
         --track-blocks               Track deps' blocks in TextMate as they're run
-        --profile                    Emit profiling information.
+        --profile                    Print a per-line timestamp to the debug log.
 ")
 
       Cmdline.should_receive(:log).with("\n")
