@@ -57,10 +57,6 @@ module Babushka
     # The message will be written to the log in the normal style, but will only
     # appear on STDOUT if debug logging is enabled.
     def debug message, opts = {}, &block
-      if Base.task.opt(:profile)
-        delta = Time.now - Base.start_time
-        message = sprintf("%.4f :: %s", delta, message)
-      end
       log message, opts.merge(:debug => !opts[:log]), &block
     end
 
@@ -108,6 +104,10 @@ module Babushka
     # not to visually confuse dep runs with other operations.)
     def log message, opts = {}, &block
       printable = !opts[:debug] || Base.task.opt(:debug)
+      if Base.task.opt(:profile)
+        delta = Time.now - Base.start_time
+        message = sprintf("%.4f :: %s", delta, message)
+      end
       Logging.print_log(Logging.indentation, printable, opts[:as]) unless opts[:indentation] == false
       if block_given?
         Logging.print_log("#{message} {".colorize('grey') + "\n", printable, opts[:as])
