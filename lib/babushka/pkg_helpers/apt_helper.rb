@@ -29,6 +29,13 @@ module Babushka
       }[Babushka.host.flavour]
     end
 
+    def source_matcher_for_system
+      {
+        :ubuntu => %r{http://(\w\w\.)?archive.ubuntu.com/ubuntu/?}
+      }[Babushka.host.flavour]
+    end
+
+
     private
 
     def has_pkg? pkg
