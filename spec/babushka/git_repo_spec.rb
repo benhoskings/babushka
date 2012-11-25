@@ -168,7 +168,7 @@ describe GitRepo, '#branches' do
       subject.branches.should == ['master']
     end
     context "after creating another branch" do
-      before {
+      before(:all) {
         repo_context('a') { shell "git checkout -b next" }
       }
       it "should return both branches" do
@@ -208,7 +208,7 @@ describe GitRepo, '#all_branches' do
       subject.all_branches.should == ["master", "origin/master", "origin/next"]
     end
     context "after creating another branch" do
-      before {
+      before(:all) {
         repo_context('a') { shell "git checkout -b next" }
       }
       it "should return both branches" do
@@ -247,7 +247,7 @@ describe GitRepo, '#current_branch' do
     subject.current_branch.should == 'master'
   end
   context "after creating another branch" do
-    before {
+    before(:all) {
       repo_context('a') { shell "git checkout -b next" }
     }
     it "should return 'next'" do
@@ -506,7 +506,7 @@ describe GitRepo, '#track!' do
     subject.branches.should_not include('next')
   end
   context "after tracking" do
-    before { subject.track! "origin/next" }
+    before(:all) { subject.track! "origin/next" }
     it "should have created a next branch" do
       subject.branches.should include('next')
     end
