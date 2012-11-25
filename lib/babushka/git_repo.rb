@@ -254,8 +254,8 @@ module Babushka
       repo_shell("git checkout '#{ref}'")
     end
 
-    # Check out the supplied ref, detaching the HEAD (if the installed git
-    # version supports doing that).
+    # Check out the supplied ref, detaching the HEAD. If the ref is a branch
+    # or tag, HEAD will reference the commit at the tip of the ref.
     def detach! ref
       repo_shell("git checkout '#{resolve(ref)}'")
     end
