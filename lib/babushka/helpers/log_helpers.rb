@@ -106,7 +106,7 @@ module Babushka
       printable = !opts[:debug] || Base.task.opt(:debug)
       if Base.task.opt(:profile)
         delta = Time.now - Base.start_time
-        Logging.print_log("%.4f :: " % delta, printable, opts[:as])
+        Logging.print_log("%.4f ".colorize('grey') % delta, printable, opts[:as])
       end
       Logging.print_log(Logging.indentation, printable, opts[:as]) unless opts[:indentation] == false
       if block_given?
