@@ -237,8 +237,8 @@ module Babushka
 
     # Create a new local branch called +branch+ with +ref+ (defaulting to
     # HEAD) as its tip.
-    def branch! branch, ref=nil
-      repo_shell("git branch '#{branch}' '#{ref || "HEAD"}'")
+    def branch! branch, ref = 'HEAD'
+      repo_shell("git branch '#{branch}' '#{ref}'")
     end
 
     # Create a new local tracking branch for +branch+, which should be specified
@@ -254,16 +254,16 @@ module Babushka
       repo_shell("git checkout '#{ref}'")
     end
 
-    # Check out the supplied ref, detaching the HEAD (if the installed git
-    # version supports doing that).
-    def detach! ref
+    # Check out the supplied ref, detaching the HEAD. If the ref is a branch
+    # or tag, HEAD will reference the commit at the tip of the ref.
+    def detach! ref = 'HEAD'
       repo_shell("git checkout '#{resolve(ref)}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
     def reset_hard! ref = 'HEAD'
-      repo_shell("git reset --hard #{ref}")
+      repo_shell("git reset --hard '#{ref}'")
     end
 
     def inspect

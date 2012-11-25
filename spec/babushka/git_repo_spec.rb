@@ -168,7 +168,7 @@ describe GitRepo, '#branches' do
       subject.branches.should == ['master']
     end
     context "after creating another branch" do
-      before {
+      before(:all) {
         repo_context('a') { shell "git checkout -b next" }
       }
       it "should return both branches" do
@@ -208,7 +208,7 @@ describe GitRepo, '#all_branches' do
       subject.all_branches.should == ["master", "origin/master", "origin/next"]
     end
     context "after creating another branch" do
-      before {
+      before(:all) {
         repo_context('a') { shell "git checkout -b next" }
       }
       it "should return both branches" do
@@ -247,7 +247,7 @@ describe GitRepo, '#current_branch' do
     subject.current_branch.should == 'master'
   end
   context "after creating another branch" do
-    before {
+    before(:all) {
       repo_context('a') { shell "git checkout -b next" }
     }
     it "should return 'next'" do
@@ -506,7 +506,7 @@ describe GitRepo, '#track!' do
     subject.branches.should_not include('next')
   end
   context "after tracking" do
-    before { subject.track! "origin/next" }
+    before(:all) { subject.track! "origin/next" }
     it "should have created a next branch" do
       subject.branches.should include('next')
     end
@@ -554,15 +554,20 @@ describe GitRepo, '#detach!' do
     stub_repo 'a'
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should detach the HEAD when a branch is supplied" do
-    subject.detach! "master"
+  it "should detach to HEAD when no ref is supplied" do
+    subject.detach!
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
     subject.current_branch.starts_with?(subject.resolve('master')).should be_true
   end
   it "should detach the HEAD when a ref is supplied" do
-    subject.detach! 'origin/next~'
+    subject.detach! 'origin/next'
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
-    subject.current_branch.starts_with?(subject.resolve('origin/next~')).should be_true
+    subject.current_branch.starts_with?(subject.resolve('origin/next')).should be_true
+  end
+  it "should detach the HEAD when a branch is supplied" do
+    subject.detach! "master"
+    subject.current_branch.should =~ /^[0-9a-f]{40}$/
+    subject.current_branch.starts_with?(subject.resolve('master')).should be_true
   end
 end
 
