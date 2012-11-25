@@ -110,6 +110,10 @@ module Babushka
       log_path_for(dep).open('w') {|f|
         f.sync = true
         @persistent_log = f
+
+        # Note the current babushka & ruby versions at the top of the log.
+        LogHelpers.debug(Base.runtime_info)
+
         yield
       }
     ensure

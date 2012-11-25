@@ -25,7 +25,6 @@ module Babushka
 
       def run
         parser.parse! argv
-        LogHelpers.debug(Base.runtime_info)
         Handler.for(verb).handler.call self
       rescue OptionParser::ParseError => e
         log_error "The #{e.args.first} option #{error_reason(e)}. #{hint}"
