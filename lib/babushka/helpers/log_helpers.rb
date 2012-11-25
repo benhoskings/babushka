@@ -107,8 +107,6 @@ module Babushka
     # runs - so please consider other logging styles before using this one, so as
     # not to visually confuse dep runs with other operations.)
     def log message, opts = {}, &block
-      # now = Time.now
-      # print "#{now.to_i}.#{now.usec}: ".ljust(20) unless opts[:debug]
       printable = !opts[:debug] || Base.task.opt(:debug)
       Logging.print_log(Logging.indentation, printable, opts[:as]) unless opts[:indentation] == false
       if block_given?
