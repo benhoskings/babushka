@@ -462,12 +462,39 @@ describe GitRepo, '#branch!' do
     subject.branches.should_not include('next')
   end
   context "after branching" do
-    before { subject.branch! "next" }
-    it "should have created a next branch" do
+    before(:all) { subject.branch! "next" }
+    it "should have created the branch" do
       subject.branches.should include('next')
+    end
+    it "should have pointed the branch at HEAD" do
+      subject.resolve('next').should == subject.resolve("master")
     end
     it "should not be tracking anything" do
       subject.repo_shell('git config branch.next.remote').should be_nil
+    end
+    it "should not have checked out the branch" do
+      subject.current_branch.should == "master"
+    end
+  end
+  context "after branching to a ref" do
+    before(:all) {
+      cd(tmp_prefix / 'repos/a') {
+        shell 'echo "Ch-ch-ch-changes" >> content.txt'
+        shell 'git commit -a -m "Changes!"'
+      }
+      subject.branch! "another", "master~"
+    }
+    it "should have created the branch" do
+      subject.branches.should include('another')
+    end
+    it "should have pointed the branch at the right ref" do
+      subject.resolve('another').should == subject.resolve("master~")
+    end
+    it "should not be tracking anything" do
+      subject.repo_shell('git config branch.another.remote').should be_nil
+    end
+    it "should not have checked out the branch" do
+      subject.current_branch.should == "master"
     end
   end
 end
