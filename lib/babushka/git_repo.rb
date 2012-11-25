@@ -263,7 +263,7 @@ module Babushka
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
     def reset_hard! ref = 'HEAD'
-      repo_shell("git reset --hard #{ref}")
+      repo_shell("git reset --hard '#{ref}'")
     end
 
     def inspect
