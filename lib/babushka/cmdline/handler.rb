@@ -8,7 +8,7 @@ module Babushka
     end
 
     def self.fail_with message
-      log message if message.respond_to? :to_s
+      log message
       exit 1
     end
 
