@@ -120,8 +120,10 @@ module Babushka
         fail_with "Can't edit '#{dep.name}, since it wasn't loaded from a file."
       else
         file, line = dep.context.source_location
-        editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('mate') || which('vim') || which('vi')
+        editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('subl') || which('mate') || which('vim') || which('vi')
         case editor_var
+        when /^subl/
+          exec "subl -n '#{file}':#{line}"
         when /^mate/
           exec "mate -l#{line} '#{file}'"
         when /^vim?/, /^nano/, /^pico/, /^emacs/
