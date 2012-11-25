@@ -469,6 +469,9 @@ describe GitRepo, '#branch!' do
     it "should not be tracking anything" do
       subject.repo_shell('git config branch.next.remote').should be_nil
     end
+    it "should have checked out the next branch" do
+      subject.current_branch.should == "next"
+    end
   end
 end
 
