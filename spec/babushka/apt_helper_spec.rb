@@ -38,6 +38,11 @@ describe Babushka::AptHelper do
       it "should match country mirrors" do
         'http://au.archive.ubuntu.com/ubuntu'[matcher].should_not be_nil
       end
+      it "should match ec2 mirrors" do
+        'http://us-east-1.ec2.archive.ubuntu.com/ubuntu/'[matcher].should_not be_nil
+        'http://us-west-1.ec2.archive.ubuntu.com/ubuntu/'[matcher].should_not be_nil
+        'http://ap-southeast-1.ec2.archive.ubuntu.com/ubuntu/'[matcher].should_not be_nil
+      end
       it "should match with a trailing slash" do
         'http://archive.ubuntu.com/ubuntu/'[matcher].should_not be_nil
       end
@@ -45,6 +50,11 @@ describe Babushka::AptHelper do
         'http://archive.ubuntu.com/'[matcher].should be_nil
         'http://lolarchive.ubuntu.com/ubuntu'[matcher].should be_nil
         'http://babushka.me'[matcher].should be_nil
+        'http://us-east-1.ec3.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
+        'http://.ec2.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
+        'http://ec2.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
+        'http://lolec2.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
+        'http://lol.ec2.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
       end
     end
   end
