@@ -48,7 +48,6 @@ module Babushka
       opt '-y', '--defaults',     "Assume the default value for all vars without prompting, where possible"
       opt '-u', '--update',       "Update referenced sources before loading deps from them"
       opt       '--show-args',    "Show the arguments being passed between deps as they're run"
-      opt       '--track-blocks', "Track deps' blocks in TextMate as they're run"
       opt       '--profile',      "Print a per-line timestamp to the debug log."
     }.run {|cmd|
       dep_names, vars = cmd.argv.partition {|arg| arg['='].nil? }
@@ -56,8 +55,6 @@ module Babushka
         fail_with "'#{bad_var}' looks like a var but it doesn't make sense."
       elsif dep_names.empty?
         fail_with "Nothing to do."
-      elsif cmd.opts[:track_blocks] && !which('mate')
-        fail_with "The --track-blocks option requires TextMate, and the `mate` helper.\nOn a Mac, you can install them like so:\n  babushka benhoskings:textmate"
       else
         Base.task.process dep_names, vars.map {|i|
           i.split('=', 2)

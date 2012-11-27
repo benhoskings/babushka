@@ -340,7 +340,6 @@ module Babushka
 
     def process_task task_name
       # log "calling #{name} / #{task_name}"
-      track_block_for(task_name) if Base.task.opt(:track_blocks)
       context.invoke(task_name)
     end
 
@@ -366,14 +365,6 @@ module Babushka
       Babushka::Logging.log_exception(e)
       advice = e.is_a?(DepDefinitionError) ? "Looks like a problem with '#{name}' - check" : "Check"
       log "#{advice} #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
-    end
-
-    def track_block_for task_name
-      if context.has_block? task_name
-        file, line = *context.source_location_for(task_name)
-        shell "mate '#{file}' -l #{line}" unless file.nil? || line.nil?
-        sleep 2
-      end
     end
 
     def log_cached result
