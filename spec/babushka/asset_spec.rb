@@ -40,6 +40,13 @@ describe Babushka::Asset do
       Asset.for(archive_path / "archive.#{ext}").extract_command.should == command
     }
   end
+  it "should yield" do
+    yielded = false
+    Asset.for(archive_path / "archive.tar").extract {
+      yielded = true
+    }
+    yielded.should be_true
+  end
   it "should yield in the extracted dir" do
     Asset.for(archive_path / "archive.tar").extract {
       Dir.pwd.should == (tmp_prefix / 'archives/archive')
