@@ -21,7 +21,7 @@ shared_examples_for 'renderable' do
       end
       context "after shitting up the file" do
         before {
-          shell "echo lulz >> #{subject.path}"
+          ShellHelpers.shell "echo lulz >> #{subject.path}"
         }
         it "should not be clean" do
           subject.should_not be_clean

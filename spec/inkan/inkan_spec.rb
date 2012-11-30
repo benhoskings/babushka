@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+require 'digest/sha1'
+
 describe "Inkan" do
   describe '.legitimate?' do
     context "without a hashbang" do
@@ -117,7 +119,7 @@ describe "Inkan" do
   describe '#render' do
     let(:inkan) { Inkan.new(nil) }
 
-    before { shell "rm -f /tmp/spec.txt" }
+    before { ShellHelpers.shell "rm -f /tmp/spec.txt" }
 
     it "writes out the contents of the buffer" do
       inkan.print "foo bar baz"

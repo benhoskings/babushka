@@ -46,10 +46,10 @@ module Babushka
       if cmd.extract_options[:log]
         # Don't log the error if the command already logged
       elsif e.stdout.empty? && e.stderr.empty?
-        log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
+        LogHelpers.log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
       else
-        log "$ #{e.cmd.join(' ')}", :closing_status => 'shell command failed' do
-          log_error(e.stderr.empty? ? e.stdout : e.stderr)
+        LogHelpers.log "$ #{e.cmd.join(' ')}", :closing_status => 'shell command failed' do
+          LogHelpers.log_error(e.stderr.empty? ? e.stdout : e.stderr)
         end
       end
     end
@@ -204,7 +204,7 @@ module Babushka
     #   Sleeping for a bit... done.
     def log_shell message, *cmd, &block
       opts = cmd.extract_options!
-      log_block message do
+      LogHelpers.log_block message do
         shell(*cmd.dup.push(opts.merge(:spinner => true)), &block)
       end
     end
