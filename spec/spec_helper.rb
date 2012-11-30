@@ -10,21 +10,6 @@ require 'rubygems'
 require 'rspec'
 require 'ir_b'
 
-class Object
-  # Log and return unmodified in the same manner as #tapp, but escape the
-  # output to be HTML safe and easily readable. For example,
-  #   #<Object:0x00000100bda208>
-  # becomes
-  #   #&lt;Object:0x00000100bda208><br />
-  def taph
-    tap {
-      puts "<pre>" +
-        "#{File.basename caller[2]}: #{self.inspect}".gsub('&', '&amp;').gsub('<', '&lt;') +
-        "</pre>"
-    }
-  end
-end
-
 puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
