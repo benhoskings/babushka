@@ -70,6 +70,23 @@ describe Babushka::Asset do
     }
   end
 
+  describe 'cleanup' do
+    it "should remove the build dir on success" do
+      Asset.for(archive_path / "archive.tar").extract {
+        (tmp_prefix / 'archives/archive').exists?.should be_true
+        true
+      }
+      (tmp_prefix / 'archives/archive').exists?.should be_false
+    end
+    it "should not remove the build dir on failure" do
+      Asset.for(archive_path / "archive.tar").extract {
+        (tmp_prefix / 'archives/archive').exists?.should be_true
+        false
+      }
+      (tmp_prefix / 'archives/archive').exists?.should be_true
+    end
+  end
+
   describe '#content_subdir' do
     let(:resource) { Asset.new('test.zip') }
 
