@@ -32,10 +32,6 @@ module Babushka
 
     private
 
-    def self.sources_yml
-      tmp_prefix / 'sources.yml'
-    end
-
     def self.source_prefix
       tmp_prefix / 'sources'
     end
