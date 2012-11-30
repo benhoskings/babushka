@@ -24,9 +24,7 @@ module Babushka
   end
 
   class Source
-
     private
-
     def self.source_prefix
       tmp_prefix / 'sources'
     end
