@@ -10,11 +10,6 @@ require 'rubygems'
 require 'rspec'
 require 'ir_b'
 
-# RSpec::Core::Example.send :include, Babushka::Helpers
-RSpec::Core::ExampleGroup.send :include, Babushka::LogHelpers
-RSpec::Core::ExampleGroup.send :include, Babushka::ShellHelpers
-RSpec::Core::ExampleGroup.send :include, Babushka::PathHelpers
-
 class Object
   # Log and return unmodified in the same manner as #tapp, but escape the
   # output to be HTML safe and easily readable. For example,
