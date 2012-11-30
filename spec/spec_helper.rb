@@ -1,5 +1,3 @@
-# coding: utf-8
-
 $:.concat %w[spec/babushka spec/fancypath spec/inkan .]
 
 require 'lib/babushka'
