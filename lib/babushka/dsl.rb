@@ -1,5 +1,8 @@
 module Babushka
   module DSL
+    # Make these helpers directly callable, and private when included.
+    module_function
+
     # Use +spec+ to look up a dep. Because +spec+ might include a source
     # prefix, the dep this method returns could be from any of the currently
     # known sources.
