@@ -48,6 +48,7 @@ describe SourcePool do
       Base.sources.dep_for(the_dep).should == the_dep
     end
     it "should not find the dep with namespacing" do
+      GitHelpers.stub!(:git) # To avoid cloning.
       Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should be_nil
     end
     context "with namespaced dep defined" do
@@ -100,6 +101,7 @@ describe SourcePool do
       Base.sources.dep_for('core:dep 1').should == dep1
     end
     it "should not find the dep when the namespace is wrong" do
+      GitHelpers.stub!(:git) # To avoid cloning.
       Base.sources.dep_for('non_core:dep 1').should be_nil
     end
   end
