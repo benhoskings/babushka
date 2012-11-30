@@ -94,7 +94,7 @@ module Babushka
     end
 
     def path
-      if implicit? || local?
+      @path ||= if implicit? || local?
         @uri
       else
         prefix / name
@@ -209,6 +209,10 @@ module Babushka
           @updated = result || false
         }
       end
+    end
+
+    def remove!
+      !cloneable? || !path.exists? || path.rm
     end
 
     private

@@ -450,4 +450,26 @@ describe Source do
       @source.load!(true)
     end
   end
+
+  describe '#remove!' do
+    it "should not delete a non-cloneable source" do
+      source = Source.new('spec/deps/good')
+      source.path.should_not_receive(:rm)
+      source.remove!
+    end
+    it "should not delete a nonexistent source" do
+      source = Source.new('spec/deps/nonexistent')
+      source.path.should_not_receive(:rm)
+      source.remove!
+    end
+    context 'on a cloneable source' do
+      let(:source) { Source.new(*@remote_2) }
+
+      it "should delete the source" do
+        source.path.should_receive(:rm)
+        source.update!
+        source.remove!
+      end
+    end
+  end
 end

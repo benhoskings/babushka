@@ -26,9 +26,6 @@ module Babushka
   end
 
   class Source
-    def remove!
-      !cloneable? || !File.exists?(path) || `rm -rf '#{path}'`
-    end
 
     private
 
