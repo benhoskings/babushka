@@ -4,7 +4,6 @@ module Babushka
   class SourceLoadError < LoadError
   end
   class Source
-    include GitHelpers
     include LogHelpers
     extend LogHelpers
     extend ShellHelpers
@@ -204,7 +203,7 @@ module Babushka
         @updated = false # So the ahead? check doesn't run again, for when there's no network.
         log "Not updating #{name} (#{path}) because it's ahead of origin."
       else
-        git(uri, :to => path, :log => true).tap {|result|
+        GitHelpers.git(uri, :to => path, :log => true).tap {|result|
           log "Marking #{uri} as offline for this run." unless result
           @updated = result || false
         }

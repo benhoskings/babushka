@@ -371,7 +371,7 @@ describe Source do
           @nameless = Source.new(@remote_1.first)
         }
         it "should use the basename as the name" do
-          @nameless.should_receive(:git).with(@remote_1.first, :to => (tmp_prefix / 'sources/remote_1'), :log => true)
+          GitHelpers.should_receive(:git).with(@remote_1.first, :to => (tmp_prefix / 'sources/remote_1'), :log => true)
           @nameless.add!
         end
         it "should set the name in the source" do
