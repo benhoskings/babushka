@@ -99,9 +99,11 @@ describe Dep, '.find_or_suggest' do
       end
     }
     it "should not find the dep without a namespace" do
+      Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
       Dep.find_or_suggest('namespaced Dep.find_or_suggest tests').should be_nil
     end
     it "should not find the dep with an incorrect namespace" do
+      Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
       Dep.find_or_suggest('incorrect:namespaced Dep.find_or_suggest tests').should be_nil
     end
     it "should find the dep with the correct namespace" do
