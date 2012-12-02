@@ -37,7 +37,7 @@ module Babushka
         response_code = result.val_for(/HTTP\/1\.\d/) # not present for ftp://, etc.
         if response_code && response_code[/^[23]/].nil?
           log_error "Couldn't download #{url}: #{response_code}."
-        elsif !(location = result.val_for('Location')).nil?
+        elsif !(location = result.val_for(/^location:/i)).nil?
           log "Following redirect from #{url}"
           download URI.escape(location), location.p.basename
         else
