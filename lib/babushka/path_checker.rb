@@ -6,7 +6,7 @@ module Babushka
       commands = [provided_list].flatten(1).versions
 
       cmds_in_path?(commands) and matching_versions?(commands) {|cmd|
-        shell("#{cmd.name} --version")
+        shell("#{cmd.name} --version 2>&1")
       }
     end
 
