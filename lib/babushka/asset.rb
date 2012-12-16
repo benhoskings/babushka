@@ -118,7 +118,7 @@ module Babushka
   class DmgAsset < Asset
     def extract &block
       in_download_dir {
-        output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
+        output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'", :input => "y"
         if output.nil?
           log_error "Couldn't mount #{filename.p}."
         elsif (path = mountpoint_for(output)).nil?
