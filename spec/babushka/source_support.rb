@@ -4,7 +4,7 @@ def make_source_remote name = 'test'
   ["file://#{tmp_prefix / 'source_remotes' / name}", {:name => name}].tap {|source|
     source_path = source.first.gsub(/^file:\/\//, '')
     unless File.exists? source_path / '.git'
-      shell %Q{
+      ShellHelpers.shell %Q{
         mkdir -p "#{source_path}" &&
         cd "#{source_path}" &&
         git init &&

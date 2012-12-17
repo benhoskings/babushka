@@ -51,8 +51,8 @@ module Babushka
     def process_extract &block
       shell("mkdir -p '#{name}'") and
       cd(name) {
-        unless log_shell("Extracting #{filename}", extract_command)
-          log_error "Couldn't extract #{path} - probably a bad download."
+        unless ShellHelpers.log_shell("Extracting #{filename}", extract_command)
+          LogHelpers.log_error "Couldn't extract #{path} - probably a bad download."
         else
           cd(content_subdir) {
             block.nil? or block.call(self)
@@ -60,11 +60,11 @@ module Babushka
         end
       }.tap {|result|
         if result
-          log_block "Cleaning up" do
+          LogHelpers.log_block "Cleaning up" do
             (build_prefix / name).p.rm
           end
         else
-          log "The build artefacts are in #{build_prefix / name / content_subdir}."
+          LogHelpers.log "The build artefacts are in #{build_prefix / name / content_subdir}."
         end
       }
     end
@@ -126,16 +126,16 @@ module Babushka
   class DmgAsset < Asset
     def extract &block
       in_download_dir {
-        output = log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
+        output = ShellHelpers.log_shell "Attaching #{filename}", "hdiutil attach '#{filename.p.basename}'"
         if output.nil?
-          log_error "Couldn't mount #{filename.p}."
+          LogHelpers.log_error "Couldn't mount #{filename.p}."
         elsif (path = mountpoint_for(output)).nil?
           raise "Couldn't find where `hdiutil` mounted #{filename.p}."
         else
           cd(path) {
             block.call(self)
           }.tap {
-            log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
+            ShellHelpers.log_shell "Detaching #{filename}", "hdiutil detach '#{path}'"
           }
         end
       }

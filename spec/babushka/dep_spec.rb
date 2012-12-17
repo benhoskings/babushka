@@ -29,6 +29,7 @@ describe "Dep.new" do
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
+    GitHelpers.stub!(:git) # To avoid cloning.
     L{
       Dep.new "colons:invalidate names", Base.sources.anonymous, [], {}, nil
     }.should raise_error(InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
@@ -104,6 +105,7 @@ describe Dep, '.find_or_suggest' do
     end
     it "should not find the dep with an incorrect namespace" do
       Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
+      GitHelpers.stub!(:git) # To avoid cloning.
       Dep.find_or_suggest('incorrect:namespaced Dep.find_or_suggest tests').should be_nil
     end
     it "should find the dep with the correct namespace" do

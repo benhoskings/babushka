@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Vars do
   before {
     Base.task.process [], {} # a hack to assign Base.task.vars
-    Base.task.vars.define_var :username, :default => shell('whoami')
+    Base.task.vars.define_var :username, :default => ShellHelpers.shell('whoami')
     Base.task.vars.define_var :domain, :default => :username
     Base.task.vars.define_var :db_name
     Base.task.vars.define_var :test_user, :default => :db_name
