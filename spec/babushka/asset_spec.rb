@@ -40,6 +40,13 @@ describe Babushka::Asset do
       Asset.for(archive_path / "archive.#{ext}").extract_command.should == command
     }
   end
+  it "should yield" do
+    yielded = false
+    Asset.for(archive_path / "archive.tar").extract {
+      yielded = true
+    }
+    yielded.should be_true
+  end
   it "should yield in the extracted dir" do
     Asset.for(archive_path / "archive.tar").extract {
       Dir.pwd.should == (tmp_prefix / 'archives/archive')
@@ -62,79 +69,96 @@ describe Babushka::Asset do
       Dir.glob('**/*').should == ['Blah.app', 'Blah.app/content.txt']
     }
   end
-end
 
-describe Asset, '#content_subdir' do
-  let(:resource) { Asset.new('test.zip') }
+  describe 'cleanup' do
+    it "should remove the build dir on success" do
+      Asset.for(archive_path / "archive.tar").extract {
+        (tmp_prefix / 'archives/archive').exists?.should be_true
+        true
+      }
+      (tmp_prefix / 'archives/archive').exists?.should be_false
+    end
+    it "should not remove the build dir on failure" do
+      Asset.for(archive_path / "archive.tar").extract {
+        (tmp_prefix / 'archives/archive').exists?.should be_true
+        false
+      }
+      (tmp_prefix / 'archives/archive').exists?.should be_true
+    end
+  end
 
-  context "when there is just a single file inside the archive" do
-    before {
-      Dir.stub!(:glob).and_return(['a dir'])
-      File.should_receive(:directory?).with('a dir').and_return(false)
-    }
-    it "should choose it, whatever it's called" do
-      resource.content_subdir.should be_nil
-    end
-  end
-  context "when there is just a single non-descendable dir inside the archive" do
-    before {
-      Dir.stub!(:glob).and_return(['a dir.app'])
-      File.should_receive(:directory?).with('a dir.app').and_return(true)
-    }
-    it "should choose it, whatever it's called" do
-      resource.content_subdir.should be_nil
-    end
-  end
-  context "when there is just a single dir inside the archive" do
-    before {
-      Dir.stub!(:glob).and_return(['a dir'])
-      File.should_receive(:directory?).with('a dir').and_return(true)
-    }
-    it "should choose it, whatever it's called" do
-      resource.content_subdir.should == 'a dir'
-    end
-  end
-  context "when there is more than one dir" do
-    context "and none are named after the archive" do
+  describe '#content_subdir' do
+    let(:resource) { Asset.new('test.zip') }
+
+    context "when there is just a single file inside the archive" do
       before {
-        Dir.stub!(:glob).and_return(['contents', 'another'])
+        Dir.stub!(:glob).and_return(['a dir'])
+        File.should_receive(:directory?).with('a dir').and_return(false)
       }
-      it "should return nil (so the original extraction dir is used)" do
+      it "should choose it, whatever it's called" do
         resource.content_subdir.should be_nil
       end
     end
-    context "and one is named after the archive" do
+    context "when there is just a single non-descendable dir inside the archive" do
       before {
-        Dir.stub!(:glob).and_return(['contents', 'test'])
+        Dir.stub!(:glob).and_return(['a dir.app'])
+        File.should_receive(:directory?).with('a dir.app').and_return(true)
       }
-      it "should choose the directory named after the archive" do
-        resource.content_subdir.should == 'test'
-      end
-    end
-  end
-  context "when there are non-descendable dirs" do
-    context "and none are named after the archive" do
-      before {
-        Dir.stub!(:glob).and_return(['contents', 'LaunchBar.app', 'RSpec.tmbundle'])
-      }
-      it "should not choose the non-descendable dir" do
+      it "should choose it, whatever it's called" do
         resource.content_subdir.should be_nil
       end
     end
-    context "and one is named after the archive" do
+    context "when there is just a single dir inside the archive" do
       before {
-        Dir.stub!(:glob).and_return(['contents', 'test.app'])
+        Dir.stub!(:glob).and_return(['a dir'])
+        File.should_receive(:directory?).with('a dir').and_return(true)
       }
-      it "should not choose the non-descendable dir" do
-        resource.content_subdir.should be_nil
+      it "should choose it, whatever it's called" do
+        resource.content_subdir.should == 'a dir'
       end
     end
-    context "one is named after the archive, and a descendable dir is present too" do
-      before {
-        Dir.stub!(:glob).and_return(['contents', 'test.app', 'test'])
-      }
-      it "should choose the descendable dir" do
-        resource.content_subdir.should == 'test'
+    context "when there is more than one dir" do
+      context "and none are named after the archive" do
+        before {
+          Dir.stub!(:glob).and_return(['contents', 'another'])
+        }
+        it "should return nil (so the original extraction dir is used)" do
+          resource.content_subdir.should be_nil
+        end
+      end
+      context "and one is named after the archive" do
+        before {
+          Dir.stub!(:glob).and_return(['contents', 'test'])
+        }
+        it "should choose the directory named after the archive" do
+          resource.content_subdir.should == 'test'
+        end
+      end
+    end
+    context "when there are non-descendable dirs" do
+      context "and none are named after the archive" do
+        before {
+          Dir.stub!(:glob).and_return(['contents', 'LaunchBar.app', 'RSpec.tmbundle'])
+        }
+        it "should not choose the non-descendable dir" do
+          resource.content_subdir.should be_nil
+        end
+      end
+      context "and one is named after the archive" do
+        before {
+          Dir.stub!(:glob).and_return(['contents', 'test.app'])
+        }
+        it "should not choose the non-descendable dir" do
+          resource.content_subdir.should be_nil
+        end
+      end
+      context "one is named after the archive, and a descendable dir is present too" do
+        before {
+          Dir.stub!(:glob).and_return(['contents', 'test.app', 'test'])
+        }
+        it "should choose the descendable dir" do
+          resource.content_subdir.should == 'test'
+        end
       end
     end
   end

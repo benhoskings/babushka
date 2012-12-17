@@ -58,6 +58,14 @@ module Babushka
             block.nil? or block.call(self)
           }
         end
+      }.tap {|result|
+        if result
+          log_block "Cleaning up" do
+            (build_prefix / name).p.rm
+          end
+        else
+          log "The build artefacts are in #{build_prefix / name / content_subdir}."
+        end
       }
     end
 
