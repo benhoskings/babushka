@@ -1,13 +1,14 @@
 require 'fancypath_support'
 
 describe Fancypath do
+  let(:tmp_dir) { tmp_prefix / 'fancypath' }
   before do
-    TMP_DIR.rmtree if TMP_DIR.exist?
-    TMP_DIR.mkpath
-    @file = TMP_DIR.to_fancypath/'testfile'
-    @dir = TMP_DIR.to_fancypath/'testdir'
+    tmp_dir.rmtree if tmp_dir.exist?
+    tmp_dir.mkpath
+    @file = tmp_dir.to_fancypath/'testfile'
+    @dir = tmp_dir.to_fancypath/'testdir'
   end
-  after { TMP_DIR.rmtree }
+  after { tmp_dir.rmtree }
 
   describe '#==' do
     it "should compare properly with other fancypaths" do
@@ -27,8 +28,8 @@ describe Fancypath do
   describe '#length' do
     it "should calculate the length" do
       @file.length.should == @file.to_s.length
-      @file.length.should == File.join(TMP_DIR, 'testfile').length
-      @dir.length.should == File.join(TMP_DIR, 'testdir').length
+      @file.length.should == File.join(tmp_dir, 'testfile').length
+      @dir.length.should == File.join(tmp_dir, 'testdir').length
     end
   end
 
@@ -88,7 +89,7 @@ describe Fancypath do
   end
 
   describe '#parent' do
-    it('returns parent') { @file.parent.should == TMP_DIR.to_fancypath }
+    it('returns parent') { @file.parent.should == tmp_dir.to_fancypath }
     it('returns Fancypath') { @file.parent.should be_instance_of(Fancypath) }
   end
 
@@ -159,7 +160,7 @@ describe Fancypath do
 
   describe '#mkdir' do
     before {
-      @mkdir = Fancypath(TMP_DIR/'nested/mkdir')
+      @mkdir = Fancypath(tmp_dir/'nested/mkdir')
     }
     it "should create directories" do
       @mkdir.exists?.should == false
@@ -174,13 +175,13 @@ describe Fancypath do
       @file.touch
     }
     it "should glob" do
-      TMP_DIR.glob('**/*').should =~ ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
+      tmp_dir.glob('**/*').should =~ [(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s)
     end
     it "should glob with no args" do
-      (TMP_DIR / '**/*').glob.should =~ ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
+      (tmp_dir / '**/*').glob.should =~ [(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s)
     end
     it "should be case insensitive" do
-      TMP_DIR.glob('**/TEST*').should =~ ['tmp/fancypath/testdir'.p.to_s, 'tmp/fancypath/testfile'.p.to_s]
+      tmp_dir.glob('**/TEST*').should =~ [(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s)
     end
   end
 
@@ -192,10 +193,10 @@ describe Fancypath do
 
   describe '#copy' do
     before { @file.touch }
-    it('returns a Fancypath') { @file.copy(TMP_DIR/'foo').should be_instance_of(Fancypath) }
-    it('creates a new file') { @file.copy(TMP_DIR/'foo').should exist }
-    it('keeps the original') { @file.copy(TMP_DIR/'foo'); @file.should exist }
-    it('copies the contents') { @file.copy(TMP_DIR/'foo').read.should == @file.read }
+    it('returns a Fancypath') { @file.copy(tmp_dir/'foo').should be_instance_of(Fancypath) }
+    it('creates a new file') { @file.copy(tmp_dir/'foo').should exist }
+    it('keeps the original') { @file.copy(tmp_dir/'foo'); @file.should exist }
+    it('copies the contents') { @file.copy(tmp_dir/'foo').read.should == @file.read }
   end
 
   describe '#copy on a directory' do
@@ -203,14 +204,14 @@ describe Fancypath do
       @dir.mkdir
       (@dir / 'testfile').touch
     }
-    it('returns a Fancypath') { @dir.copy(TMP_DIR/'foo').should be_instance_of(Fancypath) }
+    it('returns a Fancypath') { @dir.copy(tmp_dir/'foo').should be_instance_of(Fancypath) }
     it('creates a new dir with a file in it') {
-      @dir.copy(TMP_DIR/'foo')
-      (TMP_DIR/'foo').should exist
-      (TMP_DIR/'foo/testfile').should exist
+      @dir.copy(tmp_dir/'foo')
+      (tmp_dir/'foo').should exist
+      (tmp_dir/'foo/testfile').should exist
     }
-    it('keeps the original') { @dir.copy(TMP_DIR/'foo'); @dir.should exist }
-    it('copies the contents') { @dir.copy(TMP_DIR/'foo'); (TMP_DIR/'foo/testfile').read.should == (@dir/'testfile').read }
+    it('keeps the original') { @dir.copy(tmp_dir/'foo'); @dir.should exist }
+    it('copies the contents') { @dir.copy(tmp_dir/'foo'); (tmp_dir/'foo/testfile').read.should == (@dir/'testfile').read }
   end
 
   describe '#set_extension' do
@@ -228,7 +229,7 @@ describe Fancypath do
   describe '#move' do
     example "destination has the file contents, source does not exist" do
       @file.write('foo')
-      dest = TMP_DIR/'newfile'
+      dest = tmp_dir/'newfile'
       @file.move( dest )
       @file.should_not exist
       dest.read.should == 'foo'
