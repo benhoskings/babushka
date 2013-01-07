@@ -44,11 +44,11 @@ module Babushka
       !type.nil?
     end
 
-    def extract &block
-      cd(build_prefix, :create => true) { process_extract(&block) }
+    def extract defer_cleanup=false, &block
+      cd(build_prefix, :create => true) { process_extract(defer_cleanup, &block) }
     end
 
-    def process_extract &block
+    def process_extract defer_cleanup=false, &block
       shell("mkdir -p '#{name}'") and
       cd(name) {
         unless ShellHelpers.log_shell("Extracting #{filename}", extract_command)
@@ -61,7 +61,8 @@ module Babushka
       }.tap {|result|
         if result
           LogHelpers.log_block "Cleaning up" do
-            (build_prefix / name).p.rm
+            return true if defer_cleanup
+            (build_prefix / name).p.rm unless defer_cleanup
           end
         else
           LogHelpers.log "The build artefacts are in #{build_prefix / name / content_subdir}."

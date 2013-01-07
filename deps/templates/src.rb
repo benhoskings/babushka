@@ -38,12 +38,15 @@ meta :src do
     met? { in_path?(provides) }
     meet {
       extra_source.each {|uri|
-        Babushka::Resource.extract(uri)
+        Babushka::Resource.extract(uri, true)
       }
       source.each {|uri|
         Babushka::Resource.extract(uri) {|archive|
           invoke(:process_source)
         }
+      }
+      extra_source.each {|uri|
+        Babushka::Resource.extract(uri)
       }
     }
   }
