@@ -16,6 +16,10 @@ dep 'nodejs.bin' do
     otherwise 'node'
   }
   provides 'node >= 0.6.12'
+  after {
+    # Trigger the creation of npm's global package dir, which it can't run without.
+    shell!('npm --version')
+  }
 end
 
 dep 'sudo.bin'
