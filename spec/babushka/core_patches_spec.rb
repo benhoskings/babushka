@@ -168,6 +168,17 @@ describe String, "val_for" do
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for("/dev/disk1s2        	Apple_HFS").should == "/Volumes/TextMate 1.5.9"
     "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
   end
+  context "regexp keys" do
+    it "should use the supplied regexp to match" do
+      "a key: value".val_for(/key/).should == 'a : value'
+    end
+    it "should match cleanly with a proper key" do
+      "a key: value".val_for(/^a key:/).should == 'value'
+    end
+    it "should match case-insensitively" do
+      "Key: value".val_for(/^key:/i).should == 'value'
+    end
+  end
 end
 
 describe String, '#colorized?' do
