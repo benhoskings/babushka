@@ -37,19 +37,17 @@ meta :app do
   end
 
   def get_source_from_sparkle
-    unless sparkle.empty?
-      require 'rexml/document'
-      require 'net/http'
+    require 'rexml/document'
+    require 'net/http'
 
-      log_block 'Querying sparkle' do
-        sparkle.map {|uri|
-          Net::HTTP.get(URI.parse(uri))
-        }.map {|response|
-          REXML::Document.new(response)
-        }.map {|doc|
-          doc.elements['rss/channel/item/enclosure'].attributes['url']
-        }
-      end
+    log_block 'Querying sparkle' do
+      sparkle.map {|uri|
+        Net::HTTP.get(URI.parse(uri))
+      }.map {|response|
+        REXML::Document.new(response)
+      }.map {|doc|
+        doc.elements['rss/channel/item/enclosure'].attributes['url']
+      }
     end
   end
 
@@ -63,7 +61,7 @@ meta :app do
 
     prepare {
       # Append any sparkle URLs found to the list of sources to process.
-      source get_source_from_sparkle
+      source get_source_from_sparkle unless sparkle.empty?
     }
 
     meet {
