@@ -29,6 +29,14 @@ module Babushka
       }[Babushka.host.flavour]
     end
 
+    def source_matcher_for_system
+      {
+        :debian => %r{http://ftp\d?.(\w\w\.)?debian.org/debian/?},
+        :ubuntu => %r{http://((\w\w-(.*)-\d\.ec2\.)|(\w\w\.))?archive.ubuntu.com/ubuntu/?}
+      }[Babushka.host.flavour]
+    end
+
+
     private
 
     def has_pkg? pkg
