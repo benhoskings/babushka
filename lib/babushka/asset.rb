@@ -59,12 +59,12 @@ module Babushka
           }
         end
       }.tap {|result|
-        if result
+        if !result
+          LogHelpers.log "The build artefacts are in #{build_prefix / name / content_subdir}."
+        elsif !block.nil?
           LogHelpers.log_block "Cleaning up" do
             (build_prefix / name).p.rm
           end
-        else
-          LogHelpers.log "The build artefacts are in #{build_prefix / name / content_subdir}."
         end
       }
     end
