@@ -19,10 +19,10 @@ module Babushka
       end
     end
 
-    def self.extract url, &block
+    def self.extract url, defer_cleanup=false, &block
       get url do |download_path|
         in_build_dir {
-          Asset.for(download_path).extract(&block)
+          Asset.for(download_path).extract(defer_cleanup, &block)
         }
       end
     end
