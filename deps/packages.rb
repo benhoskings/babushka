@@ -17,8 +17,9 @@ dep 'nodejs.bin' do
   }
   provides 'node >= 0.6.12'
   after {
-    # Trigger the creation of npm's global package dir, which it can't run without.
-    shell!('npm --version')
+    # Trigger the creation of npm's global package dir, which it can't run
+    # without. (Only newer nodes bundle npm, though.)
+    shell!('npm --version') if which('npm')
   }
 end
 
