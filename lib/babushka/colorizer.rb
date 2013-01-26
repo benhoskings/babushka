@@ -3,7 +3,6 @@ class String
   private
 
   class Colorizer
-    include Singleton
 
     HomeOffset = 29
     LightOffset = 60
@@ -29,7 +28,7 @@ class String
       'reverse' => 7, 'reversed' => 7
     }
 
-    def colorize text, description
+    def self.colorize text, description
       return text if Babushka::Base.task.opts[:"[no_]color"] == false
 
       terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
@@ -40,18 +39,18 @@ class String
       "\e[#{"0;#{fg_for(fg)};#{bg_for(bg) || ctrl_for(ctrl)}"}m#{text}\e[0m"
     end
 
-    def fg_for name
+    def self.fg_for name
       light = name.gsub!(LightRegex, '') unless name.nil?
       (ColorOffsets[name] || 0) + HomeOffset + (light ? LightOffset : 0)
     end
 
-    def bg_for name
+    def self.bg_for name
       # There's a hole in the table on bg=none, so we use BGOffset to the left
       offset = fg_for((name || '').sub(/^on_/, ''))
       offset + BGOffset unless offset == HomeOffset
     end
 
-    def ctrl_for name
+    def self.ctrl_for name
       CtrlOffsets[name] || HomeOffset
     end
   end
