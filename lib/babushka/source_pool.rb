@@ -5,6 +5,12 @@ module Babushka
 
     SEPARATOR = ':'
 
+    attr_reader :source_opts
+
+    def initialize source_opts = {}
+      @source_opts = source_opts
+    end
+
     def current
       @current ||= default.concat(standard)
       @current.dup
@@ -47,7 +53,7 @@ module Babushka
         all_present.detect {|source| source.name == name } ||
         Source.for_remote(name)
       ).tap {|source|
-        source.load!(Base.task.opt(:update))
+        source.load!(source_opts[:update])
       }
     end
 
