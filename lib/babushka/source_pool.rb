@@ -60,7 +60,7 @@ module Babushka
       elsif opts[:from] # Next, try opts[:from], the requiring dep's source.
         opts[:from].find(dep_spec) || dep_for(dep_spec)
       else # Otherwise, try the standard set.
-        matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
+        matches = current.map {|source| source.find(dep_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_spec}'."
         else
@@ -78,7 +78,7 @@ module Babushka
       elsif opts[:from]
         opts[:from].find_template(template_spec) || template_for(template_spec)
       else
-        matches = Base.sources.default.map {|source| source.find_template(template_spec) }.flatten.compact
+        matches = default.map {|source| source.find_template(template_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_name}'."
         else
@@ -131,7 +131,7 @@ module Babushka
     end
 
     def current_load_source
-      current_real_load_source || Base.sources.anonymous
+      current_real_load_source || anonymous
     end
 
     def current_load_path
