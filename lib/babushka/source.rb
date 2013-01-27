@@ -29,13 +29,13 @@ module Babushka
         if remote.nil?
           Source.new path # local source
         else
-          Source.new remote, :name => default_name_for_uri(path) # remote source with custom path
+          Source.new remote, default_name_for_uri(path) # remote source with custom path
         end
       end
     end
 
     def self.for_remote name
-      Source.new(default_remote_for(name), :name => name)
+      Source.new(default_remote_for(name), name)
     end
 
     def self.default_remote_for name
@@ -65,10 +65,9 @@ module Babushka
       end
     end
 
-    def initialize path, opts = {}
-      raise ArgumentError, "Source.new options must be passed as a hash, not as #{opts.inspect}." unless opts.is_a?(Hash)
+    def initialize path, name = nil
       @uri, @type = self.class.discover_uri_and_type(path)
-      @name = (opts[:name] || self.class.default_name_for_uri(@uri)).to_s
+      @name = (name || self.class.default_name_for_uri(@uri)).to_s
       @deps = DepPool.new self
       @templates = DepPool.new self
       @loaded = @currently_loading = false

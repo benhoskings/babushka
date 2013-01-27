@@ -7,14 +7,6 @@ describe Source do
     @remote_2 = make_source_remote 'remote_2'
   }
 
-  describe Source, "arguments" do
-    it "should reject non-hash options" do
-      L{
-        Source.new 'a', 'b'
-      }.should raise_error(ArgumentError, 'Source.new options must be passed as a hash, not as "b".')
-    end
-  end
-
   describe Source, '.discover_uri_and_type' do
     it "should label nil paths as implicit" do
       Source.discover_uri_and_type(nil).should == [nil, :implicit]
@@ -85,10 +77,10 @@ describe Source do
       end
       context "with names" do
         it "should work for public sources" do
-          Source.new('git://github.com/benhoskings/babushka-deps.git', :name => 'custom_public_deps').path.should == tmp_prefix / 'sources/custom_public_deps'
+          Source.new('git://github.com/benhoskings/babushka-deps.git', 'custom_public_deps').path.should == tmp_prefix / 'sources/custom_public_deps'
         end
         it "should work for private sources" do
-          Source.new('git@github.com:benhoskings/babushka-deps.git', :name => 'custom_private_deps').path.should == tmp_prefix / 'sources/custom_private_deps'
+          Source.new('git@github.com:benhoskings/babushka-deps.git', 'custom_private_deps').path.should == tmp_prefix / 'sources/custom_private_deps'
         end
       end
     end
@@ -218,10 +210,10 @@ describe Source do
       (Source.new(*@remote_1) == Source.new(*@remote_1)).should be_true
     end
     it "shouldn't be equal when the name differs" do
-      (Source.new(*@remote_1) == Source.new(@remote_1.first, :name => 'remote_other')).should be_false
+      (Source.new(*@remote_1) == Source.new(@remote_1.first, 'remote_other')).should be_false
     end
     it "shouldn't be equal when the uri differs" do
-      (Source.new(*@remote_1) == Source.new(@remote_2.first, :name => 'remote_1')).should be_false
+      (Source.new(*@remote_1) == Source.new(@remote_2.first, 'remote_1')).should be_false
     end
   end
 
@@ -270,7 +262,7 @@ describe Source do
     context "on a git repo with a custom name" do
       let(:source_path) { Source.source_prefix / 'custom_name_test' }
       before {
-        Source.new(@remote_1.first, :name => 'custom_name_test').add!
+        Source.new(@remote_1.first, 'custom_name_test').add!
       }
       it "should work on a git repo" do
         source.should be_present
@@ -335,7 +327,7 @@ describe Source do
   describe "cloning" do
     context "unreadable sources" do
       before {
-        @source = Source.new(tmp_prefix / "missing.git", :name => 'unreadable')
+        @source = Source.new(tmp_prefix / "missing.git", 'unreadable')
         @source.add!
       }
       it "shouldn't work" do
@@ -382,7 +374,7 @@ describe Source do
       context "with a name" do
         before(:all) {
           @fancypath_name = 'aliased_source_test'.p.basename
-          @aliased = Source.new(@remote_1.first, :name => @fancypath_name)
+          @aliased = Source.new(@remote_1.first, @fancypath_name)
           @aliased.add!
         }
         it "should override the name" do
@@ -404,7 +396,7 @@ describe Source do
         }
         context "with the same name and URL" do
           before {
-            @dup_source = Source.new(@remote_1.first, :name => 'remote_1')
+            @dup_source = Source.new(@remote_1.first, 'remote_1')
           }
           it "should work" do
             L{ @dup_source.add! }.should_not raise_error
@@ -413,7 +405,7 @@ describe Source do
         end
         context "with the same name and different URLs" do
           it "should raise an exception and not add anything" do
-            @dup_source = Source.new(@remote_2.first, :name => 'remote_1')
+            @dup_source = Source.new(@remote_2.first, 'remote_1')
             L{
               @dup_source.add!
             }.should raise_error(SourceError, "There is already a source called '#{@source.name}' (it contains #{@source.uri}).")
@@ -421,7 +413,7 @@ describe Source do
         end
         context "with the same URL and different names" do
           it "should raise an exception and not add anything" do
-            @dup_source = Source.new(@remote_1.first, :name => 'duplicate_test_different_name')
+            @dup_source = Source.new(@remote_1.first, 'duplicate_test_different_name')
             L{
               @dup_source.add!
             }.should raise_error(SourceError, "The source #{@source.uri} is already present (as '#{@source.name}').")

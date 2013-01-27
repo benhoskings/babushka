@@ -29,19 +29,19 @@ module Babushka
     end
 
     def anonymous
-      @anonymous ||= Source.new(nil, :name => 'anonymous')
+      @anonymous ||= Source.new(nil, 'anonymous')
     end
 
     def core
-      @core ||= Source.new(Path.path / 'deps', :name => 'core')
+      @core ||= Source.new(Path.path / 'deps', 'core')
     end
 
     def current_dir
-      @current_dir ||= Source.new('./babushka-deps', :name => 'current dir')
+      @current_dir ||= Source.new('./babushka-deps', 'current dir')
     end
 
     def personal
-      @personal ||= Source.new('~/.babushka/deps', :name => 'personal')
+      @personal ||= Source.new('~/.babushka/deps', 'personal')
     end
 
     def source_for name
