@@ -11,21 +11,21 @@ module Babushka
       @source_opts = source_opts
     end
 
-    def current
-      @current ||= default.concat(standard)
-      @current.dup
-    end
-
     def default
-      [anonymous, core].dup
+      [
+        anonymous, # deps defined at the console, or otherwise not in a source
+        core, # the deps bundled with babushka, for self-install
+        current_dir, # the deps found in ./babushka-deps when babushka is run
+        personal # the deps found in ~/.babushka/deps when babushka is run
+      ].freeze
     end
 
-    def current_names
-      current.map {|source| source.deps.names }.flatten.uniq
+    def default_names
+      default.map {|source| source.deps.names }.flatten.uniq
     end
 
     def all_present
-      current.concat(Source.present)
+      default.dup.concat(Source.present)
     end
 
     def anonymous
@@ -42,10 +42,6 @@ module Babushka
 
     def personal
       @personal ||= Source.new('~/.babushka/deps', :name => 'personal')
-    end
-
-    def standard
-      [current_dir, personal]
     end
 
     def source_for name
@@ -66,7 +62,7 @@ module Babushka
       elsif opts[:from] # Next, try opts[:from], the requiring dep's source.
         opts[:from].find(dep_spec) || dep_for(dep_spec)
       else # Otherwise, try the standard set.
-        matches = current.map {|source| source.find(dep_spec) }.flatten.compact
+        matches = default.map {|source| source.find(dep_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_spec}'."
         else

@@ -28,7 +28,7 @@ describe SourcePool do
 
   describe SourcePool, '#source_for' do
     before {
-      Base.sources.stub!(:current).and_return([source1])
+      Base.sources.stub!(:default).and_return([source1])
       Source.stub!(:present).and_return([source2])
     }
     it "should find core sources" do
@@ -71,7 +71,7 @@ describe SourcePool do
     let!(:dep3) { define_in(source2) { dep 'dep 3' } }
     let!(:dep4) { define_in(source2) { dep 'dep 4' } }
     before {
-      Base.sources.stub!(:current).and_return([source1, source2])
+      Base.sources.stub!(:default).and_return([source1, source2])
       Source.stub!(:present).and_return([source1, source2])
     }
     it "should look up the correct deps without namespacing" do
@@ -92,7 +92,7 @@ describe SourcePool do
     let(:core) { Source.new(nil, :name => 'core').tap {|s| s.stub!(:load!) } }
     let!(:dep1) { define_in(core) { dep 'dep 1' } }
     before {
-      Base.sources.stub!(:current).and_return([core])
+      Base.sources.stub!(:default).and_return([core])
     }
     it "should find the correct deps without namespacing" do
       Base.sources.dep_for('dep 1').should == dep1
