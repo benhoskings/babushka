@@ -4,7 +4,7 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :opts, :vars, :caches, :persistent_log
+    attr_reader :opts, :caches, :persistent_log
     attr_accessor :reportable
 
     def initialize
@@ -15,7 +15,6 @@ module Babushka
 
     def process dep_names, with_vars
       raise "A task is already running." if running?
-      @vars = Vars.new
       @running = true
       cleanup_saved_vars # TODO: remove after August '13 or so.
       Base.in_thread { RunReporter.post_reports }
