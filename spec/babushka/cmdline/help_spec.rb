@@ -48,7 +48,7 @@ describe "help" do
     -s, --silent                     Only log errors, running silently on success
         --[no-]color, --[no-]colour  Disable color in the output
     -n, --dry-run                    Discover the curent state without making any changes
-    -y, --defaults                   Assume the default value for all vars without prompting, where possible
+    -y, --defaults                   Use dep arguments' default values without prompting
     -u, --update                     Update referenced sources before loading deps from them
         --show-args                  Show the arguments being passed between deps as they're run
         --profile                    Print a per-line timestamp to the debug log.

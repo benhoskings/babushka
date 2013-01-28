@@ -13,22 +13,22 @@ module Babushka
       @caching = false
     end
 
-    def process dep_names, with_vars
+    def process dep_names, with_args
       raise "A task is already running." if running?
       @running = true
       cleanup_saved_vars # TODO: remove after August '13 or so.
       Base.in_thread { RunReporter.post_reports }
-      dep_names.all? {|dep_name| process_dep dep_name, with_vars }
+      dep_names.all? {|dep_name| process_dep dep_name, with_args }
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
     ensure
       @running = false
     end
 
-    def process_dep dep_name, with_vars
+    def process_dep dep_name, with_args
       Dep.find_or_suggest dep_name do |dep|
         log_dep(dep) {
-          dep.with(task_args_for(dep, with_vars)).process
+          dep.with(task_args_for(dep, with_args)).process
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
@@ -85,14 +85,14 @@ module Babushka
 
     private
 
-    def task_args_for dep, with_vars
-      with_vars.keys.inject({}) {|hsh,k|
+    def task_args_for dep, with_args
+      with_args.keys.inject({}) {|hsh,k|
         # The string arg names are sanitized in the 'meet' cmdline handler.
-        hsh[k.to_sym] = with_vars[k]; hsh
-      }.tap {|with_args|
-        if (unexpected = with_args.keys - dep.params).any?
+        hsh[k.to_sym] = with_args[k]; hsh
+      }.tap {|arg_hash|
+        if (unexpected = arg_hash.keys - dep.params).any?
           log_warn "Ignoring unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:to_s).map(&:inspect).to_list}, which the dep '#{dep.name}' would reject."
-          unexpected.each {|key| with_args.delete(key) }
+          unexpected.each {|key| arg_hash.delete(key) }
         end
       }
     end

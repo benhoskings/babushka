@@ -27,7 +27,7 @@ module Babushka
     include LogHelpers
     extend LogHelpers
 
-    attr_reader :name, :params, :args, :opts, :vars, :dep_source, :load_path
+    attr_reader :name, :params, :args, :opts, :dep_source, :load_path
     attr_accessor :result_message
 
     # Create a new dep named +name+ within +source+, whose implementation is

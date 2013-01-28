@@ -13,13 +13,13 @@ describe Task, "process" do
     end
   end
   describe "argument assignment" do
-    it "should work when with_vars contains no arguments" do
+    it "should work when with_args contains no arguments" do
       the_dep = dep('task spec arg passing, no args')
       the_dep.should_receive(:with).with({}).and_return(the_dep)
       the_dep.should_receive(:process)
       Base.task.process ['task spec arg passing, no args'], {}
     end
-    it "should provide the values in with_vars as dep arguments with symbol names" do
+    it "should provide the values in with_args as dep arguments with symbol names" do
       the_dep = dep('task spec arg passing, 1 arg', :arg)
       the_dep.should_receive(:with).with({:arg => 'something argy'}).and_return(the_dep)
       the_dep.should_receive(:process)
