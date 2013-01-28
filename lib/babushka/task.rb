@@ -28,10 +28,7 @@ module Babushka
     def process_dep dep_name, with_vars
       Dep.find_or_suggest dep_name do |dep|
         log_dep(dep) {
-          load_run_info_for dep, with_vars
-          dep.with(task_args_for(dep, with_vars)).process.tap {|result|
-            save_run_info_for dep, result
-          }
+          dep.with(task_args_for(dep, with_vars)).process
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
