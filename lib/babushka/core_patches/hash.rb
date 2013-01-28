@@ -65,26 +65,6 @@ class Hash
     hsh
   end
 
-  # Return a new hash recursively filtered to remove all key-value pairs for
-  # which the block returned true. That is, like Hash#reject, except sub-hashes
-  # are also filtered.
-  def reject_r &block
-    dup.reject_r!(&block)
-  end
-
-  # Recursively filter this hash in-place to remove all key-value pairs for
-  # which the block returned true. That is, like Hash#reject!, except
-  # sub-hashes are also filtered.
-  def reject_r! &block
-    each_pair {|k,v|
-      if yield k, v
-        self.delete k
-      elsif v.is_a? Hash
-        self[k] = v.reject_r(&block)
-      end
-    }
-  end
-
   # Converts this hash to a string that can be submitted as HTTP parameters.
   # The keys and values are encoded, so the string is safe to submit exactly as
   # it is returned.
