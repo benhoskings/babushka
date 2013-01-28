@@ -83,10 +83,6 @@ module Babushka
       log_prefix / dep.contextual_name
     end
 
-    def var_path_for dep
-      VarsPrefix.p / dep.contextual_name
-    end
-
     private
 
     def task_args_for dep, with_vars
@@ -118,48 +114,6 @@ module Babushka
 
     def log_prefix
       LogPrefix.p
-    end
-
-    def load_run_info_for dep, with_vars
-      load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
-        vars.saved_vars[var_name].update var_data
-      }
-      with_vars.each_pair {|var_name,var_value|
-        vars.vars[var_name].update :value => var_value
-      }
-    end
-
-    def save_run_info_for dep, result
-      save_var_log_for var_path_for(dep), {
-        :info => task_info(dep, result),
-        :vars => vars.for_save
-      }
-    end
-
-    def load_var_log_for path
-      require 'yaml'
-      unless File.exists? path
-        debug "No log to load for '#{path}'."
-      else
-        dep_log = YAML.load_file path
-        unless dep_log.is_a?(Hash) && dep_log[:vars].is_a?(Hash)
-          log_error "Ignoring corrupt var log at #{path}."
-        else
-          dep_log[:vars]
-        end
-      end || {}
-    end
-
-    def save_var_log_for var_path, data
-      cd File.dirname(var_path), :create => true do |path|
-        debug "Saving #{var_path}"
-        dump_yaml_to File.basename(var_path), data
-      end
-    end
-
-    def dump_yaml_to filename, data
-      require 'yaml'
-      File.open(filename, 'w') {|f| YAML.dump data, f }
     end
 
     def cleanup_saved_vars

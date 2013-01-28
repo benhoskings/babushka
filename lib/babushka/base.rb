@@ -27,9 +27,8 @@ module Babushka
       @@start_time
     end
 
-    # +task+ represents the overall job that is being run, and the parts that
-    # are external to running the corresponding dep tree itself - logging, and
-    # var loading and saving in particular.
+    # +task+ represents the overall job that is being run, and things that
+    # are external to running the corresponding dep tree itself, like logging.
     def task
       @task ||= Task.new
     end
