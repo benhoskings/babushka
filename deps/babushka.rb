@@ -18,14 +18,9 @@ meta :babushka do
   end
 end
 
-dep 'babushka', :from, :path, :version, :branch do
-  ref = if branch.set?
-    deprecated! '2012-12-20', :method_name => "the :branch parameter to 'babushka'", :instead => ':version'
-    branch
-  else
-    version.default!('master')
-  end
-  requires 'up to date.babushka'.with(from, path, ref)
+dep 'babushka', :from, :path, :version do
+  version.default!('master')
+  requires 'up to date.babushka'.with(from, path, version)
   requires 'in path.babushka'.with(from, path)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
   path.default!(Babushka::Path.path) if Babushka::Path.run_from_path?
