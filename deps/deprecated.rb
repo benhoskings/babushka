@@ -9,8 +9,7 @@
 }.each_pair {|old_name, new_name|
 
   dep old_name do
-    deprecated! "2012-11-14", :method_name => "'#{name}'", :callpoint => false, :instead => "the '#{new_name}' dep"
-    requires new_name
+    removed! :method_name => "'#{name}'", :callpoint => false, :instead => "the '#{new_name}' dep"
   end
 
 }
