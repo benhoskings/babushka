@@ -97,7 +97,7 @@ module Babushka
         "#{message.chomp '?'} (#{opts[:choices] * ','})"
       else
         message.chomp '?'
-      end + "#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
+      end + (opts[:default] ? " [#{opts[:default]}]" : '')
     end
 
     def log_choice_descriptions descriptions
