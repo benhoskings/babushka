@@ -17,6 +17,7 @@ module Babushka
       raise "A task is already running." if running?
       @vars = Vars.new
       @running = true
+      cleanup_saved_vars # TODO: remove after August '13 or so.
       Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep dep_name, with_vars }
     rescue SourceLoadError => e
@@ -160,6 +161,10 @@ module Babushka
     def dump_yaml_to filename, data
       require 'yaml'
       File.open(filename, 'w') {|f| YAML.dump data, f }
+    end
+
+    def cleanup_saved_vars
+      VarsPrefix.p.rm if VarsPrefix.p.exists?
     end
 
   end
