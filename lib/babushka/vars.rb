@@ -6,26 +6,22 @@ module Babushka
 
     module Helpers
       def set(key, value)
-        deprecated! '2012-12-12', :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
-        Base.task.vars.set(key, value)
+        removed! :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
       end
 
       def merge(key, value)
-        deprecated! '2012-12-12', :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
-        Base.task.vars.merge(key, value)
+        removed! :instead => 'an argument for a dep parameter', :example => "requires 'some dep'.with(:#{key} => '#{value}')"
       end
 
       def var(name, opts = {})
-        print_var_deprecation_for('#var', name, opts)
-        Base.task.vars.var(name, opts)
+        print_var_removal_for('#var', name, opts)
       end
 
       def define_var(name, opts = {})
-        print_var_deprecation_for('#define_var', name, opts)
-        Base.task.vars.define_var(name, opts)
+        print_var_removal_for('#define_var', name, opts)
       end
 
-      def print_var_deprecation_for method_name, var_name, opts
+      def print_var_removal_for method_name, var_name, opts
         option_names_map = {
           :default => :default,
           :message => :ask,
@@ -44,7 +40,7 @@ dep 'blah', :#{var_name} do
   #{[var_name].concat(param_opts).join('.')}
 end"
         end
-        deprecated! '2012-12-12',
+        removed! \
           :skip => 2,
           :method_name => method_name,
           :instead => 'a dep parameter',
