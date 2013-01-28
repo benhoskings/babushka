@@ -1,6 +1,4 @@
 require 'spec_helper'
-require 'source_support'
-
 
 describe Task, "process" do
   describe "with a dep name" do
