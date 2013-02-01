@@ -8,8 +8,8 @@ describe SourcePool do
     end
   end
 
-  let(:source1) { Source.new(nil, :name => 'source_1').tap {|s| s.stub!(:load!) } }
-  let(:source2) { Source.new(nil, :name => 'source_2').tap {|s| s.stub!(:load!) } }
+  let(:source1) { Source.new(nil, 'source_1').tap {|s| s.stub!(:load!) } }
+  let(:source2) { Source.new(nil, 'source_2').tap {|s| s.stub!(:load!) } }
   let!(:anonymous_meta) { define_in(Base.sources.anonymous) { meta 'anonymous_meta' } }
   let!(:core_meta) { define_in(Base.sources.core) { meta 'core_meta' } }
   let!(:core_from) { define_in(Base.sources.core) { meta 'core_from' } }
@@ -28,7 +28,7 @@ describe SourcePool do
 
   describe SourcePool, '#source_for' do
     before {
-      Base.sources.stub!(:current).and_return([source1])
+      Base.sources.stub!(:default).and_return([source1])
       Source.stub!(:present).and_return([source2])
     }
     it "should find core sources" do
@@ -52,7 +52,7 @@ describe SourcePool do
       Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should be_nil
     end
     context "with namespaced dep defined" do
-      let(:source) { Source.new(nil, :name => 'namespaced') }
+      let(:source) { Source.new(nil, 'namespaced') }
       let!(:namespaced_dep) {
         define_in(source) { dep 'Base.sources.dep_for tests' }
       }
@@ -71,7 +71,7 @@ describe SourcePool do
     let!(:dep3) { define_in(source2) { dep 'dep 3' } }
     let!(:dep4) { define_in(source2) { dep 'dep 4' } }
     before {
-      Base.sources.stub!(:current).and_return([source1, source2])
+      Base.sources.stub!(:default).and_return([source1, source2])
       Source.stub!(:present).and_return([source1, source2])
     }
     it "should look up the correct deps without namespacing" do
@@ -89,10 +89,10 @@ describe SourcePool do
   end
 
   describe SourcePool, '#dep_for core' do
-    let(:core) { Source.new(nil, :name => 'core').tap {|s| s.stub!(:load!) } }
+    let(:core) { Source.new(nil, 'core').tap {|s| s.stub!(:load!) } }
     let!(:dep1) { define_in(core) { dep 'dep 1' } }
     before {
-      Base.sources.stub!(:current).and_return([core])
+      Base.sources.stub!(:default).and_return([core])
     }
     it "should find the correct deps without namespacing" do
       Base.sources.dep_for('dep 1').should == dep1
@@ -233,7 +233,7 @@ end
 
 
 describe "template selection during defining from a real source" do
-  let(:source) { Source.new('spec/deps/good', :name => 'good source').tap(&:load!) }
+  let(:source) { Source.new('spec/deps/good', 'good source').tap(&:load!) }
   before {
     Source.stub!(:present).and_return([source])
   }
@@ -260,8 +260,8 @@ describe "template selection during defining from a real source" do
 end
 
 describe "nested source loads" do
-  let(:outer_source) { Source.new('spec/deps/outer', :name => 'outer source').tap(&:load!) }
-  let(:nested_source) { Source.new('spec/deps/good', :name => 'nested source') }
+  let(:outer_source) { Source.new('spec/deps/outer', 'outer source').tap(&:load!) }
+  let(:nested_source) { Source.new('spec/deps/good', 'nested source') }
   before {
     Source.stub!(:present).and_return([outer_source, nested_source])
   }

@@ -74,7 +74,7 @@ module Babushka
         fail_with "'sources' requires a single option."
       elsif cmd.opts.has_key?(:add)
         begin
-          Source.new(cmd.argv.first, :name => cmd.opts[:add]).add!
+          Source.new(cmd.argv.first, cmd.opts[:add]).add!
         rescue SourceError => e
           log_error e.message
         end

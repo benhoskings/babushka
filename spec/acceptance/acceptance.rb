@@ -2,7 +2,7 @@ require 'acceptance_helper'
 
 describe "babushka" do
   before(:all) {
-    @vm = VM.instance
+    @vm = VM.new
     @vm.run 'bash -c "`wget -O - babushka.me/up/hard`"'
   }
 

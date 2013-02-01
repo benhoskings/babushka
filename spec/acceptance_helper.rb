@@ -1,6 +1,5 @@
 # coding: utf-8
 
-require 'singleton'
 require 'yaml'
 require 'cloudservers'
 
@@ -13,7 +12,6 @@ class Babushka::Logging
 end
 
 class VM
-  include Singleton
   include Babushka::LogHelpers
   include Babushka::ShellHelpers
 

@@ -1,46 +1,47 @@
 module Babushka
   class SourcePool
-    include Singleton
 
     include LogHelpers
 
     SEPARATOR = ':'
 
-    def current
-      @current ||= default.concat(standard)
-      @current.dup
+    attr_reader :source_opts
+
+    def initialize source_opts = {}
+      @source_opts = source_opts
     end
 
     def default
-      [anonymous, core].dup
+      [
+        anonymous, # deps defined at the console, or otherwise not in a source
+        core, # the deps bundled with babushka, for self-install
+        current_dir, # the deps found in ./babushka-deps when babushka is run
+        personal # the deps found in ~/.babushka/deps when babushka is run
+      ].freeze
     end
 
-    def current_names
-      current.map {|source| source.deps.names }.flatten.uniq
+    def default_names
+      default.map {|source| source.deps.names }.flatten.uniq
     end
 
     def all_present
-      current.concat(Source.present)
+      default.dup.concat(Source.present)
     end
 
     def anonymous
-      @anonymous ||= Source.new(nil, :name => 'anonymous')
+      @anonymous ||= Source.new(nil, 'anonymous')
     end
 
     def core
-      @core ||= Source.new(Path.path / 'deps', :name => 'core')
+      @core ||= Source.new(Path.path / 'deps', 'core')
     end
 
     def current_dir
-      @current_dir ||= Source.new('./babushka-deps', :name => 'current dir')
+      @current_dir ||= Source.new('./babushka-deps', 'current dir')
     end
 
     def personal
-      @personal ||= Source.new('~/.babushka/deps', :name => 'personal')
-    end
-
-    def standard
-      [current_dir, personal]
+      @personal ||= Source.new('~/.babushka/deps', 'personal')
     end
 
     def source_for name
@@ -48,7 +49,7 @@ module Babushka
         all_present.detect {|source| source.name == name } ||
         Source.for_remote(name)
       ).tap {|source|
-        source.load!(Base.task.opt(:update))
+        source.load!(source_opts[:update])
       }
     end
 
@@ -61,7 +62,7 @@ module Babushka
       elsif opts[:from] # Next, try opts[:from], the requiring dep's source.
         opts[:from].find(dep_spec) || dep_for(dep_spec)
       else # Otherwise, try the standard set.
-        matches = Base.sources.current.map {|source| source.find(dep_spec) }.flatten.compact
+        matches = default.map {|source| source.find(dep_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_spec}'."
         else
@@ -79,7 +80,7 @@ module Babushka
       elsif opts[:from]
         opts[:from].find_template(template_spec) || template_for(template_spec)
       else
-        matches = Base.sources.default.map {|source| source.find_template(template_spec) }.flatten.compact
+        matches = default.map {|source| source.find_template(template_spec) }.flatten.compact
         if matches.length > 1
           log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_name}'."
         else
@@ -132,7 +133,7 @@ module Babushka
     end
 
     def current_load_source
-      current_real_load_source || Base.sources.anonymous
+      current_real_load_source || anonymous
     end
 
     def current_load_path

@@ -31,7 +31,7 @@ module Babushka
     # are external to running the corresponding dep tree itself - logging, and
     # var loading and saving in particular.
     def task
-      Task.instance
+      @task ||= Task.new
     end
 
     # +cmdline+ is an instance of +Cmdline::Parser+ that represents the arguments
@@ -55,7 +55,7 @@ module Babushka
     #   - current dir (the contents of ./babushka-deps)
     #   - personal (the contents of ~/.babushka/deps)
     def sources
-      SourcePool.instance
+      @sources ||= SourcePool.new(task.opts.slice(:update))
     end
 
     def threads

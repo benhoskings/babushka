@@ -1,6 +1,5 @@
 module Babushka
   class Task
-    include Singleton
     include LogHelpers
     include PathHelpers
     include ShellHelpers

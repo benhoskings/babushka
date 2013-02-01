@@ -93,7 +93,7 @@ describe Dep, '.find_or_suggest' do
   context "namespaced" do
     before {
       Prompt.stub!(:suggest_value_for).and_return(nil)
-      @source = Source.new(nil, :name => 'namespaced')
+      @source = Source.new(nil, 'namespaced')
       Source.stub!(:present).and_return([@source])
       Base.sources.load_context :source => @source do
         @namespaced_dep = dep 'namespaced Dep.find_or_suggest tests'
@@ -117,7 +117,7 @@ describe Dep, '.find_or_suggest' do
   end
   context "from other deps" do
     before {
-      @source = Source.new(nil, :name => 'namespaced')
+      @source = Source.new(nil, 'namespaced')
       Source.stub!(:present).and_return([@source])
       Base.sources.load_context :source => @source do
         @namespaced_dep = dep 'namespaced Dep.find_or_suggest tests' do
@@ -147,8 +147,8 @@ describe Dep, '.find_or_suggest' do
     end
     context "in a different namespace" do
       before {
-        @source = Source.new(nil, :name => 'namespaced')
-        @source2 = Source.new(nil, :name => 'another namespaced')
+        @source = Source.new(nil, 'namespaced')
+        @source2 = Source.new(nil, 'another namespaced')
         Source.stub!(:present).and_return([@source, @source2])
         Base.sources.load_context :source => @source do
           @namespaced_dep = dep 'namespaced Dep.find_or_suggest tests' do
