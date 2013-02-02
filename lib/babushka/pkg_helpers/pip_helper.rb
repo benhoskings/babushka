@@ -41,7 +41,7 @@ module Babushka
     end
 
     def should_sudo?
-      !File.writable?(raw_shell("python-config --prefix").stdout.strip)
+      !shell("python-config --prefix").p.writable?
     end
 
   end
