@@ -39,18 +39,11 @@ end
 
 dep 'pip' do
   requires {
-    on :osx, 'pip.src'
+    via :brew, 'python.bin' # homebrew installs pip along with python.
     otherwise 'pip.bin'
   }
 end
 
 dep 'pip.bin' do
   installs 'python-pip'
-end
-
-dep 'pip.src' do
-  source 'http://pypi.python.org/packages/source/p/pip/pip-0.8.3.tar.gz'
-  process_source {
-    log_shell "Installing pip", "python setup.py install", :sudo => !which('python').p.writable?
-  }
 end
