@@ -34,7 +34,7 @@ meta :src do
   end
 
   template {
-    requires 'build tools', 'curl.bin'
+    requires_when_unmet 'build tools', 'curl.bin'
     met? { in_path?(provides) }
     meet {
       extra_source.each {|uri|
