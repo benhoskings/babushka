@@ -9,7 +9,7 @@ module Babushka
     private
 
     def has_pkg? pkg_name
-      raw_shell("pacman --query #{pkg_name}").stderr !~ /not found$/
+      raw_shell("#{pkg_cmd} --query #{pkg_name}").stderr !~ /not found$/
     end
 
     # NOTE By default, Arch has sudo's `tty_tickets` option enabled. This will
