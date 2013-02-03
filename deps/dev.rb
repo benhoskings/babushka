@@ -9,6 +9,7 @@ dep 'linux build tools', :template => 'bin' do
   installs {
     via :yum, %w[gcc gcc-c++ autoconf automake libtool]
     via :apt, %w[build-essential autoconf automake libtool]
+    via :pacman, 'base-devel'
   }
   provides %w[gcc g++ make ld autoconf automake libtool]
 end
