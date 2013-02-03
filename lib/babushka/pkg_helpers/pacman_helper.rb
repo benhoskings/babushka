@@ -20,7 +20,7 @@ module Babushka
     # tl;dr - Add the following line to /etc/sudoers:
     #         Defaults !tty_tickets
     def install_pkgs! pkgs, opts
-      log_shell "Syncing packages", "#{pkg_cmd} --sync --noconfirm #{pkgs.join(' ')}", :sudo => should_sudo?
+      log_shell "Syncing packages", "#{pkg_cmd} --sync --noconfirm --noprogressbar #{pkgs.join(' ')}", :sudo => should_sudo?
     end
 
   end
