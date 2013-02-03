@@ -1,13 +1,16 @@
 dep 'build tools' do
   requires {
     on :osx, 'xcode commandline tools'
-    on :yum, dep('gcc'), dep('gcc-c++'), dep('autoconf.bin'), dep('automake.bin'), dep('libtool.bin')
-    on :linux, 'build-essential', dep('autoconf.bin'), dep('automake.bin'), dep('libtool.bin')
+    on :linux, 'linux build tools'
   }
 end
 
-dep 'build-essential', :template => 'managed' do
-  provides 'gcc', 'g++', 'make', 'ld'
+dep 'linux build tools', :template => 'bin' do
+  installs {
+    via :yum, %w[gcc gcc-c++ autoconf automake libtool]
+    via :apt, %w[build-essential autoconf automake libtool]
+  }
+  provides %w[gcc g++ make ld autoconf automake libtool]
 end
 
 dep 'xcode tools', :template => 'external' do
