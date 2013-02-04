@@ -39,7 +39,7 @@ end
 
 dep 'pip' do
   requires {
-    via :brew, 'python.bin' # homebrew installs pip along with python.
+    on :brew, 'python.bin' # homebrew installs pip along with python.
     otherwise 'pip.bin'
   }
 end
