@@ -45,18 +45,18 @@ module Babushka
 
     handle('meet', 'The main one: run a dep and all its dependencies.') {
       opt '-n', '--dry-run',      "Discover the curent state without making any changes"
-      opt '-y', '--defaults',     "Assume the default value for all vars without prompting, where possible"
+      opt '-y', '--defaults',     "Use dep arguments' default values without prompting"
       opt '-u', '--update',       "Update referenced sources before loading deps from them"
       opt       '--show-args',    "Show the arguments being passed between deps as they're run"
       opt       '--profile',      "Print a per-line timestamp to the debug log."
     }.run {|cmd|
-      dep_names, vars = cmd.argv.partition {|arg| arg['='].nil? }
-      if !(bad_var = vars.detect {|var| var[/^\w+=/].nil? }).nil?
-        fail_with "'#{bad_var}' looks like a var but it doesn't make sense."
+      dep_names, args = cmd.argv.partition {|arg| arg['='].nil? }
+      if !(bad_arg = args.detect {|arg| arg[/^\w+=/].nil? }).nil?
+        fail_with "'#{bad_arg}' looks like a dep argument, but it doesn't make sense."
       elsif dep_names.empty?
         fail_with "Nothing to do."
       else
-        Base.task.process dep_names, vars.map {|i|
+        Base.task.process dep_names, args.map {|i|
           i.split('=', 2)
         }.inject({}) {|hsh,i|
           hsh[i.first] = i.last

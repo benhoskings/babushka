@@ -4,7 +4,7 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :opts, :vars, :caches, :persistent_log
+    attr_reader :opts, :caches, :persistent_log
     attr_accessor :reportable
 
     def initialize
@@ -13,25 +13,22 @@ module Babushka
       @caching = false
     end
 
-    def process dep_names, with_vars
+    def process dep_names, with_args
       raise "A task is already running." if running?
-      @vars = Vars.new
       @running = true
+      cleanup_saved_vars # TODO: remove after August '13 or so.
       Base.in_thread { RunReporter.post_reports }
-      dep_names.all? {|dep_name| process_dep dep_name, with_vars }
+      dep_names.all? {|dep_name| process_dep dep_name, with_args }
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
     ensure
       @running = false
     end
 
-    def process_dep dep_name, with_vars
+    def process_dep dep_name, with_args
       Dep.find_or_suggest dep_name do |dep|
         log_dep(dep) {
-          load_run_info_for dep, with_vars
-          dep.with(task_args_for(dep, with_vars)).process.tap {|result|
-            save_run_info_for dep, result
-          }
+          dep.with(task_args_for(dep, with_args)).process
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue dep, result, reportable
@@ -86,20 +83,16 @@ module Babushka
       log_prefix / dep.contextual_name
     end
 
-    def var_path_for dep
-      VarsPrefix.p / dep.contextual_name
-    end
-
     private
 
-    def task_args_for dep, with_vars
-      with_vars.keys.inject({}) {|hsh,k|
+    def task_args_for dep, with_args
+      with_args.keys.inject({}) {|hsh,k|
         # The string arg names are sanitized in the 'meet' cmdline handler.
-        hsh[k.to_sym] = with_vars[k]; hsh
-      }.tap {|with_args|
-        if (unexpected = with_args.keys - dep.params).any?
+        hsh[k.to_sym] = with_args[k]; hsh
+      }.tap {|arg_hash|
+        if (unexpected = arg_hash.keys - dep.params).any?
           log_warn "Ignoring unexpected argument#{'s' if unexpected.length > 1} #{unexpected.map(&:to_s).map(&:inspect).to_list}, which the dep '#{dep.name}' would reject."
-          unexpected.each {|key| with_args.delete(key) }
+          unexpected.each {|key| arg_hash.delete(key) }
         end
       }
     end
@@ -123,46 +116,8 @@ module Babushka
       LogPrefix.p
     end
 
-    def load_run_info_for dep, with_vars
-      load_var_log_for(var_path_for(dep)).each_pair {|var_name,var_data|
-        vars.saved_vars[var_name].update var_data
-      }
-      with_vars.each_pair {|var_name,var_value|
-        vars.vars[var_name].update :value => var_value
-      }
-    end
-
-    def save_run_info_for dep, result
-      save_var_log_for var_path_for(dep), {
-        :info => task_info(dep, result),
-        :vars => vars.for_save
-      }
-    end
-
-    def load_var_log_for path
-      require 'yaml'
-      unless File.exists? path
-        debug "No log to load for '#{path}'."
-      else
-        dep_log = YAML.load_file path
-        unless dep_log.is_a?(Hash) && dep_log[:vars].is_a?(Hash)
-          log_error "Ignoring corrupt var log at #{path}."
-        else
-          dep_log[:vars]
-        end
-      end || {}
-    end
-
-    def save_var_log_for var_path, data
-      cd File.dirname(var_path), :create => true do |path|
-        debug "Saving #{var_path}"
-        dump_yaml_to File.basename(var_path), data
-      end
-    end
-
-    def dump_yaml_to filename, data
-      require 'yaml'
-      File.open(filename, 'w') {|f| YAML.dump data, f }
+    def cleanup_saved_vars
+      VarsPrefix.p.rm if VarsPrefix.p.exists?
     end
 
   end

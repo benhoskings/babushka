@@ -36,8 +36,7 @@ module Babushka
     end
 
     def confirm message, opts = {}, &block
-      prompter = (!opts[:always_ask] && respond_to?(:var)) ? :var : :get_value
-      answer = send(prompter, message,
+      answer = get_value(message,
         :message => message,
         :confirmation => true,
         :default => (opts[:default] || 'y')
@@ -97,7 +96,7 @@ module Babushka
         "#{message.chomp '?'} (#{opts[:choices] * ','})"
       else
         message.chomp '?'
-      end + "#{" #{opts[:dynamic] ? '{' : '['}#{opts[:default]}#{opts[:dynamic] ? '}' : ']'}" if opts[:default]}"
+      end + (opts[:default] ? " [#{opts[:default]}]" : '')
     end
 
     def log_choice_descriptions descriptions
@@ -140,7 +139,7 @@ module Babushka
         opts[:retry] || "That wasn't valid"
       elsif value.blank? && !(opts[:default] && opts[:default].empty?)
         "That was blank"
-      elsif !opts[:confirmation] && %w[y yes].include?(value) && !confirm("Wait, do you mean the literal value '#{value}'?", :default => 'n', :always_ask => true)
+      elsif !opts[:confirmation] && %w[y yes].include?(value) && !confirm("Wait, do you mean the literal value '#{value}'?", :default => 'n')
         "Thought so :) Hit enter for the [default]"
       end
 
