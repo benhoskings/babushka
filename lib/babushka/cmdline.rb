@@ -44,11 +44,11 @@ module Babushka
     }
 
     handle('meet', 'The main one: run a dep and all its dependencies.') {
-      opt '-n', '--dry-run',      "Discover the curent state without making any changes"
+      opt '-n', '--dry-run',      "Check which deps are met, but don't meet any unmet deps"
       opt '-y', '--defaults',     "Use dep arguments' default values without prompting"
-      opt '-u', '--update',       "Update referenced sources before loading deps from them"
+      opt '-u', '--update',       "Update sources before loading deps from them"
       opt       '--show-args',    "Show the arguments being passed between deps as they're run"
-      opt       '--profile',      "Print a per-line timestamp to the debug log."
+      opt       '--profile',      "Print a per-line timestamp to the debug log"
     }.run {|cmd|
       dep_names, args = cmd.argv.partition {|arg| arg['='].nil? }
       if !(bad_arg = args.detect {|arg| arg[/^\w+=/].nil? }).nil?
@@ -67,8 +67,8 @@ module Babushka
 
     handle('sources', "Manage dep sources") {
       opt '-a', '--add NAME URI', "Add the source at URI as NAME"
-      opt '-u', '--update',       "Update all known sources"
-      opt '-l', '--list',         "List dep sources"
+      opt '-u', '--update',       "Update all known sources from their remotes"
+      opt '-l', '--list',         "List dep sources that are present locally"
     }.run {|cmd|
       if cmd.opts.slice(:add, :update, :list).length != 1
         fail_with "'sources' requires a single option."

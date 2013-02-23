@@ -47,11 +47,11 @@ describe "help" do
     -d, --debug                      Show more verbose logging, and realtime shell command output
     -s, --silent                     Only log errors, running silently on success
         --[no-]color, --[no-]colour  Disable color in the output
-    -n, --dry-run                    Discover the curent state without making any changes
+    -n, --dry-run                    Check which deps are met, but don't meet any unmet deps
     -y, --defaults                   Use dep arguments' default values without prompting
-    -u, --update                     Update referenced sources before loading deps from them
+    -u, --update                     Update sources before loading deps from them
         --show-args                  Show the arguments being passed between deps as they're run
-        --profile                    Print a per-line timestamp to the debug log.
+        --profile                    Print a per-line timestamp to the debug log
 ")
 
       Cmdline.should_receive(:log).with("\n")
