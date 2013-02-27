@@ -114,7 +114,7 @@ module Babushka
       elsif (dep = Dep.find_or_suggest(cmd.argv.first)).nil?
         fail_with "Can't find '#{cmd.argv.first}' to edit."
       elsif dep.load_path.nil?
-        fail_with "Can't edit '#{dep.name}, since it wasn't loaded from a file."
+        fail_with "Can't edit '#{dep.name}', since it wasn't loaded from a file."
       else
         file, line = dep.context.source_location
         editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('subl') || which('mate') || which('vim') || which('vi')
