@@ -4,11 +4,10 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :opts, :caches, :persistent_log
+    attr_reader :caches, :persistent_log
     attr_accessor :reportable
 
     def initialize
-      @opts = Base.cmdline.opts.dup
       @running = false
       @caching = false
     end
@@ -68,7 +67,7 @@ module Babushka
     end
 
     def opt name
-      opts[name]
+      Base.cmdline.opts[name]
     end
 
     def running?

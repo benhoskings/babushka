@@ -29,7 +29,7 @@ class String
     }
 
     def self.colorize text, description
-      return text if Babushka::Base.task.opts[:"[no_]color"] == false
+      return text if Babushka::Base.cmdline.opts[:"[no_]color"] == false
 
       terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
       bg = terms.detect {|i| /on_#{ColorRegex}/ =~ i }
