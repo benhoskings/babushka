@@ -1,3 +1,5 @@
+require "stringio"
+
 module Babushka
   class Shell
     include LogHelpers
