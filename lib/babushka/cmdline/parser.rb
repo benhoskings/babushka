@@ -24,8 +24,8 @@ module Babushka
       end
 
       def run
-        parser.parse! argv
-        Handler.for(verb).handler.call self
+        parser.parse!(argv)
+        Handler.for(verb).handler.call(self)
       rescue OptionParser::ParseError => e
         log_error "The #{e.args.first} option #{error_reason(e)}. #{hint}"
       end
