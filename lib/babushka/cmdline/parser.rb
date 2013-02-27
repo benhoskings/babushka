@@ -10,10 +10,10 @@ module Babushka
       def self.for argv
         if argv.empty? || (%w[-h --help] & argv).any?
           new 'help', argv
-        elsif !Handler.abbrev.has_key?(argv.first.sub(/^--/, ''))
-          new 'meet', argv, :implicit_verb => true
-        else
+        elsif Handler.abbrev.has_key?(argv.first.sub(/^--/, ''))
           new Handler.abbrev[argv.shift.sub(/^--/, '')], argv
+        else
+          new 'meet', argv, :implicit_verb => true
         end
       end
 
