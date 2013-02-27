@@ -53,7 +53,7 @@ module Babushka
         @block = block
         @dep_source = source
         @load_path = Base.sources.current_load_path
-        @dep_source.deps.register self
+        @dep_source.deps.register(self)
       end
     end
 
@@ -88,7 +88,7 @@ module Babushka
       elsif block.nil?
         dep
       else
-        block.call dep
+        block.call(dep)
       end
     end
 
@@ -256,22 +256,22 @@ module Babushka
     def process!
       if context.failed?
         log_error "This dep previously failed to load."
-      elsif Base.task.callstack.include? self
+      elsif Base.task.callstack.include?(self)
         log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
       elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
         log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
       else
-        Base.task.callstack.push self
+        Base.task.callstack.push(self)
         process_tree.tap {
           Base.task.callstack.pop
         }
       end
     rescue UnmeetableDep => e
-      log_error e.message
+      log_error(e.message)
       log "I don't know how to fix that, so it's up to you. :)"
       nil
     rescue StandardError => e
-      log_exception_in_dep e
+      log_exception_in_dep(e)
       Base.task.reportable = e.is_a?(DepDefinitionError)
       nil
     end
