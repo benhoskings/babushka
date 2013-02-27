@@ -112,7 +112,7 @@ module Babushka
       if cmd.argv.length != 1
         fail_with "'edit' requires a single argument."
       elsif (dep = Dep.find_or_suggest(cmd.argv.first)).nil?
-        fail_with "Can't find '#{cmd.argv.first}' to edit."
+        # Nothing to do
       elsif dep.load_path.nil?
         fail_with "Can't edit '#{dep.name}', since it wasn't loaded from a file."
       else
