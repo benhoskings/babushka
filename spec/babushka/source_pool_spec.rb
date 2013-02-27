@@ -40,84 +40,88 @@ describe SourcePool do
   end
 
   describe '#find_or_suggest' do
-    before {
-      @dep = dep 'Base.sources.find_or_suggest tests'
-    }
-    it "should find the given dep and yield the block" do
-      Base.sources.find_or_suggest('Base.sources.find_or_suggest tests') {|dep| dep }.should == @dep
+    context "basic" do
+      let!(:a_dep) { dep 'find_or_suggest' }
+      it "should find the dep" do
+        Base.sources.find_or_suggest('find_or_suggest').should == a_dep
+      end
+      it "should yield the dep to the block" do
+        Base.sources.find_or_suggest('find_or_suggest') {|dep| dep }.should == a_dep
+      end
     end
     context "namespaced" do
+      let(:source) { Source.new(nil, 'namespaced') }
+      let!(:a_dep) {
+        Base.sources.load_context :source => source do
+          dep 'find_or_suggest namespaced'
+        end
+      }
       before {
         Prompt.stub!(:suggest_value_for).and_return(nil)
-        @source = Source.new(nil, 'namespaced')
-        Source.stub!(:present).and_return([@source])
-        Base.sources.load_context :source => @source do
-          @namespaced_dep = dep 'namespaced Base.sources.find_or_suggest tests'
-        end
+        Source.stub!(:present).and_return([source])
       }
       it "should not find the dep without a namespace" do
         Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
-        Base.sources.find_or_suggest('namespaced Base.sources.find_or_suggest tests').should be_nil
+        Base.sources.find_or_suggest('find_or_suggest namespaced').should be_nil
       end
       it "should not find the dep with an incorrect namespace" do
         Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
         GitHelpers.stub!(:git) # To avoid cloning.
-        Base.sources.find_or_suggest('incorrect:namespaced Base.sources.find_or_suggest tests').should be_nil
+        Base.sources.find_or_suggest('incorrect:find_or_suggest namespaced').should be_nil
       end
       it "should find the dep with the correct namespace" do
-        Base.sources.find_or_suggest('namespaced:namespaced Base.sources.find_or_suggest tests').should == @namespaced_dep
+        Base.sources.find_or_suggest('namespaced:find_or_suggest namespaced').should == a_dep
       end
-      it "should find the dep with the correct namespace and yield it to the block" do
-        Base.sources.find_or_suggest('namespaced:namespaced Base.sources.find_or_suggest tests') {|dep| dep }.should == @namespaced_dep
+      it "should yield the dep to the block" do
+        Base.sources.find_or_suggest('namespaced:find_or_suggest namespaced') {|dep| dep }.should == a_dep
       end
     end
     context "from other deps" do
-      before {
-        @source = Source.new(nil, 'namespaced')
-        Source.stub!(:present).and_return([@source])
-        Base.sources.load_context :source => @source do
-          @namespaced_dep = dep 'namespaced Base.sources.find_or_suggest tests' do
-            requires 'Base.sources.find_or_suggest sub-dep'
+      let(:source) { Source.new(nil, 'namespaced') }
+      let!(:a_dep) {
+        Base.sources.load_context :source => source do
+          dep 'find_or_suggest namespaced' do
+            requires 'find_or_suggest sub_dep'
           end
         end
       }
       context "without namespacing" do
+        let!(:sub_dep) { dep 'find_or_suggest sub_dep' }
         before {
-          @sub_dep = dep 'Base.sources.find_or_suggest sub-dep'
+          Source.stub!(:present).and_return([source])
         }
         it "should find the sub dep" do
-          @sub_dep.should_receive :process!
-          @namespaced_dep.process
+          sub_dep.should_receive(:process!)
+          a_dep.process
         end
       end
       context "in the same namespace" do
-        before {
-          Base.sources.load_context :source => @source do
-            @sub_dep = dep 'Base.sources.find_or_suggest sub-dep'
+        let!(:sub_dep) {
+          Base.sources.load_context :source => source do
+            dep 'find_or_suggest sub_dep'
           end
         }
+        before {
+          Source.stub!(:present).and_return([source])
+        }
         it "should find the sub dep" do
-          @sub_dep.should_receive :process!
-          @namespaced_dep.process
+          sub_dep.should_receive(:process!)
+          a_dep.process
         end
       end
       context "in a different namespace" do
-        before {
-          @source = Source.new(nil, 'namespaced')
-          @source2 = Source.new(nil, 'another namespaced')
-          Source.stub!(:present).and_return([@source, @source2])
-          Base.sources.load_context :source => @source do
-            @namespaced_dep = dep 'namespaced Base.sources.find_or_suggest tests' do
-              requires 'Base.sources.find_or_suggest sub-dep'
-            end
-          end
-          Base.sources.load_context :source => @source2 do
-            @sub_dep = dep 'Base.sources.find_or_suggest sub-dep'
+        let(:source2) { Source.new(nil, 'another namespaced') }
+        let!(:sub_dep) {
+          Base.sources.load_context :source => source2 do
+            dep 'find_or_suggest sub_dep'
           end
         }
+        before {
+          Source.stub!(:present).and_return([source, source2])
+        }
         it "should not find the sub dep" do
-          @sub_dep.should_not_receive :process
-          @namespaced_dep.process
+          sub_dep.should_not_receive(:process!)
+          a_dep.process
         end
       end
     end
