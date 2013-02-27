@@ -78,8 +78,7 @@ module Babushka
     # Look up the dep specified by +dep_name+, yielding it to the block if it
     # was found.
     #
-    # If no such dep exists, search for other similarly spelt deps and re-call
-    # this same method on the one chosen by the user, if any.
+    # If no such dep exists, suggest similarly spelt deps to the user.
     def self.find_or_suggest dep_name, opts = {}, &block
       if (dep = Dep(dep_name, opts)).nil?
         log_stderr "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
