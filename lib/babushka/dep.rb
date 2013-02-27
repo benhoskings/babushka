@@ -75,22 +75,6 @@ module Babushka
       end
     end
 
-    # Look up the dep specified by +dep_name+, yielding it to the block if it
-    # was found.
-    #
-    # If no such dep exists, suggest similarly spelt deps to the user.
-    def self.find_or_suggest dep_name, opts = {}, &block
-      if (dep = Dep(dep_name, opts)).nil?
-        log_stderr "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
-        suggestions = Base.sources.default_names.similar_to(dep_name.to_s)
-        log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey') if suggestions.any?
-      elsif block.nil?
-        dep
-      else
-        block.call(dep)
-      end
-    end
-
     # Returns this dep's name, including the source name as a prefix if this
     # dep is in a cloneable source.
     #
@@ -296,7 +280,7 @@ module Babushka
     end
 
     def process_requirement requirement
-      Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
+      Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
         dep.with(*requirement.args).process_with_caching
       end
     rescue SourceLoadError => e

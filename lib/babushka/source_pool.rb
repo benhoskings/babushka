@@ -53,6 +53,22 @@ module Babushka
       }
     end
 
+    # Look up the dep specified by +dep_name+, yielding it to the block if it
+    # was found.
+    #
+    # If no such dep exists, suggest similarly spelt deps to the user.
+    def find_or_suggest dep_name, opts = {}, &block
+      if (dep = dep_for(dep_name, opts)).nil?
+        log_stderr "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
+        suggestions = default_names.similar_to(dep_name.to_s)
+        log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey') if suggestions.any?
+      elsif block.nil?
+        dep
+      else
+        block.call(dep)
+      end
+    end
+
     def dep_for dep_spec, opts = {}
       if dep_spec.is_a?(Dep)
         dep_spec

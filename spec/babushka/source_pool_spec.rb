@@ -39,6 +39,90 @@ describe SourcePool do
     end
   end
 
+  describe '#find_or_suggest' do
+    before {
+      @dep = dep 'Base.sources.find_or_suggest tests'
+    }
+    it "should find the given dep and yield the block" do
+      Base.sources.find_or_suggest('Base.sources.find_or_suggest tests') {|dep| dep }.should == @dep
+    end
+    context "namespaced" do
+      before {
+        Prompt.stub!(:suggest_value_for).and_return(nil)
+        @source = Source.new(nil, 'namespaced')
+        Source.stub!(:present).and_return([@source])
+        Base.sources.load_context :source => @source do
+          @namespaced_dep = dep 'namespaced Base.sources.find_or_suggest tests'
+        end
+      }
+      it "should not find the dep without a namespace" do
+        Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
+        Base.sources.find_or_suggest('namespaced Base.sources.find_or_suggest tests').should be_nil
+      end
+      it "should not find the dep with an incorrect namespace" do
+        Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
+        GitHelpers.stub!(:git) # To avoid cloning.
+        Base.sources.find_or_suggest('incorrect:namespaced Base.sources.find_or_suggest tests').should be_nil
+      end
+      it "should find the dep with the correct namespace" do
+        Base.sources.find_or_suggest('namespaced:namespaced Base.sources.find_or_suggest tests').should == @namespaced_dep
+      end
+      it "should find the dep with the correct namespace and yield it to the block" do
+        Base.sources.find_or_suggest('namespaced:namespaced Base.sources.find_or_suggest tests') {|dep| dep }.should == @namespaced_dep
+      end
+    end
+    context "from other deps" do
+      before {
+        @source = Source.new(nil, 'namespaced')
+        Source.stub!(:present).and_return([@source])
+        Base.sources.load_context :source => @source do
+          @namespaced_dep = dep 'namespaced Base.sources.find_or_suggest tests' do
+            requires 'Base.sources.find_or_suggest sub-dep'
+          end
+        end
+      }
+      context "without namespacing" do
+        before {
+          @sub_dep = dep 'Base.sources.find_or_suggest sub-dep'
+        }
+        it "should find the sub dep" do
+          @sub_dep.should_receive :process!
+          @namespaced_dep.process
+        end
+      end
+      context "in the same namespace" do
+        before {
+          Base.sources.load_context :source => @source do
+            @sub_dep = dep 'Base.sources.find_or_suggest sub-dep'
+          end
+        }
+        it "should find the sub dep" do
+          @sub_dep.should_receive :process!
+          @namespaced_dep.process
+        end
+      end
+      context "in a different namespace" do
+        before {
+          @source = Source.new(nil, 'namespaced')
+          @source2 = Source.new(nil, 'another namespaced')
+          Source.stub!(:present).and_return([@source, @source2])
+          Base.sources.load_context :source => @source do
+            @namespaced_dep = dep 'namespaced Base.sources.find_or_suggest tests' do
+              requires 'Base.sources.find_or_suggest sub-dep'
+            end
+          end
+          Base.sources.load_context :source => @source2 do
+            @sub_dep = dep 'Base.sources.find_or_suggest sub-dep'
+          end
+        }
+        it "should not find the sub dep" do
+          @sub_dep.should_not_receive :process
+          @namespaced_dep.process
+        end
+      end
+    end
+  end
+
   describe Dep, '#dep_for, disregarding sources' do
     let!(:the_dep) { dep 'Base.sources.dep_for tests' }
     it "should work for strings" do

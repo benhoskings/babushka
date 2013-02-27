@@ -26,7 +26,7 @@ module Babushka
     end
 
     def process_dep dep_name, with_args
-      Dep.find_or_suggest(dep_name) do |dep|
+      Base.sources.find_or_suggest(dep_name) do |dep|
         log_dep(dep) {
           dep.with(task_args_for(dep, with_args)).process
         }.tap {|result|
