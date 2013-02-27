@@ -1,3 +1,7 @@
+if RUBY_VERSION =~ /^1\.8/
+  require "stringio"
+end
+
 module Babushka
   class Shell
     include LogHelpers

@@ -147,7 +147,7 @@ module Babushka
     private
 
     def current_load_context
-      (@load_contexts ||= []).last || {}
+      (@load_contexts ||= []).last
     end
 
   end
