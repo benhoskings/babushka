@@ -1,7 +1,34 @@
-dep 'admins can sudo' do
+require "tempfile"
+
+meta :visudo do
+  accepts_value_for :line
+  template {
+    setup {
+      @line_pattern = Regexp.new(line.gsub(/\s*/, "\\s*"))
+    }
+    met? {
+      @current_content = sudo("cat /etc/sudoers")
+      @line_pattern =~ @current_content
+    }
+    meet {
+      tmpfile = Tempfile.new('sudoers')
+      tmpfile.write(@current_content)
+      # Ensure trailing newline
+      tmpfile.write("\n")
+      tmpfile.write(line)
+      tmpfile.close
+      unless shell("visudo -c -f #{tmpfile.path}")
+        unmeetable! "Your changes to sudoers are invalid"
+      end
+      sudo("mv '#{tmpfile.path}' /etc/sudoers")
+    }
+  }
+end
+
+dep 'admins can sudo', :template => "visudo" do
   requires 'admin group', 'sudo.bin'
-  met? { !sudo('cat /etc/sudoers').split("\n").grep(/^%admin/).empty? }
-  meet { append_to_file '%admin  ALL=(ALL) ALL', '/etc/sudoers', :sudo => true }
+
+  line '%admin  ALL=(ALL) ALL'
 end
 
 dep 'admin group' do
