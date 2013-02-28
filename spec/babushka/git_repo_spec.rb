@@ -301,7 +301,7 @@ describe GitRepo, '#resolve' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
-    subject.resolve('master').should =~ /^[0-9a-f]{7,40}$/
+    subject.resolve('master').should =~ /^[0-9a-f]{40}$/
   end
 end
 
