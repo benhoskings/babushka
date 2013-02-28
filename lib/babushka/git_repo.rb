@@ -260,6 +260,11 @@ module Babushka
       repo_shell("git checkout '#{resolve(ref)}'")
     end
 
+    # Fetch from the default remote, or remote if specified
+    def fetch! remote = nil
+      repo_shell("git fetch #{"'#{remote}'" if remote}")
+    end
+
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
     def reset_hard! ref = 'HEAD'
