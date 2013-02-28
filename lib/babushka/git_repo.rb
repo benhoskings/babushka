@@ -207,9 +207,9 @@ module Babushka
       repo_shell("git rev-parse HEAD")
     end
 
-    # The short SHA of the commit that +ref+ currently refers to.
+    # The SHA of the commit that +ref+ currently refers to.
     def resolve ref
-      repo_shell?("git rev-parse --short #{ref}")
+      repo_shell?("git rev-parse #{ref}")
     end
 
     # The remote assigned to branch in the git config, or 'origin' if none
