@@ -58,7 +58,9 @@ dep 'resolvable ref.babushka', :from, :path, :ref do
       false # Always fetch before resolving a remote ref.
     else
       resolved_ref.tap {|result|
-        if result
+        if result == qualified_ref
+          log_ok "#{result} is already resolved."
+        elsif result
           log_ok "#{ref} resolves to #{result}."
         else
           log "#{ref} doesn't resolve to a ref."
