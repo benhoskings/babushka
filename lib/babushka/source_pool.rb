@@ -82,7 +82,7 @@ module Babushka
       else
         matches = default.map {|source| source.find_template(template_spec) }.flatten.compact
         if matches.length > 1
-          log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_name}'."
+          log "Multiple sources (#{matches.map(&:source).map(&:name).join(',')}) contain a template called '#{template_spec}'."
         else
           matches.first
         end
