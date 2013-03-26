@@ -11,12 +11,18 @@ require 'ir_b'
 puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
-  @@tmp_prefix ||= "/#{File.symlink?('/tmp') ? File.readlink('/tmp') : 'tmp'}/from_babushka_specs".tap {|path|
-    path.p.rm.mkdir
-  }
+  Babushka::Specs.tmp_prefix
 end
 
 module Babushka
+  module Specs
+    def self.tmp_prefix
+      @tmp_prefix ||= "/#{File.symlink?('/tmp') ? File.readlink('/tmp') : 'tmp'}/from_babushka_specs".tap {|path|
+        path.p.rm.mkdir
+      }
+    end
+  end
+
   class Asset
     def build_prefix
       tmp_prefix / 'archives'
