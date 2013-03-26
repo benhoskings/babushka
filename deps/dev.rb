@@ -16,6 +16,6 @@ end
 dep 'xcode tools', :template => 'external' do
   expects %w[cc gcc c++ g++ llvm-gcc llvm-g++ clang make ld libtool]
   otherwise {
-    log "Install Xcode via the App Store, then go Preferences -> Downloads -> Components -> Command Line Tools."
+    unmeetable! "Install Xcode via the App Store, then go Preferences -> Downloads -> Components -> Command Line Tools."
   }
 end
