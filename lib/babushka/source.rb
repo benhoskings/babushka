@@ -13,10 +13,8 @@ module Babushka
     attr_reader :name, :uri, :deps, :templates
 
     def self.present
-      source_prefix.glob('*').map(&:p).select {|path|
-        path.directory?
-      }.map {|path|
-        Source.for_path path
+      source_prefix.glob('*').map {|path|
+        Source.for_path(path.p)
       }.select {|source|
         source.present?
       }

@@ -229,6 +229,9 @@ describe Source do
           Source.for_path(Source.source_prefix / 'regular_file')
         }.should raise_error(Errno::ENOTDIR, "Not a directory - #{Source.source_prefix / 'regular_file'}")
       end
+      after {
+        `rm "#{tmp_prefix / 'sources/regular_file'}"`
+      }
     end
     context "on a dir" do
       let(:source_path) { tmp_prefix / 'ad_hoc_source' }
