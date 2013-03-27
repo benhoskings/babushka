@@ -111,23 +111,25 @@ module Babushka
     handle('edit', "Load the file containing the specified dep in $EDITOR").run {|cmd|
       if cmd.argv.length != 1
         fail_with "'edit' requires a single argument."
-      elsif (dep = Dep.find_or_suggest(cmd.argv.first)).nil?
-        fail_with "Can't find '#{cmd.argv.first}' to edit."
-      elsif dep.load_path.nil?
-        fail_with "Can't edit '#{dep.name}, since it wasn't loaded from a file."
       else
-        file, line = dep.context.source_location
-        editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('subl') || which('mate') || which('vim') || which('vi')
-        case editor_var
-        when /^subl/
-          exec "subl -n '#{file}':#{line}"
-        when /^mate/
-          exec "mate -l#{line} '#{file}'"
-        when /^vim?/, /^nano/, /^pico/, /^emacs/
-          exec "#{editor_var} +#{line} '#{file}'"
-        else
-          exec "#{editor_var} '#{file}'"
-        end
+        Base.sources.find_or_suggest(cmd.argv.first) {|dep|
+          if dep.load_path.nil?
+            fail_with "Can't edit '#{dep.name}', since it wasn't loaded from a file."
+          else
+            file, line = dep.context.source_location
+            editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('subl') || which('mate') || which('vim') || which('vi')
+            case editor_var
+            when /^subl/
+              exec "subl -n '#{file}':#{line}"
+            when /^mate/
+              exec "mate -l#{line} '#{file}'"
+            when /^vim?/, /^nano/, /^pico/, /^emacs/
+              exec "#{editor_var} +#{line} '#{file}'"
+            else
+              exec "#{editor_var} '#{file}'"
+            end
+          end
+        }
       end
     }
   end

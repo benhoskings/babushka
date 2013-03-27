@@ -53,7 +53,7 @@ module Babushka
         @block = block
         @dep_source = source
         @load_path = Base.sources.current_load_path
-        @dep_source.deps.register self
+        @dep_source.deps.register(self)
       end
     end
 
@@ -72,23 +72,6 @@ module Babushka
         }
       else
         Base.sources.template_for(suffix, :from => dep_source) || self.class.base_template
-      end
-    end
-
-    # Look up the dep specified by +dep_name+, yielding it to the block if it
-    # was found.
-    #
-    # If no such dep exists, search for other similarly spelt deps and re-call
-    # this same method on the one chosen by the user, if any.
-    def self.find_or_suggest dep_name, opts = {}, &block
-      if (dep = Dep(dep_name, opts)).nil?
-        log_stderr "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
-        suggestions = Base.sources.default_names.similar_to(dep_name.to_s)
-        log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey') if suggestions.any?
-      elsif block.nil?
-        dep
-      else
-        block.call dep
       end
     end
 
@@ -256,22 +239,22 @@ module Babushka
     def process!
       if context.failed?
         log_error "This dep previously failed to load."
-      elsif Base.task.callstack.include? self
+      elsif Base.task.callstack.include?(self)
         log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
       elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
         log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
       else
-        Base.task.callstack.push self
+        Base.task.callstack.push(self)
         process_tree.tap {
           Base.task.callstack.pop
         }
       end
     rescue UnmeetableDep => e
-      log_error e.message
+      log_error(e.message)
       log "I don't know how to fix that, so it's up to you. :)"
       nil
     rescue StandardError => e
-      log_exception_in_dep e
+      log_exception_in_dep(e)
       Base.task.reportable = e.is_a?(DepDefinitionError)
       nil
     end
@@ -297,7 +280,7 @@ module Babushka
     end
 
     def process_requirement requirement
-      Dep.find_or_suggest requirement.name, :from => dep_source do |dep|
+      Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
         dep.with(*requirement.args).process_with_caching
       end
     rescue SourceLoadError => e
