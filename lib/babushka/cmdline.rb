@@ -56,12 +56,13 @@ module Babushka
       elsif dep_names.empty?
         fail_with "Nothing to do."
       else
-        Base.task.process dep_names, args.map {|i|
+        hashed_args = args.map {|i|
           i.split('=', 2)
         }.inject({}) {|hsh,i|
           hsh[i.first] = i.last
           hsh
         }
+        Base.task.process(dep_names, hashed_args, cmd)
       end
     }
 

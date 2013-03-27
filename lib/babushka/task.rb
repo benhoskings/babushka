@@ -4,17 +4,22 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :opts, :caches, :persistent_log
+    attr_reader :cmd, :caches, :persistent_log
     attr_accessor :reportable
 
     def initialize
-      @opts = Base.cmdline.opts.dup
+      clear
+    end
+
+    def clear
+      @cmd = nil
       @running = false
       @caching = false
     end
 
-    def process dep_names, with_args
+    def process dep_names, with_args, cmd
       raise "A task is already running." if running?
+      @cmd = cmd
       @running = true
       cleanup_saved_vars # TODO: remove after August '13 or so.
       Base.in_thread { RunReporter.post_reports }
@@ -22,13 +27,13 @@ module Babushka
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
     ensure
-      @running = false
+      clear
     end
 
     def process_dep dep_name, with_args
       Base.sources.find_or_suggest(dep_name) do |dep|
         log_dep(dep) {
-          dep.with(task_args_for(dep, with_args)).process
+          dep.with(task_args_for(dep, with_args)).process(!opt(:dry_run))
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
           RunReporter.queue(dep, result, reportable)
@@ -68,7 +73,7 @@ module Babushka
     end
 
     def opt name
-      opts[name]
+      cmd.opts[name] unless cmd.nil?
     end
 
     def running?

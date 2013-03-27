@@ -54,7 +54,7 @@ module Babushka
     #   - current dir (the contents of ./babushka-deps)
     #   - personal (the contents of ~/.babushka/deps)
     def sources
-      @sources ||= SourcePool.new(task.opts.slice(:update))
+      @sources ||= SourcePool.new(cmdline.opts.slice(:update))
     end
 
     def threads

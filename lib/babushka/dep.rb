@@ -134,12 +134,12 @@ module Babushka
     # have requirements that need to be met before the dep can perform its
     # +met?+ check.
     def met? *args
-      with(*args).process :dry_run => true
+      with(*args).process(false)
     end
 
     # Entry point for a full met?/meet +#process+ run.
     def meet *args
-      with(*args).process :dry_run => false
+      with(*args).process(true)
     end
 
     # Trigger a dep run with this dep at the top of the tree.
@@ -196,17 +196,16 @@ module Babushka
     # `/etc/init.d` directly; instead, it should separately test that the
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
-    def process with_opts = {}
-      Base.task.cache { process_with_caching(with_opts) }
+    def process and_meet = true
+      Base.task.cache { process_with_caching(and_meet) }
     end
 
-    def process_with_caching with_opts = {}
-      Base.task.opts.update with_opts
+    def process_with_caching and_meet
       Base.task.cached(
-        cache_key, :hit => lambda {|value| log_cached(value) }
+        cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
       ) {
-        log logging_name, :closing_status => (Base.task.opt(:dry_run) ? :dry_run : true) do
-          process!
+        log logging_name, :closing_status => (and_meet ? true : :dry_run) do
+          process!(and_meet)
         end
       }
     end
@@ -236,7 +235,7 @@ module Babushka
       Hash[params.zip(args)]
     end
 
-    def process!
+    def process! and_meet
       if context.failed?
         log_error "This dep previously failed to load."
       elsif Base.task.callstack.include?(self)
@@ -245,7 +244,7 @@ module Babushka
         log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
       else
         Base.task.callstack.push(self)
-        process_tree.tap {
+        process_tree(and_meet).tap {
           Base.task.callstack.pop
         }
       end
@@ -261,9 +260,9 @@ module Babushka
 
     # Process the tree descending from this dep (first the dependencies, then
     # the dep itself).
-    def process_tree
+    def process_tree(and_meet)
       process_task(:setup)
-      process_requirements and process_self
+      process_requirements(and_meet, :requires) && process_self(and_meet)
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
@@ -271,17 +270,17 @@ module Babushka
     #
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
-    def process_requirements accessor = :requires
-      if Base.task.opt(:dry_run)
-        requirements_for(accessor).map {|r| process_requirement(r) }.all?
+    def process_requirements and_meet, accessor
+      if and_meet
+        requirements_for(accessor).all? {|r| process_requirement(r, and_meet) }
       else
-        requirements_for(accessor).all? {|r| process_requirement(r) }
+        requirements_for(accessor).map {|r| process_requirement(r, and_meet) }.all?
       end
     end
 
-    def process_requirement requirement
+    def process_requirement requirement, and_meet
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).process_with_caching
+        dep.with(*requirement.args).process_with_caching(and_meet)
       end
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
@@ -290,13 +289,13 @@ module Babushka
     # Process this dep, assuming all its requirements are satisfied. This is
     # the method that implements the met? -> meet -> met? logic that is what
     # deps are all about. For details, see the documentation for Dep#process.
-    def process_self
+    def process_self and_meet
       process_met_task(:initial => true) {
-        if Base.task.opt(:dry_run)
+        if !and_meet
           false # unmet
         else
           process_task(:prepare)
-          if !process_requirements(:requires_when_unmet)
+          if !process_requirements(and_meet, :requires_when_unmet)
             false # install-time deps unmet
           else
             log 'meet' do
@@ -350,10 +349,10 @@ module Babushka
       log "#{advice} #{(e.backtrace.detect {|l| l[load_path.to_s] } || load_path).sub(/\:in [^:]+$/, '')}." unless load_path.nil?
     end
 
-    def log_cached result
+    def log_cached result, and_meet
       if result
         log "#{Logging::TickChar} #{name} (cached)".colorize('green')
-      elsif Base.task.opt(:dry_run)
+      elsif !and_meet
         log "~ #{name} (cached)".colorize('blue')
       end
     end
