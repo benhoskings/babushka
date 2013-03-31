@@ -12,11 +12,9 @@ That's what babushka is for. Once you describe a job using its DSL, babushka can
 
 Installing is really easy. All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
 
-If you have curl (OS X):
-
     bash -c "`curl babushka.me/up`"
 
-If you have wget (Ubuntu):
+Linux VPSes that ship without `curl` sometimes have `wget` installed (though the stock image is sometimes missing ssl support).
 
     bash -c "`wget -O - babushka.me/up`"
 
