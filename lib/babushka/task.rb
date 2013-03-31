@@ -59,17 +59,6 @@ module Babushka
       end
     end
 
-    def task_info dep, result
-      {
-        :version => Base.ref,
-        :run_at => Time.now,
-        :system_info => Babushka.host.description,
-        :dep_name => dep.name,
-        :source_uri => dep.dep_source.uri,
-        :result => result
-      }
-    end
-
     def opt name
       cmd.opts[name] unless cmd.nil?
     end
