@@ -22,7 +22,6 @@ module Babushka
       @cmd = cmd
       @running = true
       cleanup_saved_vars # TODO: remove after August '13 or so.
-      Base.in_thread { RunReporter.post_reports }
       dep_names.all? {|dep_name| process_dep(dep_name, with_args) }
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
@@ -36,7 +35,6 @@ module Babushka
           dep.with(task_args_for(dep, with_args)).process(!opt(:dry_run))
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
-          RunReporter.queue(dep, result, reportable)
           BugReporter.report(dep) if reportable
         }
       end
