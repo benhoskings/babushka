@@ -5,7 +5,6 @@ module Babushka
     include ShellHelpers
 
     attr_reader :cmd, :caches, :persistent_log
-    attr_accessor :reportable
 
     def initialize
       clear

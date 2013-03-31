@@ -254,7 +254,6 @@ module Babushka
       nil
     rescue StandardError => e
       log_exception_in_dep(e)
-      Base.task.reportable = e.is_a?(DepDefinitionError)
       nil
     end
 
