@@ -60,7 +60,7 @@ module Babushka
 
     def invoke
       debug "$ #{@cmd.join(' ')}".colorize('grey')
-      Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err, thread|
+      Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err|
         read_fds = [pipe_err, pipe_out].reject {|p| p.closed? }
         write_fds = if input.nil?
           pipe_in.close
