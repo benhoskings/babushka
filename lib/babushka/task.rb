@@ -21,7 +21,7 @@ module Babushka
       raise "A task is already running." if running?
       @cmd = cmd
       @running = true
-      cleanup_saved_vars # TODO: remove after August '13 or so.
+      cleanup_obsolete_data # TODO: remove after August '13 or so.
       dep_names.all? {|dep_name| process_dep(dep_name, with_args) }
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
@@ -108,8 +108,9 @@ module Babushka
       LogPrefix.p
     end
 
-    def cleanup_saved_vars
+    def cleanup_obsolete_data
       VarsPrefix.p.rm if VarsPrefix.p.exists?
+      ReportPrefix.p.rm if ReportPrefix.p.exists?
     end
 
   end
