@@ -16,6 +16,6 @@ is built for.
 
 To install babushka, run this command:
 
-    bash -c "`curl https://babushka.me/up`"
+    sh -c "`curl https://babushka.me/up`"
   }
 end

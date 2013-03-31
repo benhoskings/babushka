@@ -12,11 +12,11 @@ That's what babushka is for. Once you describe a job using its DSL, babushka can
 
 Installing is really easy. All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
 
-    bash -c "`curl https://babushka.me/up`"
+    sh -c "`curl https://babushka.me/up`"
 
 Linux VPSes that ship without `curl` sometimes have `wget` installed (though the stock image is sometimes missing ssl support).
 
-    bash -c "`wget -O - https://babushka.me/up`"
+    sh -c "`wget -O - https://babushka.me/up`"
 
 Babushka should run on any Unix. OS X and Ubuntu are fully supported, including their respective package managers, homebrew and apt. There is some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, but I'm not familiar with those systems so it might be incomplete. Patches are most welcome.
 
