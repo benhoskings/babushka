@@ -1,60 +1,51 @@
-dep 'release', :version do
-  requires [
-    'release on origin'.with(version)
-  ]
-end
-
-dep 'release on origin', :version do
+meta :release do
   def repo
-    Babushka::GitRepo.new('.')
+    @repo ||= Babushka::GitRepo.new('.')
   end
   def release_tag
     version.to_s.sub(/^(?!v)/, 'v')
-  end
-  requires [
-    'release exists'.with(:version => version)
-  ]
-  met? {
-    shell?("git ls-remote --tags origin").split("\n").grep(%r{refs/tags/#{release_tag}$}).any?
-  }
-  meet {
-    log_shell "Pushing #{release_tag} to origin", 'git push origin'
-    log_shell "Pushing tags to origin", 'git push origin --tags'
-  }
-end
-
-dep 'release exists', :version, :version_file do
-  version_file.default!('./lib/babushka.rb')
-  def repo
-    Babushka::GitRepo.new('.')
-  end
-  def release_tag
-    version.to_s.sub(/^(?!v)/, 'v')
-  end
-  def update_version!
-    sed_expression = "s/^(  *VERSION  *= ).*$/\\1'#{version}'/"
-    shell! 'sed', '-i.bak', '-r', sed_expression, version_file
-    shell! 'rm', "#{version_file}.bak"
   end
   def git_log from, to
     log shell("git log --graph --date-order --pretty='format:%C(yellow)%h%Cblue%d%Creset %s %C(white) %an, %ar%Creset' #{from}..#{to}")
   end
-  def most_recent_version
-    shell('git tag').split("\n").map {|t| Babushka::VersionStr.new(t) }.max
+  def latest_tag
+    version = shell('git tag').lines.map(&:to_version).max
+    "v#{version}"
   end
-  requires [
-    'repo on master'
-  ]
-  requires_when_unmet [
-    'repo clean',
-    'build passing',
-  ]
+end
+
+dep 'release', :version, :version_file, :template => 'release' do
+  requires 'release exists'.with(version, version_file)
+  met? {
+    shell("git ls-remote --tags origin").split("\n").grep(%r{refs/tags/#{release_tag}$}).any?
+  }
+  meet {
+    log_block "Pushing #{release_tag} to origin" do
+      shell! 'git push origin'
+      shell! 'git push origin --tags'
+    end
+  }
+end
+
+# This is the messy one.
+dep 'release exists', :version, :version_file, :template => 'release' do
+  version_file.default!('./lib/babushka.rb')
+
+  def update_version!
+    sed_expression = %q{s/^(\s+VERSION\s+=\s+).*/\1'%s'/} % version
+    shell! 'sed', '-i.bak', '-E', sed_expression, version_file
+    shell! 'rm', "#{version_file}.bak"
+  end
+
+  requires 'repo on master'
+  requires_when_unmet 'repo clean', 'latest tag in history', 'build passing'
+
   met? {
     repo.resolve(release_tag)
   }
   meet {
-    git_log "v#{most_recent_version}", 'HEAD'
-    confirm "Create #{release_tag} from this changeset?" do
+    git_log "#{latest_tag}", 'HEAD'
+    confirm "Create #{release_tag} from #{latest_tag} + this changeset?" do
       log_block("Writing version to #{version_file}") { update_version! }
       log_shell "Committing", "git commit #{version_file} --message '#{release_tag} - ' --edit"
       log_shell "Tagging", "git tag '#{release_tag}'"
@@ -62,27 +53,32 @@ dep 'release exists', :version, :version_file do
   }
 end
 
-dep 'repo on master' do
-  def repo
-    Babushka::GitRepo.new('.')
-  end
+dep 'repo on master', :template => 'release' do
   met? {
     repo.current_branch == 'master' || unmeetable!("Releases have to be made from master.")
   }
 end
 
-dep 'repo clean' do
-  def repo
-    Babushka::GitRepo.new('.')
-  end
-  setup {
-    repo.repo_shell "git diff" # Clear git's internal cache, which sometimes says the repo is dirty when it isn't.
+dep 'repo clean', :template => 'release' do
+  met? {
+    repo.repo_shell("git diff") # Clear git's internal cache, which sometimes says the repo is dirty when it isn't.
+    repo.clean? || unmeetable!("The remote repo has local changes.")
   }
-  met? { repo.clean? || unmeetable!("The remote repo has local changes.") }
 end
 
 dep 'build passing' do
   met? {
-    log_shell("Running specs", "bundle exec rspec --format documentation") || unmeetable!("Can't make a release when the build is broken.")
+    log_shell("Running specs", "bundle exec rspec --format documentation") ||
+      unmeetable!("Can't make a release when the build is broken.")
+  }
+end
+
+dep 'latest tag in history', :template => 'release' do
+  met? {
+    if shell?("git rev-list HEAD | grep #{repo.resolve(latest_tag)}")
+      log_ok "The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) is a parent of HEAD."
+    else
+      unmeetable!("The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) isn't a parent of HEAD.")
+    end
   }
 end
