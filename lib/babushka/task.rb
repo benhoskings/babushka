@@ -5,7 +5,6 @@ module Babushka
     include ShellHelpers
 
     attr_reader :cmd, :caches, :persistent_log
-    attr_accessor :reportable
 
     def initialize
       clear
@@ -35,7 +34,6 @@ module Babushka
           dep.with(task_args_for(dep, with_args)).process(!opt(:dry_run))
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
-          BugReporter.report(dep) if reportable
         }
       end
     end

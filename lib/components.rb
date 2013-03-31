@@ -50,7 +50,6 @@ module Babushka
     system_profile
     system_detector
     system_matcher
-    bug_reporter
     pkg_helper
     pkg_helpers/unknown_pkg_helper
     pkg_helpers/apt_helper
