@@ -16,6 +16,11 @@ end
 
 dep 'release', :version, :version_file, :template => 'release' do
   requires 'release exists'.with(version, version_file)
+  setup {
+    if latest_tag > release_tag
+      log_warn "There is already a newer release than #{release_tag} (#{latest_tag})."
+    end
+  }
   met? {
     shell("git ls-remote --tags origin").split("\n").grep(%r{refs/tags/#{release_tag}$}).any?
   }
@@ -38,7 +43,7 @@ dep 'release exists', :version, :version_file, :template => 'release' do
   end
 
   requires 'repo on master'
-  requires_when_unmet 'repo clean', 'latest tag in history', 'build passing'
+  requires_when_unmet 'repo clean', 'descendant of last release', 'build passing'
 
   met? {
     repo.resolve(release_tag)
@@ -73,7 +78,7 @@ dep 'build passing' do
   }
 end
 
-dep 'latest tag in history', :template => 'release' do
+dep 'descendant of last release', :template => 'release' do
   met? {
     if shell?("git rev-list HEAD | grep #{repo.resolve(latest_tag)}")
       log_ok "The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) is a parent of HEAD."
