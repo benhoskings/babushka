@@ -21,8 +21,7 @@ module Babushka
       raise "A task is already running." if running?
       @cmd = cmd
       @running = true
-      cleanup_saved_vars # TODO: remove after August '13 or so.
-      Base.in_thread { RunReporter.post_reports }
+      cleanup_obsolete_data # TODO: remove after August '13 or so.
       dep_names.all? {|dep_name| process_dep(dep_name, with_args) }
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
@@ -36,7 +35,6 @@ module Babushka
           dep.with(task_args_for(dep, with_args)).process(!opt(:dry_run))
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
-          RunReporter.queue(dep, result, reportable)
           BugReporter.report(dep) if reportable
         }
       end
@@ -59,17 +57,6 @@ module Babushka
       else
         @caches[key] = block.call
       end
-    end
-
-    def task_info dep, result
-      {
-        :version => Base.ref,
-        :run_at => Time.now,
-        :system_info => Babushka.host.description,
-        :dep_name => dep.name,
-        :source_uri => dep.dep_source.uri,
-        :result => result
-      }
     end
 
     def opt name
@@ -121,8 +108,9 @@ module Babushka
       LogPrefix.p
     end
 
-    def cleanup_saved_vars
+    def cleanup_obsolete_data
       VarsPrefix.p.rm if VarsPrefix.p.exists?
+      ReportPrefix.p.rm if ReportPrefix.p.exists?
     end
 
   end

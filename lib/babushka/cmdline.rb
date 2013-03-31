@@ -90,25 +90,6 @@ module Babushka
       exec "irb -r'#{Path.lib / 'babushka'}' --simple-prompt"
     }
 
-    handle('search', "Search for deps in the community database").run {|cmd|
-      if cmd.argv.length != 1
-        fail_with "'search' requires a single argument."
-      else
-        require 'net/http'
-        require 'yaml'
-
-        search_term = cmd.argv.first
-        results = Helpers.search_results_for(search_term)
-
-        if results.empty?
-          log "Never seen a dep with '#{search_term}' in its name."
-        else
-          Helpers.print_search_results search_term, results
-          true
-        end
-      end
-    }
-
     handle('edit', "Load the file containing the specified dep in $EDITOR").run {|cmd|
       if cmd.argv.length != 1
         fail_with "'edit' requires a single argument."

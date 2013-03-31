@@ -47,44 +47,8 @@ module Babushka
         log "  e.g. '#{Base.program_name} l' is short for '#{Base.program_name} list'."
       end
 
-      def self.search_results_for q
-        YAML.load(search_webservice_for(q).body).sort_by {|i|
-          -i[:runs_this_week]
-        }.map {|i|
-          [
-            i[:name],
-            i[:source_uri],
-            ((i[:runs_this_week] && i[:runs_this_week] > 0) ? "#{i[:runs_this_week]} this week" : "#{i[:total_runs]} ever"),
-            ((i[:runs_this_week] && i[:runs_this_week] > 0) ? "#{(i[:success_rate_this_week] * 100).round}%" : ((i[:total_runs] && i[:total_runs] > 0) ? "#{(i[:total_success_rate] * 100).round}%" : '')),
-            (i[:source_uri][github_autosource_regex] ? "#{Base.program_name} #{$1}:#{"'" if i[:name][/\s/]}#{i[:name]}#{"'" if i[:name][/\s/]}" : '✣')
-          ]
-        }
-      end
-
-      def self.print_search_results search_term, results
-        log "The webservice knows about #{results.length} dep#{'s' unless results.length == 1} that match#{'es' if results.length == 1} '#{search_term}':"
-        log ""
-        Logging.log_table(
-          ['Name', 'Source', 'Runs', ' ✓', 'Command'],
-          results
-        )
-        if (custom_sources = results.select {|r| r[1][github_autosource_regex].nil? }.length) > 0
-          log ""
-          log "✣  #{custom_sources == 1 ? 'This source has a custom URI' : 'These sources have custom URIs'}, so babushka can't discover #{custom_sources == 1 ? 'it' : 'them'} automatically."
-          log "   You can run #{custom_sources == 1 ? 'its' : 'their'} deps in the same way, though, once you add #{custom_sources == 1 ? 'it' : 'them'} manually:"
-          log "   $ #{Base.program_name} sources -a <alias> <uri>"
-          log "   $ #{Base.program_name} <alias>:<dep>"
-        end
-      end
-
       def self.github_autosource_regex
         /^\w+\:\/\/github\.com\/(.*)\/babushka-deps(\.git)?/
-      end
-
-      def self.search_webservice_for q
-        Net::HTTP.start('babushka.me') {|http|
-          http.get URI.escape("/deps/search.yaml/#{q}")
-        }
       end
 
       def self.generate_list_for to_list, filter_str
