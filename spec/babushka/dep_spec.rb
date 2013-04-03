@@ -6,32 +6,32 @@ require 'dep_support'
 describe "Dep.new" do
   it "should reject deps with empty names" do
     L{
-      Dep.new "", Base.sources.anonymous, [], {}, nil
+      Dep.new("", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "Deps can't have empty names.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.new "carriage\rreturn", Base.sources.anonymous, [], {}, nil
+      Dep.new("carriage\rreturn", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should allow deps with unicode characters in their names" do
     L{
-      Dep.new "☕script", Base.sources.anonymous, [], {}, nil
+      Dep.new("☕script", Base.sources.anonymous, [], {}, nil)
     }.should_not raise_error
     Dep("☕script").should be_an_instance_of(Dep)
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.new "slashes/invalidate names", Base.sources.anonymous, [], {}, nil
+      Dep.new("slashes/invalidate names", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     GitHelpers.stub!(:git) # To avoid cloning.
     L{
-      Dep.new "colons:invalidate names", Base.sources.anonymous, [], {}, nil
+      Dep.new("colons:invalidate names", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
@@ -377,6 +377,20 @@ describe Dep, '#requirements_for' do
   end
 end
 
+describe "exceptions" do
+  it "should be unmet after an exception in met? {}" do
+    dep 'exception met? test' do
+      met? { raise }
+    end.met?.should be_false
+  end
+  it "should be unmet after an exception in meet {}" do
+    dep 'exception meet test' do
+      met? { false }
+      meet { raise }
+    end.met?.should be_false
+  end
+end
+
 describe "calling met? on a single dep" do
   before {
     setup_yield_counts
@@ -400,20 +414,6 @@ describe "calling met? on a single dep" do
     @yield_counts['met for met'].should == @yield_counts_met_run
   end
   after { Base.sources.anonymous.deps.clear! }
-end
-
-describe "exceptions" do
-  it "should be unmet after an exception in met? {}" do
-    dep 'exception met? test' do
-      met? { raise }
-    end.met?.should be_false
-  end
-  it "should be unmet after an exception in meet {}" do
-    dep 'exception meet test' do
-      met? { false }
-      meet { raise }
-    end.met?.should be_false
-  end
 end
 
 describe "calling meet on a single dep" do
