@@ -76,10 +76,10 @@ module Babushka
     def reopen_log!
       if @persistent_log
         old_log = @persistent_log
-        old_log.flush
-        old_log.close
         @persistent_log = File.open(old_log.path, 'a')
         @persistent_log.sync = true
+        old_log.flush
+        old_log.close
       end
     end
 
