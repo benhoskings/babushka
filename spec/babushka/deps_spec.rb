@@ -1,19 +1,6 @@
 require 'spec_helper'
 require 'dep_support'
 
-shared_examples_for "met? when met" do
-  describe "met?" do
-    it "should met?-check deps that don't have failed subdeps" do
-      %w[a b c d e f].each {|dep_name| should_call_dep_like(:already_met, Dep(dep_name)) }
-      Dep('a').met?
-    end
-    it "shouldn't run the meet-only dep" do
-      %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
-      Dep('a').met?
-    end
-  end
-end
-
 shared_examples_for "met? when unmet" do
   describe "met?" do
     it "should met?-check deps that don't have failed subdeps" do
@@ -55,7 +42,16 @@ describe "an already met dep tree" do
     dep('f')
     dep('g')
   }
-  it_should_behave_like "met? when met"
+  describe "met?" do
+    it "should met?-check deps that don't have failed subdeps" do
+      %w[a b c d e f].each {|dep_name| should_call_dep_like(:already_met, Dep(dep_name)) }
+      Dep('a').met?
+    end
+    it "shouldn't run the meet-only dep" do
+      %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
+      Dep('a').met?
+    end
+  end
   describe "meet" do
     it "should meet no deps" do
       %w[a b c d e f].each {|dep_name| should_call_dep_like(:already_met, Dep(dep_name)) }
