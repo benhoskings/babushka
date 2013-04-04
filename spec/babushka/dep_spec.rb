@@ -392,23 +392,24 @@ describe "exceptions" do
 end
 
 describe "calling met? on a single dep" do
-  it "should run if setup returns nil or false" do
-    the_dep = dep('unmeetable for met') {
+  it "should still call met? if setup returns falsey" do
+    the_dep = dep('met? - setup is false') {
       setup { false }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should be_met
+  end
+  it "should be false for unmet deps" do
+    the_dep = dep('met? - unmet') {
       met? { false }
     }
     should_call_dep_like(:met_run, the_dep)
     the_dep.should_not be_met
   end
-  it "should return false for unmet deps" do
-    the_dep = dep('unmeetable for met') {
-      met? { false }
+  it "should be true for met deps" do
+    the_dep = dep('met? - met') {
+      met? { true }
     }
-    should_call_dep_like(:met_run, the_dep)
-    the_dep.should_not be_met
-  end
-  it "should return true for already met deps" do
-    the_dep = dep('met for met')
     should_call_dep_like(:met_run, the_dep)
     the_dep.should be_met
   end
@@ -416,21 +417,21 @@ describe "calling met? on a single dep" do
 end
 
 describe "calling meet on a single dep" do
-  it "should fail twice and return false on unmeetable deps" do
+  it "should be false for an unmeetable dep" do
     the_dep = dep('unmeetable') {
       met? { false }
     }
     should_call_dep_like(:meet_run, the_dep)
     the_dep.meet.should == false
   end
-  it "should fail fast and return nil on explicitly unmeetable deps" do
+  it "should be nil for an explicitly unmeetable dep" do
     the_dep = dep('explicitly unmeetable') {
       met? { unmeetable! }
     }
     should_call_dep_like(:met_run, the_dep)
     the_dep.meet.should == nil
   end
-  it "should fail, run meet, and then succeed on unmet deps" do
+  it "should be true for a meetable dep" do
     the_dep = dep('unmet') {
       met? { @met }
       meet { @met = true }
@@ -438,23 +439,23 @@ describe "calling meet on a single dep" do
     should_call_dep_like(:meet_run, the_dep)
     the_dep.meet.should == true
   end
-  it "should fail, not run meet, and fail again on unmet deps where before fails" do
-    the_dep = dep('unmet, #before fails') {
+  it "should be false for an unmet dep when before is false" do
+    the_dep = dep('unmet, #before is false') {
       met? { false }
       before { false }
     }
-    should_call_dep_like(:failed_at_before, the_dep)
+    should_call_dep_like(:meet_skipped, the_dep)
     the_dep.meet.should == false
   end
-  it "should fail, not run meet, and fail again on unmet deps where meet raises UnmeetableDep" do
-    the_dep = dep('unmet, #before fails') {
+  it "should be false for an unmet dep when meet fails" do
+    the_dep = dep('unmet, #meet fails') {
       met? { false }
       meet { unmeetable! }
     }
-    should_call_dep_like(:early_exit_meet_run, the_dep)
+    should_call_dep_like(:meet_failed, the_dep)
     the_dep.meet.should == nil
   end
-  it "should fail, run meet, and then succeed on unmet deps where after fails" do
+  it "should be true for an unmet dep when after fails" do
     the_dep = dep('unmet, #after fails') {
       met? { @met }
       meet { @met = true }
@@ -463,11 +464,11 @@ describe "calling meet on a single dep" do
     should_call_dep_like(:meet_run, the_dep)
     the_dep.meet.should == true
   end
-  it "should succeed on already met deps" do
+  it "should be true for an already met dep" do
     the_dep = dep('met') {
       met? { true }
     }
-    should_call_dep_like(:already_met, the_dep)
+    should_call_dep_like(:met_run, the_dep)
     the_dep.meet.should == true
   end
   after { Base.sources.anonymous.deps.clear! }

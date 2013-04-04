@@ -7,14 +7,14 @@ shared_examples_for "met? when unmet" do
       Dep('a').should_not be_met
     end
     it "should met?-check deps that don't have failed subdeps" do
-      %w[f].each {|dep_name| should_call_dep_like(:already_met, Dep(dep_name)) }
+      %w[f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
       Dep('a').met?
     end
-    it "should not met?-check deps that have failed subdeps" do
-      %w[a b c d e].each {|dep_name| should_call_dep_like(:dep_failed, Dep(dep_name)) }
+    it "should only setup deps that have failed subdeps" do
+      %w[a b c d e].each {|dep_name| should_call_dep_like(:unmet_requirement, Dep(dep_name)) }
       Dep('a').met?
     end
-    it "shouldn't run the meet-only dep" do
+    it "should not touch requires_when_unmet" do
       %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
       Dep('a').met?
     end
@@ -35,11 +35,11 @@ describe "an already met dep tree" do
     it "should be true" do
       Dep('a').should be_met
     end
-    it "should met?-check deps that don't have failed subdeps" do
-      %w[a b c d e f].each {|dep_name| should_call_dep_like(:already_met, Dep(dep_name)) }
+    it "should met?-check every dep" do
+      %w[a b c d e f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
       Dep('a').met?
     end
-    it "shouldn't run the meet-only dep" do
+    it "should not touch requires_when_unmet" do
       %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
       Dep('a').met?
     end
@@ -48,11 +48,11 @@ describe "an already met dep tree" do
     it "should be true" do
       Dep('a').meet.should == true
     end
-    it "should meet no deps" do
-      %w[a b c d e f].each {|dep_name| should_call_dep_like(:already_met, Dep(dep_name)) }
+    it "should not meet any deps" do
+      %w[a b c d e f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
       Dep('a').meet
     end
-    it "shouldn't run the meet-only dep" do
+    it "should not touch requires_when_unmet" do
       %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
       Dep('a').meet
     end
@@ -76,14 +76,14 @@ describe "an unmeetable dep tree" do
       Dep('a').meet.should == false
     end
     it "should fail on the bootom-most dep" do
-      %w[f].each {|dep_name| should_call_dep_like(:failed_meet_run, Dep(dep_name)) }
+      %w[f].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
       Dep('a').meet
     end
-    it "should bubble the fail back up" do
-      %w[a b c].each {|dep_name| should_call_dep_like(:dep_failed, Dep(dep_name)) }
+    it "should bubble the failure back up from the failed dep" do
+      %w[a b c].each {|dep_name| should_call_dep_like(:unmet_requirement, Dep(dep_name)) }
       Dep('a').meet
     end
-    it "shouldn't run any deps after the fail" do
+    it "shouldn't run any subdeps after the point of failure" do
       %w[d e g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
       Dep('a').meet
     end
@@ -106,7 +106,7 @@ describe "a meetable dep tree" do
     it "should be true" do
       Dep('a').meet.should == true
     end
-    it "should meet each dep exactly once" do
+    it "should meet every dep" do
       %w[a b c d e f g].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
       Dep('a').meet
     end
@@ -119,8 +119,8 @@ describe "a partially meetable dep tree" do
     dep('a') { met? { @met }; meet { @met = true }; requires('b', 'c') }
     dep('b') { met? { @met }; meet { @met = true }; requires('c', 'd', 'e') }
     dep('c') { met? { @met }; meet { @met = true }; requires('f'); requires_when_unmet('g') }
-    dep('d') { met? { @met }; meet { @met = true }; requires('e', 'f') }
-    dep('e') { met? { false };                      requires('f') }
+    dep('d') { met? { false };                      requires('f') }
+    dep('e') { met? { @met }; meet { @met = true }; requires('f') }
     dep('f') { met? { @met }; meet { @met = true } }
     dep('g') { met? { @met }; meet { @met = true } }
   }
@@ -129,16 +129,20 @@ describe "a partially meetable dep tree" do
     it "should be false" do
       Dep('a').meet.should == false
     end
-    it "should meet deps until one fails" do
+    it "should meet deps before the unmeetable dep is reached" do
       %w[c f g].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
       Dep('a').meet
     end
-    it "should fail on the unmeetable dep" do
-      %w[e].each {|dep_name| should_call_dep_like(:failed_meet_run, Dep(dep_name)) }
+    it "should attempt to meet the unmeetable dep" do
+      %w[d].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
       Dep('a').meet
     end
-    it "should bubble the fail up" do
-      %w[a b d].each {|dep_name| should_call_dep_like(:dep_failed, Dep(dep_name)) }
+    it "should bubble the failure back up from the unmeetable dep" do
+      %w[a b].each {|dep_name| should_call_dep_like(:unmet_requirement, Dep(dep_name)) }
+      Dep('a').meet
+    end
+    it "shouldn't run any subdeps after the point of failure" do
+      %w[e].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
       Dep('a').meet
     end
   end
