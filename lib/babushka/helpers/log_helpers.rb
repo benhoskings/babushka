@@ -136,6 +136,10 @@ module Babushka
     TICK_CHAR = '✓'
     CROSS_CHAR = '✗'
 
+    # Deprecated on 4/4/2013
+    TickChar = TICK_CHAR
+    CrossChar = CROSS_CHAR
+
     def self.closing_log_message message, result = true, opts = {}
       message = opts[:closing_status] if opts[:closing_status].is_a?(String)
 
