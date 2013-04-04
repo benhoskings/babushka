@@ -392,75 +392,83 @@ describe "exceptions" do
 end
 
 describe "calling met? on a single dep" do
-  before {
-    setup_yield_counts
-  }
   it "should run if setup returns nil or false" do
-    make_counter_dep(
-      :name => 'unmeetable for met', :setup => L{ false }, :met? => L{ false }
-    ).met?.should == false
-    @yield_counts['unmeetable for met'].should == @yield_counts_met_run
+    the_dep = dep('unmeetable for met') {
+      setup { false }
+      met? { false }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should_not be_met
   end
   it "should return false for unmet deps" do
-    make_counter_dep(
-      :name => 'unmeetable for met', :met? => L{ false }
-    ).met?.should == false
-    @yield_counts['unmeetable for met'].should == @yield_counts_met_run
+    the_dep = dep('unmeetable for met') {
+      met? { false }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should_not be_met
   end
   it "should return true for already met deps" do
-    make_counter_dep(
-      :name => 'met for met'
-    ).met?.should == true
-    @yield_counts['met for met'].should == @yield_counts_met_run
+    the_dep = dep('met for met')
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should be_met
   end
   after { Base.sources.anonymous.deps.clear! }
 end
 
 describe "calling meet on a single dep" do
-  before {
-    setup_yield_counts
-  }
   it "should fail twice and return false on unmeetable deps" do
-    make_counter_dep(
-      :name => 'unmeetable', :met? => L{ false }
-    ).meet.should == false
-    @yield_counts['unmeetable'].should == @yield_counts_meet_run
+    the_dep = dep('unmeetable') {
+      met? { false }
+    }
+    should_call_dep_like(:meet_run, the_dep)
+    the_dep.meet.should == false
   end
   it "should fail fast and return nil on explicitly unmeetable deps" do
-    make_counter_dep(
-      :name => 'explicitly unmeetable', :met? => L{ unmeetable! }
-    ).meet.should == nil
-    @yield_counts['explicitly unmeetable'].should == @yield_counts_met_run
+    the_dep = dep('explicitly unmeetable') {
+      met? { unmeetable! }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.meet.should == nil
   end
   it "should fail, run meet, and then succeed on unmet deps" do
-    make_counter_dep(
-      :name => 'unmet', :met? => L{ @yield_counts['unmet'][:met?] > 1 }
-    ).meet.should == true
-    @yield_counts['unmet'].should == @yield_counts_meet_run
+    the_dep = dep('unmet') {
+      met? { @met }
+      meet { @met = true }
+    }
+    should_call_dep_like(:meet_run, the_dep)
+    the_dep.meet.should == true
   end
   it "should fail, not run meet, and fail again on unmet deps where before fails" do
-    make_counter_dep(
-      :name => 'unmet, #before fails', :met? => L{ false }, :before => L{ false }
-    ).meet.should == false
-    @yield_counts['unmet, #before fails'].should == @yield_counts_failed_at_before
+    the_dep = dep('unmet, #before fails') {
+      met? { false }
+      before { false }
+    }
+    should_call_dep_like(:failed_at_before, the_dep)
+    the_dep.meet.should == false
   end
   it "should fail, not run meet, and fail again on unmet deps where meet raises UnmeetableDep" do
-    make_counter_dep(
-      :name => 'unmet, #before fails', :met? => L{ false }, :meet => L{ unmeetable! }
-    ).meet.should == nil
-    @yield_counts['unmet, #before fails'].should == @yield_counts_early_exit_meet_run
+    the_dep = dep('unmet, #before fails') {
+      met? { false }
+      meet { unmeetable! }
+    }
+    should_call_dep_like(:early_exit_meet_run, the_dep)
+    the_dep.meet.should == nil
   end
   it "should fail, run meet, and then succeed on unmet deps where after fails" do
-    make_counter_dep(
-      :name => 'unmet, #after fails', :met? => L{ @yield_counts['unmet, #after fails'][:met?] > 1 }, :after => L{ false }
-    ).meet.should == true
-    @yield_counts['unmet, #after fails'].should == @yield_counts_meet_run
+    the_dep = dep('unmet, #after fails') {
+      met? { @met }
+      meet { @met = true }
+      after { false }
+    }
+    should_call_dep_like(:meet_run, the_dep)
+    the_dep.meet.should == true
   end
   it "should succeed on already met deps" do
-    make_counter_dep(
-      :name => 'met', :met? => L{ true }
-    ).meet.should == true
-    @yield_counts['met'].should == @yield_counts_already_met
+    the_dep = dep('met') {
+      met? { true }
+    }
+    should_call_dep_like(:already_met, the_dep)
+    the_dep.meet.should == true
   end
   after { Base.sources.anonymous.deps.clear! }
 end
