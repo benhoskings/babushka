@@ -49,8 +49,8 @@ describe "an already met dep tree" do
   before {
     dep('a') { requires('b', 'c') }
     dep('b') { requires('c', 'd', 'e') }
-    dep('c') { requires('f') }
-    dep('d') { requires('e', 'f'); requires_when_unmet('g') }
+    dep('c') { requires('f'); requires_when_unmet('g') }
+    dep('d') { requires('e', 'f') }
     dep('e') { requires('f') }
     dep('f')
     dep('g')
