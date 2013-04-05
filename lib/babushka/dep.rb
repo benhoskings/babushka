@@ -288,27 +288,21 @@ module Babushka
     # the method that implements the met? -> meet -> met? logic that is what
     # deps are all about. For details, see the documentation for Dep#process.
     def process_self and_meet
-      process_met_task {
-        if !and_meet
-          false # unmet
+      if process_task(:met?)
+        true # already met.
+      elsif !and_meet
+        false #  not attempting to meet.
+      else
+        process_task(:prepare)
+        if !process_requirements(and_meet, :requires_when_unmet)
+          false # install-time deps unmet
         else
-          process_task(:prepare)
-          if !process_requirements(and_meet, :requires_when_unmet)
-            false # install-time deps unmet
-          else
-            log 'meet' do
-              process_task(:before) and process_task(:meet) and process_task(:after)
-            end
-            process_met_task
+          log 'meet' do
+            process_task(:before) and process_task(:meet) and process_task(:after)
           end
+          process_task(:met?)
         end
-      }
-    end
-
-    def process_met_task &block
-      # Explicitly return false to distinguish unmet deps from failed
-      # ones -- those return nil.
-      process_task(:met?) || block.try(:call) || false
+      end
     end
 
     def process_task task_name
