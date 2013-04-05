@@ -6,32 +6,32 @@ require 'dep_support'
 describe "Dep.new" do
   it "should reject deps with empty names" do
     L{
-      Dep.new "", Base.sources.anonymous, [], {}, nil
+      Dep.new("", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "Deps can't have empty names.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.new "carriage\rreturn", Base.sources.anonymous, [], {}, nil
+      Dep.new("carriage\rreturn", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should allow deps with unicode characters in their names" do
     L{
-      Dep.new "☕script", Base.sources.anonymous, [], {}, nil
+      Dep.new("☕script", Base.sources.anonymous, [], {}, nil)
     }.should_not raise_error
     Dep("☕script").should be_an_instance_of(Dep)
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.new "slashes/invalidate names", Base.sources.anonymous, [], {}, nil
+      Dep.new("slashes/invalidate names", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
     GitHelpers.stub!(:git) # To avoid cloning.
     L{
-      Dep.new "colons:invalidate names", Base.sources.anonymous, [], {}, nil
+      Dep.new("colons:invalidate names", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
@@ -377,31 +377,6 @@ describe Dep, '#requirements_for' do
   end
 end
 
-describe "calling met? on a single dep" do
-  before {
-    setup_yield_counts
-  }
-  it "should run if setup returns nil or false" do
-    make_counter_dep(
-      :name => 'unmeetable for met', :setup => L{ false }, :met? => L{ false }
-    ).met?.should == false
-    @yield_counts['unmeetable for met'].should == @yield_counts_met_run
-  end
-  it "should return false for unmet deps" do
-    make_counter_dep(
-      :name => 'unmeetable for met', :met? => L{ false }
-    ).met?.should == false
-    @yield_counts['unmeetable for met'].should == @yield_counts_met_run
-  end
-  it "should return true for already met deps" do
-    make_counter_dep(
-      :name => 'met for met'
-    ).met?.should == true
-    @yield_counts['met for met'].should == @yield_counts_met_run
-  end
-  after { Base.sources.anonymous.deps.clear! }
-end
-
 describe "exceptions" do
   it "should be unmet after an exception in met? {}" do
     dep 'exception met? test' do
@@ -416,51 +391,85 @@ describe "exceptions" do
   end
 end
 
+describe "calling met? on a single dep" do
+  it "should still call met? if setup returns falsey" do
+    the_dep = dep('met? - setup is false') {
+      setup { false }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should be_met
+  end
+  it "should be false for unmet deps" do
+    the_dep = dep('met? - unmet') {
+      met? { false }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should_not be_met
+  end
+  it "should be true for met deps" do
+    the_dep = dep('met? - met') {
+      met? { true }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.should be_met
+  end
+  after { Base.sources.anonymous.deps.clear! }
+end
+
 describe "calling meet on a single dep" do
-  before {
-    setup_yield_counts
-  }
-  it "should fail twice and return false on unmeetable deps" do
-    make_counter_dep(
-      :name => 'unmeetable', :met? => L{ false }
-    ).meet.should == false
-    @yield_counts['unmeetable'].should == @yield_counts_meet_run
+  it "should be false for an unmeetable dep" do
+    the_dep = dep('unmeetable') {
+      met? { false }
+    }
+    should_call_dep_like(:meet_run, the_dep)
+    the_dep.meet.should == false
   end
-  it "should fail fast and return nil on explicitly unmeetable deps" do
-    make_counter_dep(
-      :name => 'explicitly unmeetable', :met? => L{ unmeetable! }
-    ).meet.should == nil
-    @yield_counts['explicitly unmeetable'].should == @yield_counts_met_run
+  it "should be nil for an explicitly unmeetable dep" do
+    the_dep = dep('explicitly unmeetable') {
+      met? { unmeetable! }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.meet.should == nil
   end
-  it "should fail, run meet, and then succeed on unmet deps" do
-    make_counter_dep(
-      :name => 'unmet', :met? => L{ @yield_counts['unmet'][:met?] > 1 }
-    ).meet.should == true
-    @yield_counts['unmet'].should == @yield_counts_meet_run
+  it "should be true for a meetable dep" do
+    the_dep = dep('unmet') {
+      met? { @met }
+      meet { @met = true }
+    }
+    should_call_dep_like(:meet_run, the_dep)
+    the_dep.meet.should == true
   end
-  it "should fail, not run meet, and fail again on unmet deps where before fails" do
-    make_counter_dep(
-      :name => 'unmet, #before fails', :met? => L{ false }, :before => L{ false }
-    ).meet.should == false
-    @yield_counts['unmet, #before fails'].should == @yield_counts_failed_at_before
+  it "should be false for an unmet dep when before is false" do
+    the_dep = dep('unmet, #before is false') {
+      met? { false }
+      before { false }
+    }
+    should_call_dep_like(:meet_skipped, the_dep)
+    the_dep.meet.should == false
   end
-  it "should fail, not run meet, and fail again on unmet deps where meet raises UnmeetableDep" do
-    make_counter_dep(
-      :name => 'unmet, #before fails', :met? => L{ false }, :meet => L{ unmeetable! }
-    ).meet.should == nil
-    @yield_counts['unmet, #before fails'].should == @yield_counts_early_exit_meet_run
+  it "should be false for an unmet dep when meet fails" do
+    the_dep = dep('unmet, #meet fails') {
+      met? { false }
+      meet { unmeetable! }
+    }
+    should_call_dep_like(:meet_failed, the_dep)
+    the_dep.meet.should == nil
   end
-  it "should fail, run meet, and then succeed on unmet deps where after fails" do
-    make_counter_dep(
-      :name => 'unmet, #after fails', :met? => L{ @yield_counts['unmet, #after fails'][:met?] > 1 }, :after => L{ false }
-    ).meet.should == true
-    @yield_counts['unmet, #after fails'].should == @yield_counts_meet_run
+  it "should be true for an unmet dep when after fails" do
+    the_dep = dep('unmet, #after fails') {
+      met? { @met }
+      meet { @met = true }
+      after { false }
+    }
+    should_call_dep_like(:meet_run, the_dep)
+    the_dep.meet.should == true
   end
-  it "should succeed on already met deps" do
-    make_counter_dep(
-      :name => 'met', :met? => L{ true }
-    ).meet.should == true
-    @yield_counts['met'].should == @yield_counts_already_met
+  it "should be true for an already met dep" do
+    the_dep = dep('met') {
+      met? { true }
+    }
+    should_call_dep_like(:met_run, the_dep)
+    the_dep.meet.should == true
   end
   after { Base.sources.anonymous.deps.clear! }
 end

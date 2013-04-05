@@ -1,66 +1,60 @@
 require 'spec_helper'
 require 'dep_support'
 
-shared_examples_for "met? when met" do
-  describe "met?" do
-    before { Dep('a').met? }
-    it "should met?-check deps that don't have failed subdeps" do
-      %w[a b c d e f].each {|i| @yield_counts[i].should == @yield_counts_already_met }
-    end
-    it "shouldn't run the meet-only dep" do
-      @yield_counts['g'].should == @yield_counts_none
-    end
-  end
-end
-
 shared_examples_for "met? when unmet" do
   describe "met?" do
-    before { Dep('a').met? }
+    it "should be false" do
+      Dep('a').should_not be_met
+    end
     it "should met?-check deps that don't have failed subdeps" do
-      %w[f].each {|i| @yield_counts[i].should == @yield_counts_already_met }
+      %w[f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
+      Dep('a').met?
     end
-    it "should not met?-check deps that have failed subdeps" do
-      %w[a b c d e].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
+    it "should only setup deps that have failed subdeps" do
+      %w[a b c d e].each {|dep_name| should_call_dep_like(:unmet_requirement, Dep(dep_name)) }
+      Dep('a').met?
     end
-    it "shouldn't run the meet-only dep" do
-      @yield_counts['g'].should == @yield_counts_none
+    it "should not touch requires_when_unmet" do
+      %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
+      Dep('a').met?
     end
-  end
-end
-
-describe "met? return value" do
-  before {
-    dep 'return value a' do
-      requires 'return value b'
-    end
-    dep 'return value b' do
-      met? { false }
-    end
-  }
-  it "should return false when subdeps are unmet" do
-    Dep('return value a').met?.should be_false
   end
 end
 
 describe "an already met dep tree" do
   before {
-    setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]
-    make_counter_dep :name => 'b', :requires => %w[c d e]
-    make_counter_dep :name => 'c', :requires => %w[f]
-    make_counter_dep :name => 'd', :requires => %w[e f], :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'e', :requires => %w[f]
-    make_counter_dep :name => 'f'
-    make_counter_dep :name => 'g'
+    dep('a') { requires('b', 'c') }
+    dep('b') { requires('c', 'd', 'e') }
+    dep('c') { requires('f'); requires_when_unmet('g') }
+    dep('d') { requires('e', 'f') }
+    dep('e') { requires('f') }
+    dep('f')
+    dep('g')
   }
-  it_should_behave_like "met? when met"
-  describe "meet" do
-    before { Dep('a').meet }
-    it "should meet no deps" do
-      %w[a b c d e f].each {|i| @yield_counts[i].should == @yield_counts_already_met }
+  describe "met?" do
+    it "should be true" do
+      Dep('a').should be_met
     end
-    it "shouldn't run the meet-only dep" do
-      @yield_counts['g'].should == @yield_counts_none
+    it "should met?-check every dep" do
+      %w[a b c d e f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
+      Dep('a').met?
+    end
+    it "should not touch requires_when_unmet" do
+      %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
+      Dep('a').met?
+    end
+  end
+  describe "meet" do
+    it "should be true" do
+      Dep('a').meet.should == true
+    end
+    it "should not meet any deps" do
+      %w[a b c d e f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
+      Dep('a').meet
+    end
+    it "should not touch requires_when_unmet" do
+      %w[g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
+      Dep('a').meet
     end
   end
   after { Base.sources.anonymous.deps.clear! }
@@ -68,26 +62,30 @@ end
 
 describe "an unmeetable dep tree" do
   before {
-    setup_yield_counts
-    make_counter_dep :name => 'a', :met? => L{ false }, :requires => %w[b c]
-    make_counter_dep :name => 'b', :met? => L{ false }, :requires => %w[c d e]
-    make_counter_dep :name => 'c', :met? => L{ false }, :requires => %w[f], :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :met? => L{ false }, :requires => %w[e f]
-    make_counter_dep :name => 'e', :met? => L{ false }, :requires => %w[f]
-    make_counter_dep :name => 'f', :met? => L{ false }
-    make_counter_dep :name => 'g', :met? => L{ false }
+    dep('a') { met? { false }; requires('b', 'c') }
+    dep('b') { met? { false }; requires('c', 'd', 'e') }
+    dep('c') { met? { false }; requires('f'); requires_when_unmet('g') }
+    dep('d') { met? { false }; requires('e', 'f') }
+    dep('e') { met? { false }; requires('f') }
+    dep('f') { met? { false } }
+    dep('g') { met? { false } }
   }
   it_should_behave_like "met? when unmet"
   describe "meet" do
-    before { Dep('a').meet }
+    it "should be false" do
+      Dep('a').meet.should == false
+    end
     it "should fail on the bootom-most dep" do
-      %w[f].each {|i| @yield_counts[i].should == @yield_counts_failed_meet_run }
+      %w[f].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
+      Dep('a').meet
     end
-    it "should bubble the fail back up" do
-      %w[a b c].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
+    it "should bubble the failure back up from the failed dep" do
+      %w[a b c].each {|dep_name| should_call_dep_like(:unmet_requirement, Dep(dep_name)) }
+      Dep('a').meet
     end
-    it "shouldn't run any deps after the fail" do
-      %w[d e g].each {|i| @yield_counts[i].should == @yield_counts_none }
+    it "shouldn't run any subdeps after the point of failure" do
+      %w[d e g].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
+      Dep('a').meet
     end
   end
   after { Base.sources.anonymous.deps.clear! }
@@ -95,20 +93,22 @@ end
 
 describe "a meetable dep tree" do
   before {
-    setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:meet] > 0 }
-    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:meet] > 0 }
-    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:meet] > 0 }, :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:meet] > 0 }
-    make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ @yield_counts['e'][:meet] > 0 }
-    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:meet] > 0 }
-    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:meet] > 0 }
+    dep('a') { met? { @met }; meet { @met = true }; requires('b', 'c') }
+    dep('b') { met? { @met }; meet { @met = true }; requires('c', 'd', 'e') }
+    dep('c') { met? { @met }; meet { @met = true }; requires('f'); requires_when_unmet('g') }
+    dep('d') { met? { @met }; meet { @met = true }; requires('e', 'f') }
+    dep('e') { met? { @met }; meet { @met = true }; requires('f') }
+    dep('f') { met? { @met }; meet { @met = true } }
+    dep('g') { met? { @met }; meet { @met = true } }
   }
   it_should_behave_like "met? when unmet"
   describe "meet" do
-    before { Dep('a').meet }
-    it "should meet each dep exactly once" do
-      Base.sources.anonymous.deps.names.each {|i| @yield_counts[i].should == @yield_counts_meet_run }
+    it "should be true" do
+      Dep('a').meet.should == true
+    end
+    it "should meet every dep" do
+      %w[a b c d e f g].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
+      Dep('a').meet
     end
   end
   after { Base.sources.anonymous.deps.clear! }
@@ -116,26 +116,34 @@ end
 
 describe "a partially meetable dep tree" do
   before {
-    setup_yield_counts
-    make_counter_dep :name => 'a', :requires => %w[b c]  , :met? => L{ @yield_counts['a'][:meet] > 0 }
-    make_counter_dep :name => 'b', :requires => %w[c d e], :met? => L{ @yield_counts['b'][:meet] > 0 }
-    make_counter_dep :name => 'c', :requires => %w[f]    , :met? => L{ @yield_counts['c'][:meet] > 0 }, :requires_when_unmet => %w[g]
-    make_counter_dep :name => 'd', :requires => %w[e f]  , :met? => L{ @yield_counts['d'][:meet] > 0 }
-    make_counter_dep :name => 'e', :requires => %w[f]    , :met? => L{ false }
-    make_counter_dep :name => 'f',                         :met? => L{ @yield_counts['f'][:meet] > 0 }
-    make_counter_dep :name => 'g',                         :met? => L{ @yield_counts['g'][:meet] > 0 }
+    dep('a') { met? { @met }; meet { @met = true }; requires('b', 'c') }
+    dep('b') { met? { @met }; meet { @met = true }; requires('c', 'd', 'e') }
+    dep('c') { met? { @met }; meet { @met = true }; requires('f'); requires_when_unmet('g') }
+    dep('d') { met? { false };                      requires('f') }
+    dep('e') { met? { @met }; meet { @met = true }; requires('f') }
+    dep('f') { met? { @met }; meet { @met = true } }
+    dep('g') { met? { @met }; meet { @met = true } }
   }
   it_should_behave_like "met? when unmet"
   describe "meet" do
-    before { Dep('a').meet }
-    it "should meet deps until one fails" do
-      %w[c f g].each {|i| @yield_counts[i].should == @yield_counts_meet_run }
+    it "should be false" do
+      Dep('a').meet.should == false
     end
-    it "should fail on the unmeetable dep" do
-      %w[e].each {|i| @yield_counts[i].should == @yield_counts_failed_meet_run }
+    it "should meet deps before the unmeetable dep is reached" do
+      %w[c f g].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
+      Dep('a').meet
     end
-    it "should bubble the fail up" do
-      %w[a b d].each {|i| @yield_counts[i].should == @yield_counts_dep_failed }
+    it "should attempt to meet the unmeetable dep" do
+      %w[d].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
+      Dep('a').meet
+    end
+    it "should bubble the failure back up from the unmeetable dep" do
+      %w[a b].each {|dep_name| should_call_dep_like(:unmet_requirement, Dep(dep_name)) }
+      Dep('a').meet
+    end
+    it "shouldn't run any subdeps after the point of failure" do
+      %w[e].each {|dep_name| should_call_dep_like(:none, Dep(dep_name)) }
+      Dep('a').meet
     end
   end
   after { Base.sources.anonymous.deps.clear! }
