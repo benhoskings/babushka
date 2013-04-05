@@ -60,18 +60,6 @@ module Babushka
       }
     end
 
-    def met message
-      removed! :instead => "a truthy return value from met?{} (maybe using #log_ok)"
-    end
-
-    def unmet message
-      removed! :instead => "a falsey return value from met?{} (maybe using #log)"
-    end
-
-    def unmeetable message
-      removed! :instead => "#unmeetable!"
-    end
-
     def unmeetable! message
       raise Babushka::UnmeetableDep, message
     end
