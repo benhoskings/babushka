@@ -189,3 +189,24 @@ describe String, '#colorized?' do
     "\e[0;32;29mbabushka\e[0m".should be_colorized
   end
 end
+
+describe Integer, '#xsecs' do
+  it "should return now for 0" do
+    0.xsecs.should == 'now'
+  end
+  it "should return less than a minute for 12s" do
+    12.xsecs.should == 'less than a minute'
+  end
+  it "should return 1 minute for 80s" do
+    80.xsecs.should == '1 minute'
+  end
+  it "should return 22 minutes for 1337s" do
+    1337.xsecs.should == '22 minutes'
+  end
+  it "should return 2 hours for 10000s" do
+    10000.xsecs.should == '2 hours'
+  end
+  it "should return 14 days for 1234567s" do
+    1234567.xsecs.should == '14 days'
+  end
+end
