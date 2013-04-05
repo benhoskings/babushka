@@ -28,7 +28,6 @@ module Babushka
     extend LogHelpers
 
     attr_reader :name, :params, :args, :opts, :dep_source, :load_path
-    attr_accessor :result_message
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
@@ -313,10 +312,7 @@ module Babushka
     end
 
     def run_met_task task_opts = {}
-      process_task(:met?).tap {|result|
-        log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
-        self.result_message = nil
-      }
+      process_task(:met?)
     end
 
     def process_task task_name

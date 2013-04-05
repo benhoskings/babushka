@@ -54,12 +54,6 @@ module Babushka
       instance_eval(&send(task_name)) unless failed?
     end
 
-    def result message, opts = {}
-      opts[:result].tap {
-        dependency.result_message = message
-      }
-    end
-
     def unmeetable! message
       raise Babushka::UnmeetableDep, message
     end
