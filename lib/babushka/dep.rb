@@ -290,18 +290,16 @@ module Babushka
     def process_self and_meet
       if invoke(:met?)
         true # already met.
-      elsif !and_meet
-        false #  not attempting to meet.
-      else
-        invoke(:prepare)
-        if !process_requirements(and_meet, :requires_when_unmet)
-          false # install-time deps unmet
-        else
-          log 'meet' do
-            invoke(:before) and invoke(:meet) and invoke(:after)
-          end
-          invoke(:met?)
-        end
+      elsif and_meet
+        meet_dep
+        invoke(:met?)
+      end
+    end
+
+    def meet_dep
+      invoke(:prepare)
+      if process_requirements(true, :requires_when_unmet)
+        log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
       end
     end
 
