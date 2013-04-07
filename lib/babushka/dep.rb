@@ -243,7 +243,7 @@ module Babushka
         log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
       else
         Base.task.callstack.push(self)
-        process_tree(and_meet).tap {
+        run_met_stage(and_meet).tap {
           Base.task.callstack.pop
         }
       end
@@ -258,9 +258,9 @@ module Babushka
 
     # Process the tree descending from this dep (first the dependencies, then
     # the dep itself).
-    def process_tree(and_meet)
+    def run_met_stage(and_meet)
       invoke(:setup)
-      process_requirements(and_meet, :requires) && process_self(and_meet)
+      run_requirements(and_meet, :requires) && run_met(and_meet)
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
@@ -268,7 +268,7 @@ module Babushka
     #
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
-    def process_requirements and_meet, accessor
+    def run_requirements and_meet, accessor
       if and_meet
         requirements_for(accessor).all? {|r| process_requirement(r, and_meet) }
       else
@@ -284,23 +284,22 @@ module Babushka
       Babushka::Logging.log_exception(e)
     end
 
-    # Process this dep, assuming all its requirements are satisfied. This is
-    # the method that implements the met? -> meet -> met? logic that is what
-    # deps are all about. For details, see the documentation for Dep#process.
-    def process_self and_meet
+    def run_met and_meet
       if invoke(:met?)
         true # already met.
       elsif and_meet
-        meet_dep
+        run_meet_stage
         invoke(:met?)
       end
     end
 
-    def meet_dep
+    def run_meet_stage
       invoke(:prepare)
-      if process_requirements(true, :requires_when_unmet)
-        log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
-      end
+      run_requirements(true, :requires_when_unmet) && run_meet
+    end
+
+    def run_meet
+      log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
     end
 
     def invoke task_name

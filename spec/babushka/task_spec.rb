@@ -85,10 +85,10 @@ describe Task do
       end
     }
     it "should run the deps the right number of times" do
-      Dep('caching parent').should_receive(:process_self).once
-      Dep('caching child a').should_receive(:process_self).once.and_return(true)
-      Dep('caching child b').should_receive(:process_self).twice.and_return(true)
-      Dep('caching child c').should_receive(:process_self).once.and_return(true)
+      Dep('caching parent').should_receive(:run_met).once
+      Dep('caching child a').should_receive(:run_met).once.and_return(true)
+      Dep('caching child b').should_receive(:run_met).twice.and_return(true)
+      Dep('caching child c').should_receive(:run_met).once.and_return(true)
       Base.task.process ['caching parent'], {}, parser
     end
     it "should cache the dep requirements" do

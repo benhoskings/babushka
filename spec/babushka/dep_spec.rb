@@ -206,8 +206,8 @@ describe Dep, "defining" do
       dep('lazy defining test with errors') do
         nonexistent_method
       end.tap {|dep|
-        dep.should_not_receive(:process_deps)
-        dep.should_not_receive(:process_self)
+        dep.should_not_receive(:run_requirements)
+        dep.should_not_receive(:run_met)
       }.met?
     end
     it "should not attempt to run later" do
@@ -215,8 +215,8 @@ describe Dep, "defining" do
         nonexistent_method
       end.tap {|dep|
         dep.met?
-        dep.should_not_receive(:process_deps)
-        dep.should_not_receive(:process_self)
+        dep.should_not_receive(:run_requirements)
+        dep.should_not_receive(:run_met)
       }.met?
     end
   end
