@@ -259,7 +259,7 @@ module Babushka
     # Process the tree descending from this dep (first the dependencies, then
     # the dep itself).
     def process_tree(and_meet)
-      process_task(:setup)
+      invoke(:setup)
       process_requirements(and_meet, :requires) && process_self(and_meet)
     end
 
@@ -288,24 +288,24 @@ module Babushka
     # the method that implements the met? -> meet -> met? logic that is what
     # deps are all about. For details, see the documentation for Dep#process.
     def process_self and_meet
-      if process_task(:met?)
+      if invoke(:met?)
         true # already met.
       elsif !and_meet
         false #  not attempting to meet.
       else
-        process_task(:prepare)
+        invoke(:prepare)
         if !process_requirements(and_meet, :requires_when_unmet)
           false # install-time deps unmet
         else
           log 'meet' do
-            process_task(:before) and process_task(:meet) and process_task(:after)
+            invoke(:before) and invoke(:meet) and invoke(:after)
           end
-          process_task(:met?)
+          invoke(:met?)
         end
       end
     end
 
-    def process_task task_name
+    def invoke task_name
       # log "calling #{name} / #{task_name}"
       context.invoke(task_name)
     end
