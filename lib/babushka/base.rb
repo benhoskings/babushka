@@ -41,10 +41,6 @@ module Babushka
       @cmdline ||= Cmdline::Parser.for(ARGV)
     end
 
-    def host
-      Babushka::LogHelpers.removed! :method_name => 'Babushka::Base.host', :instead => "Babushka.host"
-    end
-
     # +sources+ is an instance of Babushka::SourcePool, contains all the
     # sources that babushka can currently load deps from. This means all the sources
     # found in ~/.babushka/sources, plus the default sources:

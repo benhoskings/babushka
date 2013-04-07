@@ -28,7 +28,6 @@ module Babushka
     extend LogHelpers
 
     attr_reader :name, :params, :args, :opts, :dep_source, :load_path
-    attr_accessor :result_message
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
@@ -244,7 +243,7 @@ module Babushka
         log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
       else
         Base.task.callstack.push(self)
-        process_tree(and_meet).tap {
+        run_met_stage(and_meet).tap {
           Base.task.callstack.pop
         }
       end
@@ -259,9 +258,9 @@ module Babushka
 
     # Process the tree descending from this dep (first the dependencies, then
     # the dep itself).
-    def process_tree(and_meet)
-      process_task(:setup)
-      process_requirements(and_meet, :requires) && process_self(and_meet)
+    def run_met_stage(and_meet)
+      invoke(:setup)
+      run_requirements(and_meet, :requires) && run_met(and_meet)
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
@@ -269,7 +268,7 @@ module Babushka
     #
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
-    def process_requirements and_meet, accessor
+    def run_requirements and_meet, accessor
       if and_meet
         requirements_for(accessor).all? {|r| process_requirement(r, and_meet) }
       else
@@ -285,41 +284,25 @@ module Babushka
       Babushka::Logging.log_exception(e)
     end
 
-    # Process this dep, assuming all its requirements are satisfied. This is
-    # the method that implements the met? -> meet -> met? logic that is what
-    # deps are all about. For details, see the documentation for Dep#process.
-    def process_self and_meet
-      process_met_task(:initial => true) {
-        if !and_meet
-          false # unmet
-        else
-          process_task(:prepare)
-          if !process_requirements(and_meet, :requires_when_unmet)
-            false # install-time deps unmet
-          else
-            log 'meet' do
-              process_task(:before) and process_task(:meet) and process_task(:after)
-            end
-            process_met_task
-          end
-        end
-      }
+    def run_met and_meet
+      if invoke(:met?)
+        true # already met.
+      elsif and_meet
+        run_meet_stage
+        invoke(:met?)
+      end
     end
 
-    def process_met_task task_opts = {}, &block
-      # Explicitly return false to distinguish unmet deps from failed
-      # ones -- those return nil.
-      run_met_task(task_opts) || block.try(:call) || false
+    def run_meet_stage
+      invoke(:prepare)
+      run_requirements(true, :requires_when_unmet) && run_meet
     end
 
-    def run_met_task task_opts = {}
-      process_task(:met?).tap {|result|
-        log result_message, :as => (:error unless result || task_opts[:initial]) unless result_message.nil?
-        self.result_message = nil
-      }
+    def run_meet
+      log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
     end
 
-    def process_task task_name
+    def invoke task_name
       # log "calling #{name} / #{task_name}"
       context.invoke(task_name)
     end

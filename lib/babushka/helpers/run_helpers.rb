@@ -4,38 +4,6 @@ module Babushka
     include ShellHelpers
     include PathHelpers
 
-    def hostname
-      removed! :instead => "#shell directly", :example => "shell('hostname -f')"
-    end
-
-    def rake cmd, &block
-      removed! :instead => "#shell directly", :example => "shell({'RAILS_ENV' => env}, 'rake #{cmd}')"
-    end
-
-    def bundle_rake cmd, &block
-      removed! :instead => "#shell directly", :example => "shell({'RAILS_ENV' => 'env'}, 'bundle exec #{cmd}')"
-    end
-
-    def check_file file_name, method_name
-      removed! :instead => "Fancypath##{method_name}", :example => "path.p.#{method_name}"
-    end
-
-    def grep pattern, file
-      removed! :instead => 'Fancypath#grep', :example => "#{file.inspect}.p.grep(#{pattern.inspect})"
-    end
-
-    def change_line line, replacement, filename
-      removed! :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(line)}$/#{replacement}/' '#{filename}'\")"
-    end
-
-    def insert_into_file insert_before, path, lines, opts = {}
-      removed! :instead => "a template with #render_erb"
-    end
-
-    def change_with_sed keyword, from, to, file
-      removed! :instead => "sed via #shell", :example => "shell(\"sed -i'' -e 's/^#{Regexp.escape(keyword)}\\s+#{Regexp.escape(from)}\\b/#{keyword} #{to}/' '#{file}'\")"
-    end
-
     def append_to_file text, file, opts = {}
       deprecated! '2012-09-01', :instead => 'Fancypath#append', :example => "'#{file}'.p.append(#{text.inspect})"
       text = text.to_s
@@ -68,10 +36,6 @@ module Babushka
       end
     end
 
-    def yaml path
-      removed! :instead => 'Fancypath#yaml', :example => "'#{path}'.p.yaml"
-    end
-
     def render_erb erb, opts = {}
       if (path = erb_path_for(erb)).nil?
         log_error "If you use #render_erb within a dynamically defined dep, you have to give the full path to the erb template."
@@ -94,14 +58,6 @@ module Babushka
       elsif load_path
         File.dirname(load_path) / erb # directory this dep is in, plus relative path
       end
-    end
-
-    def log_and_open message, url
-      removed! :instead => "a plain #log with the URL", :example => "log('Download here: http://website.org')"
-    end
-
-    def mysql cmd, username = 'root', include_password = true
-      removed! :instead => "#shell directly", :example => "shell('mysql', '-u', username, :input => cmd.end_with(';'))"
     end
   end
 end
