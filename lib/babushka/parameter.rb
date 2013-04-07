@@ -20,8 +20,8 @@ module Babushka
     # kind that won't usually need to be customised.
     #
     # For example, the deps that install babushka itself use a :branch parameter
-    # that has #default! set to 'master'. This means that the installation
-    # process will install the 'master' branch without asking the user to choose
+    # that has #default! set to 'stable'. This means that the installation
+    # process will install the 'stable' branch without asking the user to choose
     # a branch, but a custom branch can still be specified by passing an
     # explicit value, for example by passing 'branch=next' on the command line.
     def default! value
