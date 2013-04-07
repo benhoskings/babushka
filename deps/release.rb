@@ -42,7 +42,7 @@ dep 'release exists', :version, :version_file, :template => 'release' do
     shell! 'rm', "#{version_file}.bak"
   end
 
-  requires 'repo on master'
+  requires 'repo on stable'
   requires_when_unmet 'repo clean', 'descendant of last release', 'build passing'
 
   met? {
@@ -58,9 +58,9 @@ dep 'release exists', :version, :version_file, :template => 'release' do
   }
 end
 
-dep 'repo on master', :template => 'release' do
+dep 'repo on stable', :template => 'release' do
   met? {
-    repo.current_branch == 'master' || unmeetable!("Releases have to be made from master.")
+    repo.current_branch == 'stable' || unmeetable!("Releases have to be made from stable.")
   }
 end
 

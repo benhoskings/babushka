@@ -19,7 +19,7 @@ meta :babushka do
 end
 
 dep 'babushka', :from, :path, :version do
-  version.default!('master')
+  version.default!('stable')
   requires 'up to date.babushka'.with(from, path, version)
   requires 'in path.babushka'.with(from, path)
   path.ask("Where would you like babushka installed").default('/usr/local/babushka')
