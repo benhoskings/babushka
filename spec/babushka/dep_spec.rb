@@ -4,6 +4,12 @@ require 'spec_helper'
 require 'dep_support'
 
 describe "Dep.new" do
+  it "should reject deps with non-string names" do
+    L{
+      Dep.new(:symbol_name, Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(InvalidDepName, "The dep name :symbol_name isn't a string.")
+    Dep(:symbol_name).should be_nil
+  end
   it "should reject deps with empty names" do
     L{
       Dep.new("", Base.sources.anonymous, [], {}, nil)

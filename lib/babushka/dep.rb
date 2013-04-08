@@ -33,7 +33,9 @@ module Babushka
     # found in +block+. To define deps yourself, you should call +dep+ (which
     # is +Dep::Helpers#dep+).
     def initialize name, source, params, opts, block
-      if name.empty?
+      if !name.is_a?(String)
+        raise InvalidDepName, "The dep name #{name.inspect} isn't a string."
+      elsif name.empty?
         raise InvalidDepName, "Deps can't have empty names."
       elsif /[[:cntrl:]]/mu =~ name
         raise InvalidDepName, "The dep name '#{name}' contains nonprintable characters."
@@ -45,7 +47,7 @@ module Babushka
         non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
         raise DepParameterError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
-        @name = name.to_s
+        @name = name
         @params = params
         @args = {}
         @opts = Base.sources.current_load_opts.merge(opts)
