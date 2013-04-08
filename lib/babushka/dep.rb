@@ -113,13 +113,7 @@ module Babushka
     end
 
     def with *args
-      @args = if args.map(&:class) == [Hash]
-        parse_named_arguments(args.first)
-      else
-        parse_positional_arguments(args)
-      end.map_values {|k,v|
-        Parameter.for(k, v)
-      }
+      @args = parse_arguments(args)
       @context = nil # To re-evaluate parameter.default() and friends.
       self
     end
@@ -210,6 +204,16 @@ module Babushka
 
     def self.base_template
       BaseTemplate
+    end
+
+    def parse_arguments args
+      if args.map(&:class) == [Hash]
+        parse_named_arguments(args.first)
+      else
+        parse_positional_arguments(args)
+      end.map_values {|k,v|
+        Parameter.for(k, v)
+      }
     end
 
     def parse_named_arguments args
