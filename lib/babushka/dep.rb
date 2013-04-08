@@ -114,17 +114,13 @@ module Babushka
 
     def with *args
       @args = parse_arguments(args)
-      @context = nil # To re-evaluate parameter.default() and friends.
+      @context = nil # To re-run param.default() calls, etc, inside deps.
       self
     end
 
-    # Entry point for a dry +#process+ run, where only +met?+ blocks will be
-    # evaluated.
-    #
-    # This is useful to inspect the current state of a dep tree, without
-    # altering the system. It can cause failures, though, because some deps
-    # have requirements that need to be met before the dep can perform its
-    # +met?+ check.
+    # The entry point for a dry run, where only +met?+ blocks will be
+    # evaluated. This is useful to inspect the current state of a dep tree,
+    # without altering the system.
     def met? *args
       with(*args).process(false)
     end
