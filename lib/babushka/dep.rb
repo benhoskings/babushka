@@ -47,12 +47,9 @@ module Babushka
         non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
         raise DepParameterError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
-        @name = name
-        @params = params
+        @name, @dep_source, @params, @block = name, source, params, block
         @args = {}
         @opts = Base.sources.current_load_opts.merge(opts)
-        @block = block
-        @dep_source = source
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register(self)
       end
