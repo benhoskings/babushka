@@ -4,7 +4,7 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :cmd, :caches, :persistent_log
+    attr_reader :cmd, :persistent_log
 
     def initialize
       clear
@@ -13,7 +13,6 @@ module Babushka
     def clear
       @cmd = nil
       @running = false
-      @caching = false
     end
 
     def process dep_names, with_args, cmd
@@ -35,25 +34,6 @@ module Babushka
         }.tap {|result|
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
         }
-      end
-    end
-
-    def cache &block
-      was_caching, @caching, @caches = @caching, true, {}
-      block.call
-    ensure
-      @caching = was_caching
-    end
-
-    def cached key, opts = {}, &block
-      if !@caching
-        block.call
-      elsif @caches.has_key?(key)
-        @caches[key].tap {|value|
-          opts[:hit].call(value) if opts.has_key?(:hit)
-        }
-      else
-        @caches[key] = block.call
       end
     end
 
