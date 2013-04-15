@@ -473,3 +473,27 @@ describe "calling meet on a single dep" do
   end
   after { Base.sources.anonymous.deps.clear! }
 end
+
+describe 'dep caching' do
+  before {
+    dep 'caching child b', :arg_b1, :arg_b2
+    dep 'caching child c', :arg_c1
+    dep 'caching child a', :arg_a do
+      requires 'caching child b'.with(:arg_b2 => 'a value')
+      requires 'caching child c'.with('some value')
+    end
+    dep 'caching parent' do
+      requires 'caching child a'
+      requires 'caching child b'.with('more', 'values')
+      requires 'caching child c'.with('some value')
+    end
+  }
+  it "should run the deps the right number of times" do
+    Dep('caching parent').should_receive(:run_met).once
+    Dep('caching child a').should_receive(:run_met).once.and_return(true)
+    Dep('caching child b').should_receive(:run_met).twice.and_return(true)
+    Dep('caching child c').should_receive(:run_met).once.and_return(true)
+
+    Dep('caching parent').met?
+  end
+end

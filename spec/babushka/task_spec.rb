@@ -70,36 +70,4 @@ describe Task do
     end
   end
 
-  describe 'dep caching' do
-    before {
-      dep 'caching child b', :arg_b1, :arg_b2
-      dep 'caching child c', :arg_c1
-      dep 'caching child a', :arg_a do
-        requires 'caching child b'.with(:arg_b2 => 'a value')
-        requires 'caching child c'.with('some value')
-      end
-      dep 'caching parent' do
-        requires 'caching child a'
-        requires 'caching child b'.with('more', 'values')
-        requires 'caching child c'.with('some value')
-      end
-    }
-    it "should run the deps the right number of times" do
-      Dep('caching parent').should_receive(:run_met).once
-      Dep('caching child a').should_receive(:run_met).once.and_return(true)
-      Dep('caching child b').should_receive(:run_met).twice.and_return(true)
-      Dep('caching child c').should_receive(:run_met).once.and_return(true)
-      Base.task.process ['caching parent'], {}, parser
-    end
-    it "should cache the dep requirements" do
-      Base.task.process ['caching parent'], {}, parser
-      Base.task.caches.should == {
-        DepRequirement.new('caching parent', []) => true,
-        DepRequirement.new('caching child a', [nil]) => true,
-        DepRequirement.new('caching child b', [nil, 'a value']) => true,
-        DepRequirement.new('caching child b', ['more', 'values']) => true,
-        DepRequirement.new('caching child c', ['some value']) => true
-      }
-    end
-  end
 end
