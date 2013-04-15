@@ -203,9 +203,7 @@ module Babushka
       Base.task.cached(
         cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
       ) {
-        log logging_name, :closing_status => (and_meet ? true : :dry_run) do
-          process!(and_meet)
-        end
+        process!(and_meet)
       }
     end
 
@@ -235,17 +233,19 @@ module Babushka
     end
 
     def process! and_meet
-      if context.failed?
-        log_error "This dep previously failed to load."
-      elsif Base.task.callstack.include?(self)
-        log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-      elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
-        log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
-      else
-        Base.task.callstack.push(self)
-        run_met_stage(and_meet).tap {
-          Base.task.callstack.pop
-        }
+      log logging_name, :closing_status => (and_meet ? true : :dry_run) do
+        if context.failed?
+          log_error "This dep previously failed to load."
+        elsif Base.task.callstack.include?(self)
+          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
+          log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
+        else
+          Base.task.callstack.push(self)
+          run_met_stage(and_meet).tap {
+            Base.task.callstack.pop
+          }
+        end
       end
     rescue UnmeetableDep => e
       log_error(e.message)
