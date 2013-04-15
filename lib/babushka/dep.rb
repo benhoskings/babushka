@@ -260,7 +260,7 @@ module Babushka
     # the dep itself).
     def run_met_stage(and_meet)
       invoke(:setup)
-      run_requirements(and_meet, :requires) && run_met(and_meet)
+      run_requirements(:requires, and_meet) && run_met(and_meet)
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
@@ -268,7 +268,7 @@ module Babushka
     #
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
-    def run_requirements and_meet, accessor
+    def run_requirements accessor, and_meet
       if and_meet
         requirements_for(accessor).all? {|r| process_requirement(r, and_meet) }
       else
@@ -295,7 +295,7 @@ module Babushka
 
     def run_meet_stage
       invoke(:prepare)
-      run_requirements(true, :requires_when_unmet) && run_meet
+      run_requirements(:requires_when_unmet, true) && run_meet
     end
 
     def run_meet
