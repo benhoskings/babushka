@@ -7,15 +7,16 @@ def stub_commitless_repo name
   end
 end
 
-def stub_repo name
+def stub_repo name, &block
   (tmp_prefix / 'repos' / "#{name}_remote").rm
   PathHelpers.cd tmp_prefix / 'repos' / "#{name}_remote", :create => true do
     ShellHelpers.shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
   end
 
   (tmp_prefix / 'repos' / name).rm
-  PathHelpers.cd tmp_prefix / 'repos' do
+  PathHelpers.cd tmp_prefix / 'repos' do |path|
     ShellHelpers.shell "git clone #{name}_remote/remote.git #{name}"
+    yield(Babushka::GitRepo.new(path / name)) if block_given?
   end
 end
 
@@ -307,8 +308,9 @@ end
 
 describe GitRepo, '#remote_for' do
   before(:all) {
-    stub_repo 'a'
-    subject.repo_shell('git config branch.next.remote upstream')
+    stub_repo 'a' do |repo|
+      repo.repo_shell('git config branch.next.remote upstream')
+    end
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return the remote when it's set in the config" do
@@ -462,7 +464,7 @@ describe GitRepo, '#branch!' do
     subject.branches.should_not include('next')
   end
   context "after branching" do
-    before(:all) { subject.branch! "next" }
+    before(:all) { Babushka::GitRepo.new(tmp_prefix / 'repos/a').branch! "next" }
     it "should have created the branch" do
       subject.branches.should include('next')
     end
@@ -482,7 +484,7 @@ describe GitRepo, '#branch!' do
         ShellHelpers.shell 'echo "Ch-ch-ch-changes" >> content.txt'
         ShellHelpers.shell 'git commit -a -m "Changes!"'
       }
-      subject.branch! "another", "master~"
+      Babushka::GitRepo.new(tmp_prefix / 'repos/a').branch! "another", "master~"
     }
     it "should have created the branch" do
       subject.branches.should include('another')
@@ -506,7 +508,7 @@ describe GitRepo, '#track!' do
     subject.branches.should_not include('next')
   end
   context "after tracking" do
-    before(:all) { subject.track! "origin/next" }
+    before(:all) { Babushka::GitRepo.new(tmp_prefix / 'repos/a').track! "origin/next" }
     it "should have created a next branch" do
       subject.branches.should include('next')
     end
