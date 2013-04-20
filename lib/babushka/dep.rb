@@ -386,15 +386,7 @@ module Babushka
     public
 
     def inspect
-      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}' #{defined_info}>"
-    end
-
-    def defined_info
-      if context.loaded?
-        "<- [#{context.requires.join(', ')}]"
-      else
-        "(not defined yet)"
-      end
+      "#<Dep:#{object_id} '#{dep_source.name}:#{name}'>"
     end
   end
 end

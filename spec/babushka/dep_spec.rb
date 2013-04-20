@@ -89,6 +89,16 @@ describe "Dep.new" do
   end
 end
 
+describe '#inspect' do
+  let(:source) {
+    Source.new(nil, 'test source')
+  }
+  it "should represent the dep and its source" do
+    the_dep = Dep.new('inspect test', source, [], {}, nil)
+    the_dep.inspect.should == "#<Dep:#{the_dep.object_id} 'test source:inspect test'>"
+  end
+end
+
 describe "dep creation" do
   it "should work for blank deps" do
     L{
