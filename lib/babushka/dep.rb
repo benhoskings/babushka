@@ -206,7 +206,7 @@ module Babushka
     private
 
     def self.base_template
-      BaseTemplate
+      Babushka::BaseTemplate
     end
 
     # A hash of argument names to Parameter instances representing the
