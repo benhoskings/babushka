@@ -55,7 +55,7 @@ end
 dep 'resolvable ref.babushka', :from, :path, :ref do
   met? {
     if !@fetched && qualified_ref['origin/']
-      false # Always fetch before resolving a remote ref.
+      log "Need to fetch before resolving #{qualified_ref}."
     else
       resolved_ref.tap {|result|
         if result == qualified_ref
