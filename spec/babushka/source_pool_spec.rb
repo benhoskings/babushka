@@ -307,7 +307,7 @@ describe SourcePool do
           define_in(source1) { dep 'template selection 3.core_meta' }.template.should == core_meta
         end
         it "should not find a template in the wrong source, and use the base template" do
-          define_in(source1) { dep 'template selection 4.meta_3' }.template.should == Dep::BaseTemplate
+          define_in(source1) { dep 'template selection 4.meta_3' }.template.should == Dep.base_template
         end
       end
     end
@@ -340,8 +340,8 @@ describe "template selection during defining from a real source" do
     ]
   end
   it "should have defined deps against the correct template" do
-    source.find('test dep 1').template.should == Dep::BaseTemplate
-    source.find('test dep 2').template.should == Dep::BaseTemplate
+    source.find('test dep 1').template.should == Dep.base_template
+    source.find('test dep 2').template.should == Dep.base_template
     source.find('option-templated dep').template.should == source.find_template('test_template')
     source.find('suffix-templated dep.test_template').template.should == source.find_template('test_template')
   end
@@ -392,7 +392,7 @@ describe "nested source loads" do
   end
 
   it "should have defined deps against the correct template" do
-    outer_source.find('test dep 1').template.should == Dep::BaseTemplate
+    outer_source.find('test dep 1').template.should == Dep.base_template
     outer_source.find('externally templated').template.should == nested_source.find_template('test_template')
     outer_source.find('locally templated').template.should == outer_source.find_template('local_template')
     outer_source.find('locally templated.local_template').template.should == outer_source.find_template('local_template')

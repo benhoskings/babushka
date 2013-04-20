@@ -380,7 +380,7 @@ module Babushka
     end
 
     def suffixed?
-      !opts[:template] && template != BaseTemplate
+      !opts[:template] && template != self.class.base_template
     end
 
     public

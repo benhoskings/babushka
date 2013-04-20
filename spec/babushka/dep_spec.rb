@@ -59,7 +59,7 @@ describe "Dep.new" do
     }
     it "should work" do
       @dep.should be_an_instance_of(Dep)
-      @dep.template.should == Dep::BaseTemplate
+      @dep.template.should == Dep.base_template
     end
   end
   context "with a missing template" do
@@ -130,7 +130,7 @@ describe "dep creation" do
 
   context "without template" do
     it "should use the base template" do
-      dep('without template').template.should == Dep::BaseTemplate
+      dep('without template').template.should == Dep.base_template
     end
   end
   context "with template" do
