@@ -269,13 +269,13 @@ module Babushka
     # method that recurses down the dep tree.
     def run_requirements accessor, and_meet, cache
       if and_meet
-        requirements_for(accessor).all? {|r| process_requirement(r, and_meet, cache) }
+        requirements_for(accessor).all? {|r| run_requirement(r, and_meet, cache) }
       else
-        requirements_for(accessor).map {|r| process_requirement(r, and_meet, cache) }.all?
+        requirements_for(accessor).map {|r| run_requirement(r, and_meet, cache) }.all?
       end
     end
 
-    def process_requirement requirement, and_meet, cache
+    def run_requirement requirement, and_meet, cache
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
         dep.with(*requirement.args).process_with_caching(and_meet, cache)
       end
