@@ -188,6 +188,13 @@ module Babushka
       process_with_caching(and_meet, Babushka::DepCache.new)
     end
 
+    # Process this dep using a pre-existing cache. The cache is used during
+    # the run to avoid running deps (and their subtrees) more than once with
+    # the same arguments.
+    #
+    # This method is intended to be called only from deps themselves, as they
+    # invoke their requirements (via Dep#run_requirement); to process a
+    # dep directly, call Dep#process instead.
     def process_with_caching and_meet, cache
       cache.read(
         cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
@@ -202,6 +209,10 @@ module Babushka
       BaseTemplate
     end
 
+    # A hash of argument names to Parameter instances representing the
+    # arguments that were supplied. Parameters for which no argument was
+    # passed are still present, but contain no value, and will lazily prompt
+    # for it as required.
     def parse_arguments args
       if args.map(&:class) == [Hash]
         parse_named_arguments(args.first)
@@ -212,6 +223,9 @@ module Babushka
       }
     end
 
+    # Parse arguments supplied as a hash (i.e. argument names to values). When
+    # passing dep arguments by name, they can be included or ommitted as
+    # required.
     def parse_named_arguments args
       if (non_symbol = args.keys.reject {|key| key.is_a?(Symbol) }).any?
         # We sort here so we can spec the exception message across different rubies.
@@ -224,6 +238,8 @@ module Babushka
       args
     end
 
+    # Parse arguments supplied positionally, as an array of values, When
+    # passing dep arguments positionally, they must all be included.
     def parse_positional_arguments args
       if !args.empty? && args.length != params.length
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
@@ -231,6 +247,16 @@ module Babushka
       Hash[params.zip(args)]
     end
 
+    # This is the top-level entry point for processing a dep, disregarding
+    # caching. This method is here to do some housekeeping around the actual
+    # dep logic:
+    #   - It detects when the dep can't be run (if it failed to define, or if
+    #     running it would cause an endless loop);
+    #   - It detects when the dep shouldn't be run (if it's not intended for
+    #     a system of the type we're running on);
+    #   - It wraps this dep's logging in a level of indentation with its name;
+    #   - It rescues exceptions that happen during the run so that we can
+    #     fail with dignity.
     def process! and_meet, cache
       log logging_name, :closing_status => (and_meet ? true : :dry_run) do
         if context.failed?
@@ -255,8 +281,10 @@ module Babushka
       nil
     end
 
-    # Process the tree descending from this dep (first the dependencies, then
-    # the dep itself).
+    # Both the met? and meet stages involve preparation, dependencies, and
+    # the stage itself. For met?, we setup, ensure all the dep's requirements
+    # are met, and then call #run_met to run the met? check. (If the dep is
+    # unmet and should be met, #run_met will do that too.)
     def run_met_stage(and_meet, cache)
       invoke(:setup)
       run_requirements(:requires, and_meet, cache) && run_met(and_meet, cache)
@@ -264,9 +292,6 @@ module Babushka
 
     # Process each of the requirements of this dep in order. If this is a dry
     # run, check every one; otherwise, require success from all and fail fast.
-    #
-    # Each dep recursively processes its own requirements. Hence, this is the
-    # method that recurses down the dep tree.
     def run_requirements accessor, and_meet, cache
       if and_meet
         requirements_for(accessor).all? {|r| run_requirement(r, and_meet, cache) }
@@ -275,6 +300,11 @@ module Babushka
       end
     end
 
+    # Find the dep named in +requirement+, loading and running it as required,
+    # and run it.
+    #
+    # Each dep recursively processes its own requirements. Hence, this is the
+    # method that recurses down the dep tree.
     def run_requirement requirement, and_meet, cache
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
         dep.with(*requirement.args).process_with_caching(and_meet, cache)
@@ -283,6 +313,9 @@ module Babushka
       Babushka::Logging.log_exception(e)
     end
 
+    # Check if this dep is met. If it's not and we should attempt to meet it,
+    # then run that stage, and then check again whether the dep is met (i.e.
+    # whether running the meet stage met the dep).
     def run_met and_meet, cache
       if invoke(:met?)
         true # already met.
@@ -292,19 +325,28 @@ module Babushka
       end
     end
 
+    # The equivalent of #run_met_stage for meeting the dep: prepare, ensure
+    # unmet-only requirements are met, and then call #run_meet to meet the dep.
     def run_meet_stage cache
       invoke(:prepare)
       run_requirements(:requires_when_unmet, true, cache) && run_meet
     end
 
+    # Unconditionally attempt to meet this dep. (This method does return the
+    # result of attempting to meet the dep, but the value is ignored by
+    # #run_met.)
     def run_meet
       log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
     end
 
+    # Defer to this dep's context to run the named block.
     def invoke block_name
       context.invoke(block_name)
     end
 
+    # The list of requirements named in +list_name+ (either :requires or
+    # :requires_when_unmet), as a list of DepRequirements, which represent
+    # the name of the dep and the arguments to run it with.
     def requirements_for list_name
       context.send(list_name).map {|dep_or_requirement|
         if dep_or_requirement.is_a?(DepRequirement)
