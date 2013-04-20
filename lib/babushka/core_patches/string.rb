@@ -1,9 +1,8 @@
 class String
   # Return a DepRequirement that specifies the dep that should later be
   # called, and the arguments that should be passed. This allows requiring
-  # deps with a less noisy syntax, and the lookup is lazy (it happens at
-  # the point the dep is invoked, from its parent dep in
-  # Dep#process_requirements).
+  # deps with a less noisy syntax, and the lookup is lazy (it happens at the
+  # point the dep is invoked, from its parent dep in Dep#run_requirements).
   #
   #   dep 'user has a password', :username do
   #     requires 'user exists'.with(username)

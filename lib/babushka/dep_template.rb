@@ -1,7 +1,8 @@
 module Babushka
   # A BaseTemplate is just a blank, passthrough template -- all it does is
   # return DepContext as the context against which standard (i.e. untemplated)
-  # deps are defined.
+  # deps are defined. This allows all deps to be defined in the same manner,
+  # whether they were defined against an explicit template or not.
   class BaseTemplate
     def self.contextual_name; name end
     def self.suffixed?; false end

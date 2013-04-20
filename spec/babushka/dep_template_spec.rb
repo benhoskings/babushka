@@ -68,14 +68,14 @@ describe "declaration" do
 end
 
 describe "using" do
-  describe "invalid templates" do
-    it "should not define deps as options" do
+  describe "invalid template names" do
+    it "should be rejected when passed as options" do
       L{
-        dep('something undefined', :template => 'undefined').should be_nil
+        dep('something undefined', :template => 'undefined').template
       }.should raise_error(TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
     end
-    it "should define deps as options" do
-      dep('something.undefined').should be_an_instance_of(Dep)
+    it "should be ignored when passed as suffixes" do
+      dep('something.undefined').tap(&:template).should be_an_instance_of(Dep)
     end
   end
 

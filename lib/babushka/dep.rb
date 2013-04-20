@@ -33,7 +33,9 @@ module Babushka
     # found in +block+. To define deps yourself, you should call +dep+ (which
     # is +Dep::Helpers#dep+).
     def initialize name, source, params, opts, block
-      if name.empty?
+      if !name.is_a?(String)
+        raise InvalidDepName, "The dep name #{name.inspect} isn't a string."
+      elsif name.empty?
         raise InvalidDepName, "Deps can't have empty names."
       elsif /[[:cntrl:]]/mu =~ name
         raise InvalidDepName, "The dep name '#{name}' contains nonprintable characters."
@@ -45,12 +47,9 @@ module Babushka
         non_symbol_params = params.reject {|p| p.is_a?(Symbol) }
         raise DepParameterError, "The dep '#{name}' has #{'a ' if non_symbol_params.length == 1}non-symbol param#{'s' if non_symbol_params.length > 1} #{non_symbol_params.map(&:inspect).to_list}, which #{non_symbol_params.length == 1 ? "isn't" : "aren't"} allowed."
       else
-        @name = name.to_s
-        @params = params
+        @name, @dep_source, @params, @block = name, source, params, block
         @args = {}
         @opts = Base.sources.current_load_opts.merge(opts)
-        @block = block
-        @dep_source = source
         @load_path = Base.sources.current_load_path
         @dep_source.deps.register(self)
       end
@@ -114,24 +113,14 @@ module Babushka
     end
 
     def with *args
-      @args = if args.map(&:class) == [Hash]
-        parse_named_arguments(args.first)
-      else
-        parse_positional_arguments(args)
-      end.map_values {|k,v|
-        Parameter.for(k, v)
-      }
-      @context = nil # To re-evaluate parameter.default() and friends.
+      @args = parse_arguments(args)
+      @context = nil # To re-run param.default() calls, etc, inside deps.
       self
     end
 
-    # Entry point for a dry +#process+ run, where only +met?+ blocks will be
-    # evaluated.
-    #
-    # This is useful to inspect the current state of a dep tree, without
-    # altering the system. It can cause failures, though, because some deps
-    # have requirements that need to be met before the dep can perform its
-    # +met?+ check.
+    # The entry point for a dry run, where only +met?+ blocks will be
+    # evaluated. This is useful to inspect the current state of a dep tree,
+    # without altering the system.
     def met? *args
       with(*args).process(false)
     end
@@ -199,6 +188,13 @@ module Babushka
       process_with_caching(and_meet, Babushka::DepCache.new)
     end
 
+    # Process this dep using a pre-existing cache. The cache is used during
+    # the run to avoid running deps (and their subtrees) more than once with
+    # the same arguments.
+    #
+    # This method is intended to be called only from deps themselves, as they
+    # invoke their requirements (via Dep#run_requirement); to process a
+    # dep directly, call Dep#process instead.
     def process_with_caching and_meet, cache
       cache.read(
         cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
@@ -210,9 +206,26 @@ module Babushka
     private
 
     def self.base_template
-      BaseTemplate
+      Babushka::BaseTemplate
     end
 
+    # A hash of argument names to Parameter instances representing the
+    # arguments that were supplied. Parameters for which no argument was
+    # passed are still present, but contain no value, and will lazily prompt
+    # for it as required.
+    def parse_arguments args
+      if args.map(&:class) == [Hash]
+        parse_named_arguments(args.first)
+      else
+        parse_positional_arguments(args)
+      end.map_values {|k,v|
+        Parameter.for(k, v)
+      }
+    end
+
+    # Parse arguments supplied as a hash (i.e. argument names to values). When
+    # passing dep arguments by name, they can be included or ommitted as
+    # required.
     def parse_named_arguments args
       if (non_symbol = args.keys.reject {|key| key.is_a?(Symbol) }).any?
         # We sort here so we can spec the exception message across different rubies.
@@ -225,6 +238,8 @@ module Babushka
       args
     end
 
+    # Parse arguments supplied positionally, as an array of values, When
+    # passing dep arguments positionally, they must all be included.
     def parse_positional_arguments args
       if !args.empty? && args.length != params.length
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
@@ -232,6 +247,16 @@ module Babushka
       Hash[params.zip(args)]
     end
 
+    # This is the top-level entry point for processing a dep, disregarding
+    # caching. This method is here to do some housekeeping around the actual
+    # dep logic:
+    #   - It detects when the dep can't be run (if it failed to define, or if
+    #     running it would cause an endless loop);
+    #   - It detects when the dep shouldn't be run (if it's not intended for
+    #     a system of the type we're running on);
+    #   - It wraps this dep's logging in a level of indentation with its name;
+    #   - It rescues exceptions that happen during the run so that we can
+    #     fail with dignity.
     def process! and_meet, cache
       log logging_name, :closing_status => (and_meet ? true : :dry_run) do
         if context.failed?
@@ -256,8 +281,10 @@ module Babushka
       nil
     end
 
-    # Process the tree descending from this dep (first the dependencies, then
-    # the dep itself).
+    # Both the met? and meet stages involve preparation, dependencies, and
+    # the stage itself. For met?, we setup, ensure all the dep's requirements
+    # are met, and then call #run_met to run the met? check. (If the dep is
+    # unmet and should be met, #run_met will do that too.)
     def run_met_stage(and_meet, cache)
       invoke(:setup)
       run_requirements(:requires, and_meet, cache) && run_met(and_meet, cache)
@@ -265,18 +292,20 @@ module Babushka
 
     # Process each of the requirements of this dep in order. If this is a dry
     # run, check every one; otherwise, require success from all and fail fast.
-    #
-    # Each dep recursively processes its own requirements. Hence, this is the
-    # method that recurses down the dep tree.
     def run_requirements accessor, and_meet, cache
       if and_meet
-        requirements_for(accessor).all? {|r| process_requirement(r, and_meet, cache) }
+        requirements_for(accessor).all? {|r| run_requirement(r, and_meet, cache) }
       else
-        requirements_for(accessor).map {|r| process_requirement(r, and_meet, cache) }.all?
+        requirements_for(accessor).map {|r| run_requirement(r, and_meet, cache) }.all?
       end
     end
 
-    def process_requirement requirement, and_meet, cache
+    # Find the dep named in +requirement+, loading and running it as required,
+    # and run it.
+    #
+    # Each dep recursively processes its own requirements. Hence, this is the
+    # method that recurses down the dep tree.
+    def run_requirement requirement, and_meet, cache
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
         dep.with(*requirement.args).process_with_caching(and_meet, cache)
       end
@@ -284,6 +313,9 @@ module Babushka
       Babushka::Logging.log_exception(e)
     end
 
+    # Check if this dep is met. If it's not and we should attempt to meet it,
+    # then run that stage, and then check again whether the dep is met (i.e.
+    # whether running the meet stage met the dep).
     def run_met and_meet, cache
       if invoke(:met?)
         true # already met.
@@ -293,20 +325,28 @@ module Babushka
       end
     end
 
+    # The equivalent of #run_met_stage for meeting the dep: prepare, ensure
+    # unmet-only requirements are met, and then call #run_meet to meet the dep.
     def run_meet_stage cache
       invoke(:prepare)
       run_requirements(:requires_when_unmet, true, cache) && run_meet
     end
 
+    # Unconditionally attempt to meet this dep. (This method does return the
+    # result of attempting to meet the dep, but the value is ignored by
+    # #run_met.)
     def run_meet
       log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
     end
 
-    def invoke task_name
-      # log "calling #{name} / #{task_name}"
-      context.invoke(task_name)
+    # Defer to this dep's context to run the named block.
+    def invoke block_name
+      context.invoke(block_name)
     end
 
+    # The list of requirements named in +list_name+ (either :requires or
+    # :requires_when_unmet), as a list of DepRequirements, which represent
+    # the name of the dep and the arguments to run it with.
     def requirements_for list_name
       context.send(list_name).map {|dep_or_requirement|
         if dep_or_requirement.is_a?(DepRequirement)
@@ -340,21 +380,13 @@ module Babushka
     end
 
     def suffixed?
-      !opts[:template] && template != BaseTemplate
+      !opts[:template] && template != self.class.base_template
     end
 
     public
 
     def inspect
-      "#<Dep:#{object_id} #{"#{dep_source.name}:" unless dep_source.nil?}'#{name}' #{defined_info}>"
-    end
-
-    def defined_info
-      if context.loaded?
-        "<- [#{context.requires.join(', ')}]"
-      else
-        "(not defined yet)"
-      end
+      "#<Dep:#{object_id} '#{dep_source.name}:#{name}'>"
     end
   end
 end

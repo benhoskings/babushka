@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe "source_template" do
-  it "should return BaseTemplate" do
-    DepContext.source_template.should == Dep::BaseTemplate
+  it "should be base_template" do
+    DepContext.source_template.should == Dep.base_template
   end
 end
 

@@ -4,6 +4,12 @@ require 'spec_helper'
 require 'dep_support'
 
 describe "Dep.new" do
+  it "should reject deps with non-string names" do
+    L{
+      Dep.new(:symbol_name, Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(InvalidDepName, "The dep name :symbol_name isn't a string.")
+    Dep(:symbol_name).should be_nil
+  end
   it "should reject deps with empty names" do
     L{
       Dep.new("", Base.sources.anonymous, [], {}, nil)
@@ -53,7 +59,7 @@ describe "Dep.new" do
     }
     it "should work" do
       @dep.should be_an_instance_of(Dep)
-      @dep.template.should == Dep::BaseTemplate
+      @dep.template.should == Dep.base_template
     end
   end
   context "with a missing template" do
@@ -80,6 +86,16 @@ describe "Dep.new" do
       }
     end
     after { Base.sources.anonymous.templates.clear! }
+  end
+end
+
+describe '#inspect' do
+  let(:source) {
+    Source.new(nil, 'test source')
+  }
+  it "should represent the dep and its source" do
+    the_dep = Dep.new('inspect test', source, [], {}, nil)
+    the_dep.inspect.should == "#<Dep:#{the_dep.object_id} 'test source:inspect test'>"
   end
 end
 
@@ -114,7 +130,7 @@ describe "dep creation" do
 
   context "without template" do
     it "should use the base template" do
-      dep('without template').template.should == Dep::BaseTemplate
+      dep('without template').template.should == Dep.base_template
     end
   end
   context "with template" do
