@@ -301,9 +301,8 @@ module Babushka
       log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
     end
 
-    def invoke task_name
-      # log "calling #{name} / #{task_name}"
-      context.invoke(task_name)
+    def invoke block_name
+      context.invoke(block_name)
     end
 
     def requirements_for list_name

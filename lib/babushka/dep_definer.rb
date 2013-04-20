@@ -49,9 +49,9 @@ module Babushka
       raise e
     end
 
-    def invoke task_name
+    def invoke block_name
       define! unless loaded?
-      instance_eval(&send(task_name)) unless failed?
+      instance_eval(&send(block_name)) unless failed?
     end
 
     def unmeetable! message
