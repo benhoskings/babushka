@@ -130,60 +130,72 @@ module Babushka
       with(*args).process(true)
     end
 
-    # Trigger a dep run with this dep at the top of the tree.
+    # Run this dep and its subdeps recursively.
     #
-    # Running the dep involves the following:
+    # The overall flow for a single dep is [met? [, meet, met?]]. That is,
+    # met? is checked; if it's false, meet is run and then met? is checked
+    # again.
+    #
+    # The [meet, met?] component for unmet deps is only performed if +and_meet+
+    # is true. If it's false, then babushka will just check met? down the tree,
+    # returning true if this dep and all its subdeps are already met.
+    #
+    # Running the dep involves the following steps:
     # - First, the +setup+ block is run.
     # - Next, the dep's dependencies (i.e. the contents of +requires+) are
-    #   run recursively by calling +#process+ on each; this dep's +#process+
-    #   early-exits if any of the subdeps fail.
-    # - Next, the +met?+ block is run. If +met?+ returns +true+, or any
-    #   true-like value, the dep is already met and there is nothing to do.
-    #   Otherwise, the dep is unmet, and the following happens:
-    #     - The +prepare+ task is run
-    #     - The +before+ task is run
+    #   run recursively; this dep early-exits if any of the subdeps couldn't be
+    #   met (or if this is a dry run, if any of the subdeps are unmet).
+    # - If the dependencies are all met, the +met?+ block is run. If +met?+
+    #   returns +true+, or any true-like value, the dep is already met and
+    #   there is nothing to do. Otherwise, the dep is unmet, and the following
+    #   happens:
+    #     - The +prepare+ task is run.
+    #     - The +before+ task is run.
     #     - If +before+ returned a true-like value, the +meet+ task is run.
     #       This is where the actual work of achieving the dep's aim is done.
     #     - If +meet+ returned a true-like value, the +after+ task is run.
-    #     - Finally, the +met?+ task is run again, to check whether running
-    #       +meet+ has achieved the dep's goal.
+    # - Finally, the +met?+ task is run again, to check whether running +meet+
+    #   achieved the dep's goal.
     #
-    # The final step is important to understand. The +meet+ block is run
-    # unconditionally, and its return value is ignored, apart from it
-    # determining whether to run the +after+ block. The result of a dep is
-    # always taken from its +met?+ block, whether it was already met,
-    # unmeetable, or met during the run.
+    # The final step is important to understand: the +before+/+meet+/+after+
+    # blocks' return values are ignored. The result of a dep is always that of
+    # its +met?+ block, whether it was already met, became met after the meet
+    # block was run, or couldn't be met.
     #
-    # Sometimes there are conditions under which a dep can't be met. For
+    # Sometimes there are conditions under which a dep is unmeetable. For
     # example, if a dep detects that the existing version of a package is
     # broken in some way that requires manual intervention, then there's no
-    # use running the +meet+ block. In this circumstance, you can call
+    # use running the +meet+ block. In this circumstance, the dep can call
     # +#unmeetable!+, which raises an +UnmeetableDep+ exception. Babushka will
     # rescue it and consider the dep unmeetable (that is, it will just allow
     # the dep to fail without attempting to meet it).
     #
-    # The following describes the return values of a few components, and of
-    # the dep itself.
+    # The following describes the return values of the defining components, and
+    # of the dep itself.
     # - A '-' means the corresponding block wouldn't be run at all.
-    # - An 'X' means the corresponding return value doesn't matter, and is
-    #   discarded.
+    # - An 'X' means the corresponding value doesn't matter, and is discarded.
     #
-    #     Initial state   | initial met?         | meet  | subsequent met? | dep returns
-    #     ----------------+----------------------+-------+-----------------+------------
-    #     already met     | true                 | -     | -               | true
-    #     unmeetable      | UnmeetableDep raised | -     | -               | false
-    #     couldn't be met | false                | X     | false           | false
-    #     met during run  | false                | X     | true            | true
+    #     Scenario            | met?         | -> meet      | -> met? | dep returns
+    #     --------------------+--------------+--------------+---------+------------
+    #     already met         | true         | -            | -       | true
+    #     met during run      | false        | X            | true    | true
+    #     couldn't be met     | false        | X            | false   | false
+    #     failure during meet | false        | #unmeetable! | -       | nil
+    #     unmeetable          | #unmeetable! | -            | -       | nil
     #
-    # Wherever possible, the +met?+ test shouldn't directly test that the
-    # +meet+ block performed specific tasks; only that its overall purpose has
-    # been achieved. For example, if the purpose of a given dep is to make sure
-    # the webserver is running, the contents of the +meet+ block would probably
-    # involve `/etc/init.d/nginx start` or similar, on a Linux system at least.
-    # In this case, the +met?+ block shouldn't test anything involving
-    # `/etc/init.d` directly; instead, it should separately test that the
-    # webserver is running, for example by using `netstat` to check that
-    # something is listening on port 80.
+    # Wherever possible, the +met?+ test shouldn't directly test any work done
+    # in the +meet+ block, only that its overall purpose has been achieved.
+    # Just like normal test-driven development, you should test the "what" and
+    # not the "how". Tests involving the "how" are brittle and don't correctly
+    # express the dep's intent.
+    #
+    # For example, if the purpose of a given dep is to make sure the webserver
+    # is running, the contents of the +meet+ block would probably involve
+    # `/etc/init.d/nginx start` or similar, on a Linux system at least. In this
+    # case, the +met?+ block shouldn't test anything involving `/etc/init.d`
+    # directly; instead, it should separately test that the webserver is
+    # running, for example by using `lsof` to check that something is listening
+    # on port 80.
     def process and_meet = true
       process_with_caching(and_meet, Babushka::DepCache.new)
     end
