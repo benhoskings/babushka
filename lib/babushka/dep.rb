@@ -196,16 +196,14 @@ module Babushka
     # webserver is running, for example by using `netstat` to check that
     # something is listening on port 80.
     def process and_meet = true
-      Base.task.cache { process_with_caching(and_meet) }
+      process_with_caching(and_meet, Babushka::DepCache.new)
     end
 
-    def process_with_caching and_meet
-      Base.task.cached(
+    def process_with_caching and_meet, cache
+      cache.read(
         cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
       ) {
-        log logging_name, :closing_status => (and_meet ? true : :dry_run) do
-          process!(and_meet)
-        end
+        process!(and_meet, cache)
       }
     end
 
@@ -234,18 +232,20 @@ module Babushka
       Hash[params.zip(args)]
     end
 
-    def process! and_meet
-      if context.failed?
-        log_error "This dep previously failed to load."
-      elsif Base.task.callstack.include?(self)
-        log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
-      elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
-        log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
-      else
-        Base.task.callstack.push(self)
-        run_met_stage(and_meet).tap {
-          Base.task.callstack.pop
-        }
+    def process! and_meet, cache
+      log logging_name, :closing_status => (and_meet ? true : :dry_run) do
+        if context.failed?
+          log_error "This dep previously failed to load."
+        elsif Base.task.callstack.include?(self)
+          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
+          log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
+        else
+          Base.task.callstack.push(self)
+          run_met_stage(and_meet, cache).tap {
+            Base.task.callstack.pop
+          }
+        end
       end
     rescue UnmeetableDep => e
       log_error(e.message)
@@ -258,9 +258,9 @@ module Babushka
 
     # Process the tree descending from this dep (first the dependencies, then
     # the dep itself).
-    def run_met_stage(and_meet)
+    def run_met_stage(and_meet, cache)
       invoke(:setup)
-      run_requirements(and_meet, :requires) && run_met(and_meet)
+      run_requirements(:requires, and_meet, cache) && run_met(and_meet, cache)
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
@@ -268,34 +268,34 @@ module Babushka
     #
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
-    def run_requirements and_meet, accessor
+    def run_requirements accessor, and_meet, cache
       if and_meet
-        requirements_for(accessor).all? {|r| process_requirement(r, and_meet) }
+        requirements_for(accessor).all? {|r| process_requirement(r, and_meet, cache) }
       else
-        requirements_for(accessor).map {|r| process_requirement(r, and_meet) }.all?
+        requirements_for(accessor).map {|r| process_requirement(r, and_meet, cache) }.all?
       end
     end
 
-    def process_requirement requirement, and_meet
+    def process_requirement requirement, and_meet, cache
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).process_with_caching(and_meet)
+        dep.with(*requirement.args).process_with_caching(and_meet, cache)
       end
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
     end
 
-    def run_met and_meet
+    def run_met and_meet, cache
       if invoke(:met?)
         true # already met.
       elsif and_meet
-        run_meet_stage
+        run_meet_stage(cache)
         invoke(:met?)
       end
     end
 
-    def run_meet_stage
+    def run_meet_stage cache
       invoke(:prepare)
-      run_requirements(true, :requires_when_unmet) && run_meet
+      run_requirements(:requires_when_unmet, true, cache) && run_meet
     end
 
     def run_meet
