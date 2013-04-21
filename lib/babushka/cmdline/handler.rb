@@ -7,11 +7,6 @@ module Babushka
       Handler.add name, description, blk
     end
 
-    def self.fail_with message
-      log message
-      exit 1
-    end
-
     class Handler
       def self.add name, description, opt_definer
         Handler.new(name, description, opt_definer).tap {|handler|

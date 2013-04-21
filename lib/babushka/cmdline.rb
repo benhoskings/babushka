@@ -52,9 +52,9 @@ module Babushka
     }.run {|cmd|
       dep_names, args = cmd.argv.partition {|arg| arg['='].nil? }
       if !(bad_arg = args.detect {|arg| arg[/^\w+=/].nil? }).nil?
-        fail_with "'#{bad_arg}' looks like a dep argument, but it doesn't make sense."
+        log_error "'#{bad_arg}' looks like a dep argument, but it doesn't make sense."
       elsif dep_names.empty?
-        fail_with "Nothing to do."
+        log_error "Nothing to do."
       else
         hashed_args = args.map {|i|
           i.split('=', 2)
@@ -72,7 +72,7 @@ module Babushka
       opt '-l', '--list',         "List dep sources that are present locally"
     }.run {|cmd|
       if cmd.opts.slice(:add, :update, :list).length != 1
-        fail_with "'sources' requires a single option."
+        log_error "'sources' requires a single option."
       elsif cmd.opts.has_key?(:add)
         begin
           Source.new(cmd.argv.first, cmd.opts[:add]).add!
@@ -91,16 +91,16 @@ module Babushka
     }
 
     handle('search', "[removed] Search for deps in the community database").run {|cmd|
-      fail_with "Dep search has been removed (and public dep runs are no longer reported).\nMore info in the merge: https://github.com/benhoskings/babushka/commit/9741eb3"
+      log_error "Dep search has been removed (and public dep runs are no longer reported).\nMore info in the merge: https://github.com/benhoskings/babushka/commit/9741eb3"
     }
 
     handle('edit', "Load the file containing the specified dep in $EDITOR").run {|cmd|
       if cmd.argv.length != 1
-        fail_with "'edit' requires a single argument."
+        log_error "'edit' requires a single argument."
       else
         Base.sources.find_or_suggest(cmd.argv.first) {|dep|
           if dep.load_path.nil?
-            fail_with "Can't edit '#{dep.name}', since it wasn't loaded from a file."
+            log_error "Can't edit '#{dep.name}', since it wasn't loaded from a file."
           else
             file, line = dep.context.source_location
             editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('subl') || which('mate') || which('vim') || which('vi')
