@@ -27,7 +27,7 @@ module Babushka
     include LogHelpers
     extend LogHelpers
 
-    attr_reader :name, :params, :args, :opts, :dep_source, :load_path
+    attr_reader :name, :params, :args, :opts, :dep_source, :load_path, :callstack
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
@@ -197,7 +197,7 @@ module Babushka
     # running, for example by using `lsof` to check that something is listening
     # on port 80.
     def process and_meet = true
-      process_as_requirement(and_meet, Babushka::DepCache.new)
+      process_as_requirement(and_meet, [], Babushka::DepCache.new)
     end
 
     # Process this dep as a requirement of another dep -- that is, not as the
@@ -207,8 +207,11 @@ module Babushka
     # This method is intended to be called only from deps themselves, as they
     # invoke their requirements (via Dep#run_requirement); to process a
     # dep directly, call Dep#process instead.
-    def process_as_requirement and_meet, cache
+    def process_as_requirement and_meet, callstack, cache
+      @callstack = callstack
       process_with_caching(and_meet, cache)
+    ensure
+      @callstack = nil
     end
 
     private
@@ -280,14 +283,14 @@ module Babushka
       log logging_name, :closing_status => (and_meet ? true : :dry_run) do
         if context.failed?
           log_error "This dep previously failed to load."
-        elsif Base.task.callstack.include?(self)
-          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif callstack.include?(self)
+          log_error "Oh crap, endless loop! (#{callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
           log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
         else
-          Base.task.callstack.push(self)
+          callstack.push(self)
           run_met_stage(and_meet, cache).tap {
-            Base.task.callstack.pop
+            callstack.pop
           }
         end
       end
@@ -326,7 +329,7 @@ module Babushka
     # method that recurses down the dep tree.
     def run_requirement requirement, and_meet, cache
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).process_as_requirement(and_meet, cache)
+        dep.with(*requirement.args).process_as_requirement(and_meet, callstack, cache)
       end
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
