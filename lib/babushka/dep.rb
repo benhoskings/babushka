@@ -27,7 +27,7 @@ module Babushka
     include LogHelpers
     extend LogHelpers
 
-    attr_reader :name, :params, :args, :opts, :dep_source, :load_path
+    attr_reader :name, :params, :args, :opts, :dep_source, :load_path, :callstack
 
     # Create a new dep named +name+ within +source+, whose implementation is
     # found in +block+. To define deps yourself, you should call +dep+ (which
@@ -197,25 +197,27 @@ module Babushka
     # running, for example by using `lsof` to check that something is listening
     # on port 80.
     def process and_meet = true
-      process_with_caching(and_meet, Babushka::DepCache.new)
+      process_as_requirement(and_meet, [], Babushka::DepCache.new)
     end
 
-    # Process this dep using a pre-existing cache. The cache is used during
-    # the run to avoid running deps (and their subtrees) more than once with
-    # the same arguments.
+    # Process this dep as a requirement of another dep -- that is, not as the
+    # top-level dep in a tree. The difference is that the callstack and dep
+    # cache are supplied by the calling dep, instead of created anew.
     #
     # This method is intended to be called only from deps themselves, as they
     # invoke their requirements (via Dep#run_requirement); to process a
     # dep directly, call Dep#process instead.
-    def process_with_caching and_meet, cache
-      cache.read(
-        cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
-      ) {
-        process!(and_meet, cache)
-      }
+    def process_as_requirement and_meet, callstack, cache
+      @callstack = callstack
+      @cache = cache
+      process_with_caching(and_meet)
+    ensure
+      @callstack = @cache = nil
     end
 
     private
+
+    attr_reader :cache
 
     def self.base_template
       Babushka::BaseTemplate
@@ -259,6 +261,17 @@ module Babushka
       Hash[params.zip(args)]
     end
 
+    # Process this dep using a pre-existing cache. The cache is used during
+    # the run to avoid running deps (and their subtrees) more than once with
+    # the same arguments.
+    def process_with_caching and_meet
+      cache.read(
+        cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
+      ) {
+        process!(and_meet)
+      }
+    end
+
     # This is the top-level entry point for processing a dep, disregarding
     # caching. This method is here to do some housekeeping around the actual
     # dep logic:
@@ -269,18 +282,18 @@ module Babushka
     #   - It wraps this dep's logging in a level of indentation with its name;
     #   - It rescues exceptions that happen during the run so that we can
     #     fail with dignity.
-    def process! and_meet, cache
+    def process! and_meet
       log logging_name, :closing_status => (and_meet ? true : :dry_run) do
         if context.failed?
           log_error "This dep previously failed to load."
-        elsif Base.task.callstack.include?(self)
-          log_error "Oh crap, endless loop! (#{Base.task.callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
+        elsif callstack.include?(self)
+          log_error "Oh crap, endless loop! (#{callstack.push(self).drop_while {|dep| dep != self }.map(&:name).join(' -> ')})"
         elsif !opts[:for].nil? && !Babushka.host.matches?(opts[:for])
           log_ok "Not required on #{Babushka.host.differentiator_for opts[:for]}."
         else
-          Base.task.callstack.push(self)
-          run_met_stage(and_meet, cache).tap {
-            Base.task.callstack.pop
+          callstack.push(self)
+          run_met_stage(and_meet).tap {
+            callstack.pop
           }
         end
       end
@@ -297,18 +310,18 @@ module Babushka
     # the stage itself. For met?, we setup, ensure all the dep's requirements
     # are met, and then call #run_met to run the met? check. (If the dep is
     # unmet and should be met, #run_met will do that too.)
-    def run_met_stage(and_meet, cache)
+    def run_met_stage(and_meet)
       invoke(:setup)
-      run_requirements(:requires, and_meet, cache) && run_met(and_meet, cache)
+      run_requirements(:requires, and_meet) && run_met(and_meet)
     end
 
     # Process each of the requirements of this dep in order. If this is a dry
     # run, check every one; otherwise, require success from all and fail fast.
-    def run_requirements accessor, and_meet, cache
+    def run_requirements accessor, and_meet
       if and_meet
-        requirements_for(accessor).all? {|r| run_requirement(r, and_meet, cache) }
+        requirements_for(accessor).all? {|r| run_requirement(r, and_meet) }
       else
-        requirements_for(accessor).map {|r| run_requirement(r, and_meet, cache) }.all?
+        requirements_for(accessor).map {|r| run_requirement(r, and_meet) }.all?
       end
     end
 
@@ -317,9 +330,9 @@ module Babushka
     #
     # Each dep recursively processes its own requirements. Hence, this is the
     # method that recurses down the dep tree.
-    def run_requirement requirement, and_meet, cache
+    def run_requirement requirement, and_meet
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).process_with_caching(and_meet, cache)
+        dep.with(*requirement.args).process_as_requirement(and_meet, callstack, cache)
       end
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
@@ -328,20 +341,20 @@ module Babushka
     # Check if this dep is met. If it's not and we should attempt to meet it,
     # then run that stage, and then check again whether the dep is met (i.e.
     # whether running the meet stage met the dep).
-    def run_met and_meet, cache
+    def run_met and_meet
       if invoke(:met?)
         true # already met.
       elsif and_meet
-        run_meet_stage(cache)
+        run_meet_stage
         invoke(:met?)
       end
     end
 
     # The equivalent of #run_met_stage for meeting the dep: prepare, ensure
     # unmet-only requirements are met, and then call #run_meet to meet the dep.
-    def run_meet_stage cache
+    def run_meet_stage
       invoke(:prepare)
-      run_requirements(:requires_when_unmet, true, cache) && run_meet
+      run_requirements(:requires_when_unmet, true) && run_meet
     end
 
     # Unconditionally attempt to meet this dep. (This method does return the
