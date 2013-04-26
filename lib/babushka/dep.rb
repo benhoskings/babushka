@@ -197,22 +197,18 @@ module Babushka
     # running, for example by using `lsof` to check that something is listening
     # on port 80.
     def process and_meet = true
-      process_with_caching(and_meet, Babushka::DepCache.new)
+      process_as_requirement(and_meet, Babushka::DepCache.new)
     end
 
-    # Process this dep using a pre-existing cache. The cache is used during
-    # the run to avoid running deps (and their subtrees) more than once with
-    # the same arguments.
+    # Process this dep as a requirement of another dep -- that is, not as the
+    # top-level dep in a tree. The difference is that the callstack and dep
+    # cache are supplied by the calling dep, instead of created anew.
     #
     # This method is intended to be called only from deps themselves, as they
     # invoke their requirements (via Dep#run_requirement); to process a
     # dep directly, call Dep#process instead.
-    def process_with_caching and_meet, cache
-      cache.read(
-        cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
-      ) {
-        process!(and_meet, cache)
-      }
+    def process_as_requirement and_meet, cache
+      process_with_caching(and_meet, cache)
     end
 
     private
@@ -257,6 +253,17 @@ module Babushka
         raise DepArgumentError, "The dep '#{name}' accepts #{params.length} argument#{'s' unless params.length == 1}, but #{args.length} #{args.length == 1 ? 'was' : 'were'} passed."
       end
       Hash[params.zip(args)]
+    end
+
+    # Process this dep using a pre-existing cache. The cache is used during
+    # the run to avoid running deps (and their subtrees) more than once with
+    # the same arguments.
+    def process_with_caching and_meet, cache
+      cache.read(
+        cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
+      ) {
+        process!(and_meet, cache)
+      }
     end
 
     # This is the top-level entry point for processing a dep, disregarding
@@ -319,7 +326,7 @@ module Babushka
     # method that recurses down the dep tree.
     def run_requirement requirement, and_meet, cache
       Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).process_with_caching(and_meet, cache)
+        dep.with(*requirement.args).process_as_requirement(and_meet, cache)
       end
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
