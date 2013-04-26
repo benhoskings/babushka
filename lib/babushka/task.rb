@@ -4,7 +4,7 @@ module Babushka
     include PathHelpers
     include ShellHelpers
 
-    attr_reader :cmd, :persistent_log
+    attr_reader :cmd, :persistent_log, :current_dep
 
     def initialize
       clear
@@ -29,9 +29,11 @@ module Babushka
 
     def process_dep dep_name, with_args
       Base.sources.find_or_suggest(dep_name) do |dep|
+        @current_dep = dep
         log_dep(dep) {
           dep.with(task_args_for(dep, with_args)).process(!opt(:dry_run))
         }.tap {|result|
+          @current_dep = nil
           log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
         }
       end
@@ -43,10 +45,6 @@ module Babushka
 
     def running?
       @running
-    end
-
-    def callstack
-      @callstack ||= []
     end
 
     def log_path_for dep
