@@ -310,7 +310,7 @@ module Babushka
     # the stage itself. For met?, we setup, ensure all the dep's requirements
     # are met, and then call #run_met to run the met? check. (If the dep is
     # unmet and should be met, #run_met will do that too.)
-    def run_met_stage(and_meet)
+    def run_met_stage and_meet
       invoke(:setup)
       run_requirements(:requires, and_meet) && run_met(and_meet)
     end
