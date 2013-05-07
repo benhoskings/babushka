@@ -315,29 +315,6 @@ module Babushka
       run_requirements(:requires, and_meet) && run_met(and_meet)
     end
 
-    # Process each of the requirements of this dep in order. If this is a dry
-    # run, check every one; otherwise, require success from all and fail fast.
-    def run_requirements accessor, and_meet
-      if and_meet
-        requirements_for(accessor).all? {|r| run_requirement(r, and_meet) }
-      else
-        requirements_for(accessor).map {|r| run_requirement(r, and_meet) }.all?
-      end
-    end
-
-    # Find the dep named in +requirement+, loading and running it as required,
-    # and run it.
-    #
-    # Each dep recursively processes its own requirements. Hence, this is the
-    # method that recurses down the dep tree.
-    def run_requirement requirement, and_meet
-      Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
-        dep.with(*requirement.args).process_as_requirement(and_meet, callstack, cache)
-      end
-    rescue SourceLoadError => e
-      Babushka::Logging.log_exception(e)
-    end
-
     # Check if this dep is met. If it's not and we should attempt to meet it,
     # then run that stage, and then check again whether the dep is met (i.e.
     # whether running the meet stage met the dep).
@@ -362,6 +339,29 @@ module Babushka
     # #run_met.)
     def run_meet
       log('meet') { invoke(:before) && invoke(:meet) && invoke(:after) }
+    end
+
+    # Process each of the requirements of this dep in order. If this is a dry
+    # run, check every one; otherwise, require success from all and fail fast.
+    def run_requirements accessor, and_meet
+      if and_meet
+        requirements_for(accessor).all? {|r| run_requirement(r, and_meet) }
+      else
+        requirements_for(accessor).map {|r| run_requirement(r, and_meet) }.all?
+      end
+    end
+
+    # Find the dep named in +requirement+, loading and running it as required,
+    # and run it.
+    #
+    # Each dep recursively processes its own requirements. Hence, this is the
+    # method that recurses down the dep tree.
+    def run_requirement requirement, and_meet
+      Base.sources.find_or_suggest requirement.name, :from => dep_source do |dep|
+        dep.with(*requirement.args).process_as_requirement(and_meet, callstack, cache)
+      end
+    rescue SourceLoadError => e
+      Babushka::Logging.log_exception(e)
     end
 
     # Defer to this dep's context to run the named block.
