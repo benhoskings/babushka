@@ -2,17 +2,13 @@ dep 'apt source', :uri, :release, :repo do
   uri.default!(Babushka::AptHelper.source_for_system)
   release.default!(Babushka.host.name)
 
-  def present_in_file? filename
+  met? {
     src_matcher = Babushka::AptHelper.source_matcher_for_system
 
-    filename.p.exists? &&
-    # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
-    filename.p.read[/^deb\s+#{src_matcher}\s+#{release}\b.*\b#{repo}\b/]
-  end
-
-  met? {
-    present_in_file?('/etc/apt/sources.list') or
-      Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
+    shell('grep -h \^deb /etc/apt/sources.list /etc/apt/sources.list.d/*').split("\n").any? {|l|
+      # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
+      l[/^deb\s+#{src_matcher}\s+#{release}\b.*\b#{repo}\b/]
+    }
   }
   meet {
     '/etc/apt/sources.list.d/babushka.list'.p.append("deb #{uri} #{release} #{repo}\n")
