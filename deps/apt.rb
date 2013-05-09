@@ -1,13 +1,12 @@
-dep 'apt source', :uri, :release, :repo do
+dep 'apt source', :uri, :release, :repo, :uri_matcher do
   uri.default!(Babushka::AptHelper.source_for_system)
   release.default!(Babushka.host.name)
+  uri_matcher.default!(Babushka::AptHelper.source_matcher_for_system)
 
   met? {
-    src_matcher = Babushka::AptHelper.source_matcher_for_system
-
     shell('grep -h \^deb /etc/apt/sources.list /etc/apt/sources.list.d/*').split("\n").any? {|l|
       # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
-      l[/^deb\s+#{src_matcher}\s+#{release}\b.*\b#{repo}\b/]
+      l[/^deb\s+#{uri_matcher}\s+#{release}\b.*\b#{repo}\b/]
     }
   }
   meet {
