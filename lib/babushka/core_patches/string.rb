@@ -31,48 +31,14 @@ class String
     ends_with?(other) ? self : self + other
   end
 
-  # Extracts specified values from arbitrary, multiline strings. Most common
-  # formats are handled. When there are multiple matches across a multi-line
-  # string, the first is returned. If there is no match, the empty string is
+  # Extracts the value corresponding to the supplied key in an arbitrary,
+  # multiline string. Most common config formats are handled. When there are
+  # multiple matches, the first is returned. If there is no match, nil is
   # returned.
   #
-  # With a simple key/value format:
-  #   'key: value'.val_for('key')  #=> 'value'
-  #   'key = value'.val_for('key') #=> 'value'
-  #   'key value'.val_for('key')   #=> 'value'
-  #
-  # Whitespace is handled correctly:
-  #   '  key: value '.val_for('key') #=> 'value'
-  #   '  key value '.val_for('key')  #=> 'value'
-  #
-  # Leading non-word characters form part of the key:
-  #   '*key: value'.val_for('*key') #=> 'value'
-  #   '-key: value'.val_for('-key') #=> 'value'
-  #   '-key: value'.val_for('key')  #=> nil
-  #
-  # But not if they're separated from the key:
-  #   '* key: value'.val_for('key') #=> 'value'
-  #
-  # Spaces within the key are handled properly:
-  #   'key with spaces: value'.val_for('key with spaces')         #=> 'value'
-  #   '- key with spaces: value'.val_for('key with spaces')       #=> 'value'
-  #   ' --  key with spaces: value'.val_for('key with spaces')    #=> 'value'
-  #   'space-separated key: value'.val_for('space-separated key') #=> 'value'
-  #
-  # As are values containing spaces:
-  #   'key: space-separated value'.val_for('key')                         #=> 'space-separated value'
-  #   'key with spaces: space-separated value'.val_for('key with spaces') #=> 'space-separated value'
+  # See Array#val_for, and the cases in core_patches_spec.rb, for examples.
   def val_for key
-    split("\n").grep(
-      # The key we're after, maybe preceded by non-word chars and spaces, and
-      # followed either by a word/non-word boundary or whitespace.
-      key.is_a?(Regexp) ? key : /(^|^[^\w]*\s+)#{Regexp.escape(key)}(\b|(?=\s))/
-    ).map {|l|
-      l.sub(/^[^\w]*\s+/, '').
-        sub(key.is_a?(Regexp) ? key : /^#{Regexp.escape(key)}(\b|(?=\s))\s*[:=]?/, '').
-        sub(/[;,]\s*$/, '').
-        strip
-    }.first
+    split("\n").val_for(key)
   end
 
   def / other

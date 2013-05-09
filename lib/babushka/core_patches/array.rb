@@ -18,6 +18,41 @@ class Array
     value
   end
 
+  # Extracts the value from the item in the array that corresponds to the
+  # supplied key. Most common config formats are handled. When there are
+  # multiple matches, the first is returned. If there is no match, nil is
+  # returned.
+  #
+  # Some quick examples:
+  #   ['key: value'].val_for('key')  #=> 'value'
+  #   ['key = value'].val_for('key')  #=> 'value'
+  #
+  # Leading and trailing whitespace is ignored. Keys starting with non-word
+  # characters are valid, and leading non-word chars are ignored.
+  #   ['*key: value'].val_for('*key') #=> 'value'
+  #   ['*key: value'].val_for('key')  #=> nil
+  #   ['* key: value'].val_for('key') #=> 'value'
+  #
+  # Spaces within the key and value are handled properly too.
+  #   ['key with spaces: value'].val_for('key with spaces') #=> 'value'
+  #   ['key: value with spaces'].val_for('key') #=> 'value with spaces'
+  #
+  # For a full list of the supported input, check the test cases in
+  # core_patches_spec.rb.
+  #
+  def val_for key
+    grep(
+      # The key we're after, maybe preceded by non-word chars and spaces, and
+      # followed either by a word/non-word boundary or whitespace.
+      key.is_a?(Regexp) ? key : /(^|^[^\w]*\s+)#{Regexp.escape(key)}(\b|(?=\s))/
+    ).map {|l|
+      l.sub(/^[^\w]*\s+/, '').
+        sub(key.is_a?(Regexp) ? key : /^#{Regexp.escape(key)}(\b|(?=\s))\s*[:=]?/, '').
+        sub(/[;,]\s*$/, '').
+        strip
+    }.first
+  end
+
   # This is defined separately, and then aliased into place if required, so we
   # can run specs against it no matter which ruby we're running against.
   def local_group_by &block

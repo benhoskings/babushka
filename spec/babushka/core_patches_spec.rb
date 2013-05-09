@@ -127,56 +127,56 @@ describe Hash, '#defaults!' do
   end
 end
 
-describe String, "val_for" do
+describe Array, '#val_for' do
   it "space separation" do
-    'key value'.val_for('key').should == 'value'
+    ['key value'].val_for('key').should == 'value'
   end
   it "key/value separation" do
-    'key: value'.val_for('key').should == 'value'
-    'key = value'.val_for('key').should == 'value'
+    ['key: value'].val_for('key').should == 'value'
+    ['key = value'].val_for('key').should == 'value'
   end
   it "whitespace" do
-    '  key value '.val_for('key').should == 'value'
+    ['  key value '].val_for('key').should == 'value'
   end
   it "whitespace in key" do
-    'space-separated key: value'.val_for('space-separated key').should == 'value'
+    ['space-separated key: value'].val_for('space-separated key').should == 'value'
   end
   it "whitespace in value" do
-    'key: space-separated value'.val_for('key').should == 'space-separated value'
+    ['key: space-separated value'].val_for('key').should == 'space-separated value'
   end
   it "whitespace in both" do
-    'key with spaces: space-separated value'.val_for('key with spaces').should == 'space-separated value'
+    ['key with spaces: space-separated value'].val_for('key with spaces').should == 'space-separated value'
   end
   it "key ending in non-word characters" do
-    "psql (PostgreSQL) 9.1.0".val_for('psql (PostgreSQL)').should == '9.1.0'
+    ["psql (PostgreSQL) 9.1.0"].val_for('psql (PostgreSQL)').should == '9.1.0'
   end
   it "non-word leading characters" do
-    '*key: value'.val_for('*key').should == 'value'
-    '-key: value'.val_for('-key').should == 'value'
-    '-key: value'.val_for('key').should == nil
+    ['*key: value'].val_for('*key').should == 'value'
+    ['-key: value'].val_for('-key').should == 'value'
+    ['-key: value'].val_for('key').should == nil
   end
   it "non-word leading tokens" do
-    '* key: value'.val_for('key').should == 'value'
-    '- key with spaces: value'.val_for('key with spaces').should == 'value'
-    ' --  key with spaces: value'.val_for('key with spaces').should == 'value'
+    ['* key: value'].val_for('key').should == 'value'
+    ['- key with spaces: value'].val_for('key with spaces').should == 'value'
+    [' --  key with spaces: value'].val_for('key with spaces').should == 'value'
   end
   it "trailing characters" do
-    'key: value;'.val_for('key').should == 'value'
-    'key: value,'.val_for('key').should == 'value'
+    ['key: value;'].val_for('key').should == 'value'
+    ['key: value,'].val_for('key').should == 'value'
   end
   it "paths" do
-    "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for("/dev/disk1s2        	Apple_HFS").should == "/Volumes/TextMate 1.5.9"
-    "/dev/disk1s2        	Apple_HFS                      	/Volumes/TextMate 1.5.9".val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
+    ["/dev/disk1s2        	Apple_HFS                        /Volumes/TextMate 1.5.9"].val_for("/dev/disk1s2        	Apple_HFS").should == "/Volumes/TextMate 1.5.9"
+    ["/dev/disk1s2        	Apple_HFS                        /Volumes/TextMate 1.5.9"].val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
   end
   context "regexp keys" do
     it "should use the supplied regexp to match" do
-      "a key: value".val_for(/key/).should == 'a : value'
+      ["a key: value"].val_for(/key/).should == 'a : value'
     end
     it "should match cleanly with a proper key" do
-      "a key: value".val_for(/^a key:/).should == 'value'
+      ["a key: value"].val_for(/^a key:/).should == 'value'
     end
     it "should match case-insensitively" do
-      "Key: value".val_for(/^key:/i).should == 'value'
+      ["Key: value"].val_for(/^key:/i).should == 'value'
     end
   end
 end
