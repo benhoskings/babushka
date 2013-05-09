@@ -1,24 +1,34 @@
-dep 'apt source', :uri, :release, :repo do
-  uri.default!(Babushka::AptHelper.source_for_system)
-  release.default!(Babushka.host.name)
-
-  def present_in_file? filename
-    src_matcher = Babushka::AptHelper.source_matcher_for_system
-
-    filename.p.exists? &&
-    # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
-    filename.p.read[/^deb\s+#{src_matcher}\s+#{release}\b.*\b#{repo}\b/]
-  end
+dep 'keyed apt source', :uri, :release, :repo, :key_sig, :key_uri do
+  requires 'apt source'.with(uri, release, repo, uri, 'no')
 
   met? {
-    present_in_file?('/etc/apt/sources.list') or
-      Dir.glob("/etc/apt/sources.list.d/*").any? {|f| present_in_file?(f) }
+    shell('apt-key list').split("\n").collapse(/^pub.*\//).val_for(key_sig)
   }
   meet {
-    '/etc/apt/sources.list.d/babushka.list'.p.append("deb #{uri} #{release} #{repo}\n")
+    key = log_shell("Downloading #{key_uri}", 'curl', key_uri)
+    log_shell("Adding #{key_sig}", 'apt-key add -', :input => key)
+    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}"
   }
-  after {
-    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}."
+end
+
+dep 'apt source', :uri, :release, :repo, :uri_matcher, :should_update do
+  uri.default!(Babushka::AptHelper.source_for_system)
+  release.default!(Babushka.host.name)
+  uri_matcher.default!(Babushka::AptHelper.source_matcher_for_system)
+  should_update.default!('no')
+
+  met? {
+    shell('grep -h \^deb /etc/apt/sources.list /etc/apt/sources.list.d/*').split("\n").any? {|l|
+      # e.g. deb http://au.archive.ubuntu.com/ubuntu/ natty main restricted
+      l[/^deb\s+#{uri_matcher}\s+#{release}\b.*\b#{repo}\b/]
+    }
+  }
+  meet {
+    log_block "Adding #{release} from #{uri}" do
+      '/etc/apt/sources.list.d/babushka.list'.p.append("deb #{uri} #{release} #{repo}\n")
+    end
+
+    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}." if should_update[/^y/]
   }
 end
 
