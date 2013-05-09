@@ -16,8 +16,7 @@ dep 'apt source', :uri, :release, :repo do
   }
   meet {
     '/etc/apt/sources.list.d/babushka.list'.p.append("deb #{uri} #{release} #{repo}\n")
-  }
-  after {
+
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}."
   }
 end
