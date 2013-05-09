@@ -1,7 +1,21 @@
-dep 'apt source', :uri, :release, :repo, :uri_matcher do
+dep 'keyed apt source', :uri, :release, :repo, :key_sig, :key_uri do
+  requires 'apt source'.with(uri, release, repo, uri, 'no')
+
+  met? {
+    shell('apt-key list').split("\n").collapse(/^pub.*\//).val_for(key_sig)
+  }
+  meet {
+    key = log_shell("Downloading #{key_uri}", 'curl', key_uri)
+    log_shell("Adding #{key_sig}", 'apt-key add -', :input => key)
+    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}"
+  }
+end
+
+dep 'apt source', :uri, :release, :repo, :uri_matcher, :should_update do
   uri.default!(Babushka::AptHelper.source_for_system)
   release.default!(Babushka.host.name)
   uri_matcher.default!(Babushka::AptHelper.source_matcher_for_system)
+  should_update.default!('no')
 
   met? {
     shell('grep -h \^deb /etc/apt/sources.list /etc/apt/sources.list.d/*').split("\n").any? {|l|
@@ -12,7 +26,7 @@ dep 'apt source', :uri, :release, :repo, :uri_matcher do
   meet {
     '/etc/apt/sources.list.d/babushka.list'.p.append("deb #{uri} #{release} #{repo}\n")
 
-    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}."
+    Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}." if should_update[/^y/]
   }
 end
 
