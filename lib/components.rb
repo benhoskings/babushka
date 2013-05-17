@@ -32,7 +32,6 @@ module Babushka
     asset
     prompt
     lambda_chooser
-    ip
     version_str
     version_of
     accepts_list_for

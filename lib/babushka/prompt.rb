@@ -51,22 +51,6 @@ module Babushka
       end
     end
 
-    def get_ip message, opts = {}
-      get_value(message, opts.merge(
-        :retry => "That's not an IP, like '10.0.1.1'."
-      )) {|value|
-        IP.new(value).valid?
-      }
-    end
-
-    def get_ip_range message, opts = {}
-      get_value(message, opts.merge(
-        :retry => "That's not an IP range, like '10.0.1.x'."
-      )) {|value|
-        IPRange.new(value).valid?
-      }
-    end
-
     def get_path message, opts = {}
       get_value(message, opts.merge(
         :retry => "Doesn't exist, or not a directory."
