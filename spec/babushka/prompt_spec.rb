@@ -136,53 +136,6 @@ describe Prompt, "get_value" do
   end
 end
 
-describe Prompt, "#get_path" do
-  it "should return the path" do
-      $stdin.should_receive(:tty?).and_return(true)
-    Prompt.should_receive(:log).with("path", {:newline => false})
-    Prompt.should_receive(:read_from_prompt).and_return(tmp_prefix)
-    Prompt.get_path('path', :type => :path).should == tmp_prefix
-  end
-  it "should return ~ intact" do
-      $stdin.should_receive(:tty?).and_return(true)
-    Prompt.should_receive(:log).with("path", {:newline => false})
-    Prompt.should_receive(:read_from_prompt).and_return('~')
-    Prompt.get_path('path').should == '~'
-  end
-  describe "with default" do
-    it "should return the value when it's specified" do
-      $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("path [/tmp]", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return(tmp_prefix)
-      Prompt.get_path('path', :default => '/tmp').should == tmp_prefix
-    end
-    it "should return the default when no value is specified" do
-      $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("path [/tmp]", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return('')
-      Prompt.get_path('path', :default => '/tmp').should == '/tmp'
-    end
-  end
-  describe "with nonexistent path" do
-    it "should fail" do
-      $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("path", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return((tmp_prefix / 'missing').to_s)
-      Prompt.should_receive(:log).with("Doesn't exist, or not a directory. path", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return(tmp_prefix)
-      Prompt.get_path('path', :type => :path).should == tmp_prefix
-    end
-    it "should fail with a valid default" do
-      $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("path [/tmp]", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return((tmp_prefix / 'missing').to_s)
-      Prompt.should_receive(:log).with("Doesn't exist, or not a directory. path [/tmp]", {:newline => false})
-      Prompt.should_receive(:read_from_prompt).and_return(tmp_prefix)
-      Prompt.get_path('path', :type => :path, :default => '/tmp').should == tmp_prefix
-    end
-  end
-end
-
 describe "'y' input" do
   context "intentional" do
     it "should return 'y'" do

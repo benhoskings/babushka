@@ -51,14 +51,6 @@ module Babushka
       end
     end
 
-    def get_path message, opts = {}
-      get_value(message, opts.merge(
-        :retry => "Doesn't exist, or not a directory."
-      )) {|value|
-        (value || '').p.dir?
-      }
-    end
-
     def get_value message, opts = {}, &block
       if opts[:choices] && opts[:choice_descriptions]
         raise ArgumentError, "You can't use the :choices and :choice_descriptions options together."
