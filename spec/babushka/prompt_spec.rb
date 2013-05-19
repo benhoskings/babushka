@@ -18,7 +18,7 @@ describe Prompt, "get_value" do
 
   it "should return the value" do
     $stdin.should_receive(:tty?).and_return(true)
-    Prompt.should_receive(:log).with("value", {:newline => false})
+    LogHelpers.should_receive(:log).with("value", {:newline => false})
     Prompt.should_receive(:read_from_prompt).and_return('value')
     Prompt.get_value('value').should == 'value'
   end
@@ -26,19 +26,19 @@ describe Prompt, "get_value" do
   describe "with default" do
     it "should return the value when it's specified" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("value [default]", {:newline => false})
+      LogHelpers.should_receive(:log).with("value [default]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('value')
       Prompt.get_value('value', :default => 'default').should == 'value'
     end
     it "should return the default when no value is specified" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("value [default]", {:newline => false})
+      LogHelpers.should_receive(:log).with("value [default]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('')
       Prompt.get_value('value', :default => 'default').should == 'default'
     end
     it "should handle non-string defaults" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("value [80]", {:newline => false})
+      LogHelpers.should_receive(:log).with("value [80]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('')
       Prompt.get_value('value', :default => 80).should == '80'
     end
@@ -53,15 +53,15 @@ describe Prompt, "get_value" do
   describe "with choices" do
     it "should accept a valid choice" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("value (a,b,c)", {:newline => false})
+      LogHelpers.should_receive(:log).with("value (a,b,c)", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('a')
       Prompt.get_value('value', :choices => %w[a b c]).should == 'a'
     end
     it "should reject an invalid choice" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("value (a,b,c)", {:newline => false})
+      LogHelpers.should_receive(:log).with("value (a,b,c)", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('d')
-      Prompt.should_receive(:log).with("That's not a valid choice. value (a,b,c)", {:newline => false})
+      LogHelpers.should_receive(:log).with("That's not a valid choice. value (a,b,c)", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('a')
       Prompt.get_value('value', :choices => %w[a b c]).should == 'a'
     end
@@ -73,30 +73,30 @@ describe Prompt, "get_value" do
     describe "with default" do
       it "should accept a valid choice" do
         $stdin.should_receive(:tty?).and_return(true)
-        Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
+        LogHelpers.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
         Prompt.should_receive(:read_from_prompt).and_return('a')
         Prompt.get_value('value', :choices => %w[a b c], :default => 'b').should == 'a'
       end
       it "should reject an invalid choice" do
         $stdin.should_receive(:tty?).and_return(true)
-        Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
+        LogHelpers.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
         Prompt.should_receive(:read_from_prompt).and_return('d')
-        Prompt.should_receive(:log).with("That's not a valid choice. value (a,b,c) [b]", {:newline => false})
+        LogHelpers.should_receive(:log).with("That's not a valid choice. value (a,b,c) [b]", {:newline => false})
         Prompt.should_receive(:read_from_prompt).and_return('a')
         Prompt.get_value('value', :choices => %w[a b c], :default => 'b').should == 'a'
       end
       describe "with no value specified" do
         it "should accept a valid default" do
           $stdin.should_receive(:tty?).and_return(true)
-          Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
+          LogHelpers.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
           Prompt.should_receive(:read_from_prompt).and_return('')
           Prompt.get_value('value', :choices => %w[a b c], :default => 'b').should == 'b'
         end
         it "should reject an invalid default" do
           $stdin.should_receive(:tty?).and_return(true)
-          Prompt.should_receive(:log).with("value (a,b,c) [d]", {:newline => false})
+          LogHelpers.should_receive(:log).with("value (a,b,c) [d]", {:newline => false})
           Prompt.should_receive(:read_from_prompt).and_return('')
-          Prompt.should_receive(:log).with("That's not a valid choice. value (a,b,c) [d]", {:newline => false})
+          LogHelpers.should_receive(:log).with("That's not a valid choice. value (a,b,c) [d]", {:newline => false})
           Prompt.should_receive(:read_from_prompt).and_return('a')
           Prompt.get_value('value', :choices => %w[a b c], :default => 'd').should == 'a'
         end
@@ -107,13 +107,13 @@ describe Prompt, "get_value" do
   describe "with choice descriptions" do
     it "should behave like choices, logging the descriptions" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("There are 3 choices:")
-      Prompt.should_receive(:log).with("a - the first one")
-      Prompt.should_receive(:log).with("b - there's also this")
-      Prompt.should_receive(:log).with("c - or this")
-      Prompt.should_receive(:log).with("value", {:newline => false})
+      LogHelpers.should_receive(:log).with("There are 3 choices:")
+      LogHelpers.should_receive(:log).with("a - the first one")
+      LogHelpers.should_receive(:log).with("b - there's also this")
+      LogHelpers.should_receive(:log).with("c - or this")
+      LogHelpers.should_receive(:log).with("value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('d')
-      Prompt.should_receive(:log).with("That's not a valid choice. value", {:newline => false})
+      LogHelpers.should_receive(:log).with("That's not a valid choice. value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('a')
       Prompt.get_value('value', :choice_descriptions => {'a' => "the first one", 'b' => "there's also this", 'c' => "or this"}).should == 'a'
     end
@@ -127,9 +127,9 @@ describe Prompt, "get_value" do
     end
     it "should treat 'false' as invalid" do
       $stdin.should_receive(:tty?).and_return(true)
-      Prompt.should_receive(:log).with("value", {:newline => false})
+      LogHelpers.should_receive(:log).with("value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('another value')
-      Prompt.should_receive(:log).with("That wasn't valid. value", {:newline => false})
+      LogHelpers.should_receive(:log).with("That wasn't valid. value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('value')
       Prompt.get_value('value') {|value| value == 'value' }.should == 'value'
     end
@@ -140,9 +140,9 @@ describe "'y' input" do
   context "intentional" do
     it "should return 'y'" do
       $stdin.should_receive(:tty?).any_number_of_times.and_return(true)
-      Prompt.should_receive(:log).with("value", {:newline => false})
+      LogHelpers.should_receive(:log).with("value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('y')
-      Prompt.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
+      LogHelpers.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('y')
       Prompt.get_value('value').should == 'y'
     end
@@ -150,11 +150,11 @@ describe "'y' input" do
   context "unintentional" do
     it "should ask for the value again with a custom log message" do
       $stdin.should_receive(:tty?).any_number_of_times.and_return(true)
-      Prompt.should_receive(:log).with("value", {:newline => false})
+      LogHelpers.should_receive(:log).with("value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('yes')
-      Prompt.should_receive(:log).with("Wait, do you mean the literal value 'yes' [n]", {:newline => false})
+      LogHelpers.should_receive(:log).with("Wait, do you mean the literal value 'yes' [n]", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('n')
-      Prompt.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
+      LogHelpers.should_receive(:log).with("Thought so :) Hit enter for the [default]. value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('value')
       Prompt.get_value('value').should == 'value'
     end
