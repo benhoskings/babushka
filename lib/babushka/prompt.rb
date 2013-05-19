@@ -15,12 +15,6 @@ module Babushka
   class Prompt
     extend LogHelpers
 
-    module Helpers
-      def confirm message, opts = {}, &block
-        Prompt.confirm message, opts, &block
-      end
-    end
-
   class << self
     def suggest_value_for typo, choices
       if (possible_matches = choices.similar_to(typo.to_s)).empty?

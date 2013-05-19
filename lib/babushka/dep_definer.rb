@@ -9,8 +9,6 @@ module Babushka
     include RunHelpers
     extend RunHelpers
 
-    include Prompt::Helpers
-    extend Prompt::Helpers
     include VersionOf::Helpers
     extend VersionOf::Helpers
 
@@ -109,6 +107,14 @@ module Babushka
           @current_platform = nil
         }
       end
+    end
+
+    def self.confirm message, opts = {}, &block
+      Prompt.confirm(message, opts, &block)
+    end
+
+    def confirm message, opts = {}, &block
+      Prompt.confirm(message, opts, &block)
     end
 
     def chooser
