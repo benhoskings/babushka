@@ -72,13 +72,13 @@ describe Prompt, "get_value" do
     end
     describe "with default" do
       it "should accept a valid choice" do
-      $stdin.should_receive(:tty?).and_return(true)
+        $stdin.should_receive(:tty?).and_return(true)
         Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
         Prompt.should_receive(:read_from_prompt).and_return('a')
         Prompt.get_value('value', :choices => %w[a b c], :default => 'b').should == 'a'
       end
       it "should reject an invalid choice" do
-      $stdin.should_receive(:tty?).and_return(true)
+        $stdin.should_receive(:tty?).and_return(true)
         Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
         Prompt.should_receive(:read_from_prompt).and_return('d')
         Prompt.should_receive(:log).with("That's not a valid choice. value (a,b,c) [b]", {:newline => false})
@@ -87,13 +87,13 @@ describe Prompt, "get_value" do
       end
       describe "with no value specified" do
         it "should accept a valid default" do
-      $stdin.should_receive(:tty?).and_return(true)
+          $stdin.should_receive(:tty?).and_return(true)
           Prompt.should_receive(:log).with("value (a,b,c) [b]", {:newline => false})
           Prompt.should_receive(:read_from_prompt).and_return('')
           Prompt.get_value('value', :choices => %w[a b c], :default => 'b').should == 'b'
         end
         it "should reject an invalid default" do
-      $stdin.should_receive(:tty?).and_return(true)
+          $stdin.should_receive(:tty?).and_return(true)
           Prompt.should_receive(:log).with("value (a,b,c) [d]", {:newline => false})
           Prompt.should_receive(:read_from_prompt).and_return('')
           Prompt.should_receive(:log).with("That's not a valid choice. value (a,b,c) [d]", {:newline => false})
