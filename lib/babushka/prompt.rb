@@ -12,9 +12,10 @@ module Babushka
     end
   end
 
-  class Prompt
+  module Prompt
+    # Make these helpers directly callable, and private when included.
+    module_function
 
-  class << self
     def suggest_value_for typo, choices
       if (possible_matches = choices.similar_to(typo.to_s)).empty?
         nil # nothing to suggest
@@ -56,9 +57,6 @@ module Babushka
       opts.defaults! :prompt => '? '
       prompt_and_read_value prompt_message(message, opts), opts.merge(:ask => !Base.task.opt(:defaults)), &block
     end
-
-
-    private
 
     def prompt_message message, opts
       if opts[:choices] && opts[:choice_descriptions].nil?
@@ -152,6 +150,5 @@ module Babushka
         $stdin.gets.try(:strip)
       end
     end
-  end
   end
 end
