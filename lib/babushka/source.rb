@@ -37,7 +37,12 @@ module Babushka
     end
 
     def self.default_remote_for name
-      "https://github.com/#{name}/babushka-deps.git"
+      if name == 'common'
+        # This is a special case.
+        "https://github.com/benhoskings/common-babushka-deps.git"
+      else
+        "https://github.com/#{name}/babushka-deps.git"
+      end
     end
 
     require 'uri'

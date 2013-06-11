@@ -279,6 +279,19 @@ describe Source do
     end
   end
 
+  describe '.for_remote' do
+    describe "special cases" do
+      it "should return the common deps for 'common'" do
+        source = Source.for_remote('common')
+        [source.name, source.uri].should == ['common', "https://github.com/benhoskings/common-babushka-deps.git"]
+      end
+    end
+    it "should return a github URL in the standard form" do
+      source = Source.for_remote('benhoskings')
+      [source.name, source.uri].should == ['benhoskings', "https://github.com/benhoskings/babushka-deps.git"]
+    end
+  end
+
   describe "finding" do
     before {
       @source = Source.new('spec/deps/good')
