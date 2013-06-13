@@ -8,7 +8,7 @@ require 'rubygems'
 require 'rspec'
 require 'ir_b'
 
-puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION} | rspec-#{RSpec::Version::STRING}"
+puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION}p#{RUBY_PATCHLEVEL} | rspec-#{RSpec::Version::STRING}"
 
 def tmp_prefix
   Babushka::Specs.tmp_prefix
