@@ -8,7 +8,6 @@ describe "Dep.new" do
     L{
       Dep.new(:symbol_name, Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name :symbol_name isn't a string.")
-    Dep(:symbol_name).should be_nil
   end
   it "should reject deps with empty names" do
     L{

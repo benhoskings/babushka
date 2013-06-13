@@ -70,6 +70,8 @@ module Babushka
     end
 
     def dep_for dep_spec, opts = {}
+      raise ArgumentError, "The dep spec #{dep_spec.inspect} isn't a String or Dep." unless [String, Dep].include?(dep_spec.class)
+
       if dep_spec.is_a?(Dep)
         dep_spec
       elsif dep_spec[SEPARATOR] # If a source was specified, that's where we load from.

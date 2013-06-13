@@ -135,6 +135,11 @@ describe SourcePool do
     it "should work for deps" do
       Base.sources.dep_for(the_dep).should == the_dep
     end
+    it "should reject other arguments" do
+      expect {
+        Base.sources.dep_for(:symbol_name)
+      }.to raise_error(ArgumentError, "The dep spec :symbol_name isn't a String or Dep.")
+    end
     it "should not find the dep with namespacing" do
       GitHelpers.stub!(:git) # To avoid cloning.
       Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should be_nil
