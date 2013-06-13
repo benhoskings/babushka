@@ -41,6 +41,12 @@ module Babushka
     end
   end
 
+  class Task
+    def log_prefix
+      tmp_prefix / 'logs'
+    end
+  end
+
   class Logging
     def self.print_log message, printable, as
       # Don't log while running specs.
