@@ -103,7 +103,7 @@ module Babushka
             log_error "Can't edit '#{dep.name}', since it wasn't loaded from a file."
           else
             file, line = dep.context.source_location
-            editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || which('subl') || which('mate') || which('vim') || which('vi')
+            editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || ShellHelpers.which('subl') || ShellHelpers.which('mate') || ShellHelpers.which('vim') || ShellHelpers.which('vi')
             case editor_var
             when /^subl/
               exec "subl -n '#{file}':#{line}"
