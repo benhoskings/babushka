@@ -10,6 +10,11 @@ require 'ir_b'
 
 puts "babushka@#{`git rev-parse --short HEAD`.strip} | ruby-#{RUBY_VERSION}p#{RUBY_PATCHLEVEL} | rspec-#{RSpec::Version::STRING}"
 
+if ENV['TRAVIS']
+  `git config --global user.email "hello@babushka.me"`
+  `git config --global user.name "babushka specs"`
+end
+
 def tmp_prefix
   Babushka::Specs.tmp_prefix
 end
