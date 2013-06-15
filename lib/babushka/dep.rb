@@ -398,7 +398,7 @@ module Babushka
 
     def log_cached result, and_meet
       if result
-        log "#{Logging::TickChar} #{name} (cached)".colorize('green')
+        log "#{Logging::TICK_CHAR} #{name} (cached)".colorize('green')
       elsif !and_meet
         log "~ #{name} (cached)".colorize('blue')
       end

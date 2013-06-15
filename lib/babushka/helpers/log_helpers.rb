@@ -41,7 +41,7 @@ module Babushka
       }
     end
 
-    # Write +message+ to the debug log, prefixed with +TickChar+, returning +true+.
+    # Write +message+ to the debug log, prefixed with +TICK_CHAR+, returning +true+.
     #
     # This is used to report events that have succeeded, or items that are
     # already working. For example, when the package manager reports that a
@@ -90,7 +90,7 @@ module Babushka
     #
     # To specify the message type, you can use :as. There are four custom
     # types supported:
-    #   :ok      The message is printed in grey with +TickChar+ prepended, as
+    #   :ok      The message is printed in grey with +TICK_CHAR+ prepended, as
     #            used by +log_ok+.
     #   :warning The message is printed in yellow, as used by +log_warn+.
     #   :error   The message is printed in red, as used by +log_error+.
@@ -118,7 +118,7 @@ module Babushka
         }
       else
         message = message.to_s.rstrip.gsub "\n", "\n#{Logging.indentation}"
-        message = "#{Logging::TickChar.colorize('grey')} #{message}" if opts[:as] == :ok
+        message = "#{Logging::TICK_CHAR.colorize('grey')} #{message}" if opts[:as] == :ok
         message = message.colorize 'red' if opts[:as] == :error
         message = message.colorize 'yellow' if opts[:as] == :warning
         message = message.colorize 'bold' if opts[:as] == :stderr
@@ -133,18 +133,22 @@ module Babushka
   class Logging
     extend LogHelpers
 
-    TickChar = '✓'
-    CrossChar = '✗'
+    TICK_CHAR = '✓'
+    CROSS_CHAR = '✗'
+
+    # Deprecated on 4/4/2013
+    TickChar = TICK_CHAR
+    CrossChar = CROSS_CHAR
 
     def self.closing_log_message message, result = true, opts = {}
       message = opts[:closing_status] if opts[:closing_status].is_a?(String)
 
       if opts[:closing_status] == :status_only
-        '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar}".colorize(result ? 'green' : 'red')
+        '}'.colorize('grey') + ' ' + "#{result ? TICK_CHAR : CROSS_CHAR}".colorize(result ? 'green' : 'red')
       elsif opts[:closing_status] == :dry_run
-        '}'.colorize('grey') + ' ' + "#{result ? TickChar : '~'} #{message}".colorize(result ? 'green' : 'blue')
+        '}'.colorize('grey') + ' ' + "#{result ? TICK_CHAR : '~'} #{message}".colorize(result ? 'green' : 'blue')
       elsif opts[:closing_status]
-        '}'.colorize('grey') + ' ' + "#{result ? TickChar : CrossChar} #{message}".colorize(result ? 'green' : 'red')
+        '}'.colorize('grey') + ' ' + "#{result ? TICK_CHAR : CROSS_CHAR} #{message}".colorize(result ? 'green' : 'red')
       else
         "}".colorize('grey')
       end
