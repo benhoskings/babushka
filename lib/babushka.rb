@@ -10,14 +10,23 @@ module Babushka
   VARS_PREFIX     = '~/.babushka/vars'
   REPORT_PREFIX   = '~/.babushka/runs'
 
-  # Deprecated on 2013-06-15. Will be removed on 2013-12-15.
-  WorkingPrefix  = WORKING_PREFIX
-  SourcePrefix   = SOURCE_PREFIX
-  BuildPrefix    = BUILD_PREFIX
-  DownloadPrefix = DOWNLOAD_PREFIX
-  LogPrefix      = LOG_PREFIX
-  VarsPrefix     = VARS_PREFIX
-  ReportPrefix   = REPORT_PREFIX
+  def self.const_missing const_name
+    if %w[
+      WorkingPrefix
+      SourcePrefix
+      BuildPrefix
+      DownloadPrefix
+      LogPrefix
+      VarsPrefix
+      ReportPrefix
+    ].include?(const_name.to_s)
+      const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')
+      Babushka::LogHelpers.deprecated! "2013-12-15", :method_name => "Babushka::#{const_name}", :instead => "Babushka::#{const_case}"
+      Babushka.const_get(const_case)
+    else
+      super
+    end
+  end
 
   module Path
     def self.binary() File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__ end

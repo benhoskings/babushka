@@ -136,9 +136,18 @@ module Babushka
     TICK_CHAR = '✓'
     CROSS_CHAR = '✗'
 
-    # Deprecated on 2013-06-15. Will be removed on 2013-12-15.
-    TickChar = TICK_CHAR
-    CrossChar = CROSS_CHAR
+    def self.const_missing const_name
+      if %w[
+        TickChar
+        CrossChar
+      ].include?(const_name.to_s)
+        const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')
+        deprecated! "2013-12-15", :method_name => "Babushka::Logging::#{const_name}", :instead => "Babushka::Logging::#{const_case}"
+        Babushka::Logging.const_get(const_case)
+      else
+        super
+      end
+    end
 
     def self.closing_log_message message, result = true, opts = {}
       message = opts[:closing_status] if opts[:closing_status].is_a?(String)
