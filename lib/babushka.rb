@@ -2,13 +2,22 @@ module Babushka
 
   VERSION = '0.16.10'
 
-  WorkingPrefix  = '~/.babushka'
-  SourcePrefix   = '~/.babushka/sources'
-  BuildPrefix    = '~/.babushka/build'
-  DownloadPrefix = '~/.babushka/downloads'
-  LogPrefix      = '~/.babushka/logs'
-  VarsPrefix     = '~/.babushka/vars'
-  ReportPrefix   = '~/.babushka/runs'
+  WORKING_PREFIX  = '~/.babushka'
+  SOURCE_PREFIX   = '~/.babushka/sources'
+  BUILD_PREFIX    = '~/.babushka/build'
+  DOWNLOAD_PREFIX = '~/.babushka/downloads'
+  LOG_PREFIX      = '~/.babushka/logs'
+  VARS_PREFIX     = '~/.babushka/vars'
+  REPORT_PREFIX   = '~/.babushka/runs'
+
+  # Deprecated on 2013-06-15.
+  WorkingPrefix  = WORKING_PREFIX
+  SourcePrefix   = SOURCE_PREFIX
+  BuildPrefix    = BUILD_PREFIX
+  DownloadPrefix = DOWNLOAD_PREFIX
+  LogPrefix      = LOG_PREFIX
+  VarsPrefix     = VARS_PREFIX
+  ReportPrefix   = REPORT_PREFIX
 
   module Path
     def self.binary() File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__ end

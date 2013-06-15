@@ -81,12 +81,12 @@ module Babushka
     end
 
     def log_prefix
-      LogPrefix.p
+      Babushka::LOG_PREFIX.p
     end
 
     def cleanup_obsolete_data
-      VarsPrefix.p.rm if VarsPrefix.p.exists?
-      ReportPrefix.p.rm if ReportPrefix.p.exists?
+      Babushka::VARS_PREFIX.p.rm if Babushka::VARS_PREFIX.p.exists?
+      Babushka::REPORT_PREFIX.p.rm if Babushka::REPORT_PREFIX.p.exists?
     end
 
   end
