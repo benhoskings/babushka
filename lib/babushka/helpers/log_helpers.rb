@@ -136,7 +136,7 @@ module Babushka
     TICK_CHAR = '✓'
     CROSS_CHAR = '✗'
 
-    # Deprecated on 4/4/2013
+    # Deprecated on 2013-06-15.
     TickChar = TICK_CHAR
     CrossChar = CROSS_CHAR
 
