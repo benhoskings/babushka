@@ -212,6 +212,11 @@ module Babushka
       repo_shell?("git rev-parse --short #{ref}")
     end
 
+    # The full SHA of the commit that +ref+ currently refers to.
+    def resolve_full ref
+      repo_shell?("git rev-parse #{ref}")
+    end
+
     # The remote assigned to branch in the git config, or 'origin' if none
     # is set. This is the remote that git pushes to and fetches from for this
     # branch by default, and the branch that comparisons like #ahead? and
