@@ -1,11 +1,11 @@
 module Babushka
-  ExternalComponents = %w[
+  EXTERNAL_COMPONENTS = %w[
     fancypath/fancypath
     inkan/inkan
     levenshtein/levenshtein
   ]
 
-  Components = %w[
+  COMPONENTS = %w[
     core_patches/blank
     core_patches/try
     core_patches/array

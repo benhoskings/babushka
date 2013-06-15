@@ -22,11 +22,11 @@ module Babushka
     end
 
     def in_build_dir path = '', &block
-      cd Babushka::BuildPrefix / path, :create => true, &block
+      cd Babushka::BUILD_PREFIX / path, :create => true, &block
     end
 
     def in_download_dir path = '', &block
-      cd Babushka::DownloadPrefix / path, :create => true, &block
+      cd Babushka::DOWNLOAD_PREFIX / path, :create => true, &block
     end
   end
 end

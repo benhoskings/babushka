@@ -46,7 +46,7 @@ module Babushka
       if cmd.extract_options[:log]
         # Don't log the error if the command already logged
       elsif e.stdout.empty? && e.stderr.empty?
-        LogHelpers.log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CrossChar} shell command failed".colorize('red')
+        LogHelpers.log "$ #{e.cmd.join(' ')}".colorize('grey') + ' ' + "#{Logging::CROSS_CHAR} shell command failed".colorize('red')
       else
         LogHelpers.log "$ #{e.cmd.join(' ')}", :closing_status => 'shell command failed' do
           LogHelpers.log_error(e.stderr.empty? ? e.stdout : e.stderr)

@@ -6,7 +6,7 @@ module Babushka
   class VersionStr
     include Comparable
     attr_reader :pieces, :operator, :version
-    GemVersionOperators = %w[= == != > < >= <= ~>].freeze
+    GEM_VERSION_OPERATORS = %w[= == != > < >= <= ~>].freeze
 
     def self.parseable_version? str
       !str.nil? && !str[/\d|HEAD/].nil?
@@ -15,7 +15,7 @@ module Babushka
     def initialize str
       @operator, @version = str.strip.scan(/^([^\s\w\-\.]+)?\s*v?([\w\-\.]+)$/i).first
 
-      if !(@operator.nil? || GemVersionOperators.include?(@operator))
+      if !(@operator.nil? || GEM_VERSION_OPERATORS.include?(@operator))
         raise InvalidVersionOperator, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
       elsif !self.class.parseable_version?(@version)
         raise InvalidVersionStr, "VersionStr.new('#{str}'): couldn't parse a version number."

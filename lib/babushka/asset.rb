@@ -91,7 +91,7 @@ module Babushka
     end
 
     def build_prefix
-      BuildPrefix
+      BUILD_PREFIX
     end
   end
 

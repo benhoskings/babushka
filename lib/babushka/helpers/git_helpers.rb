@@ -4,7 +4,7 @@ module Babushka
     module_function
 
     def git uri, opts = {}, &block
-      repo = GitRepo.new(opts[:to] || (BuildPrefix / File.basename(uri.to_s).chomp('.git')))
+      repo = GitRepo.new(opts[:to] || (Babushka::BUILD_PREFIX / File.basename(uri.to_s).chomp('.git')))
 
       if git_update(uri, repo)
         repo.root.touch # so we can tell when it was last updated
