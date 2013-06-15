@@ -10,7 +10,7 @@ module Babushka
   VARS_PREFIX     = '~/.babushka/vars'
   REPORT_PREFIX   = '~/.babushka/runs'
 
-  # Deprecated on 2013-06-15.
+  # Deprecated on 2013-06-15. Will be removed on 2013-12-15.
   WorkingPrefix  = WORKING_PREFIX
   SourcePrefix   = SOURCE_PREFIX
   BuildPrefix    = BUILD_PREFIX
