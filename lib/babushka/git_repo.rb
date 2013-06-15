@@ -207,9 +207,9 @@ module Babushka
       repo_shell("git rev-parse HEAD")
     end
 
-    # The short SHA of the commit that +ref+ currently refers to.
+    # The SHA of the commit that +ref+ currently refers to.
     def resolve ref
-      repo_shell?("git rev-parse --short #{ref}")
+      repo_shell?("git rev-parse #{ref}")
     end
 
     # The remote assigned to branch in the git config, or 'origin' if none
@@ -258,6 +258,11 @@ module Babushka
     # or tag, HEAD will reference the commit at the tip of the ref.
     def detach! ref = 'HEAD'
       repo_shell("git checkout '#{resolve(ref)}'")
+    end
+
+    # Fetch from the default remote, or remote if specified
+    def fetch! remote = nil
+      repo_shell("git fetch #{"'#{remote}'" if remote}")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and

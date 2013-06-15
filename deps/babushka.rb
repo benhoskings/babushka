@@ -31,7 +31,7 @@ dep 'up to date.babushka', :from, :path, :ref do
   requires 'resolvable ref.babushka'.with(from, path, ref)
 
   met? {
-    (repo.current_head == resolved_ref).tap {|result|
+    (resolved_ref.start_with? repo.current_head).tap {|result|
       if result
         log_ok "babushka is up to date at #{repo.current_head}."
       else
