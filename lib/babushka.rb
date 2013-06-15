@@ -32,7 +32,7 @@ end
 require File.join(Babushka::Path.path, 'lib', 'components')
 
 # Load external components that babushka depends on.
-Babushka::ExternalComponents.each {|c| require File.join(Babushka::Path.path, 'lib', c) }
+Babushka::EXTERNAL_COMPONENTS.each {|c| require File.join(Babushka::Path.path, 'lib', c) }
 
 # Next, load babushka itself.
-Babushka::Components.each {|c| require File.join(Babushka::Path.path, 'lib/babushka', c) }
+Babushka::COMPONENTS.each {|c| require File.join(Babushka::Path.path, 'lib/babushka', c) }
