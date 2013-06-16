@@ -208,6 +208,10 @@ module Babushka
     end
 
     # The short SHA of the commit that +ref+ currently refers to.
+    #
+    # Note that it's possible for git's short SHA to change when new commits
+    # enter the repo (via commit or fetch), as git adds characters to keep
+    # short SHAs unique.
     def resolve ref
       repo_shell?("git rev-parse --short #{ref}")
     end
