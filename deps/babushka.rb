@@ -4,8 +4,9 @@ meta :babushka do
   end
 
   def qualified_ref
-    # Prepend "origin/" we're installing from scratch, or if the result is a
-    # valid remote branch.
+    # Prepend "origin/" if the resulting ref is valid, but not if the repo
+    # doesn't exist yet. (We fetch before resolving remote refs, but that's
+    # not possible before the repo exists.)
     if repo.exists? && repo.all_branches.include?("origin/#{ref}")
       "origin/#{ref}"
     else
