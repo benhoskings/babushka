@@ -29,7 +29,7 @@ module Babushka
     def first_nonmatch_for spec
       if spec == :all
         nil
-      elsif SystemDefinitions.all_systems.include? spec
+      elsif SystemDefinition.all_systems.include? spec
         spec == system ? nil : :system
       elsif PkgHelper.all_manager_keys.include? spec
         spec == pkg_helper_key ? nil : :pkg_helper
@@ -43,11 +43,11 @@ module Babushka
     end
 
     def our_flavours
-      SystemDefinitions.names[system].keys
+      SystemDefinition::NAMES[system].keys
     end
 
     def our_flavour_names
-      SystemDefinitions.names[system][flavour].values
+      SystemDefinition::NAMES[system][flavour].values
     end
   end
 end

@@ -10,7 +10,14 @@ module Babushka
     def matches?(specs) matcher.matches?(specs) end
     def match_list()    matcher.list end
 
-    def differentiator_for(specs)
+    def definition
+      @definition ||= SystemDefinition.new(system, flavour, release)
+    end
+
+    def name; definition.name end
+    def name_str; definition.name_str end
+
+    def differentiator_for specs
       differentiator = matcher.differentiator_for(specs)
       send("#{differentiator}_str") unless differentiator.nil?
     end
@@ -59,13 +66,6 @@ module Babushka
       ].compact.join(' ')
     end
 
-    def name
-      (SystemDefinitions.names[system][flavour] || {})[release]
-    end
-
-    def name_str
-      (SystemDefinitions.descriptions[system][flavour] || {})[release]
-    end
   end
 
   class UnknownSystem < SystemProfile
