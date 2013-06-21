@@ -30,12 +30,8 @@ module Babushka
     def osx?;   system == :osx end
     def bsd?;   system == :bsd end
 
-    def pkg_helper; UnknownPkgHelper end
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
-    # The extension that dynamic libraries are given on this system. On linux
-    # libraries are named like 'libssl.so'; on OS X, 'libssl.bundle'.
-    def library_ext; 'so' end
 
     def cpu_type
       shell('uname -m').tap {|result|
@@ -43,18 +39,6 @@ module Babushka
         result.replace 'x86' if result[/^i.86$/]
         result.replace 'x86_64' if result == 'amd64'
       }
-    end
-
-    def cpus
-      raise "#{self.class}#cpus is unimplemented."
-    end
-
-    def total_memory
-      raise "#{self.class}#total_memory is unimplemented."
-    end
-
-    def public_ip
-      raise "#{self.class}#public_ip is unimplemented."
     end
 
     def description
@@ -66,6 +50,11 @@ module Babushka
       ].compact.join(' ')
     end
 
+    def pkg_helper; UnknownPkgHelper end
+    def library_ext; 'so' end # libblah.so on linux, libblah.bundle on OS X, etc.
+    def cpus; raise "#{self.class}#cpus is unimplemented." end
+    def total_memory; raise "#{self.class}#total_memory is unimplemented." end
+    def public_ip; raise "#{self.class}#public_ip is unimplemented." end
   end
 
   class UnknownSystem < SystemProfile
@@ -180,9 +169,11 @@ module Babushka
   end
 
   class ArchSystemProfile < LinuxSystemProfile
-    def get_version_info; 'rolling' end
     def pkg_helper; PacmanHelper end
     def flavour; :arch end
-    def version; ''; end
+
+    # Arch uses rolling versions and doesn't assign version numbers.
+    def get_version_info; 'rolling' end
+    def version; '' end
   end
 end
