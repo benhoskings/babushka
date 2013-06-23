@@ -41,8 +41,9 @@ class VM
   def existing_server
     server_detail = connection.list_servers_detail.detect {|s| s[:name] == SERVER_NAME }
     unless server_detail.nil?
-      log "A server is already running."
       @_server = connection.get_server(server_detail[:id])
+      log "A #{image[:name]} server is already running at #{@_server.addresses[:public].first}."
+      @_server
     end
   end
 
@@ -60,6 +61,7 @@ class VM
           print '.'
           server.refresh
         end
+        log "Online at #{server.addresses[:public].first}."
         server.status == 'ACTIVE'
       end
     end
@@ -82,7 +84,7 @@ class VM
 
   def image
     connection.list_images.detect {|image| image[:name][cfg['image_name']] } ||
-      raise(RuntimeError, "Couldn't find an image that matched '#{cfg['image_name']}'.")
+      raise(RuntimeError, "Couldn't find an image that matched '#{cfg['image_name']}' in #{connection.list_images.map {|i| i[:name] }}.")
   end
 
   def flavor
