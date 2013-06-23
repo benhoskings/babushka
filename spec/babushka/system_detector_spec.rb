@@ -34,6 +34,10 @@ describe Babushka::SystemDetector do
         Babushka::AptHelper.stub!(:install!) # so an `lsb_release` install isn't attempted
         subject.should be_an_instance_of(Babushka::DebianSystemProfile)
       end
+      it "should return ArchSystemProfile on Arch boxes" do
+        File.should_receive(:exists?).with("/etc/arch-release").and_return(true)
+        subject.should be_an_instance_of(Babushka::ArchSystemProfile)
+      end
       it "should return RedhatSystemProfile on Red Hat boxes" do
         File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
         subject.should be_an_instance_of(Babushka::RedhatSystemProfile)
