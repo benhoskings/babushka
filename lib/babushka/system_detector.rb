@@ -17,13 +17,13 @@ module Babushka
 
     def self.detect_using_release_file
       [
-        ['debian_version', DebianSystemProfile],
-        ['arch-release',   ArchSystemProfile],
-        ['fedora-release', FedoraSystemProfile],
-        ['centos-release', CentOSSystemProfile],
-        ['redhat-release', RedhatSystemProfile]
+        ['/etc/debian_version', DebianSystemProfile],
+        ['/etc/arch-release',   ArchSystemProfile],
+        ['/etc/fedora-release', FedoraSystemProfile],
+        ['/etc/centos-release', CentOSSystemProfile],
+        ['/etc/redhat-release', RedhatSystemProfile]
       ].select {|(release_file,_)|
-        File.exists?("/etc/#{release_file}")
+        File.exists?(release_file)
       }.map {|(_,profile)|
         profile
       }.first
