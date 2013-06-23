@@ -16,6 +16,33 @@ describe Babushka::SystemProfile do
     end
   end
 
+  describe '#total_memory' do
+    it "should work on OS X" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
+      profile.should_receive(:shell).with('sysctl -a').and_return("hw.memsize = 4294967296\nhw.availcpu = 4")
+      profile.total_memory.should == 4294967296
+    end
+    it "should work on Linux" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
+      profile.should_receive(:shell).with('free -b').and_return("             total       used       free     shared    buffers     cached
+Mem:    1039704064  930856960  108847104          0    2244608  751648768
+-/+ buffers/cache:  176963584  862740480
+Swap:            0          0          0
+")
+      profile.total_memory.should == 1039704064
+    end
+    it "should work on FreeBSD" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
+      profile.should_receive(:shell).with('sysctl -a').and_return("hw.realmem = 4294967296\nhw.availcpu = 4")
+      profile.total_memory.should == 4294967296
+    end
+    it "should work on DragonFly" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
+      profile.should_receive(:shell).with('sysctl -a').and_return("hw.physmem = 4294967296\nhw.availcpu = 4")
+      profile.total_memory.should == 4294967296
+    end
+  end
+
   describe '#public_ip' do
     context "on OS X" do
       before {
