@@ -21,6 +21,7 @@ module Babushka
         'redhat-release' => RedhatSystemProfile,
         'arch-release'   => ArchSystemProfile,
         'system-release' => FedoraSystemProfile,
+        'centos-release' => CentOSSystemProfile,
         # 'gentoo-release' =>
         # 'SuSE-release'   =>
       }.selekt {|release_file, system_profile|

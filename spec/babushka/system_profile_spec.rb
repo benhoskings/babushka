@@ -132,6 +132,21 @@ describe Babushka::SystemProfile do
         end
       end
 
+      context 'on a CentOS box' do
+        let(:profile) { CentOSSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return("CentOS release 6.4 (Final)") }
+
+        it "should have correct system info" do
+          info_for(profile).should == [:linux, :centos, "6", "6.4", nil]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'CentOS', nil]
+        end
+        it "should be described correctly" do
+          profile.description.should == 'CentOS Linux 6.4'
+        end
+      end
+
       context 'on a Fedora box' do
         let(:profile) { FedoraSystemProfile.new }
         before { profile.stub(:get_version_info).and_return("Fedora release 18 (Spherical Cow)") }

@@ -38,6 +38,10 @@ describe Babushka::SystemDetector do
         File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
         subject.should be_an_instance_of(Babushka::RedhatSystemProfile)
       end
+      it "should return RedhatSystemProfile on CentOS boxes" do
+        File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
+        subject.should be_an_instance_of(Babushka::RedhatSystemProfile)
+      end
       it "should return FedoraSystemProfile on Fedora derived boxes" do
         File.should_receive(:exists?).with("/etc/system-release").and_return(true)
         subject.should be_an_instance_of(Babushka::FedoraSystemProfile)

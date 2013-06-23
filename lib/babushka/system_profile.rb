@@ -151,26 +151,29 @@ module Babushka
   end
 
   class RedhatSystemProfile < LinuxSystemProfile
-    def flavour
-      version_info[/^Red Hat/i] ? :redhat : version_info[/^\w+/].downcase.to_sym
-    end
-
-    def flavour_str
-      {
-        :centos => 'CentOS',
-        :redhat => 'Red Hat'
-      }[flavour]
-    end
+    def flavour; :redhat end
+    def flavour_str; 'Red Hat' end
 
     def version
-      version_info[/release [\d\.]+ \((\w+)\)/i, 1] || version_info[/release ([\d\.]+)/i, 1]
+      version_info[/release ([\d\.]+)/i, 1]
+    end
+    def release
+      version[/^(\d+)/, 1]
     end
 
     def get_version_info; File.read('/etc/redhat-release') end
     def pkg_helper; YumHelper end
   end
 
+  class CentOSSystemProfile < RedhatSystemProfile
+    def flavour; :centos end
+    def flavour_str; 'CentOS' end
+    def get_version_info; File.read('/etc/centos-release') end
+  end
+
   class FedoraSystemProfile < RedhatSystemProfile
+    def flavour; :fedora end
+    def flavour_str; 'Fedora' end
     def get_version_info; File.read('/etc/system-release') end
   end
 
