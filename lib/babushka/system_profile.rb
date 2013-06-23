@@ -126,7 +126,7 @@ module Babushka
   class LinuxSystemProfile < SystemProfile
     def system_str; 'Linux' end
     def flavour_str; 'Unknown' end
-    def version; 'unknown' end
+    def version; nil end
     def release; version end
     def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").to_i end
     def total_memory; shell("free -b").val_for("Mem").scan(/^\d+\b/).first.to_i end
@@ -183,6 +183,6 @@ module Babushka
 
     # Arch uses rolling versions and doesn't assign version numbers.
     def get_version_info; 'rolling' end
-    def version; '' end
+    def version; nil end
   end
 end

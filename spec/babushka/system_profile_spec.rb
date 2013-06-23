@@ -93,7 +93,7 @@ describe Babushka::SystemProfile do
       let(:profile) { LinuxSystemProfile.new }
 
       it "should have correct system info" do
-        info_for(profile).should == [:linux, :unknown, "unknown", "unknown", nil]
+        info_for(profile).should == [:linux, :unknown, nil, nil, nil]
       end
       it "should have correct version info" do
         info_strs_for(profile).should == ['Linux', 'Unknown', nil]
@@ -166,7 +166,7 @@ describe Babushka::SystemProfile do
         let(:profile) { ArchSystemProfile.new }
 
         it "should report correct name and version info" do
-          info_for(profile).should == [:linux, :arch, "", "", nil]
+          info_for(profile).should == [:linux, :arch, nil, nil, nil]
         end
         it "should have correct version info" do
           info_strs_for(profile).should == ['Linux', 'Arch', nil]
