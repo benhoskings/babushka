@@ -135,9 +135,6 @@ module Babushka
           '17' => 'Beefy Miracle',
           '18' => 'Spherical Cow',
           '19' => "Schrödinger's Cat"
-        },
-        :debian => {
-          '5.0.4' => 'Lenny'
         }
       },
       :bsd => {
