@@ -141,7 +141,6 @@ module Babushka
   class DebianSystemProfile < LinuxSystemProfile
     def flavour_str; version_info.val_for('DISTRIB_ID') end
     def version; version_info.val_for('DISTRIB_RELEASE') end
-    def name; version_info.val_for('DISTRIB_CODENAME').to_sym end
 
     def get_version_info; File.read('/etc/lsb-release') end
     def pkg_helper; AptHelper end
