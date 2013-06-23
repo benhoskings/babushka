@@ -5,6 +5,164 @@ describe Babushka::SystemProfile do
     Babushka::SystemDetector.profile_for_host
   }
 
+  describe 'names' do
+
+    def info_for p
+      [p.system, p.flavour, p.release, p.version, p.name]
+    end
+
+    def info_strs_for p
+      [p.system_str, p.flavour_str, p.name_str]
+    end
+
+    describe 'on an unknown system' do
+      let(:profile) { UnknownSystem.new }
+
+      it "should report correct name and version info" do
+        info_for(profile).should == [:unknown, :unknown, 'unknown', 'unknown', :unknown]
+      end
+      it "should report correct info strings" do
+        info_strs_for(profile).should == ['Unknown', 'Unknown', 'Unknown']
+      end
+      it "should be described correctly" do
+        profile.description.should == 'Unknown system'
+      end
+    end
+
+    describe 'on an OS X box' do
+      let(:profile) { OSXSystemProfile.new }
+      before { profile.stub(:get_version_info).and_return("ProductName:  Mac OS X\nProductVersion: 10.8.4\nBuildVersion: 12E55") }
+
+      it "should have correct system info" do
+        info_for(profile).should == [:osx, :osx, '10.8', '10.8.4', :mountain_lion]
+      end
+      it "should have correct version info" do
+        info_strs_for(profile).should == ['Mac OS X', 'Mac OS X', 'Mountain Lion']
+      end
+      it "should have the right description" do
+        profile.description.should == 'Mac OS X 10.8.4 (Mountain Lion)'
+      end
+    end
+
+    describe 'on a BSD box' do
+      let(:profile) { BSDSystemProfile.new }
+      before { profile.stub(:shell).with('uname -r').and_return("1.2.3") }
+
+      it "should have correct system info" do
+        info_for(profile).should == [:bsd, :unknown, '1.2', '1.2.3', nil]
+      end
+      it "should have correct version info" do
+        info_strs_for(profile).should == ['BSD', 'BSD', nil]
+      end
+      it "should be described correctly" do
+        profile.description.should == 'Unknown BSD 1.2.3'
+      end
+
+      describe 'on a FreeBSD box' do
+        let(:profile) { FreeBSDSystemProfile.new }
+        before { profile.stub(:shell).with('uname -r').and_return("9.0-RELEASE") }
+
+        it "should have correct system info" do
+          info_for(profile).should == [:bsd, :freebsd, '9.0-RELEASE', '9.0-RELEASE', nil]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['BSD', 'FreeBSD', nil]
+        end
+        it "should be described correctly" do
+          profile.description.should == 'FreeBSD 9.0-RELEASE'
+        end
+      end
+
+      describe 'on a DragonFly box' do
+        let(:profile) { DragonFlySystemProfile.new }
+        before { profile.stub(:shell).with('uname -r').and_return("1.2.3") }
+
+        it "should have correct system info" do
+          info_for(profile).should == [:bsd, :dragonfly, '1.2', '1.2.3', nil]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['BSD', 'DragonFly', nil]
+        end
+        it "should be described correctly" do
+          profile.description.should == 'DragonFly BSD 1.2.3'
+        end
+      end
+    end
+
+    describe 'on a Linux box' do
+      let(:profile) { LinuxSystemProfile.new }
+
+      it "should have correct system info" do
+        info_for(profile).should == [:linux, :unknown, "unknown", "unknown", nil]
+      end
+      it "should have correct version info" do
+        info_strs_for(profile).should == ['Linux', 'Linux', nil]
+      end
+      it "should be described correctly" do
+        profile.description.should == 'Unknown Linux'
+      end
+
+      context 'on a Debian box' do
+        let(:profile) { DebianSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return("No LSB modules are available.\nDistributor ID: Ubuntu\nDescription:  Ubuntu 12.04.2 LTS\nRelease:  12.04\nCodename: precise") }
+
+        it "should have correct name and version info" do
+          info_for(profile).should == [:linux, :ubuntu, "12.04", "12.04", :precise]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Ubuntu', 'Precise Pangolin']
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Ubuntu Linux 12.04 (Precise Pangolin)'
+        end
+      end
+
+      context 'on a Redhat box' do
+        let(:profile) { RedhatSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return("Red Hat Enterprise Linux Server release 6.4 (Santiago)") }
+
+        it "should have correct system info" do
+          info_for(profile).should == [:linux, :redhat, "6", "6.4", :santiago]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Red Hat', 'Santiago']
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Red Hat Linux 6.4 (Santiago)'
+        end
+      end
+
+      context 'on a Fedora box' do
+        let(:profile) { FedoraSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return("Fedora release 18 (Spherical Cow)") }
+
+        it "should report correct name and version info" do
+          info_for(profile).should == [:linux, :fedora, "18", "18", :spherical]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Fedora', 'Spherical Cow']
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Fedora Linux 18 (Spherical Cow)'
+        end
+      end
+
+      context 'on an Arch box' do
+        let(:profile) { ArchSystemProfile.new }
+
+        it "should report correct name and version info" do
+          info_for(profile).should == [:linux, :arch, "", "", nil]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Arch', nil]
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Arch Linux'
+        end
+      end
+    end
+  end
+
   describe '#cpu_type' do
     it "should return the type reported by `uname`" do
       profile.should_receive(:shell).with('uname -m').and_return('x86')

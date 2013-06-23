@@ -46,7 +46,7 @@ describe Babushka::SystemDetector do
         subject.class.should == Babushka::LinuxSystemProfile
       end
       it "should return a proper description on unknown Linux boxes" do
-        subject.description.should == "Linux unknown"
+        subject.description.should == "Unknown Linux"
       end
       context "version matching" do
         before {
