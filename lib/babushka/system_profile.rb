@@ -119,10 +119,10 @@ module Babushka
   end
 
   class LinuxSystemProfile < SystemProfile
-    def system; :linux end
+    def system; system_str.gsub(/[^\w]/, '').downcase.to_sym end
     def system_str; 'Linux' end
-    def flavour; :unknown end
-    def flavour_str; 'Linux' end
+    def flavour; flavour_str.gsub(/[^\w]/, '').downcase.to_sym end
+    def flavour_str; 'Unknown' end
     def version; 'unknown' end
     def release; version end
     def cpus; shell("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").to_i end
@@ -136,7 +136,6 @@ module Babushka
   end
 
   class DebianSystemProfile < LinuxSystemProfile
-    def flavour; flavour_str.downcase.to_sym end
     def flavour_str; version_info.val_for 'Distributor ID' end
     def version; version_info.val_for 'Release' end
     def name; version_info.val_for('Codename').to_sym end
@@ -151,7 +150,6 @@ module Babushka
   end
 
   class RedhatSystemProfile < LinuxSystemProfile
-    def flavour; :redhat end
     def flavour_str; 'Red Hat' end
 
     def version
@@ -166,20 +164,19 @@ module Babushka
   end
 
   class CentOSSystemProfile < RedhatSystemProfile
-    def flavour; :centos end
     def flavour_str; 'CentOS' end
     def get_version_info; File.read('/etc/centos-release') end
   end
 
   class FedoraSystemProfile < RedhatSystemProfile
-    def flavour; :fedora end
     def flavour_str; 'Fedora' end
     def get_version_info; File.read('/etc/system-release') end
   end
 
   class ArchSystemProfile < LinuxSystemProfile
+    def flavour_str; 'Arch' end
     def pkg_helper; PacmanHelper end
-    def flavour; :arch end
+
 
     # Arch uses rolling versions and doesn't assign version numbers.
     def get_version_info; 'rolling' end
