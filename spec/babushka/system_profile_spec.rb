@@ -33,13 +33,13 @@ Swap:            0          0          0
     end
     it "should work on FreeBSD" do
       ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
-      profile.should_receive(:shell).with('sysctl -n hw.realmem').and_return("4294967296")
-      profile.total_memory.should == 4294967296
+      profile.should_receive(:shell).with('sysctl -n hw.realmem').and_return("242647040")
+      profile.total_memory.should == 242647040
     end
     it "should work on DragonFly" do
       ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
-      profile.should_receive(:shell).with('sysctl -n hw.physmem').and_return("4294967296")
-      profile.total_memory.should == 4294967296
+      profile.should_receive(:shell).with('sysctl -n hw.physmem').and_return("242647040")
+      profile.total_memory.should == 242647040
     end
   end
 
