@@ -139,17 +139,12 @@ module Babushka
   end
 
   class DebianSystemProfile < LinuxSystemProfile
-    def flavour_str; version_info.val_for 'Distributor ID' end
-    def version; version_info.val_for 'Release' end
-    def name; version_info.val_for('Codename').to_sym end
-    def get_version_info; ensure_lsb_release and shell('lsb_release -a') end
-    def pkg_helper; AptHelper end
+    def flavour_str; version_info.val_for('DISTRIB_ID') end
+    def version; version_info.val_for('DISTRIB_RELEASE') end
+    def name; version_info.val_for('DISTRIB_CODENAME').to_sym end
 
-    def ensure_lsb_release
-      which('lsb_release') or log("Babushka uses `lsb_release` to learn about debian-based systems.") {
-        AptHelper.install!('lsb-release')
-      }
-    end
+    def get_version_info; File.read('/etc/lsb-release') end
+    def pkg_helper; AptHelper end
   end
 
   class RedhatSystemProfile < LinuxSystemProfile

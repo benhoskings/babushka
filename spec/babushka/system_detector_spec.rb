@@ -59,18 +59,16 @@ describe Babushka::SystemDetector do
       context "version matching" do
         before {
           File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
-          subject.should_receive(:ensure_lsb_release).and_return(true)
-          subject.should_receive(:shell).with("lsb_release -a").and_return(%Q{
-            No LSB modules are available.
-            Distributor ID:	Debian
-            Description:	Debian GNU/Linux 6.0.1 (squeeze)
-            Release:	6.0.1
-            Codename:	squeeze
+          File.should_receive(:read).with("/etc/lsb-release").and_return(%Q{
+            DISTRIB_ID=Ubuntu
+            DISTRIB_RELEASE=12.04
+            DISTRIB_CODENAME=precise
+            DISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"
           }.strip)
         }
-        it "should detect debian squeeze" do
-          subject.match_list.should == [:squeeze, :debian, :apt, :linux, :all]
-          subject.version.should == '6.0.1'
+        it "should detect debian precise" do
+          subject.match_list.should == [:precise, :ubuntu, :apt, :linux, :all]
+          subject.version.should == '12.04'
         end
       end
     end

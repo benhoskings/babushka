@@ -104,7 +104,7 @@ describe Babushka::SystemProfile do
 
       context 'on a Debian box' do
         let(:profile) { DebianSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("No LSB modules are available.\nDistributor ID: Ubuntu\nDescription:  Ubuntu 12.04.2 LTS\nRelease:  12.04\nCodename: precise") }
+        before { profile.stub(:get_version_info).and_return(%Q{DISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=12.04\nDISTRIB_CODENAME=precise\nDISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"}) }
 
         it "should have correct name and version info" do
           info_for(profile).should == [:linux, :ubuntu, "12.04", "12.04", :precise]
