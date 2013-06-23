@@ -68,6 +68,20 @@ module Babushka
           '6.0' => :squeeze,
           '7.0' => :wheezy
         },
+        :redhat => {
+          '3' => :taroon,
+          '4' => :nahant,
+          '5' => :tikanga,
+          '6' => :santiago
+        },
+        :fedora => {
+          '14' => :laughlin,
+          '15' => :lovelock,
+          '16' => :verne,
+          '17' => :beefy,
+          '18' => :spherical,
+          '19' => :schrodinger
+        },
         :arch => {}
       },
       :bsd => {
@@ -106,6 +120,20 @@ module Babushka
           '11.04' => 'Natty Narwhal',
           '11.10' => 'Oneiric Ocelot',
           '12.04' => 'Precise Pangolin'
+        },
+        :redhat => {
+          '3' => 'Taroon',
+          '4' => 'Nahant',
+          '5' => 'Tikanga',
+          '6' => 'Santiago'
+        },
+        :fedora => {
+          '14' => 'Laughlin',
+          '15' => 'Lovelock',
+          '16' => 'Verne',
+          '17' => 'Beefy Miracle',
+          '18' => 'Spherical Cow',
+          '19' => "Schrödinger's Cat"
         },
         :debian => {
           '5.0.4' => 'Lenny'
