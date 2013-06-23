@@ -38,7 +38,9 @@ module Babushka
           '10.4' => :tiger,
           '10.5' => :leopard,
           '10.6' => :snow_leopard,
-          '10.7' => :lion
+          '10.7' => :lion,
+          '10.8' => :mountain_lion,
+          '10.9' => :mavericks
         }
       },
       :linux => {
@@ -81,7 +83,9 @@ module Babushka
           '10.4' => 'Tiger',
           '10.5' => 'Leopard',
           '10.6' => 'Snow Leopard',
-          '10.7' => 'Lion'
+          '10.7' => 'Lion',
+          '10.8' => 'Mountain Lion',
+          '10.9' => 'Mavericks'
         }
       },
       :linux => {
