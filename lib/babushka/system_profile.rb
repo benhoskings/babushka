@@ -78,7 +78,7 @@ module Babushka
     def get_version_info; shell 'sw_vers' end
     def pkg_helper; BrewHelper end
     def cpus; shell('sysctl -n hw.ncpu').to_i end
-    def total_memory; shell("sysctl -a").val_for("hw.memsize").to_i end
+    def total_memory; shell("sysctl -n hw.memsize").to_i end
 
     def public_ip
       shell('ifconfig',
@@ -102,14 +102,14 @@ module Babushka
     def system_str; 'DragonFly' end
     def flavour; :dragonfly end
     def pkg_helper; BinPkgSrcHelper end
-    def total_memory; shell("sysctl -a").val_for("hw.physmem").to_i end
+    def total_memory; shell("sysctl -n hw.physmem").to_i end
   end
 
   class FreeBSDSystemProfile < BSDSystemProfile
     def system_str; 'FreeBSD' end
     def flavour; :freebsd end
     def pkg_helper; BinPortsHelper end
-    def total_memory; shell("sysctl -a").val_for("hw.realmem").to_i end
+    def total_memory; shell("sysctl -n hw.realmem").to_i end
   end
 
   class LinuxSystemProfile < SystemProfile

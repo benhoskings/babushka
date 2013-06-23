@@ -19,7 +19,7 @@ describe Babushka::SystemProfile do
   describe '#total_memory' do
     it "should work on OS X" do
       ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
-      profile.should_receive(:shell).with('sysctl -a').and_return("hw.memsize = 4294967296\nhw.availcpu = 4")
+      profile.should_receive(:shell).with('sysctl -n hw.memsize').and_return("4294967296")
       profile.total_memory.should == 4294967296
     end
     it "should work on Linux" do
@@ -33,12 +33,12 @@ Swap:            0          0          0
     end
     it "should work on FreeBSD" do
       ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
-      profile.should_receive(:shell).with('sysctl -a').and_return("hw.realmem = 4294967296\nhw.availcpu = 4")
+      profile.should_receive(:shell).with('sysctl -n hw.realmem').and_return("4294967296")
       profile.total_memory.should == 4294967296
     end
     it "should work on DragonFly" do
       ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
-      profile.should_receive(:shell).with('sysctl -a').and_return("hw.physmem = 4294967296\nhw.availcpu = 4")
+      profile.should_receive(:shell).with('sysctl -n hw.physmem').and_return("4294967296")
       profile.total_memory.should == 4294967296
     end
   end
