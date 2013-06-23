@@ -16,6 +16,29 @@ describe Babushka::SystemProfile do
     end
   end
 
+  describe '#cpus' do
+    it "should work on OS X" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
+      profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
+      profile.cpus.should == 4
+    end
+    it "should work on Linux" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
+      profile.should_receive(:shell).with("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").and_return("    4")
+      profile.cpus.should == 4
+    end
+    it "should work on FreeBSD" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
+      profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
+      profile.cpus.should == 4
+    end
+    it "should work on DragonFly" do
+      ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
+      profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
+      profile.cpus.should == 4
+    end
+  end
+
   describe '#total_memory' do
     it "should work on OS X" do
       ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")

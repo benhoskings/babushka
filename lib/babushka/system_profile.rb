@@ -95,6 +95,7 @@ module Babushka
     def flavour_str; system_str end
     def version; shell 'uname -s' end
     def release; shell 'uname -r' end
+    def cpus; shell('sysctl -n hw.ncpu').to_i end
     def get_version_info; shell 'uname -v' end
   end
 
