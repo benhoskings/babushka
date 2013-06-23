@@ -103,8 +103,8 @@ module Babushka
     def system; :bsd end
     def system_str; 'BSD' end
     def flavour_str; 'Unknown' end
-    def version; release end
-    def release; shell 'uname -r' end
+    def version; shell('uname -r') end
+    def release; version.match(/^\d+\.\d+/).to_s end
     def cpus; shell('sysctl -n hw.ncpu').to_i end
     def get_version_info; shell 'uname -v' end
   end
@@ -118,6 +118,7 @@ module Babushka
   class FreeBSDSystemProfile < BSDSystemProfile
     def system_description; flavour_str end # Not 'FreeBSD BSD'
     def flavour_str; 'FreeBSD' end
+    def release; version end # So '9.0-RELEASE' doesn't become '9.0'
     def pkg_helper; BinPortsHelper end
     def total_memory; shell("sysctl -n hw.realmem").to_i end
   end
