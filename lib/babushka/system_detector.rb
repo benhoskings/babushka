@@ -21,9 +21,7 @@ module Babushka
         'redhat-release' => RedhatSystemProfile,
         'arch-release'   => ArchSystemProfile,
         'system-release' => FedoraSystemProfile,
-        'centos-release' => CentOSSystemProfile,
-        # 'gentoo-release' =>
-        # 'SuSE-release'   =>
+        'centos-release' => CentOSSystemProfile
       }.selekt {|release_file, system_profile|
         File.exists? "/etc/#{release_file}"
       }.values.first
