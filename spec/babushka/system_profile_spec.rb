@@ -1,18 +1,18 @@
 require 'spec_helper'
 
 describe Babushka::SystemProfile do
-  subject {
+  let(:profile) {
     Babushka::SystemDetector.profile_for_host
   }
 
   describe '#cpu_type' do
     it "should return the type reported by `uname`" do
-      subject.should_receive(:shell).with('uname -m').and_return('x86')
-      subject.cpu_type.should == 'x86'
+      profile.should_receive(:shell).with('uname -m').and_return('x86')
+      profile.cpu_type.should == 'x86'
     end
     it "should substitute 'x86_64' for 'amd64'" do
-      subject.should_receive(:shell).with('uname -m').and_return('amd64')
-      subject.cpu_type.should == 'x86_64'
+      profile.should_receive(:shell).with('uname -m').and_return('amd64')
+      profile.cpu_type.should == 'x86_64'
     end
   end
 
@@ -20,7 +20,7 @@ describe Babushka::SystemProfile do
     context "on OS X" do
       before {
         ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
-        subject.should_receive(:shell).with('netstat -nr').and_return("
+        profile.should_receive(:shell).with('netstat -nr').and_return("
 Routing tables
 
 Internet:
@@ -52,7 +52,7 @@ ff02::%lo0/32                           fe80::1%lo0                     UmCI    
 ff02::%en0/32                           link#4                          UmCI            en0
 ff02::fb%en0                            link#4                          UHmW3I          en0    350
         ")
-        subject.should_receive(:shell).with('ifconfig', 'en0').and_return("
+        profile.should_receive(:shell).with('ifconfig', 'en0').and_return("
 en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	ether 60:c5:47:03:5b:6a
 	inet6 fe80::62c5:47ff:fe03:5b6a%en0 prefixlen 64 scopeid 0x4
@@ -62,21 +62,21 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
         ")
       }
       it "should return the correct IP" do
-        subject.public_ip.should == '10.0.1.31'
+        profile.public_ip.should == '10.0.1.31'
       end
     end
 
     context "on Linux" do
       before {
         ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
-        subject.should_receive(:shell).with('netstat -nr').and_return("
+        profile.should_receive(:shell).with('netstat -nr').and_return("
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
 49.156.17.0     0.0.0.0         255.255.255.0   U         0 0          0 eth0
 10.0.0.0        0.0.0.0         255.0.0.0       U         0 0          0 eth1
 0.0.0.0         49.156.17.1     0.0.0.0         UG        0 0          0 eth0
         ")
-        subject.should_receive(:shell).with('ifconfig', 'eth0').and_return("
+        profile.should_receive(:shell).with('ifconfig', 'eth0').and_return("
 eth0      Link encap:Ethernet  HWaddr 00:16:31:9c:11:ad
           inet addr:49.156.17.173  Bcast:49.156.17.255  Mask:255.255.255.0
           inet6 addr: fe80::216:31ff:fe9c:11ad/64 Scope:Link
@@ -89,7 +89,7 @@ eth0      Link encap:Ethernet  HWaddr 00:16:31:9c:11:ad
         ")
       }
       it "should return the correct IP" do
-        subject.public_ip.should == '49.156.17.173'
+        profile.public_ip.should == '49.156.17.173'
       end
     end
 
