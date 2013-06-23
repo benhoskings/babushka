@@ -16,7 +16,7 @@ describe Babushka::SystemProfile do
     end
   end
 
-  describe SystemProfile, '#public_ip' do
+  describe '#public_ip' do
     context "on OS X" do
       before {
         ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
