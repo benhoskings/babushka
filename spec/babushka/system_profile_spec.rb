@@ -52,7 +52,7 @@ describe Babushka::SystemProfile do
         info_for(profile).should == [:bsd, :unknown, '1.2', '1.2.3', nil]
       end
       it "should have correct version info" do
-        info_strs_for(profile).should == ['BSD', 'BSD', nil]
+        info_strs_for(profile).should == ['BSD', 'Unknown', nil]
       end
       it "should be described correctly" do
         profile.description.should == 'Unknown BSD 1.2.3'
@@ -96,7 +96,7 @@ describe Babushka::SystemProfile do
         info_for(profile).should == [:linux, :unknown, "unknown", "unknown", nil]
       end
       it "should have correct version info" do
-        info_strs_for(profile).should == ['Linux', 'Linux', nil]
+        info_strs_for(profile).should == ['Linux', 'Unknown', nil]
       end
       it "should be described correctly" do
         profile.description.should == 'Unknown Linux'
