@@ -19,7 +19,7 @@ module Babushka
       [
         ['debian_version', DebianSystemProfile],
         ['arch-release',   ArchSystemProfile],
-        ['system-release', FedoraSystemProfile],
+        ['fedora-release', FedoraSystemProfile],
         ['centos-release', CentOSSystemProfile],
         ['redhat-release', RedhatSystemProfile]
       ].select {|(release_file,_)|

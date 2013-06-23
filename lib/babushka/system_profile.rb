@@ -173,7 +173,7 @@ module Babushka
 
   class FedoraSystemProfile < RedhatSystemProfile
     def flavour_str; 'Fedora' end
-    def get_version_info; File.read('/etc/system-release') end
+    def get_version_info; File.read('/etc/fedora-release') end
   end
 
   class ArchSystemProfile < LinuxSystemProfile
