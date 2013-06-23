@@ -14,6 +14,9 @@ module Babushka
       @definition ||= SystemDefinition.new(system, flavour, release)
     end
 
+    def system; system_str.gsub(/[^\w]/, '').downcase.to_sym end
+    def flavour; flavour_str.gsub(/[^\w]/, '').downcase.to_sym end
+
     def name; definition.name end
     def name_str; definition.name_str end
 
@@ -41,10 +44,13 @@ module Babushka
       }
     end
 
+    def system_description
+      [flavour_str, system_str].uniq.join(' ')
+    end
+
     def description
       [
-        (flavour_str unless flavour_str == system_str),
-        system_str,
+        system_description,
         version,
         ("(#{name_str})" unless name_str.nil?)
       ].compact.join(' ')
@@ -96,32 +102,28 @@ module Babushka
   class BSDSystemProfile < SystemProfile
     def system; :bsd end
     def system_str; 'BSD' end
-    def flavour; :unknown end
-    def flavour_str; system_str end
-    def version; shell 'uname -s' end
+    def flavour_str; 'Unknown' end
+    def version; release end
     def release; shell 'uname -r' end
     def cpus; shell('sysctl -n hw.ncpu').to_i end
     def get_version_info; shell 'uname -v' end
   end
 
   class DragonFlySystemProfile < BSDSystemProfile
-    def system_str; 'DragonFly' end
-    def flavour; :dragonfly end
+    def flavour_str; 'DragonFly' end
     def pkg_helper; BinPkgSrcHelper end
     def total_memory; shell("sysctl -n hw.physmem").to_i end
   end
 
   class FreeBSDSystemProfile < BSDSystemProfile
-    def system_str; 'FreeBSD' end
-    def flavour; :freebsd end
+    def system_description; flavour_str end # Not 'FreeBSD BSD'
+    def flavour_str; 'FreeBSD' end
     def pkg_helper; BinPortsHelper end
     def total_memory; shell("sysctl -n hw.realmem").to_i end
   end
 
   class LinuxSystemProfile < SystemProfile
-    def system; system_str.gsub(/[^\w]/, '').downcase.to_sym end
     def system_str; 'Linux' end
-    def flavour; flavour_str.gsub(/[^\w]/, '').downcase.to_sym end
     def flavour_str; 'Unknown' end
     def version; 'unknown' end
     def release; version end
