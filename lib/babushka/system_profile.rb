@@ -63,8 +63,13 @@ module Babushka
     end
 
     def system; :unknown end
+    def system_str; 'Unknown' end
     def flavour; :unknown end
+    def flavour_str; 'Unknown' end
+    def release; 'unknown' end
+    def version; 'unknown' end
     def name; :unknown end
+    def name_str; 'Unknown' end
   end
 
   class OSXSystemProfile < SystemProfile
