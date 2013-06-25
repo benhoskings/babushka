@@ -168,17 +168,13 @@ module Babushka
 
     # An array of the names of all the local branches in this repo.
     def branches
-      names = repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
-      reject_non_branches(names)
+      names = repo_shell('git show-ref --heads') || ""
+      names.split("\n").map(&:chomp).map {|l| l.sub(/^[a-fA-F0-9]+ refs\/heads\//, '') }
     end
 
     def all_branches
-      names = repo_shell('git branch -a').split("\n").map {|l| l.sub(/^[* ]+/, '') }
-      reject_non_branches(names).reject {|i|
-        i['/origin/HEAD ->']
-      }.map {|i|
-        i.sub(/^remotes\//, '')
-      }
+      names = repo_shell('git show-ref') || ""
+      names.split("\n").map {|l| l.sub(/^[a-fA-F0-9]+ refs\/(?:heads|remotes)\//, '') }
     end
 
     # The name of the branch that's currently checked out, if any. If there
@@ -283,12 +279,6 @@ module Babushka
 
     def error_message_for git_error
       git_error.sub(/^fatal\: /, '').sub(/\n.*$/m, '').end_with('.')
-    end
-
-    def reject_non_branches branch_names
-      branch_names.reject {|n|
-        n['(no branch)'] || n[/^\(detached from \w+\)$/]
-      }
     end
   end
 end
