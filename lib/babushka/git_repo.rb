@@ -169,7 +169,9 @@ module Babushka
     # An array of the names of all the local branches in this repo.
     def branches
       names = repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
-      names - ['(no branch)']
+      names.reject {|n|
+        n['(no branch)'] || n[/^\(detached from \w+\)$/]
+      }
     end
 
     def all_branches
