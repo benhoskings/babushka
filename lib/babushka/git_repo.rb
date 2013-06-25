@@ -169,14 +169,12 @@ module Babushka
     # An array of the names of all the local branches in this repo.
     def branches
       names = repo_shell('git branch').split("\n").map {|l| l.sub(/^[* ]+/, '') }
-      names.reject {|n|
-        n['(no branch)'] || n[/^\(detached from \w+\)$/]
-      }
+      reject_non_branches(names)
     end
 
     def all_branches
       names = repo_shell('git branch -a').split("\n").map {|l| l.sub(/^[* ]+/, '') }
-      (names - ['(no branch)']).reject {|i|
+      reject_non_branches(names).reject {|i|
         i['/origin/HEAD ->']
       }.map {|i|
         i.sub(/^remotes\//, '')
@@ -285,6 +283,12 @@ module Babushka
 
     def error_message_for git_error
       git_error.sub(/^fatal\: /, '').sub(/\n.*$/m, '').end_with('.')
+    end
+
+    def reject_non_branches branch_names
+      branch_names.reject {|n|
+        n['(no branch)'] || n[/^\(detached from \w+\)$/]
+      }
     end
   end
 end
