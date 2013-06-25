@@ -31,38 +31,46 @@ describe Babushka::SystemDetector do
       }
       it "should return DebianSystemProfile on Debian boxes" do
         File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
-        Babushka::AptHelper.stub!(:install!) # so an `lsb_release` install isn't attempted
+        File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
         subject.should be_an_instance_of(Babushka::DebianSystemProfile)
+      end
+      it "should return UbuntuSystemProfile on Ubuntu boxes" do
+        File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
+        File.should_receive(:exists?).with("/etc/lsb-release").and_return(true)
+        File.should_receive(:read).with("/etc/lsb-release").and_return('Ubuntu')
+        subject.should be_an_instance_of(Babushka::UbuntuSystemProfile)
+      end
+      it "should return ArchSystemProfile on Arch boxes" do
+        File.should_receive(:exists?).with("/etc/arch-release").and_return(true)
+        subject.should be_an_instance_of(Babushka::ArchSystemProfile)
       end
       it "should return RedhatSystemProfile on Red Hat boxes" do
         File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
         subject.should be_an_instance_of(Babushka::RedhatSystemProfile)
       end
-      it "should return FedoraSystemProfile on Fedora derived boxes" do
-        File.should_receive(:exists?).with("/etc/system-release").and_return(true)
+      it "should return RedhatSystemProfile on CentOS boxes" do
+        File.should_receive(:exists?).with("/etc/redhat-release").and_return(true)
+        subject.should be_an_instance_of(Babushka::RedhatSystemProfile)
+      end
+      it "should return FedoraSystemProfile on Fedora boxes" do
+        File.should_receive(:exists?).with("/etc/fedora-release").and_return(true)
         subject.should be_an_instance_of(Babushka::FedoraSystemProfile)
       end
       it "should return LinuxSystemProfile on unknown Linux boxes" do
         subject.class.should == Babushka::LinuxSystemProfile
       end
       it "should return a proper description on unknown Linux boxes" do
-        subject.description.should == "Linux unknown"
+        subject.description.should == "Unknown Linux"
       end
       context "version matching" do
         before {
           File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
-          subject.should_receive(:ensure_lsb_release).and_return(true)
-          subject.should_receive(:shell).with("lsb_release -a").and_return(%Q{
-            No LSB modules are available.
-            Distributor ID:	Debian
-            Description:	Debian GNU/Linux 6.0.1 (squeeze)
-            Release:	6.0.1
-            Codename:	squeeze
-          }.strip)
+          File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
+          File.should_receive(:read).with("/etc/os-release").and_return(%Q{PRETTY_NAME="Debian GNU/Linux 7.0 (wheezy)"\nNAME="Debian GNU/Linux"\nVERSION_ID="7.0"\nVERSION="7.0 (wheezy)"\nID=debian\nANSI_COLOR="1;31"\nHOME_URL="http://www.debian.org/"\nSUPPORT_URL="http://www.debian.org/support/"\nBUG_REPORT_URL="http://bugs.debian.org/""})
         }
-        it "should detect debian squeeze" do
-          subject.match_list.should == [:squeeze, :debian, :apt, :linux, :all]
-          subject.version.should == '6.0.1'
+        it "should detect debian precise" do
+          subject.match_list.should == [:wheezy, :debian, :apt, :linux, :all]
+          subject.version.should == '7.0'
         end
       end
     end

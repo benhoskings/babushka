@@ -340,8 +340,8 @@ describe Dep, 'lambda lists' do
     Babushka.host.matcher.stub!(:system).and_return(:test_system)
     Babushka.host.matcher.stub!(:pkg_helper_key).and_return(:test_helper)
 
-    Babushka::SystemDefinitions.stub!(:all_names).and_return([:test_name, :other_name])
-    Babushka::SystemDefinitions.stub!(:all_systems).and_return([:test_system, :other_system])
+    Babushka::SystemDefinition.stub!(:all_names).and_return([:test_name, :other_name])
+    Babushka::SystemDefinition.stub!(:all_systems).and_return([:test_system, :other_system])
     Babushka::PkgHelper.stub!(:all_manager_keys).and_return([:test_helper, :other_helper])
   }
   it "should match against the system name" do

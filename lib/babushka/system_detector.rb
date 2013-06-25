@@ -16,16 +16,21 @@ module Babushka
     end
 
     def self.detect_using_release_file
-      {
-        'debian_version' => DebianSystemProfile,
-        'redhat-release' => RedhatSystemProfile,
-        'arch-release'   => ArchSystemProfile,
-        'system-release' => FedoraSystemProfile,
-        # 'gentoo-release' =>
-        # 'SuSE-release'   =>
-      }.selekt {|release_file, system_profile|
-        File.exists? "/etc/#{release_file}"
-      }.values.first
+      if File.exists?('/etc/debian_version')
+        if File.exists?('/etc/lsb-release') && File.read('/etc/lsb-release')[/ubuntu/i]
+          UbuntuSystemProfile
+        else
+          DebianSystemProfile
+        end
+      elsif File.exists?('/etc/arch-release')
+        ArchSystemProfile
+      elsif File.exists?('/etc/fedora-release')
+        FedoraSystemProfile
+      elsif File.exists?('/etc/centos-release')
+        CentOSSystemProfile
+      elsif File.exists?('/etc/redhat-release')
+        RedhatSystemProfile
+      end
     end
   end
 end

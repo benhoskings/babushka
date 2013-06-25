@@ -45,7 +45,7 @@ module Babushka
     base
     renderable
     current_ruby
-    system_definitions
+    system_definition
     system_profile
     system_detector
     system_matcher

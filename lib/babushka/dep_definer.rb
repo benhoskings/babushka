@@ -122,7 +122,7 @@ module Babushka
     end
 
     def chooser_choices
-      SystemDefinitions.all_tokens
+      SystemDefinition.all_tokens
     end
 
     def self.source_template
