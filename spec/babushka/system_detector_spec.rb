@@ -31,8 +31,14 @@ describe Babushka::SystemDetector do
       }
       it "should return DebianSystemProfile on Debian boxes" do
         File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
-        Babushka::AptHelper.stub!(:install!) # so an `lsb_release` install isn't attempted
+        File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
         subject.should be_an_instance_of(Babushka::DebianSystemProfile)
+      end
+      it "should return UbuntuSystemProfile on Ubuntu boxes" do
+        File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
+        File.should_receive(:exists?).with("/etc/lsb-release").and_return(true)
+        File.should_receive(:read).with("/etc/lsb-release").and_return('Ubuntu')
+        subject.should be_an_instance_of(Babushka::UbuntuSystemProfile)
       end
       it "should return ArchSystemProfile on Arch boxes" do
         File.should_receive(:exists?).with("/etc/arch-release").and_return(true)
@@ -59,16 +65,12 @@ describe Babushka::SystemDetector do
       context "version matching" do
         before {
           File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
-          File.should_receive(:read).with("/etc/lsb-release").and_return(%Q{
-            DISTRIB_ID=Ubuntu
-            DISTRIB_RELEASE=12.04
-            DISTRIB_CODENAME=precise
-            DISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"
-          }.strip)
+          File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
+          File.should_receive(:read).with("/etc/os-release").and_return(%Q{PRETTY_NAME="Debian GNU/Linux 7.0 (wheezy)"\nNAME="Debian GNU/Linux"\nVERSION_ID="7.0"\nVERSION="7.0 (wheezy)"\nID=debian\nANSI_COLOR="1;31"\nHOME_URL="http://www.debian.org/"\nSUPPORT_URL="http://www.debian.org/support/"\nBUG_REPORT_URL="http://bugs.debian.org/""})
         }
         it "should detect debian precise" do
-          subject.match_list.should == [:precise, :ubuntu, :apt, :linux, :all]
-          subject.version.should == '12.04'
+          subject.match_list.should == [:wheezy, :debian, :apt, :linux, :all]
+          subject.version.should == '7.0'
         end
       end
     end

@@ -17,7 +17,11 @@ module Babushka
 
     def self.detect_using_release_file
       if File.exists?('/etc/debian_version')
-        DebianSystemProfile
+        if File.exists?('/etc/lsb-release') && File.read('/etc/lsb-release')[/ubuntu/i]
+          UbuntuSystemProfile
+        else
+          DebianSystemProfile
+        end
       elsif File.exists?('/etc/arch-release')
         ArchSystemProfile
       elsif File.exists?('/etc/fedora-release')

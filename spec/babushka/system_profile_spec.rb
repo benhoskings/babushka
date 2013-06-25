@@ -104,6 +104,21 @@ describe Babushka::SystemProfile do
 
       context 'on a Debian box' do
         let(:profile) { DebianSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return(%Q{PRETTY_NAME="Debian GNU/Linux 7.0 (wheezy)"\nNAME="Debian GNU/Linux"\nVERSION_ID="7.0"\nVERSION="7.0 (wheezy)"\nID=debian\nANSI_COLOR="1;31"\nHOME_URL="http://www.debian.org/"\nSUPPORT_URL="http://www.debian.org/support/"\nBUG_REPORT_URL="http://bugs.debian.org/""}) }
+
+        it "should have correct name and version info" do
+          info_for(profile).should == [:linux, :debian, "7.0", "7.0", :wheezy]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Debian', 'wheezy']
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Debian Linux 7.0 (wheezy)'
+        end
+      end
+
+      context 'on an Ubuntu box' do
+        let(:profile) { UbuntuSystemProfile.new }
         before { profile.stub(:get_version_info).and_return(%Q{DISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=12.04\nDISTRIB_CODENAME=precise\nDISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"}) }
 
         it "should have correct name and version info" do

@@ -85,7 +85,7 @@ module Babushka
     def flavour; system end
     def flavour_str; system_str end
     def version; version_info.val_for 'ProductVersion' end
-    def release; version.match(/^\d+\.\d+/).to_s end
+    def release; version[/^\d+\.\d+/] end
     def get_version_info; shell 'sw_vers' end
     def pkg_helper; BrewHelper end
     def cpus; shell('sysctl -n hw.ncpu').to_i end
@@ -139,7 +139,16 @@ module Babushka
   end
 
   class DebianSystemProfile < LinuxSystemProfile
-    def flavour_str; version_info.val_for('DISTRIB_ID') end
+    def flavour_str; 'Debian' end
+    def version; version_info.val_for('VERSION_ID')[/\d+\.\d+/] end # The values are quoted.
+    def name_str; name.to_s end # They're named just like our symbols; no need to duplicate in SystemDefinition.
+
+    def get_version_info; File.read('/etc/os-release') end
+    def pkg_helper; AptHelper end
+  end
+
+  class UbuntuSystemProfile < LinuxSystemProfile
+    def flavour_str; 'Ubuntu' end
     def version; version_info.val_for('DISTRIB_RELEASE') end
 
     def get_version_info; File.read('/etc/lsb-release') end
