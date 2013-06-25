@@ -206,21 +206,21 @@ describe GitRepo, '#all_branches' do
   context "on a repo with commits" do
     before(:all) { stub_repo 'a' }
     it "should return the only branch in a list" do
-      subject.all_branches.should == ["master", "origin/master", "origin/next"]
+      subject.all_branches.should == ["master", "origin/HEAD", "origin/master", "origin/next"]
     end
     context "after creating another branch" do
       before(:all) {
         repo_context('a') { ShellHelpers.shell "git checkout -b next" }
       }
       it "should return both branches" do
-        subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
+        subject.all_branches.should == ["master", "next", "origin/HEAD", "origin/master", "origin/next"]
       end
       context "after changing back to master" do
         before {
           repo_context('a') { ShellHelpers.shell "git checkout master" }
         }
         it "should return both branches" do
-          subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
+          subject.all_branches.should == ["master", "next", "origin/HEAD", "origin/master", "origin/next"]
         end
       end
     end
@@ -229,7 +229,7 @@ describe GitRepo, '#all_branches' do
         repo_context('a') { ShellHelpers.shell "git checkout origin/next~" }
       }
       it "should not include the '(no branch)' entry" do
-        subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
+        subject.all_branches.should == ["master", "next", "origin/HEAD", "origin/master", "origin/next"]
       end
     end
   end
