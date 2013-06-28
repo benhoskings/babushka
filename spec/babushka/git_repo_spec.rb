@@ -200,6 +200,10 @@ describe GitRepo, '#all_branches' do
     it "should return the only branch in a list" do
       subject.all_branches.should == ["master", "origin/master", "origin/next"]
     end
+    it "should not return tags" do
+      subject.repo_shell('git tag tagged_ref')
+      subject.all_branches.grep(/tagged_ref/).should be_empty
+    end
     context "after creating another branch" do
       before(:all) {
         repo_context('a') { ShellHelpers.shell "git checkout -b next" }

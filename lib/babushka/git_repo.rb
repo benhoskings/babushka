@@ -174,7 +174,7 @@ module Babushka
 
     def all_branches
       names = repo_shell('git show-ref') || ""
-      names.split("\n").map {|l| l.sub(/^[a-fA-F0-9]+ refs\/(?:heads|remotes)\//, '') }
+      names.split("\n").collapse(%r{^\w+ refs/(?:heads|remotes)/}) - ['origin/HEAD']
     end
 
     # The name of the branch that's currently checked out, if any. If there
