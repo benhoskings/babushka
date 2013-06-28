@@ -184,14 +184,6 @@ describe GitRepo, '#branches' do
         end
       end
     end
-    context "with a detached HEAD" do
-      before {
-        repo_context('a') { ShellHelpers.shell "git checkout origin/next~" }
-      }
-      it "should not include the '(no branch)' entry" do
-        subject.branches.should == ['master', 'next']
-      end
-    end
   end
   context "on a repo with no commits" do
     before { stub_commitless_repo 'a' }
@@ -222,14 +214,6 @@ describe GitRepo, '#all_branches' do
         it "should return both branches" do
           subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
         end
-      end
-    end
-    context "with a detached HEAD" do
-      before {
-        repo_context('a') { ShellHelpers.shell "git checkout origin/next~" }
-      }
-      it "should not include the '(no branch)' entry" do
-        subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
       end
     end
   end
