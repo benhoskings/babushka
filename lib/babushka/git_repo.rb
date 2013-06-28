@@ -185,7 +185,7 @@ module Babushka
     # is no current branch (i.e. if the HEAD is detached), the HEAD's SHA is
     # returned instead.
     def current_branch
-      repo_shell("cat .git/HEAD").strip.sub(/^.*refs\/heads\//, '')
+      repo_shell("cat .git/HEAD").strip.sub(%r{^.*refs/heads/}, '')
     end
 
     # The namespaced name of the remote branch that the current local branch
@@ -254,7 +254,7 @@ module Babushka
     # as remote/branch. For example, if "origin/next" is passed, a local 'next'
     # branch will be created to track origin's 'next' branch.
     def track! branch
-      repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(/^.*\//, '')}'")
+      repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(%r{^.*/}, '')}'")
     end
 
     # Check out the supplied ref, detaching the HEAD if the named ref
