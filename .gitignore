@@ -1,9 +1,9 @@
 *.rbc
 *.sublime-*
 .bundle/
-.idea
+.idea/
 conf/rackspace.yml
-sources
+coverage/
+sources/
 sources.yml
-coverage
-tags
+vendor/bundle/
