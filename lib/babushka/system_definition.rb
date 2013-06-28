@@ -62,7 +62,10 @@ module Babushka
           '10.10' => :maverick,
           '11.04' => :natty,
           '11.10' => :oneiric,
-          '12.04' => :precise
+          '12.04' => :precise,
+          '12.10' => :quantal,
+          '13.04' => :raring,
+          '13.10' => :saucy
         },
         :debian => {
           '4.0' => :etch,
@@ -122,7 +125,10 @@ module Babushka
           '10.10' => 'Maverick Meerkat',
           '11.04' => 'Natty Narwhal',
           '11.10' => 'Oneiric Ocelot',
-          '12.04' => 'Precise Pangolin'
+          '12.04' => 'Precise Pangolin',
+          '12.10' => 'Quantal Quetzal',
+          '13.04' => 'Raring Ringtail',
+          '13.10' => 'Saucy Salamander'
         },
         :redhat => {
           '3' => 'Taroon',
