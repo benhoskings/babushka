@@ -184,14 +184,6 @@ describe GitRepo, '#branches' do
         end
       end
     end
-    context "with a detached HEAD" do
-      before {
-        repo_context('a') { ShellHelpers.shell "git checkout origin/next~" }
-      }
-      it "should not include the '(no branch)' entry" do
-        subject.branches.should == ['master', 'next']
-      end
-    end
   end
   context "on a repo with no commits" do
     before { stub_commitless_repo 'a' }
@@ -208,6 +200,10 @@ describe GitRepo, '#all_branches' do
     it "should return the only branch in a list" do
       subject.all_branches.should == ["master", "origin/master", "origin/next"]
     end
+    it "should not return tags" do
+      subject.repo_shell('git tag tagged_ref')
+      subject.all_branches.grep(/tagged_ref/).should be_empty
+    end
     context "after creating another branch" do
       before(:all) {
         repo_context('a') { ShellHelpers.shell "git checkout -b next" }
@@ -222,14 +218,6 @@ describe GitRepo, '#all_branches' do
         it "should return both branches" do
           subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
         end
-      end
-    end
-    context "with a detached HEAD" do
-      before {
-        repo_context('a') { ShellHelpers.shell "git checkout origin/next~" }
-      }
-      it "should not include the '(no branch)' entry" do
-        subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
       end
     end
   end
