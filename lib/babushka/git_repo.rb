@@ -169,7 +169,7 @@ module Babushka
     # An array of the names of all the local branches in this repo.
     def branches
       names = repo_shell('git show-ref --heads') || ""
-      names.split("\n").map(&:chomp).map {|l| l.sub(/^[a-fA-F0-9]+ refs\/heads\//, '') }
+      names.split("\n").collapse(%r{^\w+ refs/heads/})
     end
 
     def all_branches
