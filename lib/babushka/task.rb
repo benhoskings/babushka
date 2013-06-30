@@ -30,11 +30,10 @@ module Babushka
     def process_dep dep_name, with_args
       Base.sources.find_or_suggest(dep_name) do |dep|
         @current_dep = dep
-        log_dep(dep) {
+        with_logging {
           dep.with(task_args_for(dep, with_args)).process(!opt(:dry_run))
-        }.tap {|result|
+        }.tap {
           @current_dep = nil
-          log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(dep)}'." unless result
         }
       end
     end
@@ -51,6 +50,12 @@ module Babushka
       log_prefix / dep.contextual_name
     end
 
+    def open_log!
+      log_prefix.mkdir
+      @persistent_log.try(:close) # If the log was already open, close it.
+      @persistent_log = log_path_for(current_dep).open('w').tap {|f| f.sync = true }
+    end
+
     private
 
     def task_args_for dep, with_args
@@ -65,19 +70,15 @@ module Babushka
       }
     end
 
-    def log_dep dep
-      log_prefix.mkdir
-      log_path_for(dep).open('w') {|f|
-        f.sync = true
-        @persistent_log = f
+    def with_logging &blk
+      open_log!
 
-        # Note the current babushka & ruby versions at the top of the log.
-        LogHelpers.debug(Base.runtime_info)
+      # Note the current babushka & ruby versions at the top of the log.
+      LogHelpers.debug(Base.runtime_info)
 
-        yield
+      yield.tap {|result|
+        log_stderr "You can view #{opt(:debug) ? 'the' : 'a more detailed'} log at '#{log_path_for(current_dep)}'." unless result
       }
-    ensure
-      @persistent_log = nil
     end
 
     def log_prefix
