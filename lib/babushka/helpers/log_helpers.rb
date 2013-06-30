@@ -188,6 +188,9 @@ module Babushka
       }
     end
 
+    def self.reopen_persistent_log
+      Base.task.reopen_log!
+    end
 
     private
 

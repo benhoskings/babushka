@@ -51,6 +51,16 @@ module Babushka
       log_prefix / dep.contextual_name
     end
 
+    def reopen_log!
+      if @persistent_log
+        old_log = @persistent_log
+        @persistent_log = File.open(old_log.path, 'a')
+        @persistent_log.sync = true
+        old_log.flush
+        old_log.close
+      end
+    end
+
     private
 
     def task_args_for dep, with_args
