@@ -50,10 +50,10 @@ module Babushka
       log_prefix / dep.contextual_name
     end
 
-    def open_log!
+    def open_log! mode = 'a'
       log_prefix.mkdir
       @persistent_log.try(:close) # If the log was already open, close it.
-      @persistent_log = log_path_for(current_dep).open('w').tap {|f| f.sync = true }
+      @persistent_log = log_path_for(current_dep).open(mode).tap {|f| f.sync = true }
     end
 
     private
@@ -71,7 +71,7 @@ module Babushka
     end
 
     def with_logging &blk
-      open_log!
+      open_log!('w')
 
       # Note the current babushka & ruby versions at the top of the log.
       LogHelpers.debug(Base.runtime_info)
