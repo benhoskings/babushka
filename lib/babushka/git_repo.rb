@@ -181,7 +181,7 @@ module Babushka
     # is no current branch (i.e. if the HEAD is detached), the HEAD's SHA is
     # returned instead.
     def current_branch
-      repo_shell("cat .git/HEAD").strip.sub(%r{^.*refs/heads/}, '')
+      repo_shell?("git symbolic-ref --short -q HEAD") || current_full_head
     end
 
     # The namespaced name of the remote branch that the current local branch
