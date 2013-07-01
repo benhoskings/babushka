@@ -250,6 +250,14 @@ describe GitRepo, '#current_branch' do
         subject.current_branch.should == 'master'
       end
     end
+    context "after detaching" do
+      before {
+        repo_context('a') { ShellHelpers.shell "git checkout master^0" }
+      }
+      it "should return a SHA" do
+        subject.current_branch.should =~ /^\w{40}$/
+      end
+    end
   end
 end
 
