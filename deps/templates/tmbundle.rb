@@ -1,4 +1,4 @@
-meta :tmbundle, :for => :osx do
+meta :tmbundle do
   accepts_value_for :source
 
   def path
