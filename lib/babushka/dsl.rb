@@ -23,7 +23,7 @@ module Babushka
     # found in +block+. This method, along with +dep, together are the
     # top level of babushka's DSL.
     def meta name, opts = {}, &block
-      Base.sources.current_load_source.templates.add_template(name, opts, block)
+      Base.sources.current_load_source.templates.add_template(name, block)
     end
   end
 end

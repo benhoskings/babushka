@@ -31,7 +31,7 @@ module Babushka
 
     TEMPLATE_NAME_MATCH = /\A.+\.(#{VALID_NAME_CHARS})\z/m
 
-    def self.for supplied_name, source, opts, &block
+    def self.for supplied_name, source, &block
       name = supplied_name.to_s.downcase
 
       if name.empty?
@@ -45,16 +45,16 @@ module Babushka
       elsif Base.sources.current_load_source.templates.for(name)
         raise ArgumentError, "A template called '#{name}' has already been defined."
       else
-        new name, source, opts, &block
+        new name, source, &block
       end
     end
 
-    attr_reader :name, :source, :opts, :context_class
+    attr_reader :name, :source, :context_class
 
     def desc; context_class.desc end
 
-    def initialize name, source, opts, &block
-      @name, @source, @opts, @block = name, source, opts, block
+    def initialize name, source, &block
+      @name, @source, @block = name, source, block
       debug "Defining #{source.name}:#{name} template"
       @context_class = build_context block
       source.templates.register self
