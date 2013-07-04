@@ -61,9 +61,6 @@ describe "declaration" do
   it "should not define a dep helper" do
     Object.new.should_not respond_to('test')
   end
-  it "should not be marked as suffixed" do
-    template.opts[:suffix].should be_false
-  end
   after { Base.sources.anonymous.templates.clear! }
 end
 

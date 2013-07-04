@@ -138,34 +138,12 @@ class Array
   #
   #   %w[hook line sinker].to_list(:oxford => true) #=> "hook, line, and sinker"
   #
-  # If +:suffix+ is set, it will be appended along with the correct linking verb,
-  # i.e. 'is' for single-item lists and 'are' otherwise.
-  #
-  #   %w[coffee].to_list(:suffix => 'great') => "coffee is great"
-  #   %w[Cîroc Żubrówka].to_list(:suffix => 'vodkas') #=> "Cîroc and Żubrówka are vodkas"
-  #
-  # If +:limit+ is set, only the first +:limit+ items will be included in the
-  # output. If any elements were ommitted as a result, the suffix 'et al' will
-  # be appended to indicate there are missing elements.
-  #
-  #   %w[latte espresso ristretto].to_list(:suffix => 'coffees', :limit => 2) #=> "latte, espresso et al are coffees"
-  #
-  # If +:noun+ is set in addition to +:limit+, it will be used to describe the
-  # length of the list after 'et al' if any items were ommitted as a result of
-  # the +:limit+ setting.
-  #
-  #   %w[latte espresso ristretto].to_list(:limit => 2, :noun => 'coffees') #=> "latte, espresso et al - 3 coffees"
   def to_list(opts = {})
     items = map(&:to_s)
-    if opts[:limit].nil? || (length <= opts[:limit])
-      [
-        items[0..-2].squash.join(', '),
-        items.last
-      ].squash.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
-    else
-      items[0..(opts[:limit] - 1)].squash.join(', ') + ' et al' + (opts[:noun].nil? ? '' : " - #{length} #{opts[:noun]}")
-    end +
-    (opts[:suffix] ? " #{length > 1 ? 'are' : 'is'} #{opts[:suffix].strip}" : '')
+    [
+      items[0..-2].squash.join(', '),
+      items.last
+    ].squash.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
   end
 
   # If the final element of the array is a +Hash+, it's removed from this array

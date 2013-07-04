@@ -29,8 +29,8 @@ module Babushka
       end
     end
 
-    def add_template name, in_opts, block
-      DepTemplate.for name, @source, in_opts, &block
+    def add_template name, block
+      DepTemplate.for name, @source, &block
     end
 
     def clear!

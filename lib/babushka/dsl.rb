@@ -23,7 +23,8 @@ module Babushka
     # found in +block+. This method, along with +dep, together are the
     # top level of babushka's DSL.
     def meta name, opts = {}, &block
-      Base.sources.current_load_source.templates.add_template(name, opts, block)
+      Babushka::LogHelpers.deprecated! '2014-01-04', :method_name => "Passing options to 'meta' never actually did anything :) It" unless opts.empty?
+      Base.sources.current_load_source.templates.add_template(name, block)
     end
   end
 end

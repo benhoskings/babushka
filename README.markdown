@@ -100,7 +100,7 @@ A lot of chores are variations on a theme like this, or just too cumbersome to d
 
 For example, Babushka ships with a meta dep that knows how to install TextMate bundles, given just the URL. All the actual logic, including the code for `met?` and `meet`, is wrapped up in the meta dep.
 
-    meta :tmbundle, :for => :osx do
+    meta :tmbundle do
       accepts_value_for :source
 
       template {

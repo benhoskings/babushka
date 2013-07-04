@@ -19,21 +19,6 @@ describe Array, "to_list" do
   it "custom conjugation" do
     %w[a b c].to_list(:conj => 'or').should == 'a, b or c'
   end
-  describe "limits" do
-    it "below limit" do
-      %w[a b c].to_list(:limit => 4).should == 'a, b and c'
-    end
-    it "at limit" do
-      %w[a b c].to_list(:limit => 3).should == 'a, b and c'
-    end
-    it "above limit" do
-      %w[a b c].to_list(:limit => 2).should == 'a, b et al'
-      %w[a b c d e].to_list(:limit => 4).should == 'a, b, c, d et al'
-    end
-    it "with noun" do
-      %w[a b c].to_list(:limit => 2, :noun => 'items').should == 'a, b et al - 3 items'
-    end
-  end
 end
 
 describe Array, '#collapse' do

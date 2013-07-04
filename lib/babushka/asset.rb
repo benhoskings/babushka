@@ -62,9 +62,7 @@ module Babushka
         if !result
           LogHelpers.log "The build artefacts are in #{build_prefix / name / content_subdir}."
         elsif !block.nil?
-          LogHelpers.log_block "Cleaning up" do
-            (build_prefix / name).p.rm
-          end
+          cleanup!
         end
       }
     end
@@ -92,6 +90,14 @@ module Babushka
 
     def build_prefix
       BUILD_PREFIX
+    end
+
+    private
+
+    def cleanup!
+      LogHelpers.log_block "Cleaning up" do
+        (build_prefix / name).p.rm
+      end
     end
   end
 
