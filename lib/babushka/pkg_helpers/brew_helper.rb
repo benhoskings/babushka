@@ -58,22 +58,16 @@ module Babushka
     end
 
     def active_version_of pkg_name
-      shell("brew info #{pkg_name}").split("\n\n", 2).first.split("\n").map {|i|
-        i.scan(/^#{Regexp.escape(installed_pkgs_path.to_s.end_with('/'))}([^\s]+)/)
-      }.flatten.select {|i|
-        i[/\d/] # For it to be a version, it has to have at least 1 digit.
-      }.map {|i|
-        Babushka.VersionOf i.split('/', 2)
-      }.max.version
+      ShellHelpers.shell("brew info #{pkg_name}").split("\n").collapse(
+        %r{^#{Regexp.escape(installed_pkgs_path.to_s)}/#{pkg_name}/(\S+).*\*}, '\1'
+      ).first
     end
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      Dir[
-        installed_pkgs_path / pkg_name / '*'
-      ].map {|i|
-        File.basename i.chomp('/')
-      }.reject {|i|
+      ShellHelpers.shell("brew info #{pkg_name}").split("\n").collapse(
+        %r{^#{Regexp.escape(installed_pkgs_path.to_s)}/#{pkg_name}/(\S+).*}, '\1'
+      ).reject {|i|
         i[/\d|HEAD/].nil? # reject paths that aren't versions, like 'bin' etc
       }.map(&:to_version)
     end
