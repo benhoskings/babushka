@@ -7,3 +7,9 @@ coverage/
 sources/
 sources.yml
 vendor/bundle/
+
+bin/autospec
+bin/htmldiff
+bin/ldiff
+bin/rake
+bin/rspec
