@@ -57,19 +57,23 @@ module Babushka
       Dir[formulas_path / '*.rb'].map {|i| File.basename i, '.rb' }
     end
 
-    def active_version_of pkg_name
-      ShellHelpers.shell("brew info #{pkg_name}").split("\n").collapse(
-        %r{^#{Regexp.escape(installed_pkgs_path.to_s)}/#{pkg_name}/(\S+).*\*}, '\1'
-      ).first
+    def active_version_of pkg
+      version_info_for(pkg).select {|_,active| active }.map {|v,_| v.to_version }.first
     end
 
     def versions_of pkg
+      version_info_for(pkg).map {|v,_| v.to_version }
+    end
+
+    def version_info_for pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
       ShellHelpers.shell("brew info #{pkg_name}").split("\n").collapse(
-        %r{^#{Regexp.escape(installed_pkgs_path.to_s)}/#{pkg_name}/(\S+).*}, '\1'
-      ).reject {|i|
-        i[/\d|HEAD/].nil? # reject paths that aren't versions, like 'bin' etc
-      }.map(&:to_version)
+        %r{^#{Regexp.escape(installed_pkgs_path.to_s)}/#{pkg_name}/}
+      ).map {|v|
+        [v[/^\S+/], !!v.match(/\*$/)] # [Package version, version is active]
+      }.reject {|pair|
+        pair.first[/\d|HEAD/].nil? # reject paths that aren't versions, like 'bin' etc
+      }
     end
 
     def pkg_update_timeout
