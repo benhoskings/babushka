@@ -38,6 +38,7 @@ describe Babushka::BrewHelper do
 
   describe '#version_info_for' do
     before {
+      brew_helper.stub!(:prefix).and_return('/usr/local') # For systems that don't have `brew` in the path
       ShellHelpers.stub!(:shell).with('brew info readline').and_return("readline: stable 6.2.4
 http://tiswww.case.edu/php/chet/readline/rltop.html
 
