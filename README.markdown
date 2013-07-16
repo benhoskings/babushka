@@ -186,8 +186,6 @@ Thanks to my rubyist friends who've helped with brainstorming and testing---the 
 
 ## license
 
-Babushka is licensed under the three-clause BSD license, except for the following exception:
+Babushka is licensed under the three-clause BSD license, except for `lib/levenshtein/levenshtein.rb`, which is licensed under the MIT license.
 
-lib/levenshtein/levenshtein.rb, which is licensed under the MIT license.
-
-The BSD license can be found in full in the LICENSE file, and the MIT license at the top of lib/levenshtein/levenshtein.rb.
+The BSD license can be found in full in the LICENSE file, and the MIT license can be found at the top of `lib/levenshtein/levenshtein.rb`.
