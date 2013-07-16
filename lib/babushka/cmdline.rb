@@ -90,10 +90,6 @@ module Babushka
       exec "irb -r'#{Path.lib / 'babushka'}' --simple-prompt"
     }
 
-    handle('search', "[removed] Search for deps in the community database").run {|cmd|
-      log_error "Dep search has been removed (and public dep runs are no longer reported).\nMore info in the merge: https://github.com/benhoskings/babushka/commit/9741eb3"
-    }
-
     handle('edit', "Load the file containing the specified dep in $EDITOR").run {|cmd|
       if cmd.argv.length != 1
         log_error "'edit' requires a single argument."

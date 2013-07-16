@@ -18,7 +18,6 @@ describe "help" do
         "  meet       The main one: run a dep and all its dependencies.",
         "  sources    Manage dep sources",
         "  console    Start an interactive (irb-based) babushka session",
-        "  search     [removed] Search for deps in the community database",
         "  edit       Load the file containing the specified dep in $EDITOR",
         "\nCommands can be abbrev'ed, as long as they remain unique.",
         "  e.g. '#{Base.program_name} l' is short for '#{Base.program_name} list'.",
