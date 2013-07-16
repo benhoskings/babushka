@@ -49,13 +49,6 @@ If you want to write deps just for yourself that you don't plan to push online, 
 Finally, babushka also loads deps from `./babushka-deps` in the directory from which it was run. This is a good place for project-specific deps, because you can keep them within the project's source control.
 
 
-## n.b.
-
-A dep can run any code. Run deps of unknown origin at your own risk, and when choosing deps and dep sources, use the only real security there is: a network of trust.
-
-Many deps will change your system irreversibly, which is kind of the whole point, but it has to be said anyway. Use caution and always have a backup.
-
-
 ## acknowledgements
 
 [Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
