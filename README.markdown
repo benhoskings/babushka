@@ -18,57 +18,7 @@ If you'd rather install manually, all you need to do is clone [the git repo](htt
 Babushka should run on any Unix. OS X and Ubuntu are fully supported, including their respective package managers, homebrew and apt. There is some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, but I'm not familiar with those systems so it might be incomplete. Patches are most welcome.
 
 
-# kicking the tyres
-
-Once the install process has finished, you're ready to rock. If you have a Mac, maybe a good example is to install homebrew. To do that, we run the dependency (in babushka parlance, 'dep') called `homebrew`:
-
-    babushka homebrew
-
-Another example. Here's how you could check that your rubygems install is up to date and in the right place. This demonstrates how babushka works: it's the goal (rubygems set up well) that's important. You can safely run this whether rubygems is outdated, up to date, or missing, and babushka will work out what tasks need to be done in order to achieve the end goal. The `rubygems` dep handles that.
-
-    babushka rubygems
-
-Things like rubygems and homebrew aren't hard to install on their own, but with babushka it's _really_ easy, and _fast_. But more importantly, you know the job is being done just right, every time.
-
-(These deps aren't special, they're just bundled along with babushka because I like to ship package manager support.)
-
-OK, something more complex now---a vhosting nginx. Since there's not much point configuring nginx until it's installed, this dep `requires` another called `nginx.src` that does the actual install (i.e. downloading and building the source). That means calling this one will include the installation if it's not already present (i.e. if `nginx.src` is unmet).
-
-    babushka benhoskings:'configured.nginx'
-
-Then you can set up each virtualhost with another dep (which itself requires `configured.nginx`). In fact, you could call just this one, and leave the one above: configuring a vhost requires the global config, which in turn requires the install.
-
-The idea is that you can talk solely about your actual goal, without regard for the dependencies -- they'll all be pulled in as required.
-
-    babushka benhoskings:'vhost configured.nginx'
-
-That's how I set up my production machines. If something isn't working, you have a list of things that _aren't_ the culprit: everything in the output with a green ✓ beside it. Conversely, if babushka can detect the problem, the failing dep will have a red ✗ beside it instead, which leads you straight to the cause of the problem. Test-driven sysadmin!
-
-
-# nothing up my sleeve…
-
-Creating and sharing this knowledge is central to babushka. It's all very well to run `babushka rubygems` and have it do a job for you, but the real power is in babushka's ability to automate whatever chore you want, not just ones that others have thought of already.
-
-To that end, I've tried really hard to make the process quick and satisfying. If you spend a little bit of time getting the feel for babushka's DSL, you'll be cranking out deps just like the rubygems, homebrew, and nginx ones above.
-
-
 ## yeah, but how?
-
-A dep is one single piece of a larger task. A little nugget of code that does just one thing, and does it right. Here's a babushka dep, at its most generic.
-
-    dep 'name', :argument do
-      requires 'other deps'.with('args'), 'whatever they might be'
-      met? {
-        # is this dependency already met?
-      }
-      meet {
-        # this code gets run if it isn't.
-      }
-    end
-
-The important bit here is that when you're writing a dep, you don't have to think about context at all, just the one little task it's doing in isolation. As long as your `requires` are correct, you can leave the overall structure to babushka and just write each little dep separately. When you run `babushka name`, babushka uses the `requires` in each dep to assemble a tree of deps and achieve the end goal you're after.
-
-The idea is to keep a clean separation between `met?` and `meet`: the code in `met?` should do nothing except just check whether the dep is met and return a boolean, and `meet` should unconditionally satisfy the dep without doing any checks.
 
 Right, here's one I prepared earlier. Given you're on a Mac with Xcode installed, this dep knows how to achieve the goal of having llvm available in the PATH.
 
