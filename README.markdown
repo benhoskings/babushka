@@ -10,13 +10,11 @@ That's what babushka is for. Once you describe a job using its DSL, babushka can
 
 # installing
 
-Installing is really easy. All it takes is one command, and it can be the first command you run on the machine. (Babushka will happily install on any machine though, not just new ones.)
+Babushka is best installed using `babushka.me/up`, a script that installs babushka via git (and some dependencies via your system's package manager). It's safe to run on existing systems, and intended to be used as the first shell command on a new system too. You can install babushka this way using `curl` or `wget`:
 
     sh -c "`curl https://babushka.me/up`"
 
-Linux VPSes that ship without `curl` sometimes have `wget` installed (though the stock image is sometimes missing ssl support).
-
-    sh -c "`wget -O - https://babushka.me/up`"
+If you'd rather install manually, all you need to do is clone [the git repo](https://github.com/benhoskings/babushka) (or extract an archive of it), and if you like, link `bin/babushka.rb` into your path as 'babushka'. See [the relevant page in the docs](http://babushka.me/installing) for more information on installing babushka.
 
 Babushka should run on any Unix. OS X and Ubuntu are fully supported, including their respective package managers, homebrew and apt. There is some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, but I'm not familiar with those systems so it might be incomplete. Patches are most welcome.
 
