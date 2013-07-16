@@ -18,39 +18,6 @@ If you'd rather install manually, all you need to do is clone [the git repo](htt
 Babushka should run on any Unix. OS X and Ubuntu are fully supported, including their respective package managers, homebrew and apt. There is some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, but I'm not familiar with those systems so it might be incomplete. Patches are most welcome.
 
 
-# a runtime example
-
-All that means that babushka isn't just blindly running a bunch of code to make things happen. Each step of the way, it's checking what should be done, and only doing the bits that aren't done already. (In babushka parlance, it's only meeting dependencies that aren't already met.)
-
-If you already have TextMate installed, babushka notices and just installs the bundle.
-
-    Cucumber.tmbundle {
-      TextMate.app {
-        Found at /Applications/TextMate.app.
-      } ✓ TextMate.app
-      meet {
-        Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
-      }
-    } ✓ Cucumber.tmbundle
-
-But if you don't have TextMate, that's an unmet dependency, so it gets pulled in too.
-
-    Cucumber.tmbundle {
-      TextMate.app {
-        meet {
-          Downloading http://download-b.macromates.com/TextMate_1.5.9.dmg... done.
-          Attaching TextMate_1.5.9.dmg... done.
-          Found TextMate.app in the DMG, copying to /Applications... done.
-          Detaching TextMate_1.5.9.dmg... done.
-        }
-        Found at /Applications/TextMate.app.
-      } ✓ TextMate.app
-      meet {
-        Cloning from https://github.com/bmabey/cucumber-tmbundle.git... done.
-      }
-    } ✓ Cucumber.tmbundle
-
-
 ## dep sources
 
 Babushka only contains the deps that it needs to know how to install itself, and set up a bare minimum of software like package managers, `ruby` and `git`. Everything else is stored separately, in _dep sources_. A dep source is a babushka-managed git repo that contains a bunch of ruby files.
