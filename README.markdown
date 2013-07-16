@@ -201,7 +201,7 @@ Many deps will change your system irreversibly, which is kind of the whole point
 
 [Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
 
-[Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under BSD.
+[Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under the MIT license.
 
 Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of
 [@glenmaddern](http://twitter.com/glenmaddern),
@@ -223,7 +223,7 @@ Thanks to my rubyist friends who've helped with brainstorming and testing---the 
 
 ## license
 
-Babushka is licensed under the BSD license, except for the following exception:
+Babushka is licensed under the three-clause BSD license, except for the following exception:
 
 lib/levenshtein/levenshtein.rb, which is licensed under the MIT license.
 
