@@ -13,7 +13,7 @@ describe Babushka::Asset do
     Asset.type(archive_path / 'really_a_gzip.zip').should == :zip
   end
   it "should attempt to detect type via `file` when there is no extension" do
-    Asset.should_receive(:shell).with("file '#{archive_path / 'zip_without_extension'}'").any_number_of_times.and_return('Zip archive data')
+    Asset.should_receive(:shell).with("file '#{archive_path / 'zip_without_extension'}'").and_return('Zip archive data')
     Asset.type(archive_path / 'zip_without_extension').should == :zip
   end
   it "should detect supported archive types" do
@@ -21,7 +21,7 @@ describe Babushka::Asset do
     Asset.for(archive_path / 'archive.tbz2').should be_supported
   end
   it "should raise an error on unsupported types" do
-    Asset.should_receive(:shell).with("file '#{archive_path / 'invalid_archive'}'").any_number_of_times.and_return('ASCII text')
+    Asset.should_receive(:shell).with("file '#{archive_path / 'invalid_archive'}'").and_return('ASCII text')
     L{
       Asset.for(archive_path / 'invalid_archive')
     }.should raise_error("Don't know how to extract invalid_archive.")

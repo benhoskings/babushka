@@ -16,8 +16,9 @@ module Babushka
     end
 
     def self.detect_type_by_contents path
+      file_output = shell("file '#{path}'")
       ASSET_TYPES.keys.detect {|key|
-        shell("file '#{path}'")[ASSET_TYPES[key][:file_match]]
+        file_output[ASSET_TYPES[key][:file_match]]
       }
     end
 
