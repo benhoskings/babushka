@@ -34,7 +34,7 @@ describe "Dep.new" do
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
-    GitHelpers.stub!(:git) # To avoid cloning.
+    GitHelpers.stub(:git) # To avoid cloning.
     L{
       Dep.new("colons:invalidate names", Base.sources.anonymous, [], {}, nil)
     }.should raise_error(InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
@@ -168,7 +168,7 @@ end
 
 describe Dep, "defining" do
   before {
-    Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
+    Base.sources.stub(:current_real_load_source).and_return(Base.sources.anonymous)
   }
   it "should not define the dep when called without a block" do
     dep('lazy defining test').context.should_not be_loaded
@@ -207,7 +207,7 @@ describe Dep, "defining" do
   end
   context "with errors" do
     before {
-      Base.sources.stub!(:current_real_load_source).and_return(Base.sources.anonymous)
+      Base.sources.stub(:current_real_load_source).and_return(Base.sources.anonymous)
     }
     it "should not be defined, and then have failed defining after a run" do
       dep('lazy defining test with errors') do
@@ -336,13 +336,13 @@ end
 
 describe Dep, 'lambda lists' do
   before {
-    Babushka.host.matcher.stub!(:name).and_return(:test_name)
-    Babushka.host.matcher.stub!(:system).and_return(:test_system)
-    Babushka.host.matcher.stub!(:pkg_helper_key).and_return(:test_helper)
+    Babushka.host.matcher.stub(:name).and_return(:test_name)
+    Babushka.host.matcher.stub(:system).and_return(:test_system)
+    Babushka.host.matcher.stub(:pkg_helper_key).and_return(:test_helper)
 
-    Babushka::SystemDefinition.stub!(:all_names).and_return([:test_name, :other_name])
-    Babushka::SystemDefinition.stub!(:all_systems).and_return([:test_system, :other_system])
-    Babushka::PkgHelper.stub!(:all_manager_keys).and_return([:test_helper, :other_helper])
+    Babushka::SystemDefinition.stub(:all_names).and_return([:test_name, :other_name])
+    Babushka::SystemDefinition.stub(:all_systems).and_return([:test_system, :other_system])
+    Babushka::PkgHelper.stub(:all_manager_keys).and_return([:test_helper, :other_helper])
   }
   it "should match against the system name" do
     dep('lambda list name match') { requires { on :test_name, 'awesome' } }.context.define!.requires.should == ['awesome']

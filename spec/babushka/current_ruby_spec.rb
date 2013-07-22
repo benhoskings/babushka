@@ -5,7 +5,7 @@ describe Babushka::CurrentRuby do
 
   describe "with #gem_env stubbed" do
     before {
-      current_ruby.stub!(:gem_env).and_return({
+      current_ruby.stub(:gem_env).and_return({
         'RUBYGEMS VERSION' => '1.8.23',
         'INSTALLATION DIRECTORY' => '/usr/local/lib/ruby/gems/1.9.1',
         'EXECUTABLE DIRECTORY' => '/usr/local/bin',
@@ -14,29 +14,29 @@ describe Babushka::CurrentRuby do
 
     describe '#path' do
       it "should return the path to the ruby binary" do
-        Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/usr/local/bin/ruby')
+        Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/usr/local/bin/ruby')
         current_ruby.path.should == '/usr/local/bin/ruby'
       end
     end
 
     describe '#rbenv?' do
       it "should return true when ruby is running via rbenv" do
-        Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/Users/steve/.rbenv/shims/ruby')
+        Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/Users/steve/.rbenv/shims/ruby')
         current_ruby.rbenv?.should be_true
       end
       it "should return false otherwise" do
-        Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/usr/local/bin/ruby')
+        Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/usr/local/bin/ruby')
         current_ruby.rbenv?.should be_false
       end
     end
 
     describe '#rvm?' do
       it "should return true when ruby is running via rvm" do
-        Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/Users/steve/.rvm/rubies/ruby-1.9.3-p194/bin/ruby')
+        Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/Users/steve/.rvm/rubies/ruby-1.9.3-p194/bin/ruby')
         current_ruby.rvm?.should be_true
       end
       it "should return false otherwise" do
-        Babushka::ShellHelpers.stub!(:which).with('ruby').and_return('/usr/local/bin/ruby')
+        Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/usr/local/bin/ruby')
         current_ruby.rvm?.should be_false
       end
     end
@@ -61,7 +61,7 @@ describe Babushka::CurrentRuby do
 
     describe '#version' do
       it "should return the version of the ruby installation" do
-        Babushka::ShellHelpers.stub!(:shell).with('ruby --version').and_return('ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]')
+        Babushka::ShellHelpers.stub(:shell).with('ruby --version').and_return('ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-linux]')
         current_ruby.version.should == Babushka::VersionStr.new('1.9.3p194')
       end
     end
@@ -75,7 +75,7 @@ describe Babushka::CurrentRuby do
 
   describe '#gem_env' do
     before {
-      ShellHelpers.stub!(:shell).with('gem env').and_return("RubyGems Environment:
+      ShellHelpers.stub(:shell).with('gem env').and_return("RubyGems Environment:
   - RUBYGEMS VERSION: 2.0.3
   - RUBYGEMS PLATFORMS:
     - ruby

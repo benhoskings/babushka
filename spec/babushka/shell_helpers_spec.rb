@@ -172,32 +172,32 @@ describe "sudo" do
   end
   context "when already running as the sudo user" do
     it "should not sudo when the user is already root" do
-      ShellHelpers.stub!(:current_username).and_return('root')
+      ShellHelpers.stub(:current_username).and_return('root')
       ShellHelpers.should_receive(:shell_cmd).with({}, 'whoami', {}).once
       ShellHelpers.sudo('whoami')
     end
     it "should not sudo with :as" do
-      ShellHelpers.stub!(:current_username).and_return('batman')
+      ShellHelpers.stub(:current_username).and_return('batman')
       ShellHelpers.should_receive(:shell_cmd).with({}, 'whoami', {}).once
       ShellHelpers.sudo('whoami', :as => 'batman')
     end
     it "should not sudo with a :sudo => 'string' username" do
-      ShellHelpers.stub!(:current_username).and_return('batman')
+      ShellHelpers.stub(:current_username).and_return('batman')
       ShellHelpers.should_receive(:shell_cmd).with({}, 'whoami', {}).once
       ShellHelpers.shell('whoami', :sudo => 'batman')
     end
     it "should not sudo with a :sudo => Parameter username" do
-      ShellHelpers.stub!(:current_username).and_return('batman')
+      ShellHelpers.stub(:current_username).and_return('batman')
       ShellHelpers.should_receive(:shell_cmd).with({}, 'whoami', {}).once
       ShellHelpers.shell('whoami', :sudo => Parameter.new('username').default!('batman'))
     end
     it "should not sudo from #shell when :as is specified" do
-      ShellHelpers.stub!(:current_username).and_return('root')
+      ShellHelpers.stub(:current_username).and_return('root')
       ShellHelpers.should_receive(:shell_cmd).with({}, 'whoami', {}).once
       ShellHelpers.shell('whoami', :as => 'root')
     end
     it "should handle env vars properly" do
-      ShellHelpers.stub!(:current_username).and_return('root')
+      ShellHelpers.stub(:current_username).and_return('root')
       ShellHelpers.should_receive(:shell_cmd).with({'KEY' => 'value'}, 'echo $KEY', {}).once
       ShellHelpers.sudo({'KEY' => 'value'}, 'echo $KEY')
     end

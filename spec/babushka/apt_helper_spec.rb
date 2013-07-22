@@ -9,7 +9,7 @@ describe Babushka::AptHelper do
     }
     context 'on debian' do
       before {
-        Babushka.host.stub!(:flavour).and_return(:debian)
+        Babushka.host.stub(:flavour).and_return(:debian)
       }
       it "should match the root mirror" do
         'http://ftp.debian.org/debian'[matcher].should_not be_nil
@@ -30,7 +30,7 @@ describe Babushka::AptHelper do
     end
     context 'on ubuntu' do
       before {
-        Babushka.host.stub!(:flavour).and_return(:ubuntu)
+        Babushka.host.stub(:flavour).and_return(:ubuntu)
       }
       it "should match the root mirror" do
         'http://archive.ubuntu.com/ubuntu'[matcher].should_not be_nil

@@ -8,8 +8,8 @@ describe SourcePool do
     end
   end
 
-  let(:source1) { Source.new(nil, 'source_1').tap {|s| s.stub!(:load!) } }
-  let(:source2) { Source.new(nil, 'source_2').tap {|s| s.stub!(:load!) } }
+  let(:source1) { Source.new(nil, 'source_1').tap {|s| s.stub(:load!) } }
+  let(:source2) { Source.new(nil, 'source_2').tap {|s| s.stub(:load!) } }
   let!(:anonymous_meta) { define_in(Base.sources.anonymous) { meta 'anonymous_meta' } }
   let!(:core_meta) { define_in(Base.sources.core) { meta 'core_meta' } }
   let!(:core_from) { define_in(Base.sources.core) { meta 'core_from' } }
@@ -22,14 +22,14 @@ describe SourcePool do
   let!(:from2_2) { define_in(source2) { meta 'from_test_2' } }
 
   before {
-    [Base.sources.anonymous, Base.sources.core, source1, source2].each {|s| s.stub!(:load!) }
-    Source.stub!(:present).and_return [source1, source2]
+    [Base.sources.anonymous, Base.sources.core, source1, source2].each {|s| s.stub(:load!) }
+    Source.stub(:present).and_return [source1, source2]
   }
 
   describe SourcePool, '#source_for' do
     before {
-      Base.sources.stub!(:default).and_return([source1])
-      Source.stub!(:present).and_return([source2])
+      Base.sources.stub(:default).and_return([source1])
+      Source.stub(:present).and_return([source2])
     }
     it "should find core sources" do
       Base.sources.source_for('source_1').should == source1
@@ -57,16 +57,16 @@ describe SourcePool do
         end
       }
       before {
-        Prompt.stub!(:suggest_value_for).and_return(nil)
-        Source.stub!(:present).and_return([source])
+        Prompt.stub(:suggest_value_for).and_return(nil)
+        Source.stub(:present).and_return([source])
       }
       it "should not find the dep without a namespace" do
-        Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
+        Babushka::Levenshtein.stub(:distance).and_return(20) # For performance.
         Base.sources.find_or_suggest('find_or_suggest namespaced').should be_nil
       end
       it "should not find the dep with an incorrect namespace" do
-        Babushka::Levenshtein.stub!(:distance).and_return(20) # For performance.
-        GitHelpers.stub!(:git) # To avoid cloning.
+        Babushka::Levenshtein.stub(:distance).and_return(20) # For performance.
+        GitHelpers.stub(:git) # To avoid cloning.
         Base.sources.find_or_suggest('incorrect:find_or_suggest namespaced').should be_nil
       end
       it "should find the dep with the correct namespace" do
@@ -88,7 +88,7 @@ describe SourcePool do
       context "without namespacing" do
         let!(:sub_dep) { dep 'find_or_suggest sub_dep' }
         before {
-          Source.stub!(:present).and_return([source])
+          Source.stub(:present).and_return([source])
         }
         it "should find the sub dep" do
           sub_dep.should_receive(:process!)
@@ -102,7 +102,7 @@ describe SourcePool do
           end
         }
         before {
-          Source.stub!(:present).and_return([source])
+          Source.stub(:present).and_return([source])
         }
         it "should find the sub dep" do
           sub_dep.should_receive(:process!)
@@ -117,7 +117,7 @@ describe SourcePool do
           end
         }
         before {
-          Source.stub!(:present).and_return([source, source2])
+          Source.stub(:present).and_return([source, source2])
         }
         it "should not find the sub dep" do
           sub_dep.should_not_receive(:process!)
@@ -141,7 +141,7 @@ describe SourcePool do
       }.to raise_error(ArgumentError, "The dep spec :symbol_name isn't a String or Dep.")
     end
     it "should not find the dep with namespacing" do
-      GitHelpers.stub!(:git) # To avoid cloning.
+      GitHelpers.stub(:git) # To avoid cloning.
       Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should be_nil
     end
     context "with namespaced dep defined" do
@@ -150,7 +150,7 @@ describe SourcePool do
         define_in(source) { dep 'Base.sources.dep_for tests' }
       }
       before {
-        Source.stub!(:present).and_return([source])
+        Source.stub(:present).and_return([source])
       }
       it "should find the dep" do
         Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should == namespaced_dep
@@ -164,8 +164,8 @@ describe SourcePool do
     let!(:dep3) { define_in(source2) { dep 'dep 3' } }
     let!(:dep4) { define_in(source2) { dep 'dep 4' } }
     before {
-      Base.sources.stub!(:default).and_return([source1, source2])
-      Source.stub!(:present).and_return([source1, source2])
+      Base.sources.stub(:default).and_return([source1, source2])
+      Source.stub(:present).and_return([source1, source2])
     }
     it "should look up the correct deps without namespacing" do
       Base.sources.dep_for('dep 1').should == dep1
@@ -182,10 +182,10 @@ describe SourcePool do
   end
 
   describe SourcePool, '#dep_for core' do
-    let(:core) { Source.new(nil, 'core').tap {|s| s.stub!(:load!) } }
+    let(:core) { Source.new(nil, 'core').tap {|s| s.stub(:load!) } }
     let!(:dep1) { define_in(core) { dep 'dep 1' } }
     before {
-      Base.sources.stub!(:default).and_return([core])
+      Base.sources.stub(:default).and_return([core])
     }
     it "should find the correct deps without namespacing" do
       Base.sources.dep_for('dep 1').should == dep1
@@ -194,7 +194,7 @@ describe SourcePool do
       Base.sources.dep_for('core:dep 1').should == dep1
     end
     it "should not find the dep when the namespace is wrong" do
-      GitHelpers.stub!(:git) # To avoid cloning.
+      GitHelpers.stub(:git) # To avoid cloning.
       Base.sources.dep_for('non_core:dep 1').should be_nil
     end
   end
@@ -328,7 +328,7 @@ end
 describe "template selection during defining from a real source" do
   let(:source) { Source.new('spec/deps/good', 'good source').tap(&:load!) }
   before {
-    Source.stub!(:present).and_return([source])
+    Source.stub(:present).and_return([source])
   }
   it "should have loaded deps" do
     source.deps.names.should =~ [
@@ -356,7 +356,7 @@ describe "nested source loads" do
   let(:outer_source) { Source.new('spec/deps/outer', 'outer source').tap(&:load!) }
   let(:nested_source) { Source.new('spec/deps/good', 'nested source') }
   before {
-    Source.stub!(:present).and_return([outer_source, nested_source])
+    Source.stub(:present).and_return([outer_source, nested_source])
   }
   it "should have loaded outer deps" do
     outer_source.deps.names.should =~ [

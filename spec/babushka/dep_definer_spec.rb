@@ -59,7 +59,7 @@ describe DepDefiner, '#define!' do
   end
   it "shouldn't attempt re-defining after failure" do
     DepDefiner.new(a_dep).tap {|dd|
-      dd.stub!(:failed?).and_return(true)
+      dd.stub(:failed?).and_return(true)
       dd.should_not_receive(:define_elements!)
     }.define!
   end
@@ -76,7 +76,7 @@ describe DepDefiner, '#invoke' do
   end
 
   it "should invoke only when already defined" do
-    definer.stub!(:loaded?).and_return(true)
+    definer.stub(:loaded?).and_return(true)
     definer.should_not_receive(:define!)
     definer.should_receive(:met?).and_return(lambda {|_| })
     definer.invoke(:met?)
@@ -222,8 +222,8 @@ describe "#on for scoping accepters" do
   let!(:the_lambda) { L{ 'hello from the lambda' } }
   let!(:other_lambda) { L{ 'hello from the other lambda' } }
   before {
-    Babushka.stub!(:host).and_return OSXSystemProfile.new
-    Babushka.host.stub!(:match_list).and_return([:osx])
+    Babushka.stub(:host).and_return OSXSystemProfile.new
+    Babushka.host.stub(:match_list).and_return([:osx])
 
     local_lambda, other_local_lambda = the_lambda, other_lambda
 

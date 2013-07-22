@@ -448,12 +448,12 @@ describe Source do
       @source.load!
     end
     it "should not update when the source is already cloned" do
-      @source.stub!(:cloned?).and_return(true)
+      @source.stub(:cloned?).and_return(true)
       @source.should_not_receive(:update!)
       @source.load!
     end
     it "should update when the source is already cloned and update is true" do
-      @source.stub!(:cloned?).and_return(true)
+      @source.stub(:cloned?).and_return(true)
       @source.should_receive(:update!)
       @source.load!(true)
     end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Babushka::GemHelper do
   let(:gem_helper) { Babushka::GemHelper }
   before {
-    gem_helper.stub!(:versions_of).and_return([
+    gem_helper.stub(:versions_of).and_return([
       VersionStr.new('0.2.11'),
       VersionStr.new('0.2.11.3'),
       VersionStr.new('0.3.7'),
@@ -29,7 +29,7 @@ describe Babushka::GemHelper do
 
   describe "gem_path_for" do
     let(:prefix) { '/Library/Ruby/Gems/1.8/gems' }
-    before { Babushka.ruby.stub!(:gem_dir).and_return(prefix) }
+    before { Babushka.ruby.stub(:gem_dir).and_return(prefix) }
     it "should return the correct path" do
       gem_helper.gem_path_for('hammock').should == prefix / 'hammock-0.3.9'
       gem_helper.gem_path_for('hammock', '0.3.9').should == prefix / 'hammock-0.3.9'
@@ -40,7 +40,7 @@ describe Babushka::GemHelper do
 
   describe '.should_sudo?' do
     before {
-      Babushka.ruby.stub!(
+      Babushka.ruby.stub(
         :gem_dir => '/path/to/gems'.p,
         :bin_dir => '/path/to/bins'.p
       )

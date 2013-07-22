@@ -41,43 +41,43 @@ describe Fancypath do
       @dir.parent.should be_writable
     end
     it "returns true for writable paths" do
-      @file.stub!(:writable?).and_return(true)
+      @file.stub(:writable?).and_return(true)
 
       @file.should be_hypothetically_writable
     end
     it "returns false for existing, nonwritable paths" do
-      @file.stub!(:exists?).and_return(true)
-      @file.stub!(:writable?).and_return(false)
+      @file.stub(:exists?).and_return(true)
+      @file.stub(:writable?).and_return(false)
 
       @file.should_not be_hypothetically_writable
     end
     it "returns true for nonexistent paths when the parent is writable" do
       @file.stub(:parent).and_return(@dir)
-      @dir.stub!(:writable?).and_return(true)
+      @dir.stub(:writable?).and_return(true)
       dir_parent = @dir.parent
-      dir_parent.stub!(:hypothetically_writable?).and_return(false)
-      @dir.stub!(:parent).and_return(dir_parent)
+      dir_parent.stub(:hypothetically_writable?).and_return(false)
+      @dir.stub(:parent).and_return(dir_parent)
 
       subfile = @file / 'subfile'
-      subfile.stub!(:parent).and_return(@file)
+      subfile.stub(:parent).and_return(@file)
 
       @file.should be_hypothetically_writable
       subfile.should be_hypothetically_writable
     end
     it "returns false for nonexistent paths when the parent isn't writable" do
       @file.stub(:parent).and_return(@dir)
-      @dir.stub!(:exists?).and_return(true)
-      @dir.stub!(:writable?).and_return(false)
+      @dir.stub(:exists?).and_return(true)
+      @dir.stub(:writable?).and_return(false)
 
       subfile = @file / 'subfile'
-      subfile.stub!(:parent).and_return(@file)
+      subfile.stub(:parent).and_return(@file)
 
       @file.should_not be_hypothetically_writable
       subfile.should_not be_hypothetically_writable
     end
     it "works for the root" do
       @root = '/'.p
-      @root.stub!(:writable?).and_return(false)
+      @root.stub(:writable?).and_return(false)
       @root.should_not be_hypothetically_writable
     end
   end

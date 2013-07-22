@@ -27,7 +27,7 @@ describe Babushka::SystemDetector do
     context "on Linux boxes" do
       before {
         ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
-        File.stub!(:exists?).and_return(false)
+        File.stub(:exists?).and_return(false)
       }
       it "should return DebianSystemProfile on Debian boxes" do
         File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
