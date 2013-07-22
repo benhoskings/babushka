@@ -139,7 +139,7 @@ end
 describe "'y' input" do
   context "intentional" do
     it "should return 'y'" do
-      $stdin.should_receive(:tty?).any_number_of_times.and_return(true)
+      $stdin.should_receive(:tty?).twice.and_return(true)
       LogHelpers.should_receive(:log).with("value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('y')
       LogHelpers.should_receive(:log).with("Wait, do you mean the literal value 'y' [n]", {:newline => false})
@@ -149,7 +149,9 @@ describe "'y' input" do
   end
   context "unintentional" do
     it "should ask for the value again with a custom log message" do
-      $stdin.should_receive(:tty?).any_number_of_times.and_return(true)
+      # The #tty? call is in #prompt_and_read_value, which isn't re-called
+      # in the "Thought so :)" case, hence only 2 calls.
+      $stdin.should_receive(:tty?).twice.and_return(true)
       LogHelpers.should_receive(:log).with("value", {:newline => false})
       Prompt.should_receive(:read_from_prompt).and_return('yes')
       LogHelpers.should_receive(:log).with("Wait, do you mean the literal value 'yes' [n]", {:newline => false})
