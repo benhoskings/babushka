@@ -66,7 +66,7 @@ describe Babushka::SystemDetector do
         before {
           File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
           File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
-          File.should_receive(:read).with("/etc/os-release").and_return(%Q{PRETTY_NAME="Debian GNU/Linux 7.0 (wheezy)"\nNAME="Debian GNU/Linux"\nVERSION_ID="7.0"\nVERSION="7.0 (wheezy)"\nID=debian\nANSI_COLOR="1;31"\nHOME_URL="http://www.debian.org/"\nSUPPORT_URL="http://www.debian.org/support/"\nBUG_REPORT_URL="http://bugs.debian.org/""})
+          File.should_receive(:read).with("/etc/debian_version").and_return(%Q{7.0})
         }
         it "should detect debian precise" do
           subject.match_list.should == [:wheezy, :debian, :apt, :linux, :all]

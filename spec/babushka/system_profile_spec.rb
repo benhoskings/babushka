@@ -102,9 +102,9 @@ describe Babushka::SystemProfile do
         profile.description.should == 'Unknown Linux'
       end
 
-      context 'on a Debian box' do
+      context 'on a Debian 7 box' do
         let(:profile) { DebianSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return(%Q{PRETTY_NAME="Debian GNU/Linux 7.0 (wheezy)"\nNAME="Debian GNU/Linux"\nVERSION_ID="7.0"\nVERSION="7.0 (wheezy)"\nID=debian\nANSI_COLOR="1;31"\nHOME_URL="http://www.debian.org/"\nSUPPORT_URL="http://www.debian.org/support/"\nBUG_REPORT_URL="http://bugs.debian.org/""}) }
+        before { profile.stub(:get_version_info).and_return(%Q{7.0}) }
 
         it "should have correct name and version info" do
           info_for(profile).should == [:linux, :debian, "7.0", "7.0", :wheezy]
@@ -114,6 +114,21 @@ describe Babushka::SystemProfile do
         end
         it "should be described correctly" do
           profile.description.should == 'Debian Linux 7.0 (wheezy)'
+        end
+      end
+
+      context 'on a Debian 6 box' do
+        let(:profile) { DebianSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return(%Q{6.0.4}) }
+
+        it "should have correct name and version info" do
+          info_for(profile).should == [:linux, :debian, "6.0", "6.0.4", :squeeze]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Debian', 'squeeze']
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Debian Linux 6.0.4 (squeeze)'
         end
       end
 

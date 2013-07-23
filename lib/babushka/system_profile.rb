@@ -140,10 +140,11 @@ module Babushka
 
   class DebianSystemProfile < LinuxSystemProfile
     def flavour_str; 'Debian' end
-    def version; version_info.val_for('VERSION_ID')[/\d+\.\d+/] end # The values are quoted.
+    def version; version_info end
+    def release; version[/^(\d+\.\d+)/, 1] end
     def name_str; name.to_s end # They're named just like our symbols; no need to duplicate in SystemDefinition.
 
-    def get_version_info; File.read('/etc/os-release') end
+    def get_version_info; File.read('/etc/debian_version') end
     def pkg_helper; AptHelper end
   end
 
