@@ -88,7 +88,7 @@ class VM
   end
 
   def image
-    connection.list_images.detect {|image| image[:name][cfg['image_name']] } ||
+    connection.list_images.detect {|image| image[:name].downcase[cfg['image_name'].downcase] } ||
       raise(RuntimeError, "Couldn't find an image that matched '#{cfg['image_name']}' in #{connection.list_images.map {|i| i[:name] }}.")
   end
 
