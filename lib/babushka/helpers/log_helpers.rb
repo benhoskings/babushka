@@ -192,6 +192,11 @@ module Babushka
     private
 
     def self.print_log message, printable, as
+      # This is disabled in the specs.
+      print_log!(message, printable, as)
+    end
+
+    def self.print_log! message, printable, as
       if !printable
         # Only written to the log file.
       elsif [:error, :stderr].include?(as)

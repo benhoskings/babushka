@@ -6,6 +6,11 @@ require 'cloudservers'
 require 'spec_helper'
 
 class Babushka::Logging
+  def self.print_log message, printable, as
+    # Re-enable logging for the acceptance specs.
+    print_log!(message, printable, as)
+  end
+
   def self.write_to_persistent_log message
     # Don't overwrite logs when running acceptance specs.
   end
@@ -83,7 +88,7 @@ class VM
   end
 
   def image
-    connection.list_images.detect {|image| image[:name][cfg['image_name']] } ||
+    connection.list_images.detect {|image| image[:name].downcase[cfg['image_name'].downcase] } ||
       raise(RuntimeError, "Couldn't find an image that matched '#{cfg['image_name']}' in #{connection.list_images.map {|i| i[:name] }}.")
   end
 
