@@ -16,15 +16,15 @@ module Babushka
     def bin_dir
       # The directory in which the binaries from gems are found. This is
       # sometimes different to where `gem` itself is running from.
-      gem_env['EXECUTABLE DIRECTORY'].p
+      gem_env.val_for('EXECUTABLE DIRECTORY').p
     end
 
     def gem_dir
-      gem_env['INSTALLATION DIRECTORY'] / 'gems'
+      gem_env.val_for('INSTALLATION DIRECTORY') / 'gems'
     end
 
     def gemspec_dir
-      gem_env['INSTALLATION DIRECTORY'] / 'specifications'
+      gem_env.val_for('INSTALLATION DIRECTORY') / 'specifications'
     end
 
     def version
@@ -32,16 +32,13 @@ module Babushka
     end
 
     def gem_version
-      gem_env['RUBYGEMS VERSION'].to_version
+      gem_env.val_for('RUBYGEMS VERSION').to_version
     end
 
     private
 
-    require 'yaml'
     def gem_env
-      @gem_env ||= YAML.load(
-        Babushka::ShellHelpers.shell('gem env').gsub(/\n  - /, "\n    ")
-      )['RubyGems Environment']
+      @_gem_env ||= Babushka::ShellHelpers.shell('gem env')
     end
   end
 end
