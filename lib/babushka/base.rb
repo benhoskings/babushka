@@ -12,6 +12,7 @@ module Babushka
   end
   module_function :host
 
+  # +ruby+ is an instance of Babushka::CurrentRuby for the ruby the command was invoked on.
   def ruby
     @ruby ||= Babushka::CurrentRuby.new
   end
