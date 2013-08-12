@@ -13,7 +13,7 @@ end
 
 dep 'apt source', :uri, :release, :repo, :uri_matcher, :should_update do
   uri.default!(Babushka::AptHelper.source_for_system)
-  release.default!(Babushka.host.name)
+  release.default!(Babushka.host.codename)
   uri_matcher.default!(Babushka::AptHelper.source_matcher_for_system)
   should_update.default!('no')
 
@@ -40,7 +40,7 @@ dep 'ppa', :spec do
   end
   def ppa_release_file
     # This may be hardcoded to some extent, but I'm calling YAGNI on it for now.
-    "ppa.launchpad.net_#{spec_name.gsub('/', '_')}_ubuntu_dists_#{Babushka.host.name}_Release"
+    "ppa.launchpad.net_#{spec_name.gsub('/', '_')}_ubuntu_dists_#{Babushka.host.codename}_Release"
   end
   met? {
     ('/var/lib/apt/lists/' / ppa_release_file).exists?
