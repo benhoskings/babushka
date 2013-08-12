@@ -4,7 +4,7 @@ module Babushka
     extend ShellHelpers
 
     def matcher
-      @matcher ||= SystemMatcher.new(system, flavour, name, pkg_helper_key)
+      @matcher ||= SystemMatcher.new(system, flavour, codename, pkg_helper_key)
     end
 
     def matches?(specs) matcher.matches?(specs) end
@@ -18,8 +18,17 @@ module Babushka
     def system; system_str.gsub(/[^\w]/, '').downcase.to_sym end
     def flavour; flavour_str.gsub(/[^\w]/, '').downcase.to_sym end
 
-    def name; definition.name end
-    def name_str; definition.name_str end
+    def codename; definition.codename end
+    def codename_str; definition.codename_str end
+
+    def name
+      deprecated! '2014-02-13', :method_name => 'Babushka.host.name', :instead => 'Babushka.host.codename'
+      codename
+    end
+    def name_str
+      deprecated! '2014-02-13', :method_name => 'Babushka.host.name_str', :instead => 'Babushka.host.codename_str'
+      codename_str
+    end
 
     def differentiator_for specs
       differentiator = matcher.differentiator_for(specs)
@@ -53,7 +62,7 @@ module Babushka
       [
         system_description,
         version,
-        ("(#{name_str})" unless name_str.nil?)
+        ("(#{codename_str})" unless codename_str.nil?)
       ].compact.join(' ')
     end
 
@@ -75,8 +84,8 @@ module Babushka
     def flavour_str; 'Unknown' end
     def release; 'unknown' end
     def version; 'unknown' end
-    def name; :unknown end
-    def name_str; 'Unknown' end
+    def codename; :unknown end
+    def codename_str; 'Unknown' end
   end
 
   class OSXSystemProfile < SystemProfile
@@ -143,7 +152,7 @@ module Babushka
     def flavour_str; 'Debian' end
     def version; version_info end
     def release; version[/^(\d+\.\d+)/, 1] end
-    def name_str; name.to_s end # They're named just like our symbols; no need to duplicate in SystemDefinition.
+    def codename_str; codename.to_s end # They're named just like our symbols; no need to duplicate in SystemDefinition.
 
     def get_version_info; File.read('/etc/debian_version') end
     def pkg_helper; AptHelper end

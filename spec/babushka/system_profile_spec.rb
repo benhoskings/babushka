@@ -8,11 +8,11 @@ describe Babushka::SystemProfile do
   describe 'names' do
 
     def info_for p
-      [p.system, p.flavour, p.release, p.version, p.name]
+      [p.system, p.flavour, p.release, p.version, p.codename]
     end
 
     def info_strs_for p
-      [p.system_str, p.flavour_str, p.name_str]
+      [p.system_str, p.flavour_str, p.codename_str]
     end
 
     describe 'on an unknown system' do

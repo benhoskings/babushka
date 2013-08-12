@@ -4,15 +4,15 @@ module Babushka
   class SystemDefinition
 
     def self.all_systems
-      NAMES.keys
+      CODENAMES.keys
     end
 
     def self.all_flavours
-      NAMES.values.map(&:keys).flatten
+      CODENAMES.values.map(&:keys).flatten
     end
 
     def self.all_names
-      NAMES.values.map(&:values).map {|s| s.map(&:values) }.flatten
+      CODENAMES.values.map(&:values).map {|s| s.map(&:values) }.flatten
     end
 
     def self.all_tokens
@@ -25,15 +25,15 @@ module Babushka
       @system, @flavour, @release = system, flavour, release
     end
 
-    def name
-      (NAMES[system][flavour] || {})[release]
+    def codename
+      (CODENAMES[system][flavour] || {})[release]
     end
 
-    def name_str
+    def codename_str
       (DESCRIPTIONS[system][flavour] || {})[release]
     end
 
-    NAMES = {
+    CODENAMES = {
       :osx => {
         :osx => {
           '10.3' => :panther,
