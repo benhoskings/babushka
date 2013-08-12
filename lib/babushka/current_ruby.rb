@@ -1,6 +1,7 @@
 module Babushka
 
   # Provides information about the ruby installation Babushka is currently running in.
+  # You can obtain an instance through Babushka.ruby.
   class CurrentRuby
 
     # The path of the ruby binary
