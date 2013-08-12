@@ -208,6 +208,14 @@ describe Babushka::SystemProfile do
     end
   end
 
+  describe '#hostname' do
+    let(:profile) { SystemProfile.new }
+    it "should shell out to fetch the hostname" do
+      ShellHelpers.should_receive(:shell).with('hostname -f').and_return('spec.local')
+      profile.hostname.should == 'spec.local'
+    end
+  end
+
   describe '#cpu_type' do
     it "should return the type reported by `uname`" do
       profile.should_receive(:shell).with('uname -m').and_return('x86')

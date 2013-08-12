@@ -43,6 +43,10 @@ module Babushka
     def osx?;   system == :osx end
     def bsd?;   system == :bsd end
 
+    def hostname
+      ShellHelpers.shell('hostname -f')
+    end
+
     def pkg_helper_key; pkg_helper.try(:manager_key) end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
 
