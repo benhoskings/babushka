@@ -10,4 +10,11 @@ describe Babushka::SSH do
       ssh.shell('ls')
     end
   end
+
+  describe '#babushka' do
+    it "should run babushka remotely" do
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "'babushka' 'git'", :log => true)
+      ssh.babushka('git')
+    end
+  end
 end
