@@ -12,7 +12,13 @@ module Babushka
     end
 
     def babushka dep_spec, args = {}
-      remote_args = args.keys.map {|k| "#{k}=#{args[k]}" }
+      remote_args = [
+        '--defaults',
+        '--show-args',
+        ('--colour' if $stdin.tty?)
+      ].compact
+
+      remote_args.concat args.keys.map {|k| "#{k}=#{args[k]}" }
 
       shell('babushka', dep_spec, *remote_args).tap {|result|
         raise Babushka::UnmeetableDep, "The remote babushka reported an error." unless result
