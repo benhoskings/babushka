@@ -19,5 +19,11 @@ module Babushka
     def in_path? provided_list
       PathChecker.in_path? provided_list
     end
+
+    def ssh host, &blk
+      Babushka::SSH.new(host).tap {|remote|
+        yield(remote) if block_given?
+      }
+    end
   end
 end
