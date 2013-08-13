@@ -20,5 +20,9 @@ describe Babushka::SSH do
       ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "'babushka' 'fail'", :log => true).and_return(false)
       expect { ssh.babushka('fail') }.to raise_error(Babushka::UnmeetableDep)
     end
+    it "should include the args in the commandline" do
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "'babushka' 'git' 'version=1.8.3.2'", :log => true).and_return(true)
+      ssh.babushka('git', :version => '1.8.3.2')
+    end
   end
 end
