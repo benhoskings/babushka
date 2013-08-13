@@ -13,8 +13,12 @@ describe Babushka::SSH do
 
   describe '#babushka' do
     it "should run babushka remotely" do
-      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "'babushka' 'git'", :log => true)
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "'babushka' 'git'", :log => true).and_return(true)
       ssh.babushka('git')
+    end
+    it "should raise when the remote babushka fails" do
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "'babushka' 'fail'", :log => true).and_return(false)
+      expect { ssh.babushka('fail') }.to raise_error(Babushka::UnmeetableDep)
     end
   end
 end

@@ -12,7 +12,9 @@ module Babushka
     end
 
     def babushka dep_spec
-      shell('babushka', dep_spec)
+      shell('babushka', dep_spec).tap {|result|
+        raise Babushka::UnmeetableDep, "The remote babushka reported an error." unless result
+      }
     end
 
   end
