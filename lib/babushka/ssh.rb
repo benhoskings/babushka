@@ -15,7 +15,9 @@ module Babushka
       remote_args = [
         '--defaults',
         '--show-args',
-        ('--colour' if $stdin.tty?)
+        ('--colour' if $stdin.tty?),
+        ('--update' if Babushka::Base.task.opt(:update)),
+        ('--debug'  if Babushka::Base.task.opt(:debug))
       ].compact
 
       remote_args.concat args.keys.map {|k| "#{k}=#{args[k]}" }
