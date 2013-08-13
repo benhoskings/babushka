@@ -27,6 +27,7 @@ module Babushka
     helpers/uri_helpers
     popen
     shell
+    ssh
     git_repo
     resource
     asset
