@@ -81,10 +81,6 @@ module Babushka
       @loaded = @currently_loading = false
     end
 
-    def uri_matches? path
-      self.class.discover_uri_and_type(path).first == uri
-    end
-
     def find dep_spec
       load!
       deps.for(dep_spec)

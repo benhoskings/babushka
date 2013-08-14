@@ -76,23 +76,6 @@ describe Source do
     end
   end
 
-  describe Source, '#uri_matches?' do
-    it "should match on equivalent URIs" do
-      Source.new(nil).uri_matches?(nil).should be_true
-      Source.new('~/.babushka/deps').uri_matches?('~/.babushka/deps').should be_true
-      Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps.git').should be_true
-      Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('git@github.com:benhoskings/babushka-deps.git').should be_true
-    end
-    it "should not match on differing URIs" do
-      Source.new(nil).uri_matches?('').should be_false
-      Source.new('~/.babushka/deps').uri_matches?('~/.babushka/babushka-deps').should be_false
-      Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('http://github.com/benhoskings/babushka-deps.git').should be_false
-      Source.new('git://github.com/benhoskings/babushka-deps.git').uri_matches?('git://github.com/benhoskings/babushka-deps').should be_false
-      Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('github.com:benhoskings/babushka-deps.git').should be_false
-      Source.new('git@github.com:benhoskings/babushka-deps.git').uri_matches?('git@github.com:benhoskings/babushka-deps').should be_false
-    end
-  end
-
   describe Source, '#path' do
     it "should work for implicit sources" do
       Source.new(nil).path.should == nil
