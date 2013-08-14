@@ -75,7 +75,7 @@ module Babushka
     private
 
     def define_elements!
-      debug "(defining #{dependency.name} against #{dependency.template.contextual_name})"
+      debug "(defining #{dependency.name} against #{dependency.template.contextual_name} from #{dependency.load_path})"
       define_params!
       instance_eval(&block) unless block.nil?
     end
