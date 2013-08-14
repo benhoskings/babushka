@@ -41,15 +41,12 @@ describe Source do
     end
   end
 
-  describe Source, '.discover_uri_and_type' do
-    it "should label nil paths as implicit" do
-      Source.discover_uri_and_type(nil).should == [nil, :implicit]
-    end
+  describe '#type' do
     it "should treat git:// as public" do
       [
         'git://github.com/benhoskings/babushka-deps.git',
       ].each {|uri|
-        Source.discover_uri_and_type(uri).should == [uri, :public]
+        Source.new(nil, 'benhoskings', uri).type.should == :public
       }
     end
     it "should treat other protocols as private" do
@@ -58,7 +55,7 @@ describe Source do
         'https://github.com/benhoskings/babushka-deps.git',
         'file:///Users/ben/babushka/deps'
       ].each {|uri|
-        Source.discover_uri_and_type(uri).should == [uri, :private]
+        Source.new(nil, 'benhoskings', uri).type.should == :private
       }
     end
     it "should treat ssh-style URLs as private" do
@@ -67,12 +64,14 @@ describe Source do
         'benhoskin.gs:~ben/babushka-deps.git',
         'ben.local:/Users/ben/babushka-deps.git'
       ].each {|uri|
-        Source.discover_uri_and_type(uri).should == [uri, :private]
+        Source.new(nil, 'benhoskings', uri).type.should == :private
       }
     end
-    it "should work for local paths" do
-      Source.discover_uri_and_type('~/.babushka/deps').should == ['~/.babushka/deps'.p, :local]
-      Source.discover_uri_and_type('/tmp/babushka-deps').should == ['/tmp/babushka-deps', :local]
+    it "should treat existing local paths without remotes as local" do
+      Source.new(tmp_prefix).type.should == :local
+    end
+    it "should treat nonexistent local paths as private (to-be-cloned)" do
+      Source.new(tmp_prefix / 'nonexistent').type.should == :private
     end
   end
 

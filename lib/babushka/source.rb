@@ -46,17 +46,15 @@ module Babushka
     end
 
     require 'uri'
-    def self.discover_uri_and_type path
-      if path.nil?
-        [nil, :implicit]
-      elsif path.to_s.sub(/^\w+:\/\//, '')[/^[^\/]+[@:]/]
-        [path.to_s, :private]
-      elsif path.to_s[/^git:\/\//]
-        [path.to_s, :public]
-      elsif path.to_s[/^\w+:\/\//]
-        [path.to_s, :private]
+    def type
+      if uri.nil?
+        :local
+      elsif uri.sub(/^\w+:\/\//, '')[/^[^\/]+[@:]/]
+        :private
+      elsif uri[/^git:\/\//]
+        :public
       else
-        [path.p, :local]
+        :private
       end
     end
 
@@ -110,10 +108,6 @@ module Babushka
         type,
         ("#{updated_at.round.xsecs} ago" if cloneable?)
       ]
-    end
-
-    def type
-      @type
     end
 
     def cloneable?
