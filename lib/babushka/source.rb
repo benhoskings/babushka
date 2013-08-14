@@ -194,11 +194,11 @@ module Babushka
       if @updated
         debug "Already pulled #{name} (#{uri}) this session."
         true
-      elsif @updated == false
-        debug "Not updating #{name} (#{uri}) - it's offline."
       elsif Base.sources.local_only?
         debug "Not pulling #{name} (#{uri}) - in local-only mode."
         true
+      elsif @updated == false
+        debug "Not updating #{name} (#{uri}) - it's offline."
       elsif repo.exists? && repo.dirty?
         log "Not updating #{name} (#{path}) because there are local changes."
       elsif repo.exists? && repo.ahead?
