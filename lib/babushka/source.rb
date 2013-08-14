@@ -10,7 +10,7 @@ module Babushka
     include PathHelpers
     extend PathHelpers
 
-    attr_reader :name, :uri, :deps, :templates
+    attr_reader :path, :name, :uri, :deps, :templates
 
     def self.present
       source_prefix.glob('*').map {|path|
@@ -68,9 +68,14 @@ module Babushka
       end
     end
 
-    def initialize path, name = nil
-      @uri, @type = self.class.discover_uri_and_type(path)
-      @name = (name || self.class.default_name_for_uri(@uri)).to_s
+    def initialize path, name = nil, uri = nil
+      raise ArgumentError, "Sources with nil paths require a name (as the second argument)." if path.nil? && name.nil?
+      raise ArgumentError, "The source URI can only be supplied if the source doesn't exist already." if !uri.nil? && !path.nil? && path.p.exists?
+
+      @path = (path || (Source.source_prefix / name)).p
+      @name = name || path.p.basename
+      @uri = uri || detect_uri
+
       @deps = DepPool.new self
       @templates = DepPool.new self
       @loaded = @currently_loading = false
@@ -92,14 +97,6 @@ module Babushka
 
     def prefix
       self.class.source_prefix
-    end
-
-    def path
-      @path ||= if implicit? || local?
-        @uri
-      else
-        prefix / name
-      end
     end
 
     def repo
@@ -217,6 +214,14 @@ module Babushka
     end
 
     private
+
+    def detect_uri
+      if present?
+        ShellHelpers.shell("git config remote.origin.url", :cd => path)
+      else
+        self.class.default_remote_for(name)
+      end
+    end
 
     def raise_unless_addable!
       present_sources = Base.sources.all_present

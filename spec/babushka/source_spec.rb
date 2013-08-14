@@ -7,6 +7,40 @@ describe Source do
     @remote_2 = make_source_remote 'remote_2'
   }
 
+  describe '#initialize' do
+    it "should require either a path or a name" do
+      expect { Source.new(nil, nil) }.to raise_error(ArgumentError, "Sources with nil paths require a name (as the second argument).")
+    end
+    it "should set a default name" do
+      Source.new('/path/to/the-source').name.should == 'the-source'
+    end
+    it "should accept a custom name" do
+      Source.new('/path/to/the-source', 'custom-name').name.should == 'custom-name'
+    end
+    context "for nonexistent sources" do
+      it "should set a default path" do
+        Source.new(nil, 'the-source').path.should == Source.source_prefix / 'the-source'
+      end
+      it "should set a default uri" do
+        Source.new(nil, 'the-source').uri.should == 'https://github.com/the-source/babushka-deps.git'
+      end
+      it "should accept a custom uri" do
+        Source.new(nil, 'the-source', 'https://example.org/custom').uri.should == 'https://example.org/custom'
+      end
+    end
+    context "for existing sources" do
+      it "should detect the uri" do
+        ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => tmp_prefix).and_return('https://github.com/test/babushka-deps.git')
+        Source.new(tmp_prefix).uri.should == 'https://github.com/test/babushka-deps.git'
+      end
+      it "should not accept a custom uri" do
+        expect {
+          Source.new(tmp_prefix, 'custom-name', 'https://github.com/test/babushka-deps.git')
+        }.to raise_error(ArgumentError, "The source URI can only be supplied if the source doesn't exist already.")
+      end
+    end
+  end
+
   describe Source, '.discover_uri_and_type' do
     it "should label nil paths as implicit" do
       Source.discover_uri_and_type(nil).should == [nil, :implicit]
