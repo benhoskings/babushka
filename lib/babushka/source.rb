@@ -230,7 +230,7 @@ module Babushka
     public
 
     def inspect
-      "#<Source:#{object_id} '#{name}' (#{deps.count} dep#{'s' unless deps.count == 1})>"
+      "#<Source:#{object_id} '#{name}' (#{path} <- #{uri}) (#{deps.count} dep#{'s' unless deps.count == 1})>"
     end
   end
 end
