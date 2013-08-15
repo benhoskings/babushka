@@ -76,9 +76,6 @@ describe Source do
   end
 
   describe Source, '#path' do
-    it "should work for implicit sources" do
-      Source.new(nil).path.should == nil
-    end
     it "should work for local sources" do
       Source.new('~/.babushka/deps').path.should == '~/.babushka/deps'.p
     end
@@ -103,9 +100,6 @@ describe Source do
   end
 
   describe Source, '#cloneable?' do
-    it "should work for implicit sources" do
-      Source.new(nil).should_not be_cloneable
-    end
     it "should work for local sources" do
       Source.new('~/.babushka/deps').should_not be_cloneable
     end
@@ -118,9 +112,6 @@ describe Source do
   end
 
   describe "#cloned?" do
-    it "should return false for implicit sources" do
-      Source.new(nil).should_not be_cloned
-    end
     it "should return false for local sources" do
       Source.new(nil).should_not be_cloned
     end

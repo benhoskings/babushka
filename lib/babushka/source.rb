@@ -69,14 +69,10 @@ module Babushka
     def initialize path, name = nil, uri = nil
       raise ArgumentError, "Sources with nil paths require a name (as the second argument)." if path.nil? && name.nil?
       raise ArgumentError, "The source URI can only be supplied if the source doesn't exist already." if !uri.nil? && !path.nil? && path.p.exists?
-
+      init
       @path = (path || (Source.source_prefix / name)).p
       @name = name || path.p.basename
       @uri = uri || detect_uri
-
-      @deps = DepPool.new self
-      @templates = DepPool.new self
-      @loaded = @currently_loading = false
     end
 
     def find dep_spec
@@ -204,6 +200,12 @@ module Babushka
     end
 
     private
+
+    def init
+      @deps = DepPool.new self
+      @templates = DepPool.new self
+      @loaded = @currently_loading = false
+    end
 
     def detect_uri
       if present?
