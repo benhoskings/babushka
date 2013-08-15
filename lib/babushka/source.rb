@@ -15,8 +15,6 @@ module Babushka
     def self.present
       source_prefix.glob('*').map {|path|
         Source.for_path(path.p)
-      }.select {|source|
-        source.present?
       }
     end
 
@@ -115,7 +113,7 @@ module Babushka
     end
 
     def present?
-      cloneable? ? cloned? : path.exists?
+      path.exists?
     end
 
     def local?

@@ -316,33 +316,49 @@ describe Source do
 
   describe Source, "#present?" do
     context "for local repos" do
-      it "should be true for valid paths" do
+      it "should be true for existing paths" do
         Source.new('spec/deps/good').should be_present
       end
-      it "should be false for invalid paths" do
-        Source.new('spec/deps/missing').should_not be_present
+      it "should be false for nonexistent paths" do
+        Source.new('spec/deps/nonexistent').should_not be_present
       end
     end
     context "for remote repos" do
-      before {
-        @source_1 = Source.new(*@remote_1)
-        @source_2 = Source.new(*@remote_2)
-      }
+      let(:source) { Source.new(*@remote_1) }
       it "should be false" do
-        @source_1.should_not be_present
-        Source.present.should == []
+        source.should_not be_present
       end
       context "after cloning" do
-        before {
-          @source_1.add!
-        }
         it "should be true" do
-          @source_1.should be_present
-          Source.present.should == [@source_1]
+          source.tap(&:add!).should be_present
         end
-        after {
-          @source_1.remove!
-        }
+        after { source.remove! }
+      end
+    end
+  end
+
+  describe '.present' do
+    it "should include existing paths" do
+      Source.present.should include(Source.new(@local_source_path))
+    end
+    it "should not include sources with other paths" do
+      Source.present.should_not include(Source.new('spec/deps/good'))
+    end
+    it "should not include nonexistent paths" do
+      Source.present.should_not include(Source.new('spec/deps/nonexistent'))
+    end
+
+    context "for remote repos" do
+      let(:source) { Source.new(*@remote_1) }
+      it "should be false" do
+        Source.present.should_not include(source)
+      end
+      context "after cloning" do
+        it "should be true" do
+          source.add!
+          Source.present.should include(source)
+        end
+        after { source.remove! }
       end
     end
   end
