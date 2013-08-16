@@ -37,17 +37,8 @@ module Babushka
       end
     end
 
-    require 'uri'
     def type
-      if uri.nil?
-        :local
-      elsif uri.sub(/^\w+:\/\//, '')[/^[^\/]+[@:]/]
-        :private
-      elsif uri[/^git:\/\//]
-        :public
-      else
-        :private
-      end
+      uri.nil? ? :local : :remote
     end
 
     def self.default_name_for_uri uri
@@ -99,7 +90,7 @@ module Babushka
     end
 
     def cloneable?
-      [:public, :private].include? type
+      type == :remote
     end
 
     def cloned?

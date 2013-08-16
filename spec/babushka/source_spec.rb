@@ -49,36 +49,22 @@ describe Source do
   end
 
   describe '#type' do
-    it "should treat git:// as public" do
-      [
-        'git://github.com/benhoskings/babushka-deps.git',
-      ].each {|uri|
-        Source.new(nil, 'benhoskings', uri).type.should == :public
-      }
+    context "when the source exists" do
+      it "should be local when no uri is supplied" do
+        Source.new(@local_source_path).type.should == :local
+      end
+      it "should be remote when the source has a remote uri" do
+        ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
+        Source.new(@local_source_path).type.should == :remote
+      end
     end
-    it "should treat other protocols as private" do
-      [
-        'http://github.com/benhoskings/babushka-deps.git',
-        'https://github.com/benhoskings/babushka-deps.git',
-        'file:///Users/ben/babushka/deps'
-      ].each {|uri|
-        Source.new(nil, 'benhoskings', uri).type.should == :private
-      }
-    end
-    it "should treat ssh-style URLs as private" do
-      [
-        'git@github.com:benhoskings/babushka-deps.git',
-        'benhoskin.gs:~ben/babushka-deps.git',
-        'ben.local:/Users/ben/babushka-deps.git'
-      ].each {|uri|
-        Source.new(nil, 'benhoskings', uri).type.should == :private
-      }
-    end
-    it "should treat existing local paths as local" do
-      Source.new(@local_source_path).type.should == :local
-    end
-    it "should treat nonexistent local paths as local" do
-      Source.new(Source.source_prefix / 'nonexistent').type.should == :local
+    context "when the source doesn't exist" do
+      it "should be local when no uri is supplied" do
+        Source.new(Source.source_prefix / 'nonexistent').type.should == :local
+      end
+      it "should be remote when a uri is supplied" do
+        Source.new(Source.source_prefix / 'nonexistent', 'nonexistent', 'https://example.org/custom').type.should == :remote
+      end
     end
   end
 
