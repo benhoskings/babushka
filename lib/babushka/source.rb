@@ -25,7 +25,7 @@ module Babushka
     end
 
     def self.for_remote name
-      Source.new(default_remote_for(name), name)
+      Source.new(nil, name, default_remote_for(name))
     end
 
     def self.default_remote_for name
