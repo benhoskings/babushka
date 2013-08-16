@@ -198,8 +198,6 @@ module Babushka
     def detect_uri
       if present?
         ShellHelpers.shell("git config remote.origin.url", :cd => path)
-      else
-        self.class.default_remote_for(name)
       end
     end
 

@@ -25,8 +25,8 @@ describe Source do
       it "should set a default path" do
         Source.new(nil, 'the-source').path.should == Source.source_prefix / 'the-source'
       end
-      it "should set a default uri" do
-        Source.new(nil, 'the-source').uri.should == 'https://github.com/the-source/babushka-deps.git'
+      it "should not set a default uri" do
+        Source.new(nil, 'the-source').uri.should be_nil
       end
       it "should accept a custom uri" do
         Source.new(nil, 'the-source', 'https://example.org/custom').uri.should == 'https://example.org/custom'
@@ -74,11 +74,11 @@ describe Source do
         Source.new(nil, 'benhoskings', uri).type.should == :private
       }
     end
-    it "should treat existing local paths without remotes as local" do
+    it "should treat existing local paths as local" do
       Source.new(@local_source_path).type.should == :local
     end
-    it "should treat nonexistent local paths as private (to-be-cloned)" do
-      Source.new(Source.source_prefix / 'nonexistent').type.should == :private
+    it "should treat nonexistent local paths as local" do
+      Source.new(Source.source_prefix / 'nonexistent').type.should == :local
     end
   end
 
@@ -324,10 +324,30 @@ describe Source do
     end
 
     context "a readable source" do
-      let(:source) { Source.new(*@remote_1) }
-      context "normally" do
+      context "with just a path" do
+        let(:source) { Source.new('/path/to/the-source') }
+        it "should not add anything" do
+          GitHelpers.should_not_receive(:git)
+          source.add!
+        end
+      end
+
+      context "with just a name" do
+        let(:source) { Source.new(nil, 'source-name') }
+        it "should not add anything" do
+          GitHelpers.should_not_receive(:git)
+          source.add!
+        end
+      end
+
+      context "with a uri" do
+        let(:source) { Source.new(*@remote_1) }
         it "shouldn't be present yet" do
           source.should_not be_present
+        end
+        it "should clone the source" do
+          GitHelpers.should_receive(:git).with(source.uri, :to => (Source.source_prefix / 'remote_1'), :log => true)
+          source.add!
         end
         context "after adding" do
           before { source.add! }
@@ -341,33 +361,15 @@ describe Source do
         end
       end
 
-      context "with just a path" do
-        let(:source) { Source.new('/path/to/the-source') }
-        it "should use the basename as the name" do
-          GitHelpers.should_receive(:git).with(source.uri, :to => ('/path/to/the-source'), :log => true)
-          source.add!
-        end
-        after { source.path.rm }
-      end
-
-      context "with just a name" do
-        let(:source) { Source.new(nil, 'source-name') }
-        it "should use the default path for the name" do
-          GitHelpers.should_receive(:git).with(source.uri, :to => (Source.source_prefix / 'source-name'), :log => true)
-          source.add!
-        end
-        after { source.path.rm }
-      end
-
       context "duplication" do
         before {
           GitHelpers.stub(:git).and_return(true)
           Source.stub(:present).and_return([source])
         }
-        let(:source) { Source.new(nil, 'the-source') }
+        let(:source) { Source.new(nil, 'the-source', 'https://example.org/the-source') }
 
         context "with the same name and URI" do
-          let(:dup) { Source.new(nil, 'the-source') }
+          let(:dup) { Source.new(nil, 'the-source', 'https://example.org/the-source') }
           it "should work" do
             L{ dup.add! }.should_not raise_error
             dup.should == source
