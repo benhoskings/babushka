@@ -73,7 +73,11 @@ module Babushka
     end
 
     def repo
-      @repo ||= GitRepo.new(path) if cloneable?
+      @repo ||= Babushka::GitRepo.new(path)
+    end
+
+    def repo?
+      repo.exists? && (repo.root == path)
     end
 
     def updated_at

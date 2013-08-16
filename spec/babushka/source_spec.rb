@@ -68,6 +68,22 @@ describe Source do
     end
   end
 
+  describe '#repo?' do
+    let(:source) { Source.new(@local_source_path) }
+    it "should be true when the root of the source is a repo" do
+      source.repo.stub(:root).and_return(source.path)
+      source.should be_repo
+    end
+    it "should be false when the source is within a repo" do
+      source.repo.stub(:root).and_return(source.path.parent)
+      source.should_not be_repo
+    end
+    it "should be false when the source isn't within a repo" do
+      source.repo.stub(:exists?).and_return(false)
+      source.should_not be_repo
+    end
+  end
+
   describe Source, '#cloneable?' do
     it "should be false for existing sources without a URI" do
       Source.new(@local_source_path).should_not be_cloneable
