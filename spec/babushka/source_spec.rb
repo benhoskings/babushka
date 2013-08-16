@@ -91,7 +91,7 @@ describe Source do
       it "should be true for existing sources with a URI" do
         source.tap(&:add!).should be_cloneable
       end
-      after { source.remove! }
+      after { source.path.rm }
     end
     it "should be true for nonexistent sources with a URI" do
       Source.new(*@remote_1).should be_cloneable
@@ -112,7 +112,7 @@ describe Source do
         source.should be_cloned
       end
       after {
-        source.remove!
+        source.path.rm
       }
     end
   end
@@ -234,7 +234,7 @@ describe Source do
       it "should cache the source" do
         source.object_id.should == Source.for_path(@remote_1.first).object_id
       end
-      after { source.remove! }
+      after { source.path.rm }
     end
   end
 
@@ -284,7 +284,7 @@ describe Source do
         it "should be true" do
           source.tap(&:add!).should be_present
         end
-        after { source.remove! }
+        after { source.path.rm }
       end
     end
   end
@@ -310,7 +310,7 @@ describe Source do
           source.add!
           Source.present.should include(source)
         end
-        after { source.remove! }
+        after { source.path.rm }
       end
     end
   end
@@ -337,7 +337,7 @@ describe Source do
           it "should be cloned into the source prefix" do
             source.path.should == (tmp_prefix / 'sources' / source.name)
           end
-          after { source.remove! }
+          after { source.path.rm }
         end
       end
 
@@ -347,7 +347,7 @@ describe Source do
           GitHelpers.should_receive(:git).with(source.uri, :to => ('/path/to/the-source'), :log => true)
           source.add!
         end
-        after { source.remove! }
+        after { source.path.rm }
       end
 
       context "with just a name" do
@@ -356,7 +356,7 @@ describe Source do
           GitHelpers.should_receive(:git).with(source.uri, :to => (Source.source_prefix / 'source-name'), :log => true)
           source.add!
         end
-        after { source.remove! }
+        after { source.path.rm }
       end
 
       context "duplication" do
@@ -409,25 +409,4 @@ describe Source do
     end
   end
 
-  describe '#remove!' do
-    it "should not delete a non-cloneable source" do
-      source = Source.new('spec/deps/good')
-      source.path.should_not_receive(:rm)
-      source.remove!
-    end
-    it "should not delete a nonexistent source" do
-      source = Source.new('spec/deps/nonexistent')
-      source.path.should_not_receive(:rm)
-      source.remove!
-    end
-    context 'on a cloneable source' do
-      let(:source) { Source.new(*@remote_2) }
-
-      it "should delete the source" do
-        source.path.should_receive(:rm)
-        source.update!
-        source.remove!
-      end
-    end
-  end
 end

@@ -187,10 +187,6 @@ module Babushka
       end
     end
 
-    def remove!
-      !cloneable? || !path.exists? || path.rm
-    end
-
     private
 
     def init

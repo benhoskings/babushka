@@ -224,7 +224,7 @@ describe SourcePool do
         the_dep.template.should == template
       end
       after {
-        source.remove!
+        source.path.rm
       }
     end
     context "with nesting" do
