@@ -5,11 +5,15 @@ describe Source do
   before(:all) {
     @remote_1 = make_source_remote 'remote_1'
     @remote_2 = make_source_remote 'remote_2'
+    @local_source_path = (Source.source_prefix / 'local').tap(&:mkdir)
   }
 
   describe '#initialize' do
     it "should require either a path or a name" do
       expect { Source.new(nil, nil) }.to raise_error(ArgumentError, "Sources with nil paths require a name (as the second argument).")
+    end
+    it "should store the path" do
+      Source.new('/path/to/the-source').path.should == '/path/to/the-source'
     end
     it "should set a default name" do
       Source.new('/path/to/the-source').name.should == 'the-source'
@@ -27,15 +31,18 @@ describe Source do
       it "should accept a custom uri" do
         Source.new(nil, 'the-source', 'https://example.org/custom').uri.should == 'https://example.org/custom'
       end
+      it "should use the supplied name when a custom uri is supplied" do
+        Source.new(nil, 'the-source', 'https://example.org/custom').name.should == 'the-source'
+      end
     end
     context "for existing sources" do
       it "should detect the uri" do
-        ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => tmp_prefix).and_return('https://github.com/test/babushka-deps.git')
-        Source.new(tmp_prefix).uri.should == 'https://github.com/test/babushka-deps.git'
+        ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
+        Source.new(@local_source_path).uri.should == 'https://github.com/test/babushka-deps.git'
       end
       it "should not accept a custom uri" do
         expect {
-          Source.new(tmp_prefix, 'custom-name', 'https://github.com/test/babushka-deps.git')
+          Source.new(@local_source_path, 'custom-name', 'https://github.com/test/babushka-deps.git')
         }.to raise_error(ArgumentError, "The source URI can only be supplied if the source doesn't exist already.")
       end
     end
@@ -68,70 +75,50 @@ describe Source do
       }
     end
     it "should treat existing local paths without remotes as local" do
-      Source.new(tmp_prefix).type.should == :local
+      Source.new(@local_source_path).type.should == :local
     end
     it "should treat nonexistent local paths as private (to-be-cloned)" do
-      Source.new(tmp_prefix / 'nonexistent').type.should == :private
-    end
-  end
-
-  describe Source, '#path' do
-    it "should work for local sources" do
-      Source.new('~/.babushka/deps').path.should == '~/.babushka/deps'.p
-    end
-    context "cloneable repos" do
-      context "without names" do
-        it "should work for public sources" do
-          Source.new('git://github.com/benhoskings/babushka-deps.git').path.should == tmp_prefix / 'sources/babushka-deps'
-        end
-        it "should work for private sources" do
-          Source.new('git@github.com:benhoskings/babushka-deps.git').path.should == tmp_prefix / 'sources/babushka-deps'
-        end
-      end
-      context "with names" do
-        it "should work for public sources" do
-          Source.new('git://github.com/benhoskings/babushka-deps.git', 'custom_public_deps').path.should == tmp_prefix / 'sources/custom_public_deps'
-        end
-        it "should work for private sources" do
-          Source.new('git@github.com:benhoskings/babushka-deps.git', 'custom_private_deps').path.should == tmp_prefix / 'sources/custom_private_deps'
-        end
-      end
+      Source.new(Source.source_prefix / 'nonexistent').type.should == :private
     end
   end
 
   describe Source, '#cloneable?' do
-    it "should work for local sources" do
-      Source.new('~/.babushka/deps').should_not be_cloneable
+    it "should be false for existing sources without a URI" do
+      Source.new(@local_source_path).should_not be_cloneable
     end
-    it "should work for public sources" do
-      Source.new('git://github.com/benhoskings/babushka-deps.git').should be_cloneable
+    context "for existing sources" do
+      let(:source) { Source.new(*@remote_1) }
+      it "should be true for existing sources with a URI" do
+        source.tap(&:add!).should be_cloneable
+      end
+      after { source.remove! }
     end
-    it "should work for private sources" do
-      Source.new('git@github.com:benhoskings/babushka-deps.git').should be_cloneable
+    it "should be true for nonexistent sources with a URI" do
+      Source.new(*@remote_1).should be_cloneable
     end
   end
 
   describe "#cloned?" do
     it "should return false for local sources" do
-      Source.new(nil).should_not be_cloned
+      Source.new(@local_source_path).should_not be_cloned
     end
     context "for cloneable repos" do
-      subject { Source.new(*@remote_2) }
+      let(:source) { Source.new(*@remote_2) }
       it "should not be cloned" do
-        subject.should_not be_cloned
+        source.should_not be_cloned
       end
       it "should be cloned after loading" do
-        subject.load!
-        subject.should be_cloned
+        source.load!
+        source.should be_cloned
       end
       after {
-        subject.path.rm
+        source.remove!
       }
     end
   end
 
   describe '#clear!' do
-    let(:source) { Source.new(nil) }
+    let(:source) { Source.new(@local_source_path) }
     it "should clear the deps and templates" do
       source.deps.should_receive(:clear!)
       source.templates.should_receive(:clear!)
@@ -214,13 +201,13 @@ describe Source do
 
   describe "equality" do
     it "should be equal when uri, name and type are the same" do
-      (Source.new(*@remote_1) == Source.new(*@remote_1)).should be_true
+      (Source.new('/path/to/the-source') == Source.new('/path/to/the-source')).should be_true
     end
     it "shouldn't be equal when the name differs" do
-      (Source.new(*@remote_1) == Source.new(@remote_1.first, 'remote_other')).should be_false
+      (Source.new('/path/to/the-source') == Source.new('/path/to/the-source', 'custom-name')).should be_false
     end
     it "shouldn't be equal when the uri differs" do
-      (Source.new(*@remote_1) == Source.new(@remote_2.first, 'remote_1')).should be_false
+      (Source.new('/path/to/the-source', 'name') == Source.new('/path/to/the-source', 'name', 'https://example.org/custom')).should be_false
     end
   end
 
@@ -329,69 +316,47 @@ describe Source do
   end
 
   describe "cloning" do
-    context "unreadable sources" do
-      before {
-        @source = Source.new(tmp_prefix / "missing.git", 'unreadable')
-        @source.add!
-      }
+    context "an unreadable source" do
+      let(:source) { Source.new(nil, 'unreadable', (tmp_prefix / "missing.git").to_s) }
       it "shouldn't work" do
-        @source.path.should_not be_exists
+        expect { source.add! }.to raise_error(GitRepoError)
       end
     end
 
-    context "readable sources" do
-      before(:all) {
-        @source = Source.new(*@remote_1)
-      }
+    context "a readable source" do
+      let(:source) { Source.new(*@remote_1) }
       context "normally" do
         it "shouldn't be present yet" do
-          @source.path.should_not be_exists
+          source.should_not be_present
         end
         context "after adding" do
-          before(:all) { @source.add! }
+          before { source.add! }
           it "should be present now" do
-            @source.path.should be_exists
-          end
-          it "should not be available in Base.sources" do
-            Base.sources.default.include?(@source).should be_false
+            source.should be_present
           end
           it "should be cloned into the source prefix" do
-            @source.path.to_s.starts_with?((tmp_prefix / 'sources').p.to_s).should be_true
+            source.path.should == (tmp_prefix / 'sources' / source.name)
           end
-          after(:all) { @source.remove! }
+          after { source.remove! }
         end
       end
 
-      context "without a name" do
-        before(:all) {
-          @nameless = Source.new(@remote_1.first)
-        }
+      context "with just a path" do
+        let(:source) { Source.new('/path/to/the-source') }
         it "should use the basename as the name" do
-          GitHelpers.should_receive(:git).with(@remote_1.first, :to => (tmp_prefix / 'sources/remote_1'), :log => true)
-          @nameless.add!
+          GitHelpers.should_receive(:git).with(source.uri, :to => ('/path/to/the-source'), :log => true)
+          source.add!
         end
-        it "should set the name in the source" do
-          @nameless.name.should == 'remote_1'
-        end
-        after(:all) { @nameless.remove! }
+        after { source.remove! }
       end
-      context "with a name" do
-        before(:all) {
-          @fancypath_name = 'aliased_source_test'.p.basename
-          @aliased = Source.new(@remote_1.first, @fancypath_name)
-          @aliased.add!
-        }
-        it "should override the name" do
-          File.directory?(tmp_prefix / 'sources/aliased_source_test').should be_true
+
+      context "with just a name" do
+        let(:source) { Source.new(nil, 'source-name') }
+        it "should use the default path for the name" do
+          GitHelpers.should_receive(:git).with(source.uri, :to => (Source.source_prefix / 'source-name'), :log => true)
+          source.add!
         end
-        it "should set the name in the source" do
-          @aliased.name.should == 'aliased_source_test'
-        end
-        it "should stringify the name" do
-          @fancypath_name.should be_an_instance_of(Fancypath)
-          @aliased.name.should be_an_instance_of(String)
-        end
-        after(:all) { @aliased.remove! }
+        after { source.remove! }
       end
 
       context "duplication" do
