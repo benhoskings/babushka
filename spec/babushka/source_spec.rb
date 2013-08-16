@@ -393,34 +393,31 @@ describe Source do
         end
         after(:all) { @aliased.remove! }
       end
+
       context "duplication" do
-        before(:all) {
-          @source = Source.new @remote_1.first
-          @source.add!
+        before {
+          GitHelpers.stub(:git).and_return(true)
+          Source.stub(:present).and_return([source])
         }
-        context "with the same name and URL" do
-          before {
-            @dup_source = Source.new(@remote_1.first, 'remote_1')
-          }
+        let(:source) { Source.new(nil, 'the-source') }
+
+        context "with the same name and URI" do
+          let(:dup) { Source.new(nil, 'the-source') }
           it "should work" do
-            L{ @dup_source.add! }.should_not raise_error
-            @dup_source.should == @source
+            L{ dup.add! }.should_not raise_error
+            dup.should == source
           end
         end
-        context "with the same name and different URLs" do
-          it "should raise an exception and not add anything" do
-            @dup_source = Source.new(@remote_2.first, 'remote_1')
-            L{
-              @dup_source.add!
-            }.should raise_error(SourceError, "There is already a source called '#{@source.name}' (it contains #{@source.uri}).")
+        context "with the same name and different URIs" do
+          let(:dup) { Source.new(nil, source.name, 'https://example.org/custom') }
+          it "should fail" do
+            expect { dup.add! }.to raise_error(SourceError, "There is already a source called 'the-source' at #{source.path}.")
           end
         end
-        context "with the same URL and different names" do
-          it "should raise an exception and not add anything" do
-            @dup_source = Source.new(@remote_1.first, 'duplicate_test_different_name')
-            L{
-              @dup_source.add!
-            }.should raise_error(SourceError, "The source #{@source.uri} is already present (as '#{@source.name}').")
+        context "with the same URI and different names" do
+          let(:dup) { Source.new(nil, 'custom-name', source.uri) }
+          it "should fail" do
+            expect { dup.add! }.to raise_error(SourceError, "The remote #{source.uri} is already present on 'the-source', at #{source.path}.")
           end
         end
       end
