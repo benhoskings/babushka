@@ -225,62 +225,27 @@ describe Source do
   end
 
   describe Source, ".for_path" do
-    let(:source) { Source.for_path(source_path) }
-    context "on a file" do
-      before {
-        `mkdir -p "#{tmp_prefix / 'sources'}"`
-        `touch "#{tmp_prefix / 'sources/regular_file'}"`
-      }
-      it "should raise when called on a file" do
-        L{
-          Source.for_path(Source.source_prefix / 'regular_file')
-        }.should raise_error(Errno::ENOTDIR, "Not a directory - #{Source.source_prefix / 'regular_file'}")
-      end
-      after {
-        `rm "#{tmp_prefix / 'sources/regular_file'}"`
-      }
-    end
-    context "on a dir" do
-      let(:source_path) { tmp_prefix / 'ad_hoc_source' }
-      before {
-        `mkdir -p "#{tmp_prefix / 'ad_hoc_source'}"`
-      }
-      it "should work on a dir" do
+    context "on a directory" do
+      let(:source) { Source.for_path(@local_source_path) }
+      it "should find the source" do
         source.should be_present
-        source.path.should == tmp_prefix / 'ad_hoc_source'
-        source.name.should == 'ad_hoc_source'
+        [source.path, source.name].should == [@local_source_path, 'local']
       end
       it "should cache the source" do
-        Source.for_path(source_path).object_id.should == Source.for_path(source_path).object_id
+        source.object_id.should == Source.for_path(@local_source_path).object_id
       end
     end
     context "on a git repo" do
-      let(:source_path) { Source.source_prefix / 'remote_1' }
+      let(:source) { Source.for_path(@remote_1.first) }
       before {
-        Source.new(@remote_1.first).add!
+        Source.new(*@remote_1).add! # Add the source so it exists
       }
       it "should work on a git repo" do
         source.should be_present
-        source.path.should == Source.source_prefix / 'remote_1'
-        source.name.should == 'remote_1'
+        [source.path, source.name, source.uri].should == @remote_1
       end
       it "should cache the source" do
-        Source.for_path(source_path).object_id.should == Source.for_path(source_path).object_id
-      end
-      after { source.remove! }
-    end
-    context "on a git repo with a custom name" do
-      let(:source_path) { Source.source_prefix / 'custom_name_test' }
-      before {
-        Source.new(@remote_1.first, 'custom_name_test').add!
-      }
-      it "should work on a git repo" do
-        source.should be_present
-        source.path.should == Source.source_prefix / 'custom_name_test'
-        source.name.should == 'custom_name_test'
-      end
-      it "should cache the source" do
-        Source.for_path(source_path).object_id.should == Source.for_path(source_path).object_id
+        source.object_id.should == Source.for_path(@remote_1.first).object_id
       end
       after { source.remove! }
     end
