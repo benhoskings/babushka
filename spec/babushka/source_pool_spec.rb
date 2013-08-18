@@ -2,6 +2,21 @@ require 'spec_helper'
 require 'source_support'
 
 describe SourcePool do
+
+  describe 'default sources' do
+    describe 'types' do
+      it "should classify the anonymous source as implicit" do
+        Base.sources.anonymous.type.should == :implicit
+      end
+      it "should classify the core source as local" do
+        Base.sources.core.type.should == :local
+      end
+      it "should classify the current_dir source as local" do
+        Base.sources.current_dir.type.should == :local
+      end
+    end
+  end
+
   def define_in source
     Base.sources.load_context :source => source do
       yield
