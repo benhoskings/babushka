@@ -29,7 +29,7 @@ module Babushka
     end
 
     def anonymous
-      @anonymous ||= Source.new(nil, 'anonymous')
+      @anonymous ||= ImplicitSource.new('anonymous')
     end
 
     def core
