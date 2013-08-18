@@ -74,7 +74,7 @@ module Babushka
         LogHelpers.log_error "'sources' requires a single option."
       elsif cmd.opts.has_key?(:add)
         begin
-          Source.new(cmd.argv.first, cmd.opts[:add]).add!
+          Source.new(nil, cmd.opts[:add], cmd.argv.first).add!
         rescue SourceError => e
           LogHelpers.log_error e.message
         end
