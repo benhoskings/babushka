@@ -41,14 +41,6 @@ module Babushka
       uri.nil? ? :local : :remote
     end
 
-    def self.default_name_for_uri uri
-      if uri.nil?
-        nil
-      else
-        File.basename(uri.to_s).chomp('.git')
-      end
-    end
-
     def initialize path, name = nil, uri = nil
       raise ArgumentError, "Sources with nil paths require a name (as the second argument)." if path.nil? && name.nil?
       raise ArgumentError, "The source URI can only be supplied if the source doesn't exist already." if !uri.nil? && !path.nil? && path.p.exists?
@@ -76,10 +68,6 @@ module Babushka
     def find_template template_spec
       load!
       templates.for(template_spec)
-    end
-
-    def prefix
-      self.class.source_prefix
     end
 
     def repo
