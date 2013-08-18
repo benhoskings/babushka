@@ -73,10 +73,14 @@ module Babushka
       if cmd.opts.slice(:add, :update, :list).length != 1
         LogHelpers.log_error "'sources' requires a single option."
       elsif cmd.opts.has_key?(:add)
-        begin
-          Source.new(nil, cmd.opts[:add], cmd.argv.first).add!
-        rescue SourceError => e
-          LogHelpers.log_error e.message
+        if cmd.argv.length != 1
+          LogHelpers.log_error "The -a option requires a URI as its second argument. `babushka sources --help` for more info."
+        else
+          begin
+            Source.new(nil, cmd.opts[:add], cmd.argv.first).add!
+          rescue SourceError => e
+            LogHelpers.log_error e.message
+          end
         end
       elsif cmd.opts.has_key?(:update)
         Base.sources.update!
