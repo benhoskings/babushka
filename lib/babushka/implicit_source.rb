@@ -15,5 +15,9 @@ module Babushka
       nil
     end
 
+    def present?
+      false
+    end
+
   end
 end

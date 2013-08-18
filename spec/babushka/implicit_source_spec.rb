@@ -23,6 +23,12 @@ describe Babushka::ImplicitSource do
     end
   end
 
+  describe Source, '#present?' do
+    it "should be false" do
+      ImplicitSource.new('name').should_not be_present
+    end
+  end
+
   describe Source, '#cloneable?' do
     it "should not be cloneable" do
       ImplicitSource.new('name').should_not be_cloneable
