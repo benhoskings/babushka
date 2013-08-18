@@ -201,7 +201,7 @@ module Babushka
     end
 
     def detect_uri
-      if present?
+      if present? && repo?
         ShellHelpers.shell("git config remote.origin.url", :cd => path)
       end
     end

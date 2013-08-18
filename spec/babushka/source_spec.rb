@@ -37,8 +37,10 @@ describe Source do
     end
     context "for existing sources" do
       it "should detect the uri" do
-        ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
-        Source.new(@local_source_path).uri.should == 'https://github.com/test/babushka-deps.git'
+        source = Source.new(@local_source_path)
+        source.should_receive(:repo?).and_return(true)
+        ShellHelpers.stub(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
+        source.uri.should == 'https://github.com/test/babushka-deps.git'
       end
       it "should not accept a custom uri" do
         expect {
@@ -50,12 +52,18 @@ describe Source do
 
   describe '#type' do
     context "when the source exists" do
+      let(:source) { Source.new(@local_source_path) }
       it "should be local when no uri is supplied" do
-        Source.new(@local_source_path).type.should == :local
+        source.type.should == :local
       end
-      it "should be remote when the source has a remote uri" do
+      it "should be remote when the source is a repo with a remote uri" do
+        source.stub(:repo?).and_return(true)
         ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
-        Source.new(@local_source_path).type.should == :remote
+        source.type.should == :remote
+      end
+      it "should be local when the source is within a repo with a remote uri" do
+        source.stub(:repo?).and_return(false)
+        source.type.should == :local
       end
     end
     context "when the source doesn't exist" do
