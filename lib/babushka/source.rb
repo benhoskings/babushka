@@ -37,10 +37,6 @@ module Babushka
       end
     end
 
-    def type
-      uri.nil? ? :local : :remote
-    end
-
     def initialize path, name = nil, uri = nil
       raise ArgumentError, "Sources with nil paths require a name (as the second argument)." if path.nil? && name.nil?
       raise ArgumentError, "The source URI can only be supplied if the source doesn't exist already." if !uri.nil? && !path.nil? && path.p.exists?
@@ -60,14 +56,28 @@ module Babushka
       @uri ||= detect_uri
     end
 
-    def find dep_spec
-      load!
-      deps.for(dep_spec)
+    def present?
+      path.exists?
     end
 
-    def find_template template_spec
-      load!
-      templates.for(template_spec)
+    def type
+      uri.nil? ? :local : :remote
+    end
+
+    def implicit?
+      type == :implicit
+    end
+
+    def local?
+      type == :local
+    end
+
+    def cloneable?
+      type == :remote
+    end
+
+    def cloned?
+      cloneable? && File.directory?(path / '.git')
     end
 
     def repo
@@ -91,31 +101,21 @@ module Babushka
       ]
     end
 
-    def cloneable?
-      type == :remote
-    end
-
-    def cloned?
-      cloneable? && File.directory?(path / '.git')
-    end
-
-    def present?
-      path.exists?
-    end
-
-    def local?
-      type == :local
-    end
-
-    def implicit?
-      type == :implicit
-    end
-
     def == other
       [:name, :uri, :type].all? {|method_name| other.respond_to? method_name } &&
       name == other.name &&
       uri == other.uri &&
       type == other.type
+    end
+
+    def find dep_spec
+      load!
+      deps.for(dep_spec)
+    end
+
+    def find_template template_spec
+      load!
+      templates.for(template_spec)
     end
 
     def add!
