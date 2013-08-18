@@ -23,8 +23,8 @@ describe SourcePool do
     end
   end
 
-  let(:source1) { Source.new(nil, 'source_1') }
-  let(:source2) { Source.new(nil, 'source_2') }
+  let(:source1) { ImplicitSource.new('source_1') }
+  let(:source2) { ImplicitSource.new('source_2') }
   let!(:anonymous_meta) { define_in(Base.sources.anonymous) { meta 'anonymous_meta' } }
   let!(:core_meta) { define_in(Base.sources.core) { meta 'core_meta' } }
   let!(:core_from) { define_in(Base.sources.core) { meta 'core_from' } }
@@ -64,7 +64,7 @@ describe SourcePool do
       end
     end
     context "namespaced" do
-      let(:source) { Source.new(nil, 'namespaced') }
+      let(:source) { ImplicitSource.new('namespaced') }
       let!(:a_dep) {
         Base.sources.load_context :source => source do
           dep 'find_or_suggest namespaced'
@@ -91,7 +91,7 @@ describe SourcePool do
       end
     end
     context "from other deps" do
-      let(:source) { Source.new(nil, 'namespaced') }
+      let(:source) { ImplicitSource.new('namespaced') }
       let!(:a_dep) {
         Base.sources.load_context :source => source do
           dep 'find_or_suggest namespaced' do
@@ -124,7 +124,7 @@ describe SourcePool do
         end
       end
       context "in a different namespace" do
-        let(:source2) { Source.new(nil, 'another namespaced') }
+        let(:source2) { ImplicitSource.new('another namespaced') }
         let!(:sub_dep) {
           Base.sources.load_context :source => source2 do
             dep 'find_or_suggest sub_dep'
@@ -159,7 +159,7 @@ describe SourcePool do
       Base.sources.dep_for('namespaced:Base.sources.dep_for tests').should be_nil
     end
     context "with namespaced dep defined" do
-      let(:source) { Source.new(nil, 'namespaced') }
+      let(:source) { ImplicitSource.new('namespaced') }
       let!(:namespaced_dep) {
         define_in(source) { dep 'Base.sources.dep_for tests' }
       }
@@ -196,7 +196,7 @@ describe SourcePool do
   end
 
   describe SourcePool, '#dep_for core' do
-    let(:core) { Source.new(nil, 'core') }
+    let(:core) { ImplicitSource.new('core') }
     let!(:dep1) { define_in(core) { dep 'dep 1' } }
     before {
       Base.sources.stub(:default).and_return([core])
@@ -223,7 +223,7 @@ describe SourcePool do
       end
     end
     context "with a template" do
-      let(:source) { Source.new(nil) }
+      let(:source) { ImplicitSource.new('load_context') }
       let!(:template) {
         Base.sources.load_context :source => source do
           meta 'load_context_template'
