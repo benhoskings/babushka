@@ -23,8 +23,8 @@ describe SourcePool do
     end
   end
 
-  let(:source1) { Source.new(nil, 'source_1').tap {|s| s.stub(:load!) } }
-  let(:source2) { Source.new(nil, 'source_2').tap {|s| s.stub(:load!) } }
+  let(:source1) { Source.new(nil, 'source_1') }
+  let(:source2) { Source.new(nil, 'source_2') }
   let!(:anonymous_meta) { define_in(Base.sources.anonymous) { meta 'anonymous_meta' } }
   let!(:core_meta) { define_in(Base.sources.core) { meta 'core_meta' } }
   let!(:core_from) { define_in(Base.sources.core) { meta 'core_from' } }
@@ -37,7 +37,6 @@ describe SourcePool do
   let!(:from2_2) { define_in(source2) { meta 'from_test_2' } }
 
   before {
-    [Base.sources.anonymous, Base.sources.core, source1, source2].each {|s| s.stub(:load!) }
     Source.stub(:present).and_return [source1, source2]
   }
 
@@ -197,7 +196,7 @@ describe SourcePool do
   end
 
   describe SourcePool, '#dep_for core' do
-    let(:core) { Source.new(nil, 'core').tap {|s| s.stub(:load!) } }
+    let(:core) { Source.new(nil, 'core') }
     let!(:dep1) { define_in(core) { dep 'dep 1' } }
     before {
       Base.sources.stub(:default).and_return([core])
@@ -238,9 +237,6 @@ describe SourcePool do
       it "should use the template" do
         the_dep.template.should == template
       end
-      after {
-        source.path.rm
-      }
     end
     context "with nesting" do
       it "should maintain the outer context after the inner one returns" do
