@@ -8,7 +8,7 @@ describe Source do
     @local_source_path = (Source.source_prefix / 'local').tap(&:mkdir)
   }
 
-  describe '#initialize' do
+  describe 'attributes' do
     it "should require either a path or a name" do
       expect { Source.new(nil, nil) }.to raise_error(ArgumentError, "Sources with nil paths require a name (as the second argument).")
     end

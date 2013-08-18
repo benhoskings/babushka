@@ -11,5 +11,9 @@ module Babushka
       :implicit
     end
 
+    def path
+      nil
+    end
+
   end
 end
