@@ -80,6 +80,7 @@ module Babushka
     # refer to this dep on your system; i.e. the name that properly identifies
     # the dep, taking your (possibly customised) source names into account.
     def contextual_name
+      # TODO This isn't quite right; it should be dep_source.default? instead."
       dep_source.remote? ? "#{dep_source.name}:#{name}" : name
     end
 

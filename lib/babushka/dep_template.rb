@@ -68,6 +68,7 @@ module Babushka
     # identifies the template, taking your (possibly customised) source names
     # into account.
     def contextual_name
+      # TODO This isn't quite right; it should be source.default? instead."
       source.remote? ? "#{source.name}:#{name}" : name
     end
 
