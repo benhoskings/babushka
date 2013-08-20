@@ -24,7 +24,7 @@ describe "help" do
       ].each {|line|
         Cmdline::Helpers.should_receive(:log).with(line)
       }
-      Cmdline.should_receive(:log).with("\n")
+      LogHelpers.should_receive(:log).with("\n")
     }
     it "should print the verb help information" do
       Cmdline::Parser.for(%w[help]).run
@@ -36,7 +36,7 @@ describe "help" do
       Cmdline::Helpers.should_receive(:log).with(
         "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2012 Ben Hoskings <ben@hoskings.net>"
       )
-      Cmdline.should_receive(:log).with(
+      LogHelpers.should_receive(:log).with(
         "\nmeet - The main one: run a dep and all its dependencies."
       )
 
@@ -53,7 +53,7 @@ describe "help" do
         --profile                    Print a per-line timestamp to the debug log
 ")
 
-      Cmdline.should_receive(:log).with("\n")
+      LogHelpers.should_receive(:log).with("\n")
     }
     it "should print the help information for the verb" do
       parser.run

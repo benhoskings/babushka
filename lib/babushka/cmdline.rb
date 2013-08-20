@@ -2,7 +2,6 @@
 
 module Babushka
   class Cmdline
-    extend LogHelpers
 
     handle('global', "Options that are valid for any handler") {
       opt '-v', '--version',     "Print the current version"
@@ -20,13 +19,13 @@ module Babushka
         Helpers.print_handlers
         Helpers.print_notes
       elsif (handler = Handler.for(cmd.argv.first)).nil?
-        log "#{cmd.argv.first.capitalize}? I have honestly never heard of that."
+        LogHelpers.log "#{cmd.argv.first.capitalize}? I have honestly never heard of that."
       else
-        log "\n#{handler.name} - #{handler.description}"
+        LogHelpers.log "\n#{handler.name} - #{handler.description}"
         cmd.parse(&handler.opt_definer)
         cmd.print_usage
       end
-      log "\n"
+      LogHelpers.log "\n"
       true
     }
 
@@ -52,9 +51,9 @@ module Babushka
     }.run {|cmd|
       dep_names, args = cmd.argv.partition {|arg| arg['='].nil? }
       if !(bad_arg = args.detect {|arg| arg[/^\w+=/].nil? }).nil?
-        log_error "'#{bad_arg}' looks like a dep argument, but it doesn't make sense."
+        LogHelpers.log_error "'#{bad_arg}' looks like a dep argument, but it doesn't make sense."
       elsif dep_names.empty?
-        log_error "Nothing to do."
+        LogHelpers.log_error "Nothing to do."
       else
         hashed_args = args.map {|i|
           i.split('=', 2)
@@ -72,12 +71,16 @@ module Babushka
       opt '-l', '--list',         "List dep sources that are present locally"
     }.run {|cmd|
       if cmd.opts.slice(:add, :update, :list).length != 1
-        log_error "'sources' requires a single option."
+        LogHelpers.log_error "'sources' requires a single option."
       elsif cmd.opts.has_key?(:add)
-        begin
-          Source.new(cmd.argv.first, cmd.opts[:add]).add!
-        rescue SourceError => e
-          log_error e.message
+        if cmd.argv.length != 1
+          LogHelpers.log_error "The -a option requires a URI as its second argument. `babushka sources --help` for more info."
+        else
+          begin
+            Source.new(nil, cmd.opts[:add], cmd.argv.first).add!
+          rescue SourceError => e
+            LogHelpers.log_error e.message
+          end
         end
       elsif cmd.opts.has_key?(:update)
         Base.sources.update!
@@ -92,11 +95,11 @@ module Babushka
 
     handle('edit', "Load the file containing the specified dep in $EDITOR").run {|cmd|
       if cmd.argv.length != 1
-        log_error "'edit' requires a single argument."
+        LogHelpers.log_error "'edit' requires a single argument."
       else
         Base.sources.find_or_suggest(cmd.argv.first) {|dep|
           if dep.load_path.nil?
-            log_error "Can't edit '#{dep.name}', since it wasn't loaded from a file."
+            LogHelpers.log_error "Can't edit '#{dep.name}', since it wasn't loaded from a file."
           else
             file, line = dep.context.source_location
             editor_var = ENV['BABUSHKA_EDITOR'] || ENV['VISUAL'] || ENV['EDITOR'] || ShellHelpers.which('subl') || ShellHelpers.which('mate') || ShellHelpers.which('vim') || ShellHelpers.which('vi')
@@ -114,5 +117,6 @@ module Babushka
         }
       end
     }
+
   end
 end

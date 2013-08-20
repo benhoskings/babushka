@@ -67,6 +67,7 @@ module Babushka
     dep_cache
     task
     source
+    implicit_source
     source_pool
     vars
     parameter
