@@ -43,11 +43,11 @@ module Babushka
     end
 
     def our_flavours
-      SystemDefinition::NAMES[system].keys
+      SystemDefinition::CODENAMES[system].keys
     end
 
     def our_flavour_names
-      SystemDefinition::NAMES[system][flavour].values
+      SystemDefinition::CODENAMES[system][flavour].values
     end
   end
 end
