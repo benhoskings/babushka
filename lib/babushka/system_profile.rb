@@ -8,7 +8,6 @@ module Babushka
     end
 
     def matches?(specs) matcher.matches?(specs) end
-    alias_method :===, :matches?
     def match_list()    matcher.list end
 
     def definition
