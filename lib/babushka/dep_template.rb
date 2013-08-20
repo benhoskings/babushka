@@ -60,17 +60,15 @@ module Babushka
       source.templates.register self
     end
 
-    # Returns this template's name, including the source name as a prefix if
-    # this template is in a cloneable source.
+    # Returns this template's name, including its source name as a prefix if
+    # the source is remote.
     #
-    # A cloneable source is one that babushka knows how to automatically
-    # update; i.e. a source that babushka could have installed itself.
-    #
-    # In effect, a cloneable source is one whose deps you prefix when you run
-    # them, so this method returns the template's name in the same form as you
-    # would refer to it when using it from another source.
+    # The contextual name is the name you can use to refer to unambiguously
+    # refer to this template on your system; i.e. the name that properly
+    # identifies the template, taking your (possibly customised) source names
+    # into account.
     def contextual_name
-      source.cloneable? ? "#{source.name}:#{name}" : name
+      source.remote? ? "#{source.name}:#{name}" : name
     end
 
     def build_context block

@@ -92,22 +92,6 @@ describe Source do
     end
   end
 
-  describe Source, '#cloneable?' do
-    it "should be false for existing sources without a URI" do
-      Source.new(@local_source_path).should_not be_cloneable
-    end
-    context "for existing sources" do
-      let(:source) { Source.new(*@remote_1) }
-      it "should be true for existing sources with a URI" do
-        source.tap(&:add!).should be_cloneable
-      end
-      after { source.path.rm }
-    end
-    it "should be true for nonexistent sources with a URI" do
-      Source.new(*@remote_1).should be_cloneable
-    end
-  end
-
   describe "#cloned?" do
     it "should return false for local sources" do
       Source.new(@local_source_path).should_not be_cloned

@@ -73,17 +73,14 @@ module Babushka
       end
     end
 
-    # Returns this dep's name, including the source name as a prefix if this
-    # dep is in a cloneable source.
+    # Returns this dep's name, including its source name as a prefix if the
+    # source is remote.
     #
-    # A cloneable source is one that babushka knows how to automatically
-    # update; i.e. a source that babushka could have installed itself.
-    #
-    # In effect, a cloneable source is one whose deps you prefix when you run
-    # them, so this method returns the dep's name in the same form as you would
-    # refer to it on the commandline or within a +require+ call in another dep.
+    # The contextual name is the name you can use to refer to unambiguously
+    # refer to this dep on your system; i.e. the name that properly identifies
+    # the dep, taking your (possibly customised) source names into account.
     def contextual_name
-      dep_source.cloneable? ? "#{dep_source.name}:#{name}" : name
+      dep_source.remote? ? "#{dep_source.name}:#{name}" : name
     end
 
     # Return this dep's name, first removing the template suffix if one is

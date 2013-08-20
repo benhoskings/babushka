@@ -29,9 +29,9 @@ describe Babushka::ImplicitSource do
     end
   end
 
-  describe Source, '#cloneable?' do
-    it "should not be cloneable" do
-      ImplicitSource.new('name').should_not be_cloneable
+  describe Source, '#remote?' do
+    it "should not be remote" do
+      ImplicitSource.new('name').should_not be_remote
     end
   end
 

@@ -72,7 +72,7 @@ module Babushka
       type == :local
     end
 
-    def cloneable?
+    def remote?
       type == :remote
     end
 
@@ -97,7 +97,7 @@ module Babushka
         name,
         uri.to_s,
         type,
-        ("#{updated_at.round.xsecs} ago" if cloneable?)
+        ("#{updated_at.round.xsecs} ago" if remote?)
       ]
     end
 
@@ -119,7 +119,7 @@ module Babushka
     end
 
     def add!
-      if !cloneable?
+      if !remote?
         log "Nothing to add for #{name}."
       else
         raise_unless_addable!
@@ -135,7 +135,7 @@ module Babushka
     def load! should_update = false
       unless @currently_loading
         @currently_loading = true
-        update! if cloneable? && (!cloned? || should_update)
+        update! if remote? && (!cloned? || should_update)
         load_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end

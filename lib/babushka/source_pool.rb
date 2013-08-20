@@ -109,7 +109,7 @@ module Babushka
 
     def update!
       all_present.select {|source|
-        source.cloneable?
+        source.remote?
       }.tap {|sources|
         log "Updating #{sources.length} source#{'s' unless sources.length == 1}."
       }.map {|source|
