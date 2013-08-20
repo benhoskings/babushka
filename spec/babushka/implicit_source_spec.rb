@@ -35,10 +35,4 @@ describe Babushka::ImplicitSource do
     end
   end
 
-  describe "#cloned?" do
-    it "should not be cloned" do
-      Source.new('name').should_not be_cloned
-    end
-  end
-
 end

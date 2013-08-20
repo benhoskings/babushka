@@ -92,25 +92,6 @@ describe Source do
     end
   end
 
-  describe "#cloned?" do
-    it "should return false for local sources" do
-      Source.new(@local_source_path).should_not be_cloned
-    end
-    context "for cloneable repos" do
-      let(:source) { Source.new(*@remote_2) }
-      it "should not be cloned" do
-        source.should_not be_cloned
-      end
-      it "should be cloned after loading" do
-        source.load!
-        source.should be_cloned
-      end
-      after {
-        source.path.rm
-      }
-    end
-  end
-
   describe '#clear!' do
     let(:source) { Source.new(@local_source_path) }
     it "should clear the deps and templates" do
@@ -393,13 +374,13 @@ describe Source do
       @source.should_receive(:update!)
       @source.load!
     end
-    it "should not update when the source is already cloned" do
-      @source.stub(:cloned?).and_return(true)
+    it "should not update when the source is already present" do
+      @source.stub(:repo?).and_return(true)
       @source.should_not_receive(:update!)
       @source.load!
     end
-    it "should update when the source is already cloned and update is true" do
-      @source.stub(:cloned?).and_return(true)
+    it "should update when the source is already present and update is true" do
+      @source.stub(:repo?).and_return(true)
       @source.should_receive(:update!)
       @source.load!(true)
     end

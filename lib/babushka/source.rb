@@ -76,10 +76,6 @@ module Babushka
       type == :remote
     end
 
-    def cloned?
-      cloneable? && File.directory?(path / '.git')
-    end
-
     def repo
       @repo ||= Babushka::GitRepo.new(path)
     end
@@ -135,7 +131,7 @@ module Babushka
     def load! should_update = false
       unless @currently_loading
         @currently_loading = true
-        update! if remote? && (!cloned? || should_update)
+        update! if remote? && (!repo? || should_update)
         load_deps! unless implicit? # implicit sources can't be loaded.
         @currently_loading = false
       end
