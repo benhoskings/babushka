@@ -321,7 +321,9 @@ module Babushka
         true # already met.
       elsif and_meet
         run_meet_stage
-        invoke(:met?)
+        invoke(:met?).tap {|result|
+          Babushka::GitFS.commit(commit_message) if result && Base.task.opt(:git_fs)
+        }
       end
     end
 
@@ -378,6 +380,11 @@ module Babushka
           DepRequirement.new(dep_or_requirement, [])
         end
       }
+    end
+
+    def commit_message
+      arg_list = args.map {|k,v| "#{v.description}\n" }.join
+      "babushka '#{contextual_name}'\n\n#{arg_list}"
     end
 
     def logging_name
