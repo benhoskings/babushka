@@ -237,6 +237,18 @@ module Babushka
       repo_shell?("git rev-parse refs/remotes/#{current_remote_branch}")
     end
 
+    # Initialize this repository, if it doesn't already exist, using the
+    # supplied gitignore contents (or a blank one).
+    def init! gitignore_contents = ''
+      if !exists?
+        path.mkdir
+        shell('git init', :cd => path)
+        (path / '.gitignore').write(gitignore_contents)
+        shell('git add .gitignore', :cd => path)
+        shell('git commit -m "Add .gitignore."', :cd => path)
+      end
+    end
+
     # Clone the remote at +from+ to this GitRepo's path. The path must be
     # nonexistent; an error is raised if the local repo already exists.
     def clone! from
