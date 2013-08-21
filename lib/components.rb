@@ -28,6 +28,7 @@ module Babushka
     popen
     shell
     git_repo
+    git_fs
     resource
     asset
     prompt
