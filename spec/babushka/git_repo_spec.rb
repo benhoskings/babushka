@@ -495,6 +495,20 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
   end
 end
 
+describe GitRepo, '#commit!' do
+  before(:all) { stub_repo 'a' }
+  let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should shell out to git" do
+    repo.should_receive(:shell).with('git', 'commit', '-m', 'from specs', :cd => repo.root)
+    repo.commit!('from specs')
+  end
+  it "should create a commit" do
+    (repo.root / 'file').write('contents')
+    repo.repo_shell('git add -A .')
+    expect { repo.commit!('from specs') }.to change { repo.repo_shell('git rev-list HEAD | wc -l').strip.to_i }.by(1)
+  end
+end
+
 describe GitRepo, '#branch!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }

@@ -260,6 +260,10 @@ module Babushka
       }
     end
 
+    def commit! message
+      repo_shell("git", "commit", "-m", message)
+    end
+
     # Create a new local branch called +branch+ with +ref+ (defaulting to
     # HEAD) as its tip.
     def branch! branch, ref = 'HEAD'
