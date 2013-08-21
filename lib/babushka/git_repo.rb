@@ -71,19 +71,21 @@ module Babushka
     #
     # A GitRepo with a nonexistent {root} is valid - it will only fail if
     # an operation that requires an existing repo is attempted.
-    def repo_shell cmd, opts = {}, &block
+    def repo_shell *cmd, &block
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
-        shell cmd, opts.merge(:cd => root), &block
+        opts = cmd.extract_options!
+        shell *cmd.push(opts.merge(:cd => root)), &block
       end
     end
 
-    def repo_shell? cmd, opts = {}
+    def repo_shell? *cmd
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
-        shell? cmd, opts.merge(:cd => root)
+        opts = cmd.extract_options!
+        shell? *cmd.push(opts.merge(:cd => root))
       end
     end
 
