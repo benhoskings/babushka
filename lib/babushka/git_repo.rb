@@ -278,7 +278,11 @@ module Babushka
     end
 
     def inspect
-      "#<GitRepo:#{root} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+      if !exists?
+        "#<GitRepo:#{path} (nonexistent)>"
+      else
+        "#<GitRepo:#{root} : #{current_branch}@#{current_head}#{' (dirty)' if dirty?}>"
+      end
     end
 
     private
