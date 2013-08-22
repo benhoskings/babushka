@@ -12,6 +12,9 @@ describe Babushka::SSH do
   end
 
   describe '#babushka' do
+    before {
+      $stdin.stub(:tty?).and_return(false)
+    }
     it "should run babushka remotely" do
       ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", :log => true).and_return(true)
       ssh.babushka('git')
@@ -24,10 +27,14 @@ describe Babushka::SSH do
       ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "version=1.8.3.2", :log => true).and_return(true)
       ssh.babushka('git', :version => '1.8.3.2')
     end
-    it "should use colour when running on a terminal" do
-      $stdin.stub(:tty?).and_return(true)
-      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--colour", :log => true).and_return(true)
-      ssh.babushka('git')
+    context "when running on a terminal" do
+      before {
+        $stdin.stub(:tty?).and_return(true)
+      }
+      it "should use colour" do
+        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--colour", :log => true).and_return(true)
+        ssh.babushka('git')
+      end
     end
     it "should propagate --update to the remote" do
       Babushka::Base.task.stub(:opt).and_return(false)
