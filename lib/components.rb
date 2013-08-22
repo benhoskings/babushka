@@ -29,6 +29,7 @@ module Babushka
     shell
     ssh
     git_repo
+    git_fs
     resource
     asset
     prompt

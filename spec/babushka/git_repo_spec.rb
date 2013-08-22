@@ -413,6 +413,40 @@ describe GitRepo, '#behind?' do
   end
 end
 
+describe GitRepo, '#init!' do
+  context "when the repo doesn't exist" do
+    let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/uninited') }
+    it "should init the repo" do
+      expect { repo.init! }.to change(repo, :exists?).from(false).to(true)
+    end
+    it "should add an initial commit" do
+      repo.init!
+      repo.repo_shell('git rev-list HEAD | wc -l').strip.to_i.should == 1
+    end
+    context "when no gitignore is supplied" do
+      it "should add an empty gitignore" do
+        repo.init!
+        repo.repo_shell('git show HEAD:.gitignore').should == ''
+      end
+    end
+    context "when a gitignore is supplied" do
+      it "should use that gitignore" do
+        repo.init!('log/')
+        repo.repo_shell('git show HEAD:.gitignore').should == 'log/'
+      end
+    end
+    after { repo.root.rm }
+  end
+  context "when a repo already exists" do
+    before(:all) { stub_repo 'a' }
+    let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+    it "should not re-init the repo" do
+      repo.should_not_receive(:shell)
+      repo.init!
+    end
+  end
+end
+
 describe GitRepo, '#clone!' do
   before(:all) { stub_repo 'a' }
   context "for existing repos" do
@@ -458,6 +492,20 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
     after {
       ShellHelpers.shell "rm -rf #{tmp_prefix / 'repos/b'}"
     }
+  end
+end
+
+describe GitRepo, '#commit!' do
+  before(:all) { stub_repo 'a' }
+  let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should shell out to git" do
+    repo.should_receive(:shell).with('git', 'commit', '-m', 'from specs', :cd => repo.root)
+    repo.commit!('from specs')
+  end
+  it "should create a commit" do
+    (repo.root / 'file').write('contents')
+    repo.repo_shell('git add -A .')
+    expect { repo.commit!('from specs') }.to change { repo.repo_shell('git rev-list HEAD | wc -l').strip.to_i }.by(1)
   end
 end
 

@@ -512,3 +512,52 @@ describe 'dep caching' do
     Dep('caching parent').met?
   end
 end
+
+describe "fs snapshotting" do
+  before {
+    Base.task.stub(:opt).and_return(false)
+    Base.task.stub(:opt).with(:git_fs).and_return(true)
+  }
+  context "when the dep is already met" do
+    let(:the_dep) {
+      dep('snapshotting - met')
+    }
+    it "should not snapshot" do
+      Babushka::GitFS.should_not_receive(:commit)
+      the_dep.meet
+    end
+  end
+  context "when the dep can't be met" do
+    let(:the_dep) {
+      dep('snapshotting - unmeetable') {
+        met? { false }
+      }
+    }
+    it "should not snapshot" do
+      Babushka::GitFS.should_not_receive(:commit)
+      the_dep.meet
+    end
+  end
+  context "when the dep can be met" do
+    let(:the_dep) {
+      dep('snapshotting - unmet') {
+        met? { @run }
+        meet { @run = true }
+      }
+    }
+    it "should snapshot" do
+      Babushka::GitFS.should_receive(:commit).with("babushka 'snapshotting - unmet'\n\n")
+      the_dep.meet
+    end
+    context "when snapshotting is disabled" do
+      before {
+        Base.task.stub(:opt).and_return(false)
+        Base.task.stub(:opt).with(:git_fs).and_return(false)
+      }
+      it "should not snapshot" do
+        Babushka::GitFS.should_not_receive(:commit)
+        the_dep.meet
+      end
+    end
+  end
+end
