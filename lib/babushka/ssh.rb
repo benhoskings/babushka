@@ -8,7 +8,7 @@ module Babushka
     end
 
     def shell *cmd
-      ShellHelpers.shell "ssh", "-A", host, cmd.map{|i| "'#{i}'" }.join(' '), :log => true
+      ShellHelpers.shell "ssh", "-A", host, *cmd, :log => true
     end
 
     def babushka dep_spec, args = {}
