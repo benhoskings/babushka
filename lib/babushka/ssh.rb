@@ -14,6 +14,7 @@ module Babushka
     def babushka dep_spec, args = {}
       remote_args = [
         '--defaults',
+        '--git-fs',
         '--show-args',
         ('--colour' if $stdin.tty?),
         ('--update' if Babushka::Base.task.opt(:update)),

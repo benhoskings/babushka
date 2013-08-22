@@ -16,15 +16,15 @@ describe Babushka::SSH do
       $stdin.stub(:tty?).and_return(false)
     }
     it "should run babushka remotely" do
-      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", :log => true).and_return(true)
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", :log => true).and_return(true)
       ssh.babushka('git')
     end
     it "should raise when the remote babushka fails" do
-      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "fail", "--defaults", "--show-args", :log => true).and_return(false)
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "fail", "--defaults", "--git-fs", "--show-args", :log => true).and_return(false)
       expect { ssh.babushka('fail') }.to raise_error(Babushka::UnmeetableDep)
     end
     it "should include the args in the commandline" do
-      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "version=1.8.3.2", :log => true).and_return(true)
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "version=1.8.3.2", :log => true).and_return(true)
       ssh.babushka('git', :version => '1.8.3.2')
     end
     context "when running on a terminal" do
@@ -32,7 +32,7 @@ describe Babushka::SSH do
         $stdin.stub(:tty?).and_return(true)
       }
       it "should use colour" do
-        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--colour", :log => true).and_return(true)
+        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "--colour", :log => true).and_return(true)
         ssh.babushka('git')
       end
     end
@@ -42,12 +42,12 @@ describe Babushka::SSH do
       }
       it "should propagate --update to the remote" do
         Babushka::Base.task.stub(:opt).with(:update).and_return(true)
-        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--update", "version=1.8.3.2", :log => true).and_return(true)
+        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "--update", "version=1.8.3.2", :log => true).and_return(true)
         ssh.babushka('git', :version => '1.8.3.2')
       end
       it "should propagate --debug to the remote" do
         Babushka::Base.task.stub(:opt).with(:debug).and_return(true)
-        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--debug", "version=1.8.3.2", :log => true).and_return(true)
+        ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "--debug", "version=1.8.3.2", :log => true).and_return(true)
         ssh.babushka('git', :version => '1.8.3.2')
       end
     end
