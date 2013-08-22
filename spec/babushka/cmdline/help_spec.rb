@@ -51,6 +51,7 @@ describe "help" do
     -u, --update                     Update sources before loading deps from them
         --show-args                  Show the arguments being passed between deps as they're run
         --profile                    Print a per-line timestamp to the debug log
+        --git-fs                     Snapshot the root filesystem in a git repo after meeting deps
 ")
 
       LogHelpers.should_receive(:log).with("\n")

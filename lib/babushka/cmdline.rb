@@ -48,6 +48,7 @@ module Babushka
       opt '-u', '--update',       "Update sources before loading deps from them"
       opt       '--show-args',    "Show the arguments being passed between deps as they're run"
       opt       '--profile',      "Print a per-line timestamp to the debug log"
+      opt       '--git-fs',       "Snapshot the root filesystem in a git repo after meeting deps"
     }.run {|cmd|
       dep_names, args = cmd.argv.partition {|arg| arg['='].nil? }
       if !(bad_arg = args.detect {|arg| arg[/^\w+=/].nil? }).nil?

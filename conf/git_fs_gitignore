@@ -1,0 +1,43 @@
+# Virtual dirs
+dev/*
+proc/*
+sys/*
+
+# Variable FHS dirs (these should have a .gitkeep)
+tmp/*
+var/cache/*
+var/lib/*
+var/local/*
+var/log/*
+var/opt/*
+var/run/*
+var/spool/*
+var/tmp/*
+
+# Non-standard variable dirs
+run
+var/backups
+
+# Variable files
+*.log
+*.log.1
+*.log.?.gz
+*.pid
+.aptitude/
+.babushka/
+.bash_history
+.cache/
+.irb_history
+.lesshst
+.nano_history
+.netrwhist
+.viminfo
+.zsh_history
+
+# Files that that we don't need to store
+*.backup
+*.bak
+*.tmp
+
+# Custom ignores
+/srv/http/*/sqldumps
