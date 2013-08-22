@@ -3,7 +3,7 @@ require 'spec_helper'
 describe '#ssh' do
   it "should return a Babushka::SSH instance" do
     value = nil
-    dep 'ssh test' do
+    dep 'ssh test without block' do
       value = ssh('user@host')
     end.met?
     value.should be_an_instance_of(Babushka::SSH)
@@ -11,7 +11,7 @@ describe '#ssh' do
   end
   it "should yield the Babushka::SSH instance to the block" do
     value = nil
-    dep 'ssh test' do
+    dep 'ssh test with block' do
       ssh('user@host') {|remote|
         value = remote
       }
