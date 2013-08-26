@@ -50,6 +50,24 @@ describe Source do
     end
   end
 
+  describe '#path' do
+    it "should be a Fancypath" do
+      Source.new(@local_source_path).path.should be_an_instance_of(Fancypath)
+    end
+  end
+
+  describe '#name' do
+    it "should be a String" do
+      Source.new(@local_source_path).name.should be_an_instance_of(String)
+    end
+  end
+
+  describe '#uri' do
+    it "should be a String" do
+      Source.new(nil, 'name', 'https://example.org/repo').uri.should be_an_instance_of(String)
+    end
+  end
+
   describe '#type' do
     context "when the source exists" do
       let(:source) { Source.new(@local_source_path) }
