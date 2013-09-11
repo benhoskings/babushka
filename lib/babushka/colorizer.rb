@@ -34,25 +34,24 @@ class String
 
     def self.escape_for description
       desc = description.strip.gsub(/\bon /, 'on_')
-      bg = bg_for(desc)
-      fg = fg_for(desc)
-      ctrl = ctrl_for(desc)
-
-      "\e[0;#{fg};#{bg || ctrl}m"
+      codes = [
+        fg_for(desc),
+        (bg_for(desc) || ctrl_for(desc))
+      ].compact
+      codes.empty? ? "\e[0m" : "\e[#{codes.join(';')}m"
     end
 
     def self.fg_for desc
-      COLOR_OFFSETS[desc[FG_REGEX]] || 0
+      COLOR_OFFSETS[desc[FG_REGEX]]
     end
 
     def self.bg_for desc
-      # There's a hole in the table on bg=none, so we use BG_OFFSET to the left
       offset = fg_for((desc[BG_REGEX] || '').sub(/^on_/, ''))
-      offset + BG_OFFSET unless offset == 0
+      offset + BG_OFFSET unless offset.nil?
     end
 
     def self.ctrl_for desc
-      CTRL_OFFSETS[desc[CTRL_REGEX]] || (1 if desc[FG_REGEX]) || 0
+      CTRL_OFFSETS[desc[CTRL_REGEX]]
     end
   end
 
