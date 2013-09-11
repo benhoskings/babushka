@@ -38,7 +38,7 @@ class String
       fg = fg_for(desc)
       ctrl = ctrl_for(desc)
 
-      "\e[#{"0;#{fg};#{bg || ctrl}"}m"
+      "\e[0;#{fg};#{bg || ctrl}m"
     end
 
     def self.fg_for desc
