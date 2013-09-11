@@ -5,10 +5,8 @@ class String
   class Colorizer
 
     HOME_OFFSET = 29
-    LIGHT_OFFSET = 60
     BG_OFFSET = 10
-    LIGHT_REGEX = /^light_/
-    COLOR_REGEX = /^(light_)?none|gr[ae]y|red|green|yellow|blue|pink|cyan|white$/
+    COLOR_REGEX = /^none|gr[ae]y|red|green|yellow|blue|pink|cyan|white$/
     CTRL_REGEX = /^bold|underlined?|blink(ing)?|reversed?$/
     COLOR_OFFSETS = {
       'none' => 0,
@@ -35,7 +33,7 @@ class String
     end
 
     def self.escape_for description
-      terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
+      terms = " #{description} ".gsub(' on ', ' on_').strip.split(/\s+/)
       bg = terms.detect {|i| /on_#{COLOR_REGEX}/ =~ i }
       fg = terms.detect {|i| COLOR_REGEX =~ i }
       ctrl = terms.detect {|i| CTRL_REGEX =~ i }
@@ -44,8 +42,7 @@ class String
     end
 
     def self.fg_for name
-      light = name.gsub!(LIGHT_REGEX, '') unless name.nil?
-      (COLOR_OFFSETS[name] || 0) + HOME_OFFSET + (light ? LIGHT_OFFSET : 0)
+      (COLOR_OFFSETS[name] || 0) + HOME_OFFSET
     end
 
     def self.bg_for name
