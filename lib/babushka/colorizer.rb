@@ -4,21 +4,20 @@ class String
 
   class Colorizer
 
-    HOME_OFFSET = 29
     BG_OFFSET = 10
     COLOR_REGEX = /gr[ae]y|red|green|yellow|blue|pink|cyan|white/
     FG_REGEX = /\b#{COLOR_REGEX}\b/
     BG_REGEX = /\bon_#{COLOR_REGEX}\b/
     CTRL_REGEX = /\bbold|underlined?|blink(ing)?|reversed?\b/
     COLOR_OFFSETS = {
-      'gray' => 61, 'grey' => 61,
-      'red' => 2,
-      'green' => 3,
-      'yellow' => 4,
-      'blue' => 5,
-      'pink' => 6,
-      'cyan' => 7,
-      'white' => 8
+      'gray' => 90, 'grey' => 90,
+      'red' => 31,
+      'green' => 32,
+      'yellow' => 33,
+      'blue' => 34,
+      'pink' => 35,
+      'cyan' => 36,
+      'white' => 37
     }
     CTRL_OFFSETS = {
       'bold' => 1,
@@ -43,17 +42,17 @@ class String
     end
 
     def self.fg_for desc
-      (COLOR_OFFSETS[desc[FG_REGEX]] || 0) + HOME_OFFSET
+      COLOR_OFFSETS[desc[FG_REGEX]] || 0
     end
 
     def self.bg_for desc
       # There's a hole in the table on bg=none, so we use BG_OFFSET to the left
       offset = fg_for((desc[BG_REGEX] || '').sub(/^on_/, ''))
-      offset + BG_OFFSET unless offset == HOME_OFFSET
+      offset + BG_OFFSET unless offset == 0
     end
 
     def self.ctrl_for desc
-      CTRL_OFFSETS[desc[CTRL_REGEX]] || HOME_OFFSET
+      CTRL_OFFSETS[desc[CTRL_REGEX]] || (1 if desc[FG_REGEX]) || 0
     end
   end
 
