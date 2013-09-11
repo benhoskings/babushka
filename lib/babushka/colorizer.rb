@@ -31,12 +31,16 @@ class String
     def self.colorize text, description
       return text if Babushka::Base.cmdline.opts[:"[no_]color"] == false
 
+      "#{escape_for(description)}#{text}\e[0m"
+    end
+
+    def self.escape_for description
       terms = " #{description} ".gsub(' light ', ' light_').gsub(' on ', ' on_').strip.split(/\s+/)
       bg = terms.detect {|i| /on_#{COLOR_REGEX}/ =~ i }
       fg = terms.detect {|i| COLOR_REGEX =~ i }
       ctrl = terms.detect {|i| CTRL_REGEX =~ i }
 
-      "\e[#{"0;#{fg_for(fg)};#{bg_for(bg) || ctrl_for(ctrl)}"}m#{text}\e[0m"
+      "\e[#{"0;#{fg_for(fg)};#{bg_for(bg) || ctrl_for(ctrl)}"}m"
     end
 
     def self.fg_for name
