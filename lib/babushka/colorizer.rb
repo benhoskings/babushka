@@ -6,8 +6,10 @@ class String
 
     HOME_OFFSET = 29
     BG_OFFSET = 10
-    COLOR_REGEX = /^none|gr[ae]y|red|green|yellow|blue|pink|cyan|white$/
-    CTRL_REGEX = /^bold|underlined?|blink(ing)?|reversed?$/
+    COLOR_REGEX = /none|gr[ae]y|red|green|yellow|blue|pink|cyan|white/
+    FG_REGEX = /\b#{COLOR_REGEX}\b/
+    BG_REGEX = /\bon_#{COLOR_REGEX}\b/
+    CTRL_REGEX = /\bbold|underlined?|blink(ing)?|reversed?\b/
     COLOR_OFFSETS = {
       'none' => 0,
       'gray' => 61, 'grey' => 61,
@@ -33,10 +35,10 @@ class String
     end
 
     def self.escape_for description
-      terms = description.strip.gsub(/\bon /, 'on_').split(/\s+/)
-      bg = terms.detect {|i| /on_#{COLOR_REGEX}/ =~ i }
-      fg = terms.detect {|i| COLOR_REGEX =~ i }
-      ctrl = terms.detect {|i| CTRL_REGEX =~ i }
+      desc = description.strip.gsub(/\bon /, 'on_')
+      bg = desc[BG_REGEX]
+      fg = desc[FG_REGEX]
+      ctrl = desc[CTRL_REGEX]
 
       "\e[#{"0;#{fg_for(fg)};#{bg_for(bg) || ctrl_for(ctrl)}"}m"
     end
