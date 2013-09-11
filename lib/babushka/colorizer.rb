@@ -27,9 +27,11 @@ class String
     }
 
     def self.colorize text, description
-      return text if Babushka::Base.cmdline.opts[:"[no_]color"] == false
-
-      "#{escape_for(description)}#{text}\e[0m"
+      if Babushka::Base.cmdline.opts[:"[no_]color"] == false
+        text
+      else
+        "#{escape_for(description)}#{text}\e[0m"
+      end
     end
 
     def self.escape_for description
