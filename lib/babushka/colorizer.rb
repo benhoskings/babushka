@@ -33,7 +33,7 @@ class String
     end
 
     def self.escape_for description
-      terms = " #{description} ".gsub(' on ', ' on_').strip.split(/\s+/)
+      terms = description.strip.gsub(/\bon /, 'on_').split(/\s+/)
       bg = terms.detect {|i| /on_#{COLOR_REGEX}/ =~ i }
       fg = terms.detect {|i| COLOR_REGEX =~ i }
       ctrl = terms.detect {|i| CTRL_REGEX =~ i }
