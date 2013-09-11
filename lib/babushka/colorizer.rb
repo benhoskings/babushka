@@ -6,12 +6,11 @@ class String
 
     HOME_OFFSET = 29
     BG_OFFSET = 10
-    COLOR_REGEX = /none|gr[ae]y|red|green|yellow|blue|pink|cyan|white/
+    COLOR_REGEX = /gr[ae]y|red|green|yellow|blue|pink|cyan|white/
     FG_REGEX = /\b#{COLOR_REGEX}\b/
     BG_REGEX = /\bon_#{COLOR_REGEX}\b/
     CTRL_REGEX = /\bbold|underlined?|blink(ing)?|reversed?\b/
     COLOR_OFFSETS = {
-      'none' => 0,
       'gray' => 61, 'grey' => 61,
       'red' => 2,
       'green' => 3,
