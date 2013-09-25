@@ -24,7 +24,7 @@ Babushka should run on any Unix. OS X and Ubuntu are fully supported, including 
 
 [Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under the MIT license.
 
-Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of
+Thanks to my rubyist friends who've contributed to babushka by submitting patches, and helped me with brainstorming and testing---the likes of
 [@glenmaddern](http://twitter.com/glenmaddern),
 [@nathan_scott](http://twitter.com/nathan_scott),
 [@notahat](http://twitter.com/notahat),
