@@ -30,6 +30,7 @@ Thanks to my rubyist friends who've helped with brainstorming and testing---the 
 [@notahat](http://twitter.com/notahat),
 [@quamen](http://twitter.com/quamen),
 [@dgoodlad](http://twitter.com/dgoodlad),
+[@rich0H](http://twitter.com/rich0H),
 [@chrisberkhout](http://twitter.com/chrisberkhout),
 [@pat](http://twitter.com/pat),
 [@brentsnook](http://twitter.com/brentsnook),
