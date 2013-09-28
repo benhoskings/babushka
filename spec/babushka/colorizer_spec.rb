@@ -15,6 +15,7 @@ describe String::Colorizer do
       it "should work for background colours" do
         String::Colorizer.escape_for('on green').should == "\e[42m"
         String::Colorizer.escape_for('on blue').should == "\e[44m"
+        String::Colorizer.escape_for('on grey').should == "\e[100m"
       end
       it "should work for control colours" do
         String::Colorizer.escape_for('underline').should == "\e[4m"
