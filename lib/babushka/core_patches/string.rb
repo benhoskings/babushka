@@ -57,9 +57,9 @@ class String
   # Return a new string with the contents of this string surrounded in escape
   # sequences such that it will render as described in +description+.
   # Some examples:
-  #   'Hello world!'.colorize('green')   #=> "\e[0;32;29mHello world!\e[0m"
-  #   'Hello world!'.colorize('on red')  #=> "\e[0;29;41mHello world!\e[0m"
-  #   'Hello world!'.colorize('reverse') #=> "\e[0;29;7mHello world!\e[0m"
+  #   'Hello world!'.colorize('green')   #=> "\e[32mHello world!\e[m"
+  #   'Hello world!'.colorize('on red')  #=> "\e[41mHello world!\e[m"
+  #   'Hello world!'.colorize('reverse') #=> "\e[7mHello world!\e[m"
   def colorize description = '', start_at = nil
     if start_at.nil? || (cut_point = index(start_at)).nil?
       Colorizer.colorize self, description
