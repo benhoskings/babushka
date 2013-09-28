@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe String::Colorizer do
+  describe '.colorize' do
+    it "should wrap the input in ansi codes" do
+      String::Colorizer.colorize('lol', 'blue').should == "\e[34mlol\e[0m"
+    end
+  end
   describe '.escape_for' do
     describe 'single settings' do
       it "should work for nothing" do
