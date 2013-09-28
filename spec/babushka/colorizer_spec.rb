@@ -29,11 +29,11 @@ describe String::Colorizer do
       it "should work for foreground + control" do
         String::Colorizer.escape_for('underlined green').should == "\e[32;4m"
       end
-      it "should work for background + control (ignoring the control)" do
-        String::Colorizer.escape_for('underlined on green').should == "\e[42m"
+      it "should work for background + control" do
+        String::Colorizer.escape_for('underlined on green').should == "\e[42;4m"
       end
-      it "should work for foreground + background + control (ignoring the control)" do
-        String::Colorizer.escape_for('underlined blue on green').should == "\e[34;42m"
+      it "should work for foreground + background + control" do
+        String::Colorizer.escape_for('underlined blue on green').should == "\e[34;42;4m"
       end
     end
   end

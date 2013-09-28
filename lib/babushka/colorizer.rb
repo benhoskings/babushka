@@ -36,10 +36,8 @@ class String
 
     def self.escape_for description
       desc = description.strip.gsub(/\bon /, 'on_')
-      codes = [
-        fg_for(desc),
-        (bg_for(desc) || ctrl_for(desc))
-      ].compact
+      codes = [fg_for(desc), bg_for(desc), ctrl_for(desc)].compact
+
       codes.empty? ? "\e[0m" : "\e[#{codes.join(';')}m"
     end
 
