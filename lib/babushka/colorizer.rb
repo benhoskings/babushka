@@ -30,15 +30,15 @@ class String
       if Babushka::Base.cmdline.opts[:"[no_]color"] == false
         text
       else
-        "#{escape_for(description)}#{text}\e[0m"
+        "#{escape_for(description)}#{text}\e[m"
       end
     end
 
     def self.escape_for description
       desc = description.strip.gsub(/\bon /, 'on_')
-      codes = [fg_for(desc), bg_for(desc), ctrl_for(desc)].compact
+      codes = [fg_for(desc), bg_for(desc), ctrl_for(desc)]
 
-      codes.empty? ? "\e[0m" : "\e[#{codes.join(';')}m"
+      "\e[#{codes.compact.join(';')}m"
     end
 
     def self.fg_for desc

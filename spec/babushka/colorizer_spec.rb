@@ -3,14 +3,14 @@ require 'spec_helper'
 describe String::Colorizer do
   describe '.colorize' do
     it "should wrap the input in ansi codes" do
-      String::Colorizer.colorize('lol', 'blue').should == "\e[34mlol\e[0m"
+      String::Colorizer.colorize('lol', 'blue').should == "\e[34mlol\e[m"
     end
   end
   describe '.escape_for' do
     describe 'single settings' do
       it "should work for nothing" do
-        String::Colorizer.escape_for('reset').should == "\e[0m"
-        String::Colorizer.escape_for('none').should == "\e[0m"
+        String::Colorizer.escape_for('reset').should == "\e[m"
+        String::Colorizer.escape_for('none').should == "\e[m"
       end
       it "should work for foreground colours" do
         String::Colorizer.escape_for('green').should == "\e[32m"
