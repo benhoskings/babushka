@@ -12,39 +12,38 @@ module Babushka
       @path ||= Babushka::ShellHelpers.which('ruby').p
     end
 
-    # Is the current ruby managed by rbenv?
+    # True if the current ruby is managed by rbenv.
     def rbenv?
       path.to_s[%r{\brbenv/}]
     end
 
-    # Is the current ruby managed by rvm?
+    # True if the current ruby is managed by rvm.
     def rvm?
       path.to_s[%r{\brvm/}]
     end
 
-    # The directory in which the binaries from gems are found.
-    #
-    # This is sometimes different to where `gem` itself is running from.
+    # The directory in which gem binaries are found. This is sometimes different
+    # to the path that `gem` itself runs from.
     def bin_dir
       gem_env.val_for('EXECUTABLE DIRECTORY').p
     end
 
-    # Where all the gems are actually installed
+    # The path to the current ruby's installed set of gems.
     def gem_dir
       gem_env.val_for('INSTALLATION DIRECTORY') / 'gems'
     end
 
-    # Where all the gemspecs are saved
+    # The path to the gemspecs for the current ruby's installed set of gems.
     def gemspec_dir
       gem_env.val_for('INSTALLATION DIRECTORY') / 'specifications'
     end
 
-    # The ruby version
+    # The version of the ruby in the path.
     def version
       @_version ||= Babushka::ShellHelpers.shell('ruby --version').scan(/^ruby (\S+)/).flatten.first.to_version
     end
 
-    # The rubygems version
+    # The version of the `gem` in the path.
     def gem_version
       gem_env.val_for('RUBYGEMS VERSION').to_version
     end
