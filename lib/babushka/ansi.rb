@@ -45,7 +45,7 @@ module Babushka
       # Make "on_grey" etc single words, so the foreground regex doesn't match.
       desc = description.strip.gsub(/\bon /, 'on_')
       # If we're on a linux pty, substitute 'bold black' for 'bright black'.
-      desc = desc.gsub(/\bgrey\b/, 'bold black') if ENV['TERM'] == 'linux'
+      desc = desc.gsub(/\bgrey\b/, 'bold black') if linux_pty?
 
       codes = [fg_for(desc), bg_for(desc), ctrl_for(desc)]
 
@@ -63,6 +63,10 @@ module Babushka
 
     def self.ctrl_for desc
       CTRL_OFFSETS[desc[CTRL_REGEX]]
+    end
+
+    def self.linux_pty?
+      $stdin.tty? && (ENV['TERM'] == 'linux')
     end
   end
 end
