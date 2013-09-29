@@ -56,12 +56,8 @@ class String
 
   # Wrap this string in ANSI color codes according to description. See the
   # Babushka::ANSI docs for details.
-  def colourise description = '', start_at = nil
-    if start_at.nil? || (cut_point = index(start_at)).nil?
-      Babushka::ANSI.wrap(self, description)
-    else
-      self[0...cut_point] + Babushka::ANSI.wrap(self[cut_point..-1], description)
-    end
+  def colourise description = ''
+    Babushka::ANSI.wrap(self, description)
   end
   alias_method :colorize, :colourise
 
