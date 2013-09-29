@@ -1,8 +1,5 @@
-class String
-
-  private
-
-  class Colorizer
+module Babushka
+  class ANSI
 
     BG_OFFSET = 10
     COLOR_REGEX = /gr[ae]y|red|green|yellow|blue|pink|cyan|white/
@@ -26,7 +23,7 @@ class String
       'reverse' => 7, 'reversed' => 7
     }
 
-    def self.colorize text, description
+    def self.wrap text, description
       if Babushka::Base.cmdline.opts[:"[no_]color"] == false
         text
       else
@@ -54,5 +51,4 @@ class String
       CTRL_OFFSETS[desc[CTRL_REGEX]]
     end
   end
-
 end
