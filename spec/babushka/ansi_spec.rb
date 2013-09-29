@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe Babushka::ANSI do
   describe '.wrap' do
+    before {
+      Babushka::Base.cmdline.opts.stub(:[]).with(:"[no_]color") { true }
+    }
     it "should wrap the input in ansi codes" do
       Babushka::ANSI.wrap('lol', 'blue').should == "\e[34mlol\e[m"
     end
