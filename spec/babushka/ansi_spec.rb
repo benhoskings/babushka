@@ -21,7 +21,7 @@ describe Babushka::ANSI do
       end
       context "on a linux pty" do
         before {
-          ENV.stub(:[]).with('TERM') { 'linux' }
+          Babushka::ANSI.stub(:linux_pty?) { true }
         }
         it "should use 'bold black' for grey" do
           Babushka::ANSI.escape_for('grey').should == "\e[30;1m"
@@ -29,7 +29,7 @@ describe Babushka::ANSI do
       end
       context "on other terminals" do
         before {
-          ENV.stub(:[]).with('TERM') { 'xterm' }
+          Babushka::ANSI.stub(:linux_pty?) { false }
         }
         it "should use 'bright black' for grey" do
           Babushka::ANSI.escape_for('grey').should == "\e[90m"
