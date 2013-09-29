@@ -2,7 +2,7 @@ module Babushka
   class ANSI
 
     BG_OFFSET = 10
-    COLOR_REGEX = /gr[ae]y|red|green|yellow|blue|pink|cyan|white/
+    COLOR_REGEX = /black|gr[ae]y|red|green|yellow|blue|pink|cyan|white/
     FG_REGEX = /\b#{COLOR_REGEX}\b/
     BG_REGEX = /\bon_#{COLOR_REGEX}\b/
     CTRL_REGEX = /\bbold|underlined?|blink(ing)?|reversed?\b/
@@ -10,6 +10,7 @@ module Babushka
       # This is actually "bright black", i.e. black (30) plus brightness (60),
       # which almost all terminals render as grey.
       'gray' => 90, 'grey' => 90,
+      'black' => 30,
       'red' => 31,
       'green' => 32,
       'yellow' => 33,
