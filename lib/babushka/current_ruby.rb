@@ -1,10 +1,13 @@
 module Babushka
 
-  # Provides information about the ruby installation Babushka is currently running in.
-  # You can obtain an instance through Babushka.ruby.
+  # This class provides information about the active ruby installation according
+  # to the system's $PATH. This might be different to the ruby via which
+  # babushka was invoked.
+  #
+  # The preferred way to use this class is via `Babushka.ruby`.
   class CurrentRuby
 
-    # The path of the ruby binary
+    # The path the ruby binary that is visible via the $PATH.
     def path
       @path ||= Babushka::ShellHelpers.which('ruby').p
     end
