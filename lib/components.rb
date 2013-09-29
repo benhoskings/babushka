@@ -38,7 +38,7 @@ module Babushka
     accepts_list_for
     accepts_value_for
     accepts_block_for
-    colorizer
+    ansi
     cmdline/parser
     cmdline/handler
     cmdline/helpers
