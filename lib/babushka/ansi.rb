@@ -44,6 +44,9 @@ module Babushka
     def self.escape_for description
       # Make "on_grey" etc single words, so the foreground regex doesn't match.
       desc = description.strip.gsub(/\bon /, 'on_')
+      # If we're on a linux pty, substitute 'bold black' for 'bright black'.
+      desc = desc.gsub(/\bgrey\b/, 'bold black') if ENV['TERM'] == 'linux'
+
       codes = [fg_for(desc), bg_for(desc), ctrl_for(desc)]
 
       "\e[#{codes.compact.join(';')}m"
