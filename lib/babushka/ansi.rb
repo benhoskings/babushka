@@ -66,7 +66,7 @@ module Babushka
     end
 
     def self.linux_pty?
-      ENV['TERM'] == 'linux'
+      $stdin.tty? && (ENV['TERM'] == 'linux')
     end
   end
 end
