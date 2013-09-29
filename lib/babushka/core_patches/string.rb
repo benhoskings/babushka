@@ -51,6 +51,7 @@ class String
   end
 
   def colorized?
+    Babushka::LogHelpers.deprecated! "2014-03-29", :method_name => 'String#colorized?'
     self[/\e\[\d/]
   end
 
@@ -63,16 +64,19 @@ class String
 
   # As +colorize+, but modify this string in-place instead of returning a new one.
   def colorize! description = nil, start_at = nil
+    Babushka::LogHelpers.deprecated! "2014-03-29", :method_name => 'String#colorize!'
     replace colorize(description, start_at) unless description.nil?
   end
 
   # Return a new string with all color-related escape sequences removed.
   def decolorize
+    Babushka::LogHelpers.deprecated! "2014-03-29", :method_name => 'String#decolorize'
     dup.decolorize!
   end
 
   # Remove all color-related escape sequences from this string in-place.
   def decolorize!
+    Babushka::LogHelpers.deprecated! "2014-03-29", :method_name => 'String#decolorize!'
     gsub!(/\e\[\d+[;\d]*m/, '')
     self
   end
