@@ -2,12 +2,15 @@ module Babushka
   class ANSI
 
     BG_OFFSET = 10
-    COLOR_REGEX = /gr[ae]y|red|green|yellow|blue|pink|cyan|white/
+    COLOR_REGEX = /black|gr[ae]y|red|green|yellow|blue|pink|cyan|white/
     FG_REGEX = /\b#{COLOR_REGEX}\b/
     BG_REGEX = /\bon_#{COLOR_REGEX}\b/
     CTRL_REGEX = /\bbold|underlined?|blink(ing)?|reversed?\b/
     COLOR_OFFSETS = {
+      # This is actually "bright black", i.e. black (30) plus brightness (60),
+      # which almost all terminals render as grey.
       'gray' => 90, 'grey' => 90,
+      'black' => 30,
       'red' => 31,
       'green' => 32,
       'yellow' => 33,
@@ -30,6 +33,7 @@ module Babushka
     #     Babushka::ANSI.wrap('babushka', 'underlined blue')  #=> "\e[34;4mbabushka\e[m"
     #     Babushka::ANSI.wrap('babushka', 'reverse')          #=> "\e[7mbabushka\e[m"
     def self.wrap text, description
+      # This means "colour", not "no colour". The "no_" is the flippable bit.
       if Babushka::Base.cmdline.opts[:"[no_]color"] == false
         text
       else
@@ -38,7 +42,11 @@ module Babushka
     end
 
     def self.escape_for description
+      # Make "on_grey" etc single words, so the foreground regex doesn't match.
       desc = description.strip.gsub(/\bon /, 'on_')
+      # If we're on a linux pty, substitute 'bold black' for 'bright black'.
+      desc = desc.gsub(/\bgrey\b/, 'bold black') if ENV['TERM'] == 'linux'
+
       codes = [fg_for(desc), bg_for(desc), ctrl_for(desc)]
 
       "\e[#{codes.compact.join(';')}m"

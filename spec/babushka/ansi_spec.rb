@@ -2,6 +2,9 @@ require 'spec_helper'
 
 describe Babushka::ANSI do
   describe '.wrap' do
+    before {
+      Babushka::Base.cmdline.opts.stub(:[]).with(:"[no_]color") { true }
+    }
     it "should wrap the input in ansi codes" do
       Babushka::ANSI.wrap('lol', 'blue').should == "\e[34mlol\e[m"
     end
@@ -15,7 +18,22 @@ describe Babushka::ANSI do
       it "should work for foreground colours" do
         Babushka::ANSI.escape_for('green').should == "\e[32m"
         Babushka::ANSI.escape_for('blue').should == "\e[34m"
-        Babushka::ANSI.escape_for('grey').should == "\e[90m"
+      end
+      context "on a linux pty" do
+        before {
+          ENV.stub(:[]).with('TERM') { 'linux' }
+        }
+        it "should use 'bold black' for grey" do
+          Babushka::ANSI.escape_for('grey').should == "\e[30;1m"
+        end
+      end
+      context "on other terminals" do
+        before {
+          ENV.stub(:[]).with('TERM') { 'xterm' }
+        }
+        it "should use 'bright black' for grey" do
+          Babushka::ANSI.escape_for('grey').should == "\e[90m"
+        end
       end
       it "should work for background colours" do
         Babushka::ANSI.escape_for('on green').should == "\e[42m"
