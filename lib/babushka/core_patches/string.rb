@@ -56,7 +56,7 @@ class String
 
   # Wrap this string in ANSI color codes according to description. See the
   # Babushka::ANSI docs for details.
-  def colourise description = ''
+  def colourise description
     Babushka::ANSI.wrap(self, description)
   end
   alias_method :colorize, :colourise
