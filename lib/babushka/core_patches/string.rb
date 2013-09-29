@@ -54,12 +54,8 @@ class String
     self[/\e\[\d/]
   end
 
-  # Return a new string with the contents of this string surrounded in escape
-  # sequences such that it will render as described in +description+.
-  # Some examples:
-  #   'Hello world!'.colorize('green')   #=> "\e[32mHello world!\e[m"
-  #   'Hello world!'.colorize('on red')  #=> "\e[41mHello world!\e[m"
-  #   'Hello world!'.colorize('reverse') #=> "\e[7mHello world!\e[m"
+  # Wrap this string in ANSI color codes according to description. See the
+  # Babushka::ANSI docs for details.
   def colourise description = '', start_at = nil
     if start_at.nil? || (cut_point = index(start_at)).nil?
       Babushka::ANSI.wrap(self, description)
