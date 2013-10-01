@@ -72,6 +72,7 @@ module Babushka
           '5.0' => :lenny,
           '6.0' => :squeeze,
           '7.0' => :wheezy,
+          '7.1' => :wheezy, # Temporary, until these are parsed by major version.
           '8.0' => :jessie
         },
         :redhat => {
