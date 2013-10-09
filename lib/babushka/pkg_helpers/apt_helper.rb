@@ -31,8 +31,8 @@ module Babushka
 
     def source_matcher_for_system
       {
-        :debian => %r{http://(ftp\d?.(\w\w\.)?debian.org|(http|cdn).debian.net)/debian/?},
-        :ubuntu => %r{http://((\w\w-(.*)-\d\.ec2\.)|(\w\w\.))?archive.ubuntu.com/ubuntu/?}
+        :debian => %r{http://(ftp\d?\.(\w\w\.)?debian\.org|(http|cdn)\.debian\.net)/debian/?},
+        :ubuntu => %r{http://((\w\w-(.*)-\d\.ec2\.)|(\w\w\.))?archive\.ubuntu\.com/ubuntu/?}
       }[Babushka.host.flavour]
     end
 
