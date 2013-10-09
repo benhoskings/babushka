@@ -24,7 +24,7 @@ module Babushka
 
     def source_for_system
       {
-        :debian => 'http://ftp.debian.org/debian',
+        :debian => 'http://http.debian.net/debian',
         :ubuntu => 'http://archive.ubuntu.com/ubuntu'
       }[Babushka.host.flavour]
     end
