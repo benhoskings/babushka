@@ -19,6 +19,10 @@ describe Babushka::AptHelper do
         'http://ftp.au.debian.org/debian'[matcher].should_not be_nil
         'http://ftp2.au.debian.org/debian'[matcher].should_not be_nil
       end
+      it "should match geoip mirrors" do
+        'http://http.debian.net/debian'[matcher].should_not be_nil
+        'http://cdn.debian.net/debian'[matcher].should_not be_nil
+      end
       it "should match with a trailing slash" do
         'http://ftp.debian.org/debian/'[matcher].should_not be_nil
       end
