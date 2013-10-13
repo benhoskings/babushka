@@ -8,9 +8,13 @@ class Babushka::GitFS
   end
 
   def commit message
-    repo.init!(File.read(GITIGNORE_FILE)) unless repo.exists?
+    init
     repo.repo_shell('git add -A .')
     repo.commit!(message)
+  end
+
+  def init
+    repo.init!(File.read(GITIGNORE_FILE)) unless repo.exists?
   end
 
   def repo
