@@ -1,7 +1,7 @@
 dep 'ruby', :template => 'bin' do
   installs {
-    via [:lenny, :hardy, :lucid], %w[ruby irb ruby1.8-dev libopenssl-ruby]
-    via :apt, %w[ruby ruby1.8-dev]
+    via [:lenny, :hardy, :lucid], %w[ruby irb libopenssl-ruby]
+    via :apt, %w[ruby]
     via :yum, %w[ruby ruby-irb]
     otherwise 'ruby'
   }
