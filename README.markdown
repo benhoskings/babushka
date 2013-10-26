@@ -24,22 +24,21 @@ Babushka should run on any Unix. OS X and Ubuntu are fully supported, including 
 
 [Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under the MIT license.
 
-Thanks to my rubyist friends who've helped with brainstorming and testing---the likes of
-[@glenmaddern](http://twitter.com/glenmaddern),
-[@nathan_scott](http://twitter.com/nathan_scott),
-[@notahat](http://twitter.com/notahat),
-[@quamen](http://twitter.com/quamen),
-[@dgoodlad](http://twitter.com/dgoodlad),
-[@chrisberkhout](http://twitter.com/chrisberkhout),
-[@pat](http://twitter.com/pat),
-[@brentsnook](http://twitter.com/brentsnook),
-[@odaeus](http://twitter.com/odaeus),
-[@lachlanhardy](http://twitter.com/lachlanhardy),
+Thanks to my rubyist friends who've contributed to babushka by submitting patches---[Richo Healey](https://github.com/richo), [Dave Goodlad](https://github.com/dgoodlad), [Alexey](https://github.com/bearded) and others, and who've helped me with brainstorming and testing---the likes of
 [@aussiegeek](http://twitter.com/aussiegeek),
 [@bjeanes](http://twitter.com/bjeanes),
+[@brentsnook](http://twitter.com/brentsnook),
 [@chendo](http://twitter.com/chendo),
-[@ryanbigg](http://twitter.com/ryanbigg) &
-[@drnic](http://twitter.com/drnic).
+[@chrisberkhout](http://twitter.com/chrisberkhout),
+[@drnic](http://twitter.com/drnic),
+[@glenmaddern](http://twitter.com/glenmaddern),
+[@lachlanhardy](http://twitter.com/lachlanhardy),
+[@nathan_scott](http://twitter.com/nathan_scott),
+[@notahat](http://twitter.com/notahat),
+[@odaeus](http://twitter.com/odaeus),
+[@pat](http://twitter.com/pat),
+[@quamen](http://twitter.com/quamen), &
+[@ryanbigg](http://twitter.com/ryanbigg).
 
 
 ## license

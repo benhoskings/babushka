@@ -49,7 +49,7 @@ module Babushka
     end
 
     def name
-      @name ||= path.basename
+      @name ||= path.basename.to_s
     end
 
     def uri
