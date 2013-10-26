@@ -18,7 +18,10 @@ class Babushka::GitFS
   end
 
   def self.init
-    repo.init!(File.read(GITIGNORE_FILE)) unless repo.exists?
+    unless repo.exists?
+      repo.init!(File.read(GITIGNORE_FILE))
+      commit("Add the base system.")
+    end
   end
 
   def self.repo

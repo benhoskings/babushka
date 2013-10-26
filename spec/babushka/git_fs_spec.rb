@@ -40,6 +40,7 @@ describe Babushka::GitFS do
       it "should init, and commit the current system" do
         git_fs.repo.stub(:exists?) { false }
         git_fs.repo.should_receive(:init!)
+        git_fs.should_receive(:commit).with("Add the base system.")
         git_fs.init
       end
     end
@@ -47,6 +48,7 @@ describe Babushka::GitFS do
       it "should do nothing" do
         git_fs.repo.stub(:exists?) { true }
         git_fs.repo.should_not_receive(:init)
+        git_fs.should_not_receive(:commit)
         git_fs.init
       end
     end
