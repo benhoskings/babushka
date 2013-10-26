@@ -320,6 +320,7 @@ module Babushka
       if invoke(:met?)
         true # already met.
       elsif and_meet
+        Babushka::GitFS.init if Base.task.opt(:git_fs)
         run_meet_stage
         invoke(:met?).tap {|result|
           Babushka::GitFS.commit(commit_message) if result && Base.task.opt(:git_fs)

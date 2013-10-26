@@ -545,7 +545,9 @@ describe "fs snapshotting" do
         meet { @run = true }
       }
     }
-    it "should snapshot" do
+    it "should snapshot after meeting the dep" do
+      Babushka::GitFS.should_receive(:init)
+      the_dep.should_receive(:run_meet_stage).and_call_original
       Babushka::GitFS.should_receive(:commit).with("babushka 'snapshotting - unmet'\n\n")
       the_dep.meet
     end
