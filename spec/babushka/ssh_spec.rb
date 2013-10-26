@@ -27,6 +27,11 @@ describe Babushka::SSH do
       ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "version=1.8.3.2", :log => true).and_return(true)
       ssh.babushka('git', :version => '1.8.3.2')
     end
+    it "should handle quotes" do
+      dep 'with args', :single, :double
+      ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "with args", "--defaults", "--git-fs", "--show-args", "single=a single' quote", "double=\"and a double", :log => true).and_return(true)
+      ssh.babushka('with args', :single => "a single' quote", :double => '"and a double')
+    end
     context "when running on a terminal" do
       before {
         $stdin.stub(:tty?).and_return(true)
