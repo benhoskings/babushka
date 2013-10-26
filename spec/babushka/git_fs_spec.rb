@@ -4,7 +4,7 @@ describe Babushka::GitFS do
   let(:git_fs) { Babushka::GitFS }
 
   describe '#snapshotting_with' do
-    let(:blk) { ->{} }
+    let(:blk) { lambda {} }
     context "when snapshotting is enabled" do
       before {
         Base.task.stub(:opt).with(:git_fs) { true }
