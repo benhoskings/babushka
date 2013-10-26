@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Babushka::GitFS do
-  let(:git_fs) { Babushka::GitFS.new }
+  let(:git_fs) { Babushka::GitFS }
 
   describe '#init' do
     context "when the repo doesn't exist" do
