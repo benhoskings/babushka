@@ -13,13 +13,17 @@ describe Babushka::GitFS do
         git_fs.should_receive(:init)
         blk.should_receive(:call) { true }
         git_fs.should_receive(:commit).with('A message')
-        git_fs.snapshotting_with('A message', &blk)
+        # I would pass the block directly here (and below (*)):
+        #   git_fs.snapshotting_with('A message', &blk)
+        # But doing so on ruby 1.8 prevents rspec from seeing blk.call in places
+        # where blk was passed as a block (i.e. inside #snapshotting_with).
+        git_fs.snapshotting_with('A message') { blk.call }
       end
       it "should init, run, and not commit on failure" do
         git_fs.should_receive(:init)
         blk.should_receive(:call) { false }
         git_fs.should_not_receive(:commit)
-        git_fs.snapshotting_with('A message', &blk)
+        git_fs.snapshotting_with('A message') { blk.call } # (*)
       end
     end
     context "when snapshotting is enabled" do
@@ -30,7 +34,7 @@ describe Babushka::GitFS do
         git_fs.should_not_receive(:init)
         blk.should_receive(:call)
         git_fs.should_not_receive(:commit).with('A message')
-        git_fs.snapshotting_with('A message', &blk)
+        git_fs.snapshotting_with('A message') { blk.call } # (*)
       end
     end
   end
