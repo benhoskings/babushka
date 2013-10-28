@@ -7,26 +7,26 @@ describe Babushka::SystemDetector do
 
   describe '.for_host' do
     it "should return OSXSystemProfile on Darwin boxes" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
       subject.should be_an_instance_of(Babushka::OSXSystemProfile)
     end
     it "should return UnknownSystem on unknown boxes" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("LolOS")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("LolOS")
       subject.should be_an_instance_of(Babushka::UnknownSystem)
     end
     context "on BSD boxes" do
       it "should return DragonFlySystemProfile on Dragonfly boxes" do
-        ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
+        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
         subject.should be_an_instance_of(Babushka::DragonFlySystemProfile)
       end
       it "should return FreeBSDSystemProfile on FreeBSD boxes" do
-        ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
+        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
         subject.should be_an_instance_of(Babushka::FreeBSDSystemProfile)
       end
     end
     context "on Linux boxes" do
       before {
-        ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
+        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
         File.stub(:exists?).and_return(false)
       }
       it "should return DebianSystemProfile on Debian boxes" do

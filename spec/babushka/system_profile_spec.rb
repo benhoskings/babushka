@@ -16,7 +16,7 @@ describe Babushka::SystemProfile do
     end
 
     describe 'on an unknown system' do
-      let(:profile) { UnknownSystem.new }
+      let(:profile) { Babushka::UnknownSystem.new }
 
       it "should report correct name and version info" do
         info_for(profile).should == [:unknown, :unknown, 'unknown', 'unknown', :unknown]
@@ -30,7 +30,7 @@ describe Babushka::SystemProfile do
     end
 
     describe 'on an OS X box' do
-      let(:profile) { OSXSystemProfile.new }
+      let(:profile) { Babushka::OSXSystemProfile.new }
       before { profile.stub(:get_version_info).and_return("ProductName:  Mac OS X\nProductVersion: 10.8.4\nBuildVersion: 12E55") }
 
       it "should have correct system info" do
@@ -45,7 +45,7 @@ describe Babushka::SystemProfile do
     end
 
     describe 'on a BSD box' do
-      let(:profile) { BSDSystemProfile.new }
+      let(:profile) { Babushka::BSDSystemProfile.new }
       before { profile.stub(:shell).with('uname -r').and_return("1.2.3") }
 
       it "should have correct system info" do
@@ -59,7 +59,7 @@ describe Babushka::SystemProfile do
       end
 
       describe 'on a FreeBSD box' do
-        let(:profile) { FreeBSDSystemProfile.new }
+        let(:profile) { Babushka::FreeBSDSystemProfile.new }
         before { profile.stub(:shell).with('uname -r').and_return("9.0-RELEASE") }
 
         it "should have correct system info" do
@@ -74,7 +74,7 @@ describe Babushka::SystemProfile do
       end
 
       describe 'on a DragonFly box' do
-        let(:profile) { DragonFlySystemProfile.new }
+        let(:profile) { Babushka::DragonFlySystemProfile.new }
         before { profile.stub(:shell).with('uname -r').and_return("1.2.3") }
 
         it "should have correct system info" do
@@ -90,7 +90,7 @@ describe Babushka::SystemProfile do
     end
 
     describe 'on a Linux box' do
-      let(:profile) { LinuxSystemProfile.new }
+      let(:profile) { Babushka::LinuxSystemProfile.new }
 
       it "should have correct system info" do
         info_for(profile).should == [:linux, :unknown, nil, nil, nil]
@@ -103,7 +103,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on a Debian 7 box' do
-        let(:profile) { DebianSystemProfile.new }
+        let(:profile) { Babushka::DebianSystemProfile.new }
         before { profile.stub(:get_version_info).and_return(%Q{7.0}) }
 
         it "should have correct name and version info" do
@@ -118,7 +118,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on a Debian 6 box' do
-        let(:profile) { DebianSystemProfile.new }
+        let(:profile) { Babushka::DebianSystemProfile.new }
         before { profile.stub(:get_version_info).and_return(%Q{6.0.4}) }
 
         it "should have correct name and version info" do
@@ -133,7 +133,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on an Ubuntu box' do
-        let(:profile) { UbuntuSystemProfile.new }
+        let(:profile) { Babushka::UbuntuSystemProfile.new }
         before { profile.stub(:get_version_info).and_return(%Q{DISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=12.04\nDISTRIB_CODENAME=precise\nDISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"}) }
 
         it "should have correct name and version info" do
@@ -148,7 +148,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on a Redhat box' do
-        let(:profile) { RedhatSystemProfile.new }
+        let(:profile) { Babushka::RedhatSystemProfile.new }
         before { profile.stub(:get_version_info).and_return("Red Hat Enterprise Linux Server release 6.4 (Santiago)") }
 
         it "should have correct system info" do
@@ -163,7 +163,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on a CentOS box' do
-        let(:profile) { CentOSSystemProfile.new }
+        let(:profile) { Babushka::CentOSSystemProfile.new }
         before { profile.stub(:get_version_info).and_return("CentOS release 6.4 (Final)") }
 
         it "should have correct system info" do
@@ -178,7 +178,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on a Fedora box' do
-        let(:profile) { FedoraSystemProfile.new }
+        let(:profile) { Babushka::FedoraSystemProfile.new }
         before { profile.stub(:get_version_info).and_return("Fedora release 18 (Spherical Cow)") }
 
         it "should report correct name and version info" do
@@ -193,7 +193,7 @@ describe Babushka::SystemProfile do
       end
 
       context 'on an Arch box' do
-        let(:profile) { ArchSystemProfile.new }
+        let(:profile) { Babushka::ArchSystemProfile.new }
 
         it "should report correct name and version info" do
           info_for(profile).should == [:linux, :arch, nil, nil, nil]
@@ -209,9 +209,9 @@ describe Babushka::SystemProfile do
   end
 
   describe '#hostname' do
-    let(:profile) { SystemProfile.new }
+    let(:profile) { Babushka::SystemProfile.new }
     it "should shell out to fetch the hostname" do
-      ShellHelpers.should_receive(:shell).with('hostname -f').and_return('spec.local')
+      Babushka::ShellHelpers.should_receive(:shell).with('hostname -f').and_return('spec.local')
       profile.hostname.should == 'spec.local'
     end
   end
@@ -229,22 +229,22 @@ describe Babushka::SystemProfile do
 
   describe '#cpus' do
     it "should work on OS X" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
       profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
       profile.cpus.should == 4
     end
     it "should work on Linux" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
       profile.should_receive(:shell).with("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").and_return("    4")
       profile.cpus.should == 4
     end
     it "should work on FreeBSD" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
       profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
       profile.cpus.should == 4
     end
     it "should work on DragonFly" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
       profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
       profile.cpus.should == 4
     end
@@ -252,12 +252,12 @@ describe Babushka::SystemProfile do
 
   describe '#total_memory' do
     it "should work on OS X" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
       profile.should_receive(:shell).with('sysctl -n hw.memsize').and_return("4294967296")
       profile.total_memory.should == 4294967296
     end
     it "should work on Linux" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
       profile.should_receive(:shell).with('free -b').and_return("             total       used       free     shared    buffers     cached
 Mem:    1039704064  930856960  108847104          0    2244608  751648768
 -/+ buffers/cache:  176963584  862740480
@@ -266,12 +266,12 @@ Swap:            0          0          0
       profile.total_memory.should == 1039704064
     end
     it "should work on FreeBSD" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
       profile.should_receive(:shell).with('sysctl -n hw.realmem').and_return("242647040")
       profile.total_memory.should == 242647040
     end
     it "should work on DragonFly" do
-      ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
+      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
       profile.should_receive(:shell).with('sysctl -n hw.physmem').and_return("242647040")
       profile.total_memory.should == 242647040
     end
@@ -280,7 +280,7 @@ Swap:            0          0          0
   describe '#public_ip' do
     context "on OS X" do
       before {
-        ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
+        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
         profile.should_receive(:shell).with('netstat -nr').and_return("
 Routing tables
 
@@ -329,7 +329,7 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 
     context "on Linux" do
       before {
-        ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
+        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
         profile.should_receive(:shell).with('netstat -nr').and_return("
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface

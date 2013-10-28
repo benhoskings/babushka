@@ -119,7 +119,7 @@ describe "Inkan" do
   describe '#render' do
     let(:inkan) { Inkan.new(nil) }
 
-    before { ShellHelpers.shell "rm -f /tmp/spec.txt" }
+    before { Babushka::ShellHelpers.shell "rm -f /tmp/spec.txt" }
 
     it "writes out the contents of the buffer" do
       inkan.print "foo bar baz"

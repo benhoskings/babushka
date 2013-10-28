@@ -5,7 +5,7 @@ describe "cd" do
 
   it "should yield if no dir is given" do
     has_yielded = false
-    PathHelpers.cd(nil) {|path|
+    Babushka::PathHelpers.cd(nil) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == original_pwd
       has_yielded = true
@@ -15,7 +15,7 @@ describe "cd" do
 
   it "should yield if no chdir is required" do
     has_yielded = false
-    PathHelpers.cd(original_pwd) {|path|
+    Babushka::PathHelpers.cd(original_pwd) {|path|
       path.should be_an_instance_of(Fancypath)
       Dir.pwd.should == original_pwd
       has_yielded = true
@@ -24,7 +24,7 @@ describe "cd" do
   end
   it "should change dir for the duration of the block" do
     has_yielded = false
-    PathHelpers.cd(tmp_prefix) {
+    Babushka::PathHelpers.cd(tmp_prefix) {
       Dir.pwd.should == tmp_prefix
       has_yielded = true
     }
@@ -35,9 +35,9 @@ describe "cd" do
     let(:tmp_subdir) { (tmp_prefix / '2').tap(&:mkdir) }
     it "should work" do
       has_yielded = false
-      PathHelpers.cd(tmp_prefix) {
+      Babushka::PathHelpers.cd(tmp_prefix) {
         Dir.pwd.should == tmp_prefix
-        PathHelpers.cd(tmp_subdir) {
+        Babushka::PathHelpers.cd(tmp_subdir) {
           Dir.pwd.should == tmp_subdir
           has_yielded = true
         }
@@ -52,11 +52,11 @@ describe "cd" do
       (tmp_prefix / 'missing').tap(&:rm)
     }
     it "should fail" do
-      L{ PathHelpers.cd(nonexistent_dir) }.should raise_error(Errno::ENOENT)
+      L{ Babushka::PathHelpers.cd(nonexistent_dir) }.should raise_error(Errno::ENOENT)
     end
     context "when :create => true is specified" do
       it "should create and cd" do
-        PathHelpers.cd(nonexistent_dir, :create => true) {
+        Babushka::PathHelpers.cd(nonexistent_dir, :create => true) {
           Dir.pwd.should == nonexistent_dir
         }
         Dir.pwd.should == original_pwd
@@ -72,13 +72,13 @@ describe "in_build_dir" do
   let!(:original_pwd) { Dir.pwd }
 
   it "should change to the build dir with no args" do
-    PathHelpers.in_build_dir {
+    Babushka::PathHelpers.in_build_dir {
       Dir.pwd.should == "~/.babushka/build".p
     }
     Dir.pwd.should == original_pwd
   end
   it "should append the supplied path when supplied" do
-    PathHelpers.in_build_dir "tmp" do
+    Babushka::PathHelpers.in_build_dir "tmp" do
       Dir.pwd.should == "~/.babushka/build/tmp".p
     end
     Dir.pwd.should == original_pwd
@@ -89,13 +89,13 @@ describe "in_download_dir" do
   let!(:original_pwd) { Dir.pwd }
 
   it "should change to the download dir with no args" do
-    PathHelpers.in_download_dir {
+    Babushka::PathHelpers.in_download_dir {
       Dir.pwd.should == "~/.babushka/downloads".p
     }
     Dir.pwd.should == original_pwd
   end
   it "should append the supplied path when supplied" do
-    PathHelpers.in_download_dir "tmp" do
+    Babushka::PathHelpers.in_download_dir "tmp" do
       Dir.pwd.should == "~/.babushka/downloads/tmp".p
     end
     Dir.pwd.should == original_pwd

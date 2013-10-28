@@ -6,66 +6,66 @@ require 'dep_support'
 describe "Dep.new" do
   it "should reject deps with non-string names" do
     L{
-      Dep.new(:symbol_name, Base.sources.anonymous, [], {}, nil)
-    }.should raise_error(InvalidDepName, "The dep name :symbol_name isn't a string.")
+      Babushka::Dep.new(:symbol_name, Babushka::Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(Babushka::InvalidDepName, "The dep name :symbol_name isn't a string.")
   end
   it "should reject deps with empty names" do
     L{
-      Dep.new("", Base.sources.anonymous, [], {}, nil)
-    }.should raise_error(InvalidDepName, "Deps can't have empty names.")
+      Babushka::Dep.new("", Babushka::Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(Babushka::InvalidDepName, "Deps can't have empty names.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
     L{
-      Dep.new("carriage\rreturn", Base.sources.anonymous, [], {}, nil)
-    }.should raise_error(InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
+      Babushka::Dep.new("carriage\rreturn", Babushka::Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(Babushka::InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     Dep("carriage\rreturn").should be_nil
   end
   it "should allow deps with unicode characters in their names" do
     L{
-      Dep.new("☕script", Base.sources.anonymous, [], {}, nil)
+      Babushka::Dep.new("☕script", Babushka::Base.sources.anonymous, [], {}, nil)
     }.should_not raise_error
-    Dep("☕script").should be_an_instance_of(Dep)
+    Dep("☕script").should be_an_instance_of(Babushka::Dep)
   end
   it "should reject deps slashes in their names" do
     L{
-      Dep.new("slashes/invalidate names", Base.sources.anonymous, [], {}, nil)
-    }.should raise_error(InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
+      Babushka::Dep.new("slashes/invalidate names", Babushka::Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(Babushka::InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     Dep("slashes/invalidate names").should be_nil
   end
   it "should reject deps colons in their names" do
-    GitHelpers.stub(:git) # To avoid cloning.
+    Babushka::GitHelpers.stub(:git) # To avoid cloning.
     L{
-      Dep.new("colons:invalidate names", Base.sources.anonymous, [], {}, nil)
-    }.should raise_error(InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
+      Babushka::Dep.new("colons:invalidate names", Babushka::Base.sources.anonymous, [], {}, nil)
+    }.should raise_error(Babushka::InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     Dep("colons:invalidate names").should be_nil
   end
   it "should create deps with valid names" do
     L{
-      Dep.new("valid dep name", Base.sources.anonymous, [], {}, nil)
-    }.should change(Base.sources.anonymous.deps, :count).by(1)
-    Dep("valid dep name").should be_an_instance_of(Dep)
+      Babushka::Dep.new("valid dep name", Babushka::Base.sources.anonymous, [], {}, nil)
+    }.should change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    Dep("valid dep name").should be_an_instance_of(Babushka::Dep)
   end
   it "should store the params" do
     L{
-      Dep.new("valid dep with params", Base.sources.anonymous, [:some, :params], {}, nil)
-    }.should change(Base.sources.anonymous.deps, :count).by(1)
+      Babushka::Dep.new("valid dep with params", Babushka::Base.sources.anonymous, [:some, :params], {}, nil)
+    }.should change(Babushka::Base.sources.anonymous.deps, :count).by(1)
     Dep("valid dep with params").params.should == [:some, :params]
   end
   context "without template" do
     before {
-      @dep = Dep.new("valid base dep", Base.sources.anonymous, [], {}, nil)
+      @dep = Babushka::Dep.new("valid base dep", Babushka::Base.sources.anonymous, [], {}, nil)
     }
     it "should work" do
-      @dep.should be_an_instance_of(Dep)
-      @dep.template.should == Dep.base_template
+      @dep.should be_an_instance_of(Babushka::Dep)
+      @dep.template.should == Babushka::Dep.base_template
     end
   end
   context "with a missing template" do
     it "should fail to define optioned deps against a missing template" do
       L{
-        Dep.new("valid but missing template", Base.sources.anonymous, [], {:template => 'template'}, nil).template
-      }.should raise_error(TemplateNotFound, "There is no template named 'template' to define 'valid but missing template' against.")
+        Babushka::Dep.new("valid but missing template", Babushka::Base.sources.anonymous, [], {:template => 'template'}, nil).template
+      }.should raise_error(Babushka::TemplateNotFound, "There is no template named 'template' to define 'valid but missing template' against.")
     end
   end
   context "with template" do
@@ -73,27 +73,27 @@ describe "Dep.new" do
       @meta = meta('template')
     }
     it "should work when passed as an option" do
-      Dep.new("valid option dep", Base.sources.anonymous, [], {:template => 'template'}, nil).tap {|dep|
-        dep.should be_an_instance_of(Dep)
+      Babushka::Dep.new("valid option dep", Babushka::Base.sources.anonymous, [], {:template => 'template'}, nil).tap {|dep|
+        dep.should be_an_instance_of(Babushka::Dep)
         dep.template.should == @meta
       }
     end
     it "should work when passed as a suffix" do
-      Dep.new("valid dep name.template", Base.sources.anonymous, [], {}, nil).tap {|dep|
-        dep.should be_an_instance_of(Dep)
+      Babushka::Dep.new("valid dep name.template", Babushka::Base.sources.anonymous, [], {}, nil).tap {|dep|
+        dep.should be_an_instance_of(Babushka::Dep)
         dep.template.should == @meta
       }
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 end
 
 describe '#inspect' do
   let(:source) {
-    Source.new(nil, 'test source')
+    Babushka::Source.new(nil, 'test source')
   }
   it "should represent the dep and its source" do
-    the_dep = Dep.new('inspect test', source, [], {}, nil)
+    the_dep = Babushka::Dep.new('inspect test', source, [], {}, nil)
     the_dep.inspect.should == "#<Dep:#{the_dep.object_id} 'test source:inspect test'>"
   end
 end
@@ -102,8 +102,8 @@ describe "dep creation" do
   it "should work for blank deps" do
     L{
       dep "a blank dep"
-    }.should change(Base.sources.anonymous.deps, :count).by(1)
-    Dep('a blank dep').should be_an_instance_of(Dep)
+    }.should change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    Dep('a blank dep').should be_an_instance_of(Babushka::Dep)
   end
   it "should work for filled in deps" do
     L{
@@ -114,22 +114,22 @@ describe "dep creation" do
         meet { }
         after { }
       end
-    }.should change(Base.sources.anonymous.deps, :count).by(1)
-    Dep('a standard dep').should be_an_instance_of(Dep)
+    }.should change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    Dep('a standard dep').should be_an_instance_of(Babushka::Dep)
   end
   it "should accept deps as dep names" do
     L{
       dep 'parent dep' do
         requires dep('nested dep')
       end.met?
-    }.should change(Base.sources.anonymous.deps, :count).by(2)
+    }.should change(Babushka::Base.sources.anonymous.deps, :count).by(2)
     Dep('parent dep').context.requires.should == [Dep('nested dep')]
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 
   context "without template" do
     it "should use the base template" do
-      dep('without template').template.should == Dep.base_template
+      dep('without template').template.should == Babushka::Dep.base_template
     end
   end
   context "with template" do
@@ -163,12 +163,12 @@ describe "dep creation" do
       end
     end
   end
-  after { Base.sources.anonymous.templates.clear! }
+  after { Babushka::Base.sources.anonymous.templates.clear! }
 end
 
 describe Babushka::Dep, "defining" do
   before {
-    Base.sources.stub(:current_real_load_source).and_return(Base.sources.anonymous)
+    Babushka::Base.sources.stub(:current_real_load_source).and_return(Babushka::Base.sources.anonymous)
   }
   it "should not define the dep when called without a block" do
     dep('lazy defining test').context.should_not be_loaded
@@ -195,7 +195,7 @@ describe Babushka::Dep, "defining" do
   end
   context "with params" do
     it "should run against subsequent parameters" do
-      parameter = Parameter.new(:arg)
+      parameter = Babushka::Parameter.new(:arg)
       dep('parameter preserving', :arg) {
         arg.default!('a default value')
       }.tap {|dep|
@@ -207,7 +207,7 @@ describe Babushka::Dep, "defining" do
   end
   context "with errors" do
     before {
-      Base.sources.stub(:current_real_load_source).and_return(Base.sources.anonymous)
+      Babushka::Base.sources.stub(:current_real_load_source).and_return(Babushka::Base.sources.anonymous)
     }
     it "should not be defined, and then have failed defining after a run" do
       dep('lazy defining test with errors') do
@@ -259,8 +259,8 @@ describe Babushka::Dep, '#basename' do
       end
     end
     after {
-      Base.sources.anonymous.deps.clear!
-      Base.sources.anonymous.templates.clear!
+      Babushka::Base.sources.anonymous.deps.clear!
+      Babushka::Base.sources.anonymous.templates.clear!
     }
   end
   context "for suffix-templated deps" do
@@ -269,24 +269,24 @@ describe Babushka::Dep, '#basename' do
       dep('basename test.basename_template').basename.should == 'basename test'
     end
     after {
-      Base.sources.anonymous.deps.clear!
-      Base.sources.anonymous.templates.clear!
+      Babushka::Base.sources.anonymous.deps.clear!
+      Babushka::Base.sources.anonymous.templates.clear!
     }
   end
 end
 
 describe Babushka::Dep, '#cache_key' do
   it "should work for parameterless deps" do
-    dep('cache key, no params').cache_key.should == DepRequirement.new('cache key, no params', [])
+    dep('cache key, no params').cache_key.should == Babushka::DepRequirement.new('cache key, no params', [])
   end
   it "should work for parameterised deps with no args" do
-    dep('cache key, no args', :arg1, :arg2).cache_key.should == DepRequirement.new('cache key, no args', [nil, nil])
+    dep('cache key, no args', :arg1, :arg2).cache_key.should == Babushka::DepRequirement.new('cache key, no args', [nil, nil])
   end
   it "should work for parameterised deps with named args" do
-    dep('cache key, named args', :arg1, :arg2).with(:arg2 => 'value').cache_key.should == DepRequirement.new('cache key, named args', [nil, 'value'])
+    dep('cache key, named args', :arg1, :arg2).with(:arg2 => 'value').cache_key.should == Babushka::DepRequirement.new('cache key, named args', [nil, 'value'])
   end
   it "should work for parameterised deps positional args" do
-    dep('cache key, positional args', :arg1, :arg2).with('value', 'another').cache_key.should == DepRequirement.new('cache key, positional args', ['value', 'another'])
+    dep('cache key, positional args', :arg1, :arg2).with('value', 'another').cache_key.should == Babushka::DepRequirement.new('cache key, positional args', ['value', 'another'])
   end
 end
 
@@ -295,12 +295,12 @@ describe Babushka::Dep, "params" do
     it "should be rejected, singular" do
       L{
         dep('non-symbol param', 'a')
-      }.should raise_error(DepParameterError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
+      }.should raise_error(Babushka::DepParameterError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
     end
     it "should be rejected, plural" do
       L{
         dep('non-symbol params', 'a', 'b')
-      }.should raise_error(DepParameterError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
+      }.should raise_error(Babushka::DepParameterError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
     end
   end
   it "should define methods on the context" do
@@ -309,7 +309,7 @@ describe Babushka::Dep, "params" do
   it "should raise on conflicting methods" do
     L{
       dep('conflicting param names', :name).context.define!
-    }.should raise_error(DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
+    }.should raise_error(Babushka::DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
   end
   it "should discard the context" do
     dep('context discarding').tap {|dep|
@@ -323,13 +323,13 @@ describe Babushka::Dep, "params" do
   end
   it "should return a param containing the value when it's set" do
     dep('set params test', :a_set_param)
-    Dep('set params test').with('a value').context.define!.a_set_param.should be_an_instance_of(Parameter)
+    Dep('set params test').with('a value').context.define!.a_set_param.should be_an_instance_of(Babushka::Parameter)
     Dep('set params test').with('a value').context.define!.a_set_param.to_s.should == 'a value'
   end
   it "should ask for the value when it's not set" do
     dep('unset params test', :an_unset_param).context.define!
-    Dep('unset params test').context.an_unset_param.should be_an_instance_of(Parameter)
-    Prompt.should_receive(:get_value).with('an_unset_param', {}).and_return('a value from the prompt')
+    Dep('unset params test').context.an_unset_param.should be_an_instance_of(Babushka::Parameter)
+    Babushka::Prompt.should_receive(:get_value).with('an_unset_param', {}).and_return('a value from the prompt')
     Dep('unset params test').context.an_unset_param.to_s.should == 'a value from the prompt'
   end
 end
@@ -428,7 +428,7 @@ describe "calling met? on a single dep" do
     should_call_dep_like(:met_run, the_dep)
     the_dep.should be_met
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
 describe "calling meet on a single dep" do
@@ -486,7 +486,7 @@ describe "calling meet on a single dep" do
     should_call_dep_like(:met_run, the_dep)
     the_dep.meet.should == true
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
 describe 'dep caching' do
@@ -515,8 +515,8 @@ end
 
 describe "fs snapshotting" do
   before {
-    Base.task.stub(:opt).and_return(false)
-    Base.task.stub(:opt).with(:git_fs).and_return(true)
+    Babushka::Base.task.stub(:opt).and_return(false)
+    Babushka::Base.task.stub(:opt).with(:git_fs).and_return(true)
   }
   context "when the dep is already met" do
     let(:the_dep) {
@@ -553,8 +553,8 @@ describe "fs snapshotting" do
     end
     context "when snapshotting is disabled" do
       before {
-        Base.task.stub(:opt).and_return(false)
-        Base.task.stub(:opt).with(:git_fs).and_return(false)
+        Babushka::Base.task.stub(:opt).and_return(false)
+        Babushka::Base.task.stub(:opt).with(:git_fs).and_return(false)
       }
       it "should not snapshot" do
         Babushka::GitFS.should_not_receive(:commit)

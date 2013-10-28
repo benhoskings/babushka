@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Babushka::DepCache do
-  let(:dep_cache) { DepCache.new }
+  let(:dep_cache) { Babushka::DepCache.new }
 
   context 'when the key misses' do
     it "should yield the block to get the result" do

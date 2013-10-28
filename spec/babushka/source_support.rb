@@ -5,7 +5,7 @@ def make_source_remote name = 'test'
   remote_path = tmp_prefix / 'source_remotes' / name
   [path, name, "file://#{remote_path}"].tap {|source|
     unless File.exists?(remote_path / '.git')
-      ShellHelpers.shell %Q{
+      Babushka::ShellHelpers.shell %Q{
         mkdir -p "#{remote_path}" &&
         cd "#{remote_path}" &&
         git init &&

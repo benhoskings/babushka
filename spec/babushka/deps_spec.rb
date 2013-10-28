@@ -57,7 +57,7 @@ describe "an already met dep tree" do
       Dep('a').meet
     end
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
 describe "an unmeetable dep tree" do
@@ -88,7 +88,7 @@ describe "an unmeetable dep tree" do
       Dep('a').meet
     end
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
 describe "a meetable dep tree" do
@@ -111,7 +111,7 @@ describe "a meetable dep tree" do
       Dep('a').meet
     end
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
 describe "a partially meetable dep tree" do
@@ -146,5 +146,5 @@ describe "a partially meetable dep tree" do
       Dep('a').meet
     end
   end
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end

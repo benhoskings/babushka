@@ -30,12 +30,12 @@ describe "name checks" do
     it "should be prevented" do
       L{ meta(:duplicate) }.should raise_error(ArgumentError, "A template called 'duplicate' has already been defined.")
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 
   describe "valid names" do
     it "should work" do
-      L{ meta 'count_test' }.should change(Base.sources.anonymous.templates, :count).by(1)
+      L{ meta 'count_test' }.should change(Babushka::Base.sources.anonymous.templates, :count).by(1)
     end
     it "should downcase the name" do
       meta("Case_Test").name.should == 'case_test'
@@ -49,7 +49,7 @@ describe "declaration" do
     template.name.should == 'test'
   end
   it "should set the source" do
-    template.source.should == Base.sources.anonymous
+    template.source.should == Babushka::Base.sources.anonymous
   end
   it "should define a dep context" do
     template.context_class.should be_an_instance_of(Class)
@@ -61,7 +61,7 @@ describe "declaration" do
   it "should not define a dep helper" do
     Object.new.should_not respond_to('test')
   end
-  after { Base.sources.anonymous.templates.clear! }
+  after { Babushka::Base.sources.anonymous.templates.clear! }
 end
 
 describe "using" do
@@ -69,10 +69,10 @@ describe "using" do
     it "should be rejected when passed as options" do
       L{
         dep('something undefined', :template => 'undefined').template
-      }.should raise_error(TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
+      }.should raise_error(Babushka::TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
     end
     it "should be ignored when passed as suffixes" do
-      dep('something.undefined').tap(&:template).should be_an_instance_of(Dep)
+      dep('something.undefined').tap(&:template).should be_an_instance_of(Babushka::Dep)
     end
   end
 
@@ -81,7 +81,7 @@ describe "using" do
     it "should define deps based on the template" do
       dep('templateless dep.templateless_test').template.should == template
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 
   describe "with template" do
@@ -119,7 +119,7 @@ describe "using" do
         met? { 'overridden met? block.' }
       }.send(:invoke, :met?).should == 'overridden met? block.'
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 
   describe "acceptors" do
@@ -151,7 +151,7 @@ describe "using" do
       }.meet
       block_called.should be_true
     end
-    after { Base.sources.anonymous.templates.clear! }
+    after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 
   describe "calling accepted blocks" do
