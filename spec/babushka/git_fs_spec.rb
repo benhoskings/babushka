@@ -7,7 +7,7 @@ describe Babushka::GitFS do
     let(:blk) { lambda {} }
     context "when snapshotting is enabled" do
       before {
-        Base.task.stub(:opt).with(:git_fs) { true }
+        Babushka::Base.task.stub(:opt).with(:git_fs) { true }
       }
       it "should init, run, and commit on success" do
         git_fs.should_receive(:init)
@@ -28,7 +28,7 @@ describe Babushka::GitFS do
     end
     context "when snapshotting is enabled" do
       before {
-        Base.task.stub(:opt).with(:git_fs) { false }
+        Babushka::Base.task.stub(:opt).with(:git_fs) { false }
       }
       it "should just call the block" do
         git_fs.should_not_receive(:init)

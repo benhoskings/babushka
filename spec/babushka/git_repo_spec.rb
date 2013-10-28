@@ -2,29 +2,29 @@ require 'spec_helper'
 
 def stub_commitless_repo name
   (tmp_prefix / 'repos' / name).rm
-  PathHelpers.cd tmp_prefix / 'repos' / name, :create => true do
-    ShellHelpers.shell "git init"
+  Babushka::PathHelpers.cd tmp_prefix / 'repos' / name, :create => true do
+    Babushka::ShellHelpers.shell "git init"
   end
 end
 
 def stub_repo name, &block
   (tmp_prefix / 'repos' / "#{name}_remote").rm
-  PathHelpers.cd tmp_prefix / 'repos' / "#{name}_remote", :create => true do
-    ShellHelpers.shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
+  Babushka::PathHelpers.cd tmp_prefix / 'repos' / "#{name}_remote", :create => true do
+    Babushka::ShellHelpers.shell "tar -zxvf #{File.dirname(__FILE__) / '../repos/remote.git.tgz'}"
   end
 
   (tmp_prefix / 'repos' / name).rm
-  PathHelpers.cd tmp_prefix / 'repos' do |path|
-    ShellHelpers.shell "git clone #{name}_remote/remote.git #{name}"
+  Babushka::PathHelpers.cd tmp_prefix / 'repos' do |path|
+    Babushka::ShellHelpers.shell "git clone #{name}_remote/remote.git #{name}"
     yield(Babushka::GitRepo.new(path / name)) if block_given?
   end
 end
 
 def repo_context name, &block
-  PathHelpers.cd(tmp_prefix / 'repos'/ name, &block)
+  Babushka::PathHelpers.cd(tmp_prefix / 'repos'/ name, &block)
 end
 
-describe GitRepo, 'creation' do
+describe Babushka::GitRepo, 'creation' do
   before(:all) { stub_repo 'a' }
   it "should return nil on nonexistent paths" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/missing').root.should == nil
@@ -55,7 +55,7 @@ describe GitRepo, 'creation' do
   end
 end
 
-describe GitRepo, 'without a dir' do
+describe Babushka::GitRepo, 'without a dir' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/missing') }
   it "should not exist" do
     subject.exists?.should be_false
@@ -77,7 +77,7 @@ describe GitRepo, 'without a dir' do
   end
 end
 
-describe GitRepo, 'without a repo' do
+describe Babushka::GitRepo, 'without a repo' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/empty') }
   before { (tmp_prefix / 'repos/empty').mkdir }
 
@@ -101,7 +101,7 @@ describe GitRepo, 'without a repo' do
   end
 end
 
-describe GitRepo, "with a repo" do
+describe Babushka::GitRepo, "with a repo" do
   before(:all) { stub_repo 'a' }
   it "should exist with string path" do
     Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).exists?.should be_true
@@ -111,7 +111,7 @@ describe GitRepo, "with a repo" do
   end
 end
 
-describe GitRepo, '#clean? / #dirty?' do
+describe Babushka::GitRepo, '#clean? / #dirty?' do
   context "on commitless repos" do
     before(:all) { stub_commitless_repo 'a' }
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -129,7 +129,7 @@ describe GitRepo, '#clean? / #dirty?' do
     end
     context "when there are changes" do
       before {
-        PathHelpers.cd(tmp_prefix / 'repos/a') { ShellHelpers.shell "echo dirt >> content.txt" }
+        Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') { Babushka::ShellHelpers.shell "echo dirt >> content.txt" }
       }
       it "should be dirty" do
         subject.should_not be_clean
@@ -137,7 +137,7 @@ describe GitRepo, '#clean? / #dirty?' do
       end
       context "when the changes are staged" do
         before {
-          PathHelpers.cd(tmp_prefix / 'repos/a') { ShellHelpers.shell "git add --update ." }
+          Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') { Babushka::ShellHelpers.shell "git add --update ." }
         }
         it "should be dirty" do
           subject.should_not be_clean
@@ -148,7 +148,7 @@ describe GitRepo, '#clean? / #dirty?' do
   end
 end
 
-describe GitRepo, '#include?' do
+describe Babushka::GitRepo, '#include?' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return true for valid commits" do
@@ -161,7 +161,7 @@ describe GitRepo, '#include?' do
   end
 end
 
-describe GitRepo, '#branches' do
+describe Babushka::GitRepo, '#branches' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   context "on a repo with commits" do
     before(:all) { stub_repo 'a' }
@@ -170,14 +170,14 @@ describe GitRepo, '#branches' do
     end
     context "after creating another branch" do
       before(:all) {
-        repo_context('a') { ShellHelpers.shell "git checkout -b next" }
+        repo_context('a') { Babushka::ShellHelpers.shell "git checkout -b next" }
       }
       it "should return both branches" do
         subject.branches.should == ['master', 'next']
       end
       context "after changing back to master" do
         before {
-          repo_context('a') { ShellHelpers.shell "git checkout master" }
+          repo_context('a') { Babushka::ShellHelpers.shell "git checkout master" }
         }
         it "should return both branches" do
           subject.branches.should == ['master', 'next']
@@ -193,7 +193,7 @@ describe GitRepo, '#branches' do
   end
 end
 
-describe GitRepo, '#all_branches' do
+describe Babushka::GitRepo, '#all_branches' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   context "on a repo with commits" do
     before(:all) { stub_repo 'a' }
@@ -206,14 +206,14 @@ describe GitRepo, '#all_branches' do
     end
     context "after creating another branch" do
       before(:all) {
-        repo_context('a') { ShellHelpers.shell "git checkout -b next" }
+        repo_context('a') { Babushka::ShellHelpers.shell "git checkout -b next" }
       }
       it "should return both branches" do
         subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
       end
       context "after changing back to master" do
         before {
-          repo_context('a') { ShellHelpers.shell "git checkout master" }
+          repo_context('a') { Babushka::ShellHelpers.shell "git checkout master" }
         }
         it "should return both branches" do
           subject.all_branches.should == ["master", "next", "origin/master", "origin/next"]
@@ -229,7 +229,7 @@ describe GitRepo, '#all_branches' do
   end
 end
 
-describe GitRepo, '#current_branch' do
+describe Babushka::GitRepo, '#current_branch' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return 'master'" do
@@ -237,14 +237,14 @@ describe GitRepo, '#current_branch' do
   end
   context "after creating another branch" do
     before(:all) {
-      repo_context('a') { ShellHelpers.shell "git checkout -b next" }
+      repo_context('a') { Babushka::ShellHelpers.shell "git checkout -b next" }
     }
     it "should return 'next'" do
       subject.current_branch.should == 'next'
     end
     context "after changing back to master" do
       before {
-        repo_context('a') { ShellHelpers.shell "git checkout master" }
+        repo_context('a') { Babushka::ShellHelpers.shell "git checkout master" }
       }
       it "should return 'next'" do
         subject.current_branch.should == 'master'
@@ -252,7 +252,7 @@ describe GitRepo, '#current_branch' do
     end
     context "after detaching" do
       before {
-        repo_context('a') { ShellHelpers.shell "git checkout master^0" }
+        repo_context('a') { Babushka::ShellHelpers.shell "git checkout master^0" }
       }
       it "should return a SHA" do
         subject.current_branch.should =~ /^\w{40}$/
@@ -261,7 +261,7 @@ describe GitRepo, '#current_branch' do
   end
 end
 
-describe GitRepo, '#current_remote_branch' do
+describe Babushka::GitRepo, '#current_remote_branch' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return the namespaced remote branch" do
@@ -278,7 +278,7 @@ describe GitRepo, '#current_remote_branch' do
   end
 end
 
-describe GitRepo, '#current_head' do
+describe Babushka::GitRepo, '#current_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a short commit id" do
@@ -286,7 +286,7 @@ describe GitRepo, '#current_head' do
   end
 end
 
-describe GitRepo, '#current_full_head' do
+describe Babushka::GitRepo, '#current_full_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
@@ -294,7 +294,7 @@ describe GitRepo, '#current_full_head' do
   end
 end
 
-describe GitRepo, '#resolve' do
+describe Babushka::GitRepo, '#resolve' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a short commit id" do
@@ -302,7 +302,7 @@ describe GitRepo, '#resolve' do
   end
 end
 
-describe GitRepo, '#resolve_full' do
+describe Babushka::GitRepo, '#resolve_full' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
@@ -310,7 +310,7 @@ describe GitRepo, '#resolve_full' do
   end
 end
 
-describe GitRepo, '#remote_for' do
+describe Babushka::GitRepo, '#remote_for' do
   before(:all) {
     stub_repo 'a' do |repo|
       repo.repo_shell('git config branch.next.remote upstream')
@@ -325,11 +325,11 @@ describe GitRepo, '#remote_for' do
   end
 end
 
-describe GitRepo, '#ahead?' do
+describe Babushka::GitRepo, '#ahead?' do
   before(:all) {
     stub_repo 'a'
-    PathHelpers.cd(tmp_prefix / 'repos/a') {
-      ShellHelpers.shell "git checkout -b topic"
+    Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+      Babushka::ShellHelpers.shell "git checkout -b topic"
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -342,10 +342,10 @@ describe GitRepo, '#ahead?' do
   end
   context "when remote branch exists" do
     before(:all) {
-      PathHelpers.cd(tmp_prefix / 'repos/a') {
-        ShellHelpers.shell "git push origin topic"
-        ShellHelpers.shell 'echo "Ch-ch-ch-changes" >> content.txt'
-        ShellHelpers.shell 'git commit -a -m "Changes!"'
+      Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+        Babushka::ShellHelpers.shell "git push origin topic"
+        Babushka::ShellHelpers.shell 'echo "Ch-ch-ch-changes" >> content.txt'
+        Babushka::ShellHelpers.shell 'git commit -a -m "Changes!"'
       }
     }
     it "should have a local topic branch" do
@@ -357,8 +357,8 @@ describe GitRepo, '#ahead?' do
     end
     context "when the branch is fully pushed" do
       before {
-        PathHelpers.cd(tmp_prefix / 'repos/a') {
-          ShellHelpers.shell "git push origin topic"
+        Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+          Babushka::ShellHelpers.shell "git push origin topic"
         }
       }
       it "should not be ahead" do
@@ -378,12 +378,12 @@ describe GitRepo, '#ahead?' do
   end
 end
 
-describe GitRepo, '#behind?' do
+describe Babushka::GitRepo, '#behind?' do
   before(:all) {
     stub_repo 'a'
-    PathHelpers.cd(tmp_prefix / 'repos/a') {
-      ShellHelpers.shell "git checkout -b next"
-      ShellHelpers.shell "git reset --hard origin/next^"
+    Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+      Babushka::ShellHelpers.shell "git checkout -b next"
+      Babushka::ShellHelpers.shell "git reset --hard origin/next^"
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -393,8 +393,8 @@ describe GitRepo, '#behind?' do
   end
   context "when the remote is merged" do
     before {
-      PathHelpers.cd(tmp_prefix / 'repos/a') {
-        ShellHelpers.shell "git merge origin/next"
+      Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+        Babushka::ShellHelpers.shell "git merge origin/next"
       }
     }
     it "should not be behind" do
@@ -413,7 +413,7 @@ describe GitRepo, '#behind?' do
   end
 end
 
-describe GitRepo, '#init!' do
+describe Babushka::GitRepo, '#init!' do
   context "when the repo doesn't exist" do
     let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/uninited') }
     it "should init the repo" do
@@ -447,14 +447,14 @@ describe GitRepo, '#init!' do
   end
 end
 
-describe GitRepo, '#clone!' do
+describe Babushka::GitRepo, '#clone!' do
   before(:all) { stub_repo 'a' }
   context "for existing repos" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
     it "should raise" do
       L{
         subject.clone!('a_remote/remote.git')
-      }.should raise_error(GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}.")
+      }.should raise_error(Babushka::GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}.")
     end
   end
   context "for non-existent repos" do
@@ -466,7 +466,7 @@ describe GitRepo, '#clone!' do
       it "should raise" do
         L{
           subject.clone!(tmp_prefix / 'repos/a_remote/missing.git')
-        }.should raise_error(GitRepoError)
+        }.should raise_error(Babushka::GitRepoError)
       end
     end
     context "after cloning" do
@@ -490,12 +490,12 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
       end
     end
     after {
-      ShellHelpers.shell "rm -rf #{tmp_prefix / 'repos/b'}"
+      Babushka::ShellHelpers.shell "rm -rf #{tmp_prefix / 'repos/b'}"
     }
   end
 end
 
-describe GitRepo, '#commit!' do
+describe Babushka::GitRepo, '#commit!' do
   before(:all) { stub_repo 'a' }
   let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should shell out to git" do
@@ -509,7 +509,7 @@ describe GitRepo, '#commit!' do
   end
 end
 
-describe GitRepo, '#branch!' do
+describe Babushka::GitRepo, '#branch!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
@@ -532,9 +532,9 @@ describe GitRepo, '#branch!' do
   end
   context "after branching to a ref" do
     before(:all) {
-      PathHelpers.cd(tmp_prefix / 'repos/a') {
-        ShellHelpers.shell 'echo "Ch-ch-ch-changes" >> content.txt'
-        ShellHelpers.shell 'git commit -a -m "Changes!"'
+      Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+        Babushka::ShellHelpers.shell 'echo "Ch-ch-ch-changes" >> content.txt'
+        Babushka::ShellHelpers.shell 'git commit -a -m "Changes!"'
       }
       Babushka::GitRepo.new(tmp_prefix / 'repos/a').branch! "another", "master~"
     }
@@ -553,7 +553,7 @@ describe GitRepo, '#branch!' do
   end
 end
 
-describe GitRepo, '#track!' do
+describe Babushka::GitRepo, '#track!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should not already have a next branch" do
@@ -570,11 +570,11 @@ describe GitRepo, '#track!' do
   end
 end
 
-describe GitRepo, '#checkout!' do
+describe Babushka::GitRepo, '#checkout!' do
   before(:all) {
     stub_repo 'a'
-    PathHelpers.cd(tmp_prefix / 'repos/a') {
-      ShellHelpers.shell "git checkout -b next"
+    Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+      Babushka::ShellHelpers.shell "git checkout -b next"
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -603,7 +603,7 @@ describe GitRepo, '#checkout!' do
   end
 end
 
-describe GitRepo, '#detach!' do
+describe Babushka::GitRepo, '#detach!' do
   before(:all) {
     stub_repo 'a'
   }
@@ -625,11 +625,11 @@ describe GitRepo, '#detach!' do
   end
 end
 
-describe GitRepo, '#reset_hard!' do
+describe Babushka::GitRepo, '#reset_hard!' do
   before {
     stub_repo 'a'
-    PathHelpers.cd(tmp_prefix / 'repos/a') {
-      ShellHelpers.shell "echo 'more rubies' >> lib/rubies.rb"
+    Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
+      Babushka::ShellHelpers.shell "echo 'more rubies' >> lib/rubies.rb"
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }

@@ -1,50 +1,50 @@
 require 'spec_helper'
 require 'source_support'
 
-describe Source do
+describe Babushka::Source do
   before(:all) {
     @remote_1 = make_source_remote 'remote_1'
     @remote_2 = make_source_remote 'remote_2'
-    @local_source_path = (Source.source_prefix / 'local').tap(&:mkdir)
+    @local_source_path = (Babushka::Source.source_prefix / 'local').tap(&:mkdir)
   }
 
   describe 'attributes' do
     it "should require either a path or a name" do
-      expect { Source.new(nil, nil) }.to raise_error(ArgumentError, "Sources with nil paths require a name (as the second argument).")
+      expect { Babushka::Source.new(nil, nil) }.to raise_error(ArgumentError, "Sources with nil paths require a name (as the second argument).")
     end
     it "should store the path" do
-      Source.new('/path/to/the-source').path.should == '/path/to/the-source'
+      Babushka::Source.new('/path/to/the-source').path.should == '/path/to/the-source'
     end
     it "should set a default name" do
-      Source.new('/path/to/the-source').name.should == 'the-source'
+      Babushka::Source.new('/path/to/the-source').name.should == 'the-source'
     end
     it "should accept a custom name" do
-      Source.new('/path/to/the-source', 'custom-name').name.should == 'custom-name'
+      Babushka::Source.new('/path/to/the-source', 'custom-name').name.should == 'custom-name'
     end
     context "for nonexistent sources" do
       it "should set a default path" do
-        Source.new(nil, 'the-source').path.should == Source.source_prefix / 'the-source'
+        Babushka::Source.new(nil, 'the-source').path.should == Babushka::Source.source_prefix / 'the-source'
       end
       it "should not set a default uri" do
-        Source.new(nil, 'the-source').uri.should be_nil
+        Babushka::Source.new(nil, 'the-source').uri.should be_nil
       end
       it "should accept a custom uri" do
-        Source.new(nil, 'the-source', 'https://example.org/custom').uri.should == 'https://example.org/custom'
+        Babushka::Source.new(nil, 'the-source', 'https://example.org/custom').uri.should == 'https://example.org/custom'
       end
       it "should use the supplied name when a custom uri is supplied" do
-        Source.new(nil, 'the-source', 'https://example.org/custom').name.should == 'the-source'
+        Babushka::Source.new(nil, 'the-source', 'https://example.org/custom').name.should == 'the-source'
       end
     end
     context "for existing sources" do
       it "should detect the uri" do
-        source = Source.new(@local_source_path)
+        source = Babushka::Source.new(@local_source_path)
         source.should_receive(:repo?).and_return(true)
-        ShellHelpers.stub(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
+        Babushka::ShellHelpers.stub(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
         source.uri.should == 'https://github.com/test/babushka-deps.git'
       end
       it "should not accept a custom uri" do
         expect {
-          Source.new(@local_source_path, 'custom-name', 'https://github.com/test/babushka-deps.git')
+          Babushka::Source.new(@local_source_path, 'custom-name', 'https://github.com/test/babushka-deps.git')
         }.to raise_error(ArgumentError, "The source URI can only be supplied if the source doesn't exist already.")
       end
     end
@@ -52,31 +52,31 @@ describe Source do
 
   describe '#path' do
     it "should be a Fancypath" do
-      Source.new(@local_source_path).path.should be_an_instance_of(Fancypath)
+      Babushka::Source.new(@local_source_path).path.should be_an_instance_of(Fancypath)
     end
   end
 
   describe '#name' do
     it "should be a String" do
-      Source.new(@local_source_path).name.should be_an_instance_of(String)
+      Babushka::Source.new(@local_source_path).name.should be_an_instance_of(String)
     end
   end
 
   describe '#uri' do
     it "should be a String" do
-      Source.new(nil, 'name', 'https://example.org/repo').uri.should be_an_instance_of(String)
+      Babushka::Source.new(nil, 'name', 'https://example.org/repo').uri.should be_an_instance_of(String)
     end
   end
 
   describe '#type' do
     context "when the source exists" do
-      let(:source) { Source.new(@local_source_path) }
+      let(:source) { Babushka::Source.new(@local_source_path) }
       it "should be local when no uri is supplied" do
         source.type.should == :local
       end
       it "should be remote when the source is a repo with a remote uri" do
         source.stub(:repo?).and_return(true)
-        ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
+        Babushka::ShellHelpers.should_receive(:shell).with('git config remote.origin.url', :cd => @local_source_path).and_return('https://github.com/test/babushka-deps.git')
         source.type.should == :remote
       end
       it "should be local when the source is within a repo with a remote uri" do
@@ -86,16 +86,16 @@ describe Source do
     end
     context "when the source doesn't exist" do
       it "should be local when no uri is supplied" do
-        Source.new(Source.source_prefix / 'nonexistent').type.should == :local
+        Babushka::Source.new(Babushka::Source.source_prefix / 'nonexistent').type.should == :local
       end
       it "should be remote when a uri is supplied" do
-        Source.new(Source.source_prefix / 'nonexistent', 'nonexistent', 'https://example.org/custom').type.should == :remote
+        Babushka::Source.new(Babushka::Source.source_prefix / 'nonexistent', 'nonexistent', 'https://example.org/custom').type.should == :remote
       end
     end
   end
 
   describe '#repo?' do
-    let(:source) { Source.new(@local_source_path) }
+    let(:source) { Babushka::Source.new(@local_source_path) }
     it "should be true when the root of the source is a repo" do
       source.repo.stub(:root).and_return(source.path)
       source.should be_repo
@@ -111,7 +111,7 @@ describe Source do
   end
 
   describe '#clear!' do
-    let(:source) { Source.new(@local_source_path) }
+    let(:source) { Babushka::Source.new(@local_source_path) }
     it "should clear the deps and templates" do
       source.deps.should_receive(:clear!)
       source.templates.should_receive(:clear!)
@@ -122,7 +122,7 @@ describe Source do
   describe "loading deps" do
     context "with a good source" do
       before {
-        @source = Source.new('spec/deps/good')
+        @source = Babushka::Source.new('spec/deps/good')
         @source.load!
       }
       it "should load deps from a file" do
@@ -139,7 +139,7 @@ describe Source do
     end
     context "with a source with errors" do
       before {
-        @source = Source.new('spec/deps/bad')
+        @source = Babushka::Source.new('spec/deps/bad')
       }
       it "should raise an error" do
         expect { @source.load! }.to raise_error(Babushka::SourceLoadError)
@@ -149,7 +149,7 @@ describe Source do
   end
 
   describe "loading deps with parameters" do
-    let(:source) { Source.new('spec/deps/params').tap(&:load!) }
+    let(:source) { Babushka::Source.new('spec/deps/params').tap(&:load!) }
     let(:requires) { source.deps.for('top-level dep with params').context.define!.requires }
     it "should store the right number of requirements" do
       requires.length.should == 2
@@ -168,7 +168,7 @@ describe Source do
       context "arguments" do
         let(:args) { requirement.args }
         it "should store parameters" do
-          args.map(&:class).should == [Parameter]
+          args.map(&:class).should == [Babushka::Parameter]
         end
         it "should store the name properly" do
           args.map(&:name).should == [:param]
@@ -179,7 +179,7 @@ describe Source do
 
   describe "defining deps" do
     before {
-      @source = Source.new('spec/deps/good')
+      @source = Babushka::Source.new('spec/deps/good')
       @source.load!
     }
     context "after loading" do
@@ -194,38 +194,38 @@ describe Source do
 
   describe "equality" do
     it "should be equal when uri, name and type are the same" do
-      (Source.new('/path/to/the-source') == Source.new('/path/to/the-source')).should be_true
+      (Babushka::Source.new('/path/to/the-source') == Babushka::Source.new('/path/to/the-source')).should be_true
     end
     it "shouldn't be equal when the name differs" do
-      (Source.new('/path/to/the-source') == Source.new('/path/to/the-source', 'custom-name')).should be_false
+      (Babushka::Source.new('/path/to/the-source') == Babushka::Source.new('/path/to/the-source', 'custom-name')).should be_false
     end
     it "shouldn't be equal when the uri differs" do
-      (Source.new('/path/to/the-source', 'name') == Source.new('/path/to/the-source', 'name', 'https://example.org/custom')).should be_false
+      (Babushka::Source.new('/path/to/the-source', 'name') == Babushka::Source.new('/path/to/the-source', 'name', 'https://example.org/custom')).should be_false
     end
   end
 
-  describe Source, ".for_path" do
+  describe Babushka::Source, ".for_path" do
     context "on a directory" do
-      let(:source) { Source.for_path(@local_source_path) }
+      let(:source) { Babushka::Source.for_path(@local_source_path) }
       it "should find the source" do
         source.should be_present
         [source.path, source.name].should == [@local_source_path, 'local']
       end
       it "should cache the source" do
-        source.object_id.should == Source.for_path(@local_source_path).object_id
+        source.object_id.should == Babushka::Source.for_path(@local_source_path).object_id
       end
     end
     context "on a git repo" do
-      let(:source) { Source.for_path(@remote_1.first) }
+      let(:source) { Babushka::Source.for_path(@remote_1.first) }
       before {
-        Source.new(*@remote_1).add! # Add the source so it exists
+        Babushka::Source.new(*@remote_1).add! # Add the source so it exists
       }
       it "should work on a git repo" do
         source.should be_present
         [source.path, source.name, source.uri].should == @remote_1
       end
       it "should cache the source" do
-        source.object_id.should == Source.for_path(@remote_1.first).object_id
+        source.object_id.should == Babushka::Source.for_path(@remote_1.first).object_id
       end
       after { source.path.rm }
     end
@@ -234,42 +234,42 @@ describe Source do
   describe '.for_remote' do
     describe "special cases" do
       it "should return the common deps for 'common'" do
-        source = Source.for_remote('common')
-        [source.path, source.name, source.uri].should == [(Source.source_prefix / 'common').p, 'common', "https://github.com/benhoskings/common-babushka-deps.git"]
+        source = Babushka::Source.for_remote('common')
+        [source.path, source.name, source.uri].should == [(Babushka::Source.source_prefix / 'common').p, 'common', "https://github.com/benhoskings/common-babushka-deps.git"]
       end
     end
     it "should return a github URL in the standard form" do
-      source = Source.for_remote('benhoskings')
-      [source.path, source.name, source.uri].should == [(Source.source_prefix / 'benhoskings').p, 'benhoskings', "https://github.com/benhoskings/babushka-deps.git"]
+      source = Babushka::Source.for_remote('benhoskings')
+      [source.path, source.name, source.uri].should == [(Babushka::Source.source_prefix / 'benhoskings').p, 'benhoskings', "https://github.com/benhoskings/babushka-deps.git"]
     end
   end
 
   describe "finding" do
     before {
-      @source = Source.new('spec/deps/good')
+      @source = Babushka::Source.new('spec/deps/good')
       @source.load!
     }
     it "should find the specified dep" do
-      @source.find('test dep 1').should be_an_instance_of(Dep)
+      @source.find('test dep 1').should be_an_instance_of(Babushka::Dep)
       @source.deps.items.include?(@source.find('test dep 1')).should be_true
     end
     it "should find the specified template" do
-      @source.find_template('test_meta_1').should be_an_instance_of(DepTemplate)
+      @source.find_template('test_meta_1').should be_an_instance_of(Babushka::DepTemplate)
       @source.templates.items.include?(@source.find_template('test_meta_1')).should be_true
     end
   end
 
-  describe Source, "#present?" do
+  describe Babushka::Source, "#present?" do
     context "for local repos" do
       it "should be true for existing paths" do
-        Source.new('spec/deps/good').should be_present
+        Babushka::Source.new('spec/deps/good').should be_present
       end
       it "should be false for nonexistent paths" do
-        Source.new('spec/deps/nonexistent').should_not be_present
+        Babushka::Source.new('spec/deps/nonexistent').should_not be_present
       end
     end
     context "for remote repos" do
-      let(:source) { Source.new(*@remote_1) }
+      let(:source) { Babushka::Source.new(*@remote_1) }
       it "should be false" do
         source.should_not be_present
       end
@@ -284,24 +284,24 @@ describe Source do
 
   describe '.present' do
     it "should include existing paths" do
-      Source.present.should include(Source.new(@local_source_path))
+      Babushka::Source.present.should include(Babushka::Source.new(@local_source_path))
     end
     it "should not include sources with other paths" do
-      Source.present.should_not include(Source.new('spec/deps/good'))
+      Babushka::Source.present.should_not include(Babushka::Source.new('spec/deps/good'))
     end
     it "should not include nonexistent paths" do
-      Source.present.should_not include(Source.new('spec/deps/nonexistent'))
+      Babushka::Source.present.should_not include(Babushka::Source.new('spec/deps/nonexistent'))
     end
 
     context "for remote repos" do
-      let(:source) { Source.new(*@remote_1) }
+      let(:source) { Babushka::Source.new(*@remote_1) }
       it "should be false" do
-        Source.present.should_not include(source)
+        Babushka::Source.present.should_not include(source)
       end
       context "after cloning" do
         it "should be true" do
           source.add!
-          Source.present.should include(source)
+          Babushka::Source.present.should include(source)
         end
         after { source.path.rm }
       end
@@ -310,36 +310,36 @@ describe Source do
 
   describe "cloning" do
     context "an unreadable source" do
-      let(:source) { Source.new(nil, 'unreadable', (tmp_prefix / "missing.git").to_s) }
+      let(:source) { Babushka::Source.new(nil, 'unreadable', (tmp_prefix / "missing.git").to_s) }
       it "shouldn't work" do
-        expect { source.add! }.to raise_error(GitRepoError)
+        expect { source.add! }.to raise_error(Babushka::GitRepoError)
       end
     end
 
     context "a readable source" do
       context "with just a path" do
-        let(:source) { Source.new('/path/to/the-source') }
+        let(:source) { Babushka::Source.new('/path/to/the-source') }
         it "should not add anything" do
-          GitHelpers.should_not_receive(:git)
+          Babushka::GitHelpers.should_not_receive(:git)
           source.add!
         end
       end
 
       context "with just a name" do
-        let(:source) { Source.new(nil, 'source-name') }
+        let(:source) { Babushka::Source.new(nil, 'source-name') }
         it "should not add anything" do
-          GitHelpers.should_not_receive(:git)
+          Babushka::GitHelpers.should_not_receive(:git)
           source.add!
         end
       end
 
       context "with a uri" do
-        let(:source) { Source.new(*@remote_1) }
+        let(:source) { Babushka::Source.new(*@remote_1) }
         it "shouldn't be present yet" do
           source.should_not be_present
         end
         it "should clone the source" do
-          GitHelpers.should_receive(:git).with(source.uri, :to => (Source.source_prefix / 'remote_1'), :log => true)
+          Babushka::GitHelpers.should_receive(:git).with(source.uri, :to => (Babushka::Source.source_prefix / 'remote_1'), :log => true)
           source.add!
         end
         context "after adding" do
@@ -356,28 +356,28 @@ describe Source do
 
       context "duplication" do
         before {
-          GitHelpers.stub(:git).and_return(true)
-          Source.stub(:present).and_return([source])
+          Babushka::GitHelpers.stub(:git).and_return(true)
+          Babushka::Source.stub(:present).and_return([source])
         }
-        let(:source) { Source.new(nil, 'the-source', 'https://example.org/the-source') }
+        let(:source) { Babushka::Source.new(nil, 'the-source', 'https://example.org/the-source') }
 
         context "with the same name and URI" do
-          let(:dup) { Source.new(nil, 'the-source', 'https://example.org/the-source') }
+          let(:dup) { Babushka::Source.new(nil, 'the-source', 'https://example.org/the-source') }
           it "should work" do
             L{ dup.add! }.should_not raise_error
             dup.should == source
           end
         end
         context "with the same name and different URIs" do
-          let(:dup) { Source.new(nil, source.name, 'https://example.org/custom') }
+          let(:dup) { Babushka::Source.new(nil, source.name, 'https://example.org/custom') }
           it "should fail" do
-            expect { dup.add! }.to raise_error(SourceError, "There is already a source called 'the-source' at #{source.path}.")
+            expect { dup.add! }.to raise_error(Babushka::SourceError, "There is already a source called 'the-source' at #{source.path}.")
           end
         end
         context "with the same URI and different names" do
-          let(:dup) { Source.new(nil, 'custom-name', source.uri) }
+          let(:dup) { Babushka::Source.new(nil, 'custom-name', source.uri) }
           it "should fail" do
-            expect { dup.add! }.to raise_error(SourceError, "The remote #{source.uri} is already present on 'the-source', at #{source.path}.")
+            expect { dup.add! }.to raise_error(Babushka::SourceError, "The remote #{source.uri} is already present on 'the-source', at #{source.path}.")
           end
         end
       end
@@ -386,7 +386,7 @@ describe Source do
 
   describe "updating" do
     before {
-      @source = Source.new(*@remote_2)
+      @source = Babushka::Source.new(*@remote_2)
     }
     it "should update when the source isn't cloned" do
       @source.should_receive(:update!)

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe XMLString do
+describe Babushka::XMLString do
   it "should parse xml like a son of a bitch" do
     sample_xml.val_for('CFBundleShortVersionString').should == '5.0.310.0'
     sample_xml.val_for('CFBundleSignature').should == 'Cr24 Example String'
@@ -9,7 +9,7 @@ describe XMLString do
 end
 
 def sample_xml
-  XMLString.new %Q{
+  Babushka::XMLString.new %Q{
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">

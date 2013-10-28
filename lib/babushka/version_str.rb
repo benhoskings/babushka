@@ -16,9 +16,9 @@ module Babushka
       @operator, @version = str.strip.scan(/^([^\s\w\-\.]+)?\s*v?([\w\-\.]+)$/i).first
 
       if !(@operator.nil? || GEM_VERSION_OPERATORS.include?(@operator))
-        raise InvalidVersionOperator, "VersionStr.new('#{str}'): invalid operator '#{@operator}'."
+        raise InvalidVersionOperator, "Babushka::VersionStr.new('#{str}'): invalid operator '#{@operator}'."
       elsif !self.class.parseable_version?(@version)
-        raise InvalidVersionStr, "VersionStr.new('#{str}'): couldn't parse a version number."
+        raise InvalidVersionStr, "Babushka::VersionStr.new('#{str}'): couldn't parse a version number."
       else
         @pieces = @version.strip.scan(/\d+|[a-zA-Z]+|\w+/).map {|piece|
           piece[/^\d+$/] ? piece.to_i : piece

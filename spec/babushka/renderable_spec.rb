@@ -10,7 +10,7 @@ shared_examples_for 'renderable' do
       subject.exists?.should be_true
     end
     it "should have added the prefix" do
-      dest_file.read.should =~ Renderable::SEAL_REGEXP
+      dest_file.read.should =~ Babushka::Renderable::SEAL_REGEXP
     end
     it "should have interpolated the erb" do
       dest_file.read.should =~ content
@@ -21,7 +21,7 @@ shared_examples_for 'renderable' do
       end
       context "after shitting up the file" do
         before {
-          ShellHelpers.shell "echo lulz >> #{subject.path}"
+          Babushka::ShellHelpers.shell "echo lulz >> #{subject.path}"
         }
         it "should not be clean" do
           subject.should_not be_clean
@@ -39,8 +39,8 @@ shared_examples_for 'renderable' do
   end
 end
 
-describe Renderable do
-  subject { Renderable.new(dest_file) }
+describe Babushka::Renderable do
+  subject { Babushka::Renderable.new(dest_file) }
 
   describe '#source_sha' do
     context "when the result doesn't exist" do
@@ -103,7 +103,7 @@ describe Renderable do
 end
 
 describe "binding handling" do
-  subject { Renderable.new(tmp_prefix / 'example.conf') }
+  subject { Babushka::Renderable.new(tmp_prefix / 'example.conf') }
   context "when no explicit binding is passed" do
     before {
       subject.instance_eval {

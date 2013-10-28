@@ -4,26 +4,26 @@ describe Babushka::GemHelper do
   let(:gem_helper) { Babushka::GemHelper }
   before {
     gem_helper.stub(:versions_of).and_return([
-      VersionStr.new('0.2.11'),
-      VersionStr.new('0.2.11.3'),
-      VersionStr.new('0.3.7'),
-      VersionStr.new('0.3.9')
+      Babushka::VersionStr.new('0.2.11'),
+      Babushka::VersionStr.new('0.2.11.3'),
+      Babushka::VersionStr.new('0.3.7'),
+      Babushka::VersionStr.new('0.3.9')
     ])
   }
   describe "has?" do
     it "should report installed gems correctly" do
-      gem_helper.has?('hammock 0.3.9').should == VersionStr.new('0.3.9')
+      gem_helper.has?('hammock 0.3.9').should == Babushka::VersionStr.new('0.3.9')
     end
     it "should report missing gems correctly" do
       gem_helper.has?('hammock 0.3.8').should be_nil
     end
     it "should report matching gems correctly" do
       gem_helper.has?('hammock >= 0.3.10').should be_nil
-      gem_helper.has?('hammock >= 0.3.9').should == VersionStr.new('0.3.9')
-      gem_helper.has?('hammock >= 0.3.8').should == VersionStr.new('0.3.9')
-      gem_helper.has?('hammock >= 0.3.7').should == VersionStr.new('0.3.9')
-      gem_helper.has?('hammock ~> 0.2.7').should == VersionStr.new('0.2.11.3')
-      gem_helper.has?('hammock ~> 0.3.7').should == VersionStr.new('0.3.9')
+      gem_helper.has?('hammock >= 0.3.9').should == Babushka::VersionStr.new('0.3.9')
+      gem_helper.has?('hammock >= 0.3.8').should == Babushka::VersionStr.new('0.3.9')
+      gem_helper.has?('hammock >= 0.3.7').should == Babushka::VersionStr.new('0.3.9')
+      gem_helper.has?('hammock ~> 0.2.7').should == Babushka::VersionStr.new('0.2.11.3')
+      gem_helper.has?('hammock ~> 0.3.7').should == Babushka::VersionStr.new('0.3.9')
     end
   end
 
