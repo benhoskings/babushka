@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'timeout'
 
-describe Shell, "arguments" do
+describe Babushka::Shell, "arguments" do
   it "should reject calls with no arguments, since exec will explode anyway" do
     L{ Shell.new }.should raise_error(ArgumentError, "wrong number of arguments (0 for 1+)")
   end
 end
 
-describe Shell, '#ok?' do
+describe Babushka::Shell, '#ok?' do
   it "should return true on success" do
     Shell.new('true', {}).run(&:ok?).should be_true
   end
@@ -16,7 +16,7 @@ describe Shell, '#ok?' do
   end
 end
 
-describe Shell, '#result' do
+describe Babushka::Shell, '#result' do
   it "should return zero on success" do
     Shell.new('true', {}).run(&:result).should == 0
   end
@@ -25,7 +25,7 @@ describe Shell, '#result' do
   end
 end
 
-describe Shell do
+describe Babushka::Shell do
   it "should close stdin, so subprocesses don't wait for input forever" do
     Timeout::timeout(1) do
       Shell.new('cat', {}).run(&:result).should == 0

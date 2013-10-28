@@ -6,7 +6,7 @@ describe "source_template" do
   end
 end
 
-describe DepDefiner, '#define!' do
+describe Babushka::DepDefiner, '#define!' do
   let(:a_dep) { dep('DepDefiner defining spec') }
 
   it "should return itself" do
@@ -65,7 +65,7 @@ describe DepDefiner, '#define!' do
   end
 end
 
-describe DepDefiner, '#invoke' do
+describe Babushka::DepDefiner, '#invoke' do
   let(:a_dep) { dep('DepDefiner invoking spec') }
   let(:definer) { DepDefiner.new(a_dep) }
 

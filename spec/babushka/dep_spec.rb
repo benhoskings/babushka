@@ -166,7 +166,7 @@ describe "dep creation" do
   after { Base.sources.anonymous.templates.clear! }
 end
 
-describe Dep, "defining" do
+describe Babushka::Dep, "defining" do
   before {
     Base.sources.stub(:current_real_load_source).and_return(Base.sources.anonymous)
   }
@@ -237,7 +237,7 @@ describe Dep, "defining" do
   end
 end
 
-describe Dep, '#basename' do
+describe Babushka::Dep, '#basename' do
   context "for base deps" do
     it "should be the same as the dep's name" do
       dep('basename test').basename.should == 'basename test'
@@ -275,7 +275,7 @@ describe Dep, '#basename' do
   end
 end
 
-describe Dep, '#cache_key' do
+describe Babushka::Dep, '#cache_key' do
   it "should work for parameterless deps" do
     dep('cache key, no params').cache_key.should == DepRequirement.new('cache key, no params', [])
   end
@@ -290,7 +290,7 @@ describe Dep, '#cache_key' do
   end
 end
 
-describe Dep, "params" do
+describe Babushka::Dep, "params" do
   describe "non-symbol params" do
     it "should be rejected, singular" do
       L{
@@ -334,7 +334,7 @@ describe Dep, "params" do
   end
 end
 
-describe Dep, 'lambda lists' do
+describe Babushka::Dep, 'lambda lists' do
   before {
     Babushka.host.matcher.stub(:name).and_return(:test_name)
     Babushka.host.matcher.stub(:system).and_return(:test_system)
@@ -355,7 +355,7 @@ describe Dep, 'lambda lists' do
   end
 end
 
-describe Dep, '#requirements_for' do
+describe Babushka::Dep, '#requirements_for' do
   let(:dependency) {
     dep('requirements_for specs') {
       requires 'a dep'

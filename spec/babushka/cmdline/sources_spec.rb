@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Cmdline, 'meet' do
+describe Babushka::Cmdline, 'meet' do
   describe "with just a name" do
     let(:parser) {
       Cmdline::Parser.for(%w[sources -a source-name])

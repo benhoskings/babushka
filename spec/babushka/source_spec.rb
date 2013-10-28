@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'source_support'
 
-describe Source do
+describe Babushka::Source do
   before(:all) {
     @remote_1 = make_source_remote 'remote_1'
     @remote_2 = make_source_remote 'remote_2'
@@ -204,7 +204,7 @@ describe Source do
     end
   end
 
-  describe Source, ".for_path" do
+  describe Babushka::Source, ".for_path" do
     context "on a directory" do
       let(:source) { Source.for_path(@local_source_path) }
       it "should find the source" do
@@ -259,7 +259,7 @@ describe Source do
     end
   end
 
-  describe Source, "#present?" do
+  describe Babushka::Source, "#present?" do
     context "for local repos" do
       it "should be true for existing paths" do
         Source.new('spec/deps/good').should be_present

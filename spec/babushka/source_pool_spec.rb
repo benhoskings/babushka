@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'source_support'
 
-describe SourcePool do
+describe Babushka::SourcePool do
 
   describe 'default sources' do
     describe 'types' do
@@ -40,7 +40,7 @@ describe SourcePool do
     Source.stub(:present).and_return [source1, source2]
   }
 
-  describe SourcePool, '#source_for' do
+  describe Babushka::SourcePool, '#source_for' do
     before {
       Base.sources.stub(:default).and_return([source1])
       Source.stub(:present).and_return([source2])
@@ -141,7 +141,7 @@ describe SourcePool do
     end
   end
 
-  describe Dep, '#dep_for, disregarding sources' do
+  describe Babushka::Dep, '#dep_for, disregarding sources' do
     let!(:the_dep) { dep 'Base.sources.dep_for tests' }
     it "should work for strings" do
       Base.sources.dep_for('Base.sources.dep_for tests').should == the_dep
@@ -172,7 +172,7 @@ describe SourcePool do
     end
   end
 
-  describe SourcePool, '#dep_for' do
+  describe Babushka::SourcePool, '#dep_for' do
     let!(:dep1) { define_in(source1) { dep 'dep 1' } }
     let!(:dep2) { define_in(source1) { dep 'dep 2' } }
     let!(:dep3) { define_in(source2) { dep 'dep 3' } }
@@ -195,7 +195,7 @@ describe SourcePool do
     end
   end
 
-  describe SourcePool, '#dep_for core' do
+  describe Babushka::SourcePool, '#dep_for core' do
     let(:core) { ImplicitSource.new('core') }
     let!(:dep1) { define_in(core) { dep 'dep 1' } }
     before {
@@ -213,7 +213,7 @@ describe SourcePool do
     end
   end
 
-  describe SourcePool, '#load_context' do
+  describe Babushka::SourcePool, '#load_context' do
     context "without a template" do
       before {
         Dep.should_receive(:new).with('load_context', Base.sources.anonymous, [], {}, nil)
@@ -251,7 +251,7 @@ describe SourcePool do
     end
   end
 
-  describe SourcePool, '#template_for' do
+  describe Babushka::SourcePool, '#template_for' do
 
     context "without namespacing" do
       it "should find templates in the anonymous source" do

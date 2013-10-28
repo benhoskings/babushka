@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe XMLString do
+describe Babushka::XMLString do
   it "should parse xml like a son of a bitch" do
     sample_xml.val_for('CFBundleShortVersionString').should == '5.0.310.0'
     sample_xml.val_for('CFBundleSignature').should == 'Cr24 Example String'

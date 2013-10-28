@@ -17,19 +17,19 @@ describe Babushka::ImplicitSource do
     end
   end
 
-  describe Source, '#path' do
+  describe Babushka::ImplicitSource, '#path' do
     it "should be nil" do
       ImplicitSource.new('name').path.should == nil
     end
   end
 
-  describe Source, '#present?' do
+  describe Babushka::ImplicitSource, '#present?' do
     it "should be false" do
       ImplicitSource.new('name').should_not be_present
     end
   end
 
-  describe Source, '#remote?' do
+  describe Babushka::ImplicitSource, '#remote?' do
     it "should not be remote" do
       ImplicitSource.new('name').should_not be_remote
     end

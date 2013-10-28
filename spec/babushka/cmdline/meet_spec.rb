@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Cmdline, 'meet' do
+describe Babushka::Cmdline, 'meet' do
   describe "argument parsing" do
     let(:parser) {
       Cmdline::Parser.for(%w[git version=1.7.7 source=http://git.org/git.tgz])

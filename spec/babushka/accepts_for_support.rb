@@ -1,6 +1,6 @@
 class AcceptsForTest
-  include AcceptsListFor
-  include AcceptsValueFor
+  include Babushka::AcceptsListFor
+  include Babushka::AcceptsValueFor
 
   attr_reader :payload
 

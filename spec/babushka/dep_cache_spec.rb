@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DepCache do
+describe Babushka::DepCache do
   let(:dep_cache) { DepCache.new }
 
   context 'when the key misses' do

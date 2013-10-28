@@ -39,7 +39,7 @@ shared_examples_for 'renderable' do
   end
 end
 
-describe Renderable do
+describe Babushka::Renderable do
   subject { Renderable.new(dest_file) }
 
   describe '#source_sha' do

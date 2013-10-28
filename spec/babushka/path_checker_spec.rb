@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PathChecker do
+describe Babushka::PathChecker do
   describe '.match_potential_versions' do
     it "should extract a single version" do
       PathChecker.match_potential_versions('0.13.2').should == ['0.13.2']

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Parameter do
+describe Babushka::Parameter do
   it "should not be set without a value" do
     Parameter.new(:test).set?.should be_false
   end
