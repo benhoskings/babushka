@@ -4,7 +4,7 @@ class Babushka::GitFS
   GITIGNORE_FILE = (Babushka::Path.path / 'conf/git_fs_gitignore')
 
   def self.snapshotting_with message, &blk
-    if Base.task.opt(:git_fs)
+    if Babushka::Base.task.opt(:git_fs)
       init
       blk.call.tap {|result| commit(message) if result }
     else
