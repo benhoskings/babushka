@@ -166,6 +166,43 @@ describe Array, '#val_for' do
   end
 end
 
+describe String, '#to_utf8' do
+  let(:valid_utf8) { "こんにちは".force_encoding('utf-8') }
+  let(:valid_utf8_mislabelled) { "こんにちは".force_encoding('ascii') }
+  let(:valid_ascii) { "konnichiwa".force_encoding('ascii') }
+  let(:invalid) { "lol\xFF".force_encoding('ascii') }
+
+  it "should make sure :valid_utf8 is really utf8" do
+    expect { valid_utf8.encode('ascii') }.to raise_error(Encoding::UndefinedConversionError)
+  end
+  it "should make sure :invalid is really invalid" do
+    expect { invalid.encode('utf-8') }.to raise_error(Encoding::InvalidByteSequenceError)
+  end
+
+  it "should convert ASCII strings to utf8" do
+    valid_ascii.encoding.should == Encoding::ASCII
+    valid_ascii.to_utf8.should == "konnichiwa"
+    valid_ascii.to_utf8.encoding.should == Encoding::UTF_8
+  end
+  it "should leave UTF-8 strings untouched" do
+    valid_utf8.encoding.should == Encoding::UTF_8
+    valid_utf8.to_utf8.should == "こんにちは"
+    valid_utf8.to_utf8.encoding.should == Encoding::UTF_8
+  end
+  # TODO: This case might be better handled by assuming the string is UTF-8, but
+  # I'm going to leave the logic stupid for now and improve it later.
+  it "should respect mislabelled strings" do
+    valid_utf8_mislabelled.encoding.should == Encoding::ASCII
+    valid_utf8_mislabelled.to_utf8.should == "???????????????"
+    valid_utf8_mislabelled.to_utf8.encoding.should == Encoding::UTF_8
+  end
+  it "should convert invalid strings" do
+    invalid.encoding.should == Encoding::ASCII
+    invalid.to_utf8.should == "lol?"
+    invalid.to_utf8.encoding.should == Encoding::UTF_8
+  end
+end
+
 describe String, '#colorized?' do
   it "should return false for regular strings" do
     "babushka".should_not be_colorized
