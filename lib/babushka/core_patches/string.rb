@@ -51,7 +51,9 @@ class String
   end
 
   def to_utf8
-    if valid_encoding?
+    if !respond_to?(:encoding) # Skip on ruby-1.8.
+      self
+    elsif valid_encoding?
       encode("utf-8")
     else
       # Round-trip to force a conversion, stripping invalid chars.
