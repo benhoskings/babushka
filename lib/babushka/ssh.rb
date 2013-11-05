@@ -1,3 +1,5 @@
+require 'shellwords'
+
 module Babushka
   class SSH
 
@@ -21,9 +23,11 @@ module Babushka
         ('--debug'  if Babushka::Base.task.opt(:debug))
       ].compact
 
-      remote_args.concat args.keys.map {|k| "#{k}=#{args[k]}" }
+      dep_args = args.keys.map {|k| "#{k}=#{Shellwords.escape(args[k])}" }
 
-      shell('babushka', dep_spec, *remote_args).tap {|result|
+      remote_args.concat(dep_args)
+
+      shell('babushka', Shellwords.escape(dep_spec), *remote_args).tap {|result|
         raise Babushka::UnmeetableDep, "The remote babushka reported an error." unless result
       }
     end
