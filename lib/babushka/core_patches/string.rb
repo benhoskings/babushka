@@ -50,6 +50,17 @@ class String
     Babushka::VersionStr.new self
   end
 
+  def to_utf8
+    if !respond_to?(:encoding) # Skip on ruby-1.8.
+      self
+    elsif valid_encoding?
+      encode("utf-8")
+    else
+      # Round-trip to force a conversion, stripping invalid chars.
+      encode("utf-16be", :invalid => :replace, :replace => "?").encode("utf-8")
+    end
+  end
+
   def colorized?
     Babushka::LogHelpers.deprecated! "2014-03-29", :method_name => 'String#colorized?'
     self[/\e\[\d/]

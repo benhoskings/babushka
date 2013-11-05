@@ -6,11 +6,11 @@ describe "help" do
       [
         "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2012 Ben Hoskings <ben@hoskings.net>",
         "\nThe gist:",
-        "  #{Base.program_name} <command> [options]",
+        "  #{Babushka::Base.program_name} <command> [options]",
         "\nAlso:",
-        "  #{Base.program_name} help <command>  # Print command-specific usage info",
-        "  #{Base.program_name} <dep name>      # A shortcut for 'babushka meet <dep name>'",
-        "  #{Base.program_name} babushka        # Update babushka itself (what babushka.me/up does)",
+        "  #{Babushka::Base.program_name} help <command>  # Print command-specific usage info",
+        "  #{Babushka::Base.program_name} <dep name>      # A shortcut for 'babushka meet <dep name>'",
+        "  #{Babushka::Base.program_name} babushka        # Update babushka itself (what babushka.me/up does)",
         "\nCommands:",
         "  help       Print usage information",
         "  version    Print the current version",
@@ -20,23 +20,23 @@ describe "help" do
         "  console    Start an interactive (irb-based) babushka session",
         "  edit       Load the file containing the specified dep in $EDITOR",
         "\nCommands can be abbrev'ed, as long as they remain unique.",
-        "  e.g. '#{Base.program_name} l' is short for '#{Base.program_name} list'.",
+        "  e.g. '#{Babushka::Base.program_name} l' is short for '#{Babushka::Base.program_name} list'.",
       ].each {|line|
-        Cmdline::Helpers.should_receive(:log).with(line)
+        Babushka::Cmdline::Helpers.should_receive(:log).with(line)
       }
-      LogHelpers.should_receive(:log).with("\n")
+      Babushka::LogHelpers.should_receive(:log).with("\n")
     }
     it "should print the verb help information" do
-      Cmdline::Parser.for(%w[help]).run
+      Babushka::Cmdline::Parser.for(%w[help]).run
     end
   end
   context "with a verb" do
-    let(:parser) { Cmdline::Parser.for(%w[help meet]) }
+    let(:parser) { Babushka::Cmdline::Parser.for(%w[help meet]) }
     before {
-      Cmdline::Helpers.should_receive(:log).with(
+      Babushka::Cmdline::Helpers.should_receive(:log).with(
         "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2012 Ben Hoskings <ben@hoskings.net>"
       )
-      LogHelpers.should_receive(:log).with(
+      Babushka::LogHelpers.should_receive(:log).with(
         "\nmeet - The main one: run a dep and all its dependencies."
       )
 
@@ -54,7 +54,7 @@ describe "help" do
         --git-fs                     [EXPERIMENTAL] Snapshot the root filesystem in a git repo after meeting deps
 ")
 
-      LogHelpers.should_receive(:log).with("\n")
+      Babushka::LogHelpers.should_receive(:log).with("\n")
     }
     it "should print the help information for the verb" do
       parser.run

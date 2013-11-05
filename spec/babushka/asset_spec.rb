@@ -6,29 +6,29 @@ end
 
 describe Babushka::Asset do
   it "should detect file types" do
-    Asset.type(archive_path / 'archive.zip').should == :zip
-    Asset.type(archive_path / 'archive.tgz').should == :gzip
+    Babushka::Asset.type(archive_path / 'archive.zip').should == :zip
+    Babushka::Asset.type(archive_path / 'archive.tgz').should == :gzip
   end
   it "should first attempt to detect type using file extension" do
-    Asset.type(archive_path / 'really_a_gzip.zip').should == :zip
+    Babushka::Asset.type(archive_path / 'really_a_gzip.zip').should == :zip
   end
   it "should attempt to detect type via `file` when there is no extension" do
-    Asset.should_receive(:shell).with("file '#{archive_path / 'zip_without_extension'}'").and_return('Zip archive data')
-    Asset.type(archive_path / 'zip_without_extension').should == :zip
+    Babushka::Asset.should_receive(:shell).with("file '#{archive_path / 'zip_without_extension'}'").and_return('Zip archive data')
+    Babushka::Asset.type(archive_path / 'zip_without_extension').should == :zip
   end
   it "should detect supported archive types" do
-    Asset.for(archive_path / 'archive.tgz').should be_supported
-    Asset.for(archive_path / 'archive.tbz2').should be_supported
+    Babushka::Asset.for(archive_path / 'archive.tgz').should be_supported
+    Babushka::Asset.for(archive_path / 'archive.tbz2').should be_supported
   end
   it "should raise an error on unsupported types" do
-    Asset.should_receive(:shell).with("file '#{archive_path / 'invalid_archive'}'").and_return('ASCII text')
+    Babushka::Asset.should_receive(:shell).with("file '#{archive_path / 'invalid_archive'}'").and_return('ASCII text')
     L{
-      Asset.for(archive_path / 'invalid_archive')
+      Babushka::Asset.for(archive_path / 'invalid_archive')
     }.should raise_error("Don't know how to extract invalid_archive.")
   end
   it "should set the name" do
-    Asset.for(archive_path / 'archive.tar').name.should == 'archive'
-    Asset.for(archive_path / 'archive.tar.gz').name.should == 'archive'
+    Babushka::Asset.for(archive_path / 'archive.tar').name.should == 'archive'
+    Babushka::Asset.for(archive_path / 'archive.tar.gz').name.should == 'archive'
   end
   it "should generate the proper command to extract the archive" do
     {
@@ -37,34 +37,34 @@ describe Babushka::Asset do
       'tbz2' => "tar -jxf '#{archive_path / 'archive.tbz2'}'",
       'zip' => "unzip -o '#{archive_path / 'archive.zip'}'"
     }.each_pair {|ext,command|
-      Asset.for(archive_path / "archive.#{ext}").extract_command.should == command
+      Babushka::Asset.for(archive_path / "archive.#{ext}").extract_command.should == command
     }
   end
   it "should yield" do
     yielded = false
-    Asset.for(archive_path / "archive.tar").extract {
+    Babushka::Asset.for(archive_path / "archive.tar").extract {
       yielded = true
     }
     yielded.should be_true
   end
   it "should yield in the extracted dir" do
-    Asset.for(archive_path / "archive.tar").extract {
+    Babushka::Asset.for(archive_path / "archive.tar").extract {
       Dir.pwd.should == (tmp_prefix / 'archives/archive')
     }
   end
   it "should yield in the nested dir if there is one" do
-    Asset.for(archive_path / "nested_archive.tar").extract {
+    Babushka::Asset.for(archive_path / "nested_archive.tar").extract {
       Dir.pwd.should == (tmp_prefix / 'archives/nested_archive/nested archive')
     }
   end
   it "should find a standard content dir as a nested dir" do
-    Asset.for(archive_path / "test-0.3.1.tgz").extract {
+    Babushka::Asset.for(archive_path / "test-0.3.1.tgz").extract {
       Dir.pwd.should == (tmp_prefix / 'archives/test-0.3.1/test-0.3.1')
       Dir.glob('*').should == ['content.txt']
     }
   end
   it "shouldn't descend into some dirs" do
-    Asset.for(archive_path / "Blah.app.zip").extract {
+    Babushka::Asset.for(archive_path / "Blah.app.zip").extract {
       Dir.pwd.should == (tmp_prefix / 'archives/Blah.app')
       Dir.glob('**/*').should == ['Blah.app', 'Blah.app/content.txt']
     }
@@ -72,14 +72,14 @@ describe Babushka::Asset do
 
   describe 'cleanup' do
     it "should remove the build dir on success" do
-      Asset.for(archive_path / "archive.tar").extract {
+      Babushka::Asset.for(archive_path / "archive.tar").extract {
         (tmp_prefix / 'archives/archive').exists?.should be_true
         true
       }
       (tmp_prefix / 'archives/archive').exists?.should be_false
     end
     it "should not remove the build dir on failure" do
-      Asset.for(archive_path / "archive.tar").extract {
+      Babushka::Asset.for(archive_path / "archive.tar").extract {
         (tmp_prefix / 'archives/archive').exists?.should be_true
         false
       }
@@ -88,7 +88,7 @@ describe Babushka::Asset do
   end
 
   describe '#content_subdir' do
-    let(:resource) { Asset.new('test.zip') }
+    let(:resource) { Babushka::Asset.new('test.zip') }
 
     context "when there is just a single file inside the archive" do
       before {

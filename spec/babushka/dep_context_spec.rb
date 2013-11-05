@@ -25,7 +25,7 @@ describe "accepts_block_for behaviour" do
   let(:lambda_hello) { L{ "hello world!" } }
 
   def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
-    DepContext.accepts_block_for accepter_name
+    Babushka::DepContext.accepts_block_for accepter_name
     dep 'accepts_block_for' do
       send accepter_name, opts, &lambda
     end
@@ -40,12 +40,12 @@ describe "accepts_block_for behaviour" do
 
   it "should define a declarer" do
     Dep('default').context.should_not respond_to(:test_defining)
-    DepContext.accepts_block_for :test_defining
+    Babushka::DepContext.accepts_block_for :test_defining
     Dep('default').context.should respond_to(:test_defining)
   end
 
   it "should return lambda" do
-    DepContext.accepts_block_for :test_defining
+    Babushka::DepContext.accepts_block_for :test_defining
     lambda = L{ 'blah' }
     value_from_block = nil
     dep 'returning test' do
@@ -66,7 +66,7 @@ describe "accepts_block_for behaviour" do
 
   it "should use default blocks when no specific one is specified" do
     lambda = L{ 'default value' }
-    DepContext.accepts_block_for :test_defaults, &lambda
+    Babushka::DepContext.accepts_block_for :test_defaults, &lambda
     value_from_block = nil
     dep 'default test' do
       value_from_block = test_defaults
@@ -74,7 +74,7 @@ describe "accepts_block_for behaviour" do
     value_from_block.should == lambda
   end
 
-  after { Base.sources.anonymous.deps.clear! }
+  after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
 describe "accepts_list_for behaviour" do
