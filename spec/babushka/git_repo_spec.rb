@@ -111,17 +111,32 @@ describe Babushka::GitRepo, "with a repo" do
   end
 end
 
-describe "#repo_shell" do
+describe 'shelling' do
   before(:all) { stub_repo 'a' }
   let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
-  it "should raise an error when the repo doesn't exist" do
-    repo.stub(:exists?) { false }
-    expect { repo.repo_shell('true') }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/a'}.")
+
+  describe "#repo_shell" do
+    it "should raise an error when the repo doesn't exist" do
+      repo.stub(:exists?) { false }
+      expect { repo.repo_shell('true') }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/a'}.")
+    end
+    it "should run the given command inside the repo" do
+      repo.stub(:exists?) { true }
+      repo.should_receive(:shell).with('true', :cd => (tmp_prefix / 'repos/a'), :an => 'option')
+      repo.repo_shell('true', :an => 'option')
+    end
   end
-  it "should run the given command inside the repo" do
-    repo.stub(:exists?) { true }
-    repo.should_receive(:shell).with('true', :cd => (tmp_prefix / 'repos/a'), :an => 'option')
-    repo.repo_shell('true', :an => 'option')
+
+  describe "#repo_shell?" do
+    it "should raise an error when the repo doesn't exist" do
+      repo.stub(:exists?) { false }
+      expect { repo.repo_shell?('true') }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/a'}.")
+    end
+    it "should run the given command inside the repo" do
+      repo.stub(:exists?) { true }
+      repo.should_receive(:shell?).with('true', :cd => (tmp_prefix / 'repos/a'), :an => 'option')
+      repo.repo_shell?('true', :an => 'option')
+    end
   end
 end
 

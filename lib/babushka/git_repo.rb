@@ -80,12 +80,18 @@ module Babushka
       end
     end
 
+    # Run +cmd+ on the shell using +shell?+.
+    #
+    # The semantics of this command are identical to those of +repo_shell+,
+    # except that +shell?+ is used to invoke the command instead of +shell+.
+    #
+    # (See the ShellHelpers docs for details on those two methods).
     def repo_shell? *cmd
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
         opts = cmd.extract_options!
-        shell? *cmd.push(opts.merge(:cd => root))
+        shell?(*cmd.push(opts.merge(:cd => root)))
       end
     end
 
