@@ -43,8 +43,13 @@ module Babushka
       end
     end
 
-    def initialize path
+    def initialize path, opts = {}
       @path = path.p
+      @run_as_owner = !!opts[:run_as_owner]
+    end
+
+    def run_as_owner?
+      @run_as_owner
     end
 
     # This repo's top-level directory.

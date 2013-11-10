@@ -53,6 +53,11 @@ describe Babushka::GitRepo, 'creation' do
     Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).root.should be_an_instance_of(Fancypath)
     Babushka::GitRepo.new(tmp_prefix / 'repos/a').root.should be_an_instance_of(Fancypath)
   end
+  describe "options" do
+    it "should accept :run_as_owner" do
+      Babushka::GitRepo.new(tmp_prefix / 'repos/a', :run_as_owner => true).run_as_owner?.should be_true
+    end
+  end
 end
 
 describe Babushka::GitRepo, 'without a dir' do
