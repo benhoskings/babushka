@@ -135,13 +135,16 @@ module Babushka
       opts = cmd.extract_options!
       env = cmd.first.is_a?(Hash) ? cmd.shift : {}
 
-      if cmd.map(&:class) != [String]
-        raise ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings."
-      end
-
       raw_as = opts[:as] || opts[:sudo] || 'root'
       as = raw_as == true ? 'root' : raw_as
-      cmd = cmd.last
+
+      cmd = if cmd.map(&:class) == [Array]
+        cmd.first.join(' ')
+      elsif cmd.length > 1
+        cmd.join(' ')
+      else
+        cmd.first
+      end
 
       sudo_cmd = if current_username == as
         cmd # Don't sudo if we're already running as the specified user.

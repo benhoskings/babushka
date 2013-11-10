@@ -151,8 +151,17 @@ describe 'argument behaviour' do
 end
 
 describe "sudo" do
-  it "should reject array input" do
-    L{ Babushka::ShellHelpers.sudo(%w[whoami]) }.should raise_error(ArgumentError, "#sudo commands have to be passed as a single string, not splatted strings or an array, since the `sudo` is composed from strings.")
+  it "should accept string input" do
+    Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
+    Babushka::ShellHelpers.sudo('whoami')
+  end
+  it "should accept splatted input" do
+    Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root echo test', {}).once
+    Babushka::ShellHelpers.sudo('echo', 'test')
+  end
+  it "should accept array input" do
+    Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
+    Babushka::ShellHelpers.sudo(['whoami'])
   end
   it "should run as root when no user is given" do
     Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
