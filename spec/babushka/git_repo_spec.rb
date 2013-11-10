@@ -143,6 +143,24 @@ describe 'shelling' do
       repo.repo_shell?('true', :an => 'option')
     end
   end
+
+  describe "#repo_shell_as_owner" do
+    context "when run_as_owner is set" do
+      it "should run the given command as the repo owner" do
+        repo.stub(:run_as_owner?) { true }
+        repo.root.stub(:owner) { 'bob' }
+        repo.should_receive(:repo_shell).with('true', :as => 'bob')
+        repo.repo_shell_as_owner('true')
+      end
+    end
+    context "when run_as_owner is not set" do
+      it "should run the given command as the current user" do
+        repo.root.stub(:owner) { 'bob' }
+        repo.should_receive(:repo_shell).with('true', {})
+        repo.repo_shell_as_owner('true')
+      end
+    end
+  end
 end
 
 describe Babushka::GitRepo, '#clean? / #dirty?' do

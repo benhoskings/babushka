@@ -100,6 +100,17 @@ module Babushka
       end
     end
 
+    # Run +cmd+ via +repo_shell+, sudoing as the owner of the repository if the
+    # +run_as_owner?+ flag is set.
+    #
+    # This command is useful for cleanly working with a root-owned repo without
+    # having to run babushka as root.
+    def repo_shell_as_owner *cmd, &block
+      opts = cmd.extract_options!
+      opts[:as] = root.owner if run_as_owner?
+
+      repo_shell(*cmd.push(opts), &block)
+    end
 
     # True if the repo is clean, i.e. when the content in its index and working
     # copy match the commit that HEAD refers to.
