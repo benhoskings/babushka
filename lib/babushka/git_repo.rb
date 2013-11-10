@@ -76,7 +76,7 @@ module Babushka
         raise GitRepoError, "There is no repo at #{@path}."
       else
         opts = cmd.extract_options!
-        shell *cmd.push(opts.merge(:cd => root)), &block
+        shell(*cmd.push(opts.merge(:cd => root)), &block)
       end
     end
 
