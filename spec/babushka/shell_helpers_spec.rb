@@ -163,6 +163,20 @@ describe "sudo" do
     Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
     Babushka::ShellHelpers.sudo(['whoami'])
   end
+  describe 'command joining' do
+    it "should escape & join splatted args" do
+      Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root echo test with\ a\ \"quote', {}).once
+      Babushka::ShellHelpers.sudo('echo', 'test', 'with a "quote')
+    end
+    it "should escape & join array args" do
+      Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root echo test with\ a\ \"quote', {}).once
+      Babushka::ShellHelpers.sudo(['echo', 'test', 'with a "quote'])
+    end
+    it "should not escape string args" do
+      Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root echo test with a \"quote', {}).once
+      Babushka::ShellHelpers.sudo('echo test with a \"quote')
+    end
+  end
   it "should run as root when no user is given" do
     Babushka::ShellHelpers.should_receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
     Babushka::ShellHelpers.sudo('whoami')

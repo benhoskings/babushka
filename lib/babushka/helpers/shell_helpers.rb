@@ -1,3 +1,5 @@
+require 'shellwords'
+
 module Babushka
   module ShellHelpers
     include LogHelpers
@@ -139,9 +141,9 @@ module Babushka
       as = raw_as == true ? 'root' : raw_as
 
       cmd = if cmd.map(&:class) == [Array]
-        cmd.first.join(' ')
+        Shellwords.join(cmd.first)
       elsif cmd.length > 1
-        cmd.join(' ')
+        Shellwords.join(cmd)
       else
         cmd.first
       end
