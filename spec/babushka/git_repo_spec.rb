@@ -550,6 +550,10 @@ end
 describe Babushka::GitRepo, '#commit!' do
   before(:all) { stub_repo 'a' }
   let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    repo.should_receive(:repo_shell_as_owner)
+    repo.commit!('from specs')
+  end
   it "should shell out to git" do
     repo.should_receive(:shell).with('git', 'commit', '-m', 'from specs', :cd => repo.root)
     repo.commit!('from specs')
@@ -564,6 +568,10 @@ end
 describe Babushka::GitRepo, '#branch!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.branch!('next')
+  end
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
   end
@@ -608,6 +616,10 @@ end
 describe Babushka::GitRepo, '#track!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.track!('origin/next')
+  end
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
   end
@@ -630,6 +642,10 @@ describe Babushka::GitRepo, '#checkout!' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.checkout!('master')
+  end
   describe "checking out a branch" do
     it "should already have a next branch" do
       subject.branches.should =~ %w[master next]
@@ -660,6 +676,10 @@ describe Babushka::GitRepo, '#detach!' do
     stub_repo 'a'
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.detach!
+  end
   it "should detach to HEAD when no ref is supplied" do
     subject.detach!
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
@@ -685,6 +705,10 @@ describe Babushka::GitRepo, '#reset_hard!' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.reset_hard!
+  end
   it "should make a dirty repo clean" do
     subject.should be_dirty
     subject.reset_hard!

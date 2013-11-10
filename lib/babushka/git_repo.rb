@@ -283,38 +283,38 @@ module Babushka
     end
 
     def commit! message
-      repo_shell("git", "commit", "-m", message)
+      repo_shell_as_owner("git", "commit", "-m", message)
     end
 
     # Create a new local branch called +branch+ with +ref+ (defaulting to
     # HEAD) as its tip.
     def branch! branch, ref = 'HEAD'
-      repo_shell("git branch '#{branch}' '#{ref}'")
+      repo_shell_as_owner("git branch '#{branch}' '#{ref}'")
     end
 
     # Create a new local tracking branch for +branch+, which should be specified
     # as remote/branch. For example, if "origin/next" is passed, a local 'next'
     # branch will be created to track origin's 'next' branch.
     def track! branch
-      repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(%r{^.*/}, '')}'")
+      repo_shell_as_owner("git checkout -t '#{branch}' -b '#{branch.sub(%r{^.*/}, '')}'")
     end
 
     # Check out the supplied ref, detaching the HEAD if the named ref
     # isn't a branch.
     def checkout! ref
-      repo_shell("git checkout '#{ref}'")
+      repo_shell_as_owner("git checkout '#{ref}'")
     end
 
     # Check out the supplied ref, detaching the HEAD. If the ref is a branch
     # or tag, HEAD will reference the commit at the tip of the ref.
     def detach! ref = 'HEAD'
-      repo_shell("git checkout '#{resolve(ref)}'")
+      repo_shell_as_owner("git checkout '#{resolve(ref)}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
     def reset_hard! ref = 'HEAD'
-      repo_shell("git reset --hard '#{ref}'")
+      repo_shell_as_owner("git reset --hard '#{ref}'")
     end
 
     def inspect
