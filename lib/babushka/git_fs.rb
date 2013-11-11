@@ -12,7 +12,7 @@ class Babushka::GitFS
   end
 
   def self.commit message
-    repo.repo_shell('git add -A .')
+    repo.repo_shell_as_owner('git add -A .')
     repo.commit!(message)
   end
 

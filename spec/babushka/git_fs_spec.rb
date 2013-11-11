@@ -66,7 +66,7 @@ describe Babushka::GitFS do
 
   describe '#commit' do
     it "should commit with the given message" do
-      git_fs.repo.should_receive(:repo_shell).with('git add -A .')
+      git_fs.repo.should_receive(:repo_shell_as_owner).with('git add -A .')
       git_fs.repo.should_receive(:commit!).with('dep name')
       git_fs.commit('dep name')
     end
