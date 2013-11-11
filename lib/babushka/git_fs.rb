@@ -1,4 +1,3 @@
-
 class Babushka::GitFS
 
   GITIGNORE_FILE = (Babushka::Path.path / 'conf/git_fs_gitignore')
