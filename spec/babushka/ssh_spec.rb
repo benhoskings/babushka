@@ -23,9 +23,13 @@ describe Babushka::SSH do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "fail", "--defaults", "--git-fs", "--show-args", :log => true).and_return(false)
       expect { ssh.babushka('fail') }.to raise_error(Babushka::UnmeetableDep)
     end
-    it "should include the args in the commandline" do
+    it "should include dep args in the commandline" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "version=1.8.3.2", :log => true).and_return(true)
       ssh.babushka('git', :version => '1.8.3.2')
+    end
+    it "should sort the dep args" do
+      Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "a=a", "b=b", "c=c", "d=d", :log => true).and_return(true)
+      ssh.babushka('git', :b => 'b', :d => 'd', :c => 'c', :a => 'a')
     end
     it "should escape the dep name" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git\\ aliases", "--defaults", "--git-fs", "--show-args", "version=1.8.3.2", :log => true).and_return(true)
@@ -36,7 +40,7 @@ describe Babushka::SSH do
       ssh.babushka('git', :version => "this needs\nescaping")
     end
     it "should escape quotes" do
-      Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "quotes", "--defaults", "--git-fs", "--show-args", "single=single\\'quote", "double=\\\"doublequote", :log => true).and_return(true)
+      Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "quotes", "--defaults", "--git-fs", "--show-args", "double=\\\"doublequote", "single=single\\'quote", :log => true).and_return(true)
       ssh.babushka('quotes', :single => "single'quote", :double => '"doublequote')
     end
     it "should escape everything as required" do

@@ -26,7 +26,7 @@ module Babushka
         ('--debug'  if Babushka::Base.task.opt(:debug))
       ].compact
 
-      dep_args = args.keys.map {|k| "#{k}=#{Shellwords.escape(args[k])}" }
+      dep_args = args.keys.map {|k| "#{k}=#{Shellwords.escape(args[k])}" }.sort
 
       remote_args.concat(dep_args)
 
