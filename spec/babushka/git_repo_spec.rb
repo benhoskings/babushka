@@ -53,6 +53,11 @@ describe Babushka::GitRepo, 'creation' do
     Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).root.should be_an_instance_of(Fancypath)
     Babushka::GitRepo.new(tmp_prefix / 'repos/a').root.should be_an_instance_of(Fancypath)
   end
+  describe "options" do
+    it "should accept :run_as_owner" do
+      Babushka::GitRepo.new(tmp_prefix / 'repos/a', :run_as_owner => true).run_as_owner?.should be_true
+    end
+  end
 end
 
 describe Babushka::GitRepo, 'without a dir' do
@@ -108,6 +113,53 @@ describe Babushka::GitRepo, "with a repo" do
   end
   it "should exist with Fancypath path" do
     Babushka::GitRepo.new(tmp_prefix / 'repos/a').exists?.should be_true
+  end
+end
+
+describe 'shelling' do
+  before(:all) { stub_repo 'a' }
+  let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+
+  describe "#repo_shell" do
+    it "should raise an error when the repo doesn't exist" do
+      repo.stub(:exists?) { false }
+      expect { repo.repo_shell('true') }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/a'}.")
+    end
+    it "should run the given command inside the repo" do
+      repo.stub(:exists?) { true }
+      repo.should_receive(:shell).with('true', :cd => (tmp_prefix / 'repos/a'), :an => 'option')
+      repo.repo_shell('true', :an => 'option')
+    end
+  end
+
+  describe "#repo_shell?" do
+    it "should raise an error when the repo doesn't exist" do
+      repo.stub(:exists?) { false }
+      expect { repo.repo_shell?('true') }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/a'}.")
+    end
+    it "should run the given command inside the repo" do
+      repo.stub(:exists?) { true }
+      repo.should_receive(:shell?).with('true', :cd => (tmp_prefix / 'repos/a'), :an => 'option')
+      repo.repo_shell?('true', :an => 'option')
+    end
+  end
+
+  describe "#repo_shell_as_owner" do
+    context "when run_as_owner is set" do
+      it "should run the given command as the repo owner" do
+        repo.stub(:run_as_owner?) { true }
+        repo.root.stub(:owner) { 'bob' }
+        repo.should_receive(:repo_shell).with('true', :as => 'bob')
+        repo.repo_shell_as_owner('true')
+      end
+    end
+    context "when run_as_owner is not set" do
+      it "should run the given command as the current user" do
+        repo.root.stub(:owner) { 'bob' }
+        repo.should_receive(:repo_shell).with('true', {})
+        repo.repo_shell_as_owner('true')
+      end
+    end
   end
 end
 
@@ -498,6 +550,10 @@ end
 describe Babushka::GitRepo, '#commit!' do
   before(:all) { stub_repo 'a' }
   let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    repo.should_receive(:repo_shell_as_owner)
+    repo.commit!('from specs')
+  end
   it "should shell out to git" do
     repo.should_receive(:shell).with('git', 'commit', '-m', 'from specs', :cd => repo.root)
     repo.commit!('from specs')
@@ -512,6 +568,10 @@ end
 describe Babushka::GitRepo, '#branch!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.branch!('next')
+  end
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
   end
@@ -556,6 +616,10 @@ end
 describe Babushka::GitRepo, '#track!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.track!('origin/next')
+  end
   it "should not already have a next branch" do
     subject.branches.should_not include('next')
   end
@@ -578,6 +642,10 @@ describe Babushka::GitRepo, '#checkout!' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.checkout!('master')
+  end
   describe "checking out a branch" do
     it "should already have a next branch" do
       subject.branches.should =~ %w[master next]
@@ -608,6 +676,10 @@ describe Babushka::GitRepo, '#detach!' do
     stub_repo 'a'
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.detach!
+  end
   it "should detach to HEAD when no ref is supplied" do
     subject.detach!
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
@@ -633,6 +705,10 @@ describe Babushka::GitRepo, '#reset_hard!' do
     }
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
+  it "should run using repo_shell_as_owner" do
+    subject.should_receive(:repo_shell_as_owner)
+    subject.reset_hard!
+  end
   it "should make a dirty repo clean" do
     subject.should be_dirty
     subject.reset_hard!
