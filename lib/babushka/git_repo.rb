@@ -43,8 +43,13 @@ module Babushka
       end
     end
 
-    def initialize path
+    def initialize path, opts = {}
       @path = path.p
+      @run_as_owner = !!opts[:run_as_owner]
+    end
+
+    def run_as_owner?
+      @run_as_owner
     end
 
     # This repo's top-level directory.
@@ -76,19 +81,36 @@ module Babushka
         raise GitRepoError, "There is no repo at #{@path}."
       else
         opts = cmd.extract_options!
-        shell *cmd.push(opts.merge(:cd => root)), &block
+        shell(*cmd.push(opts.merge(:cd => root)), &block)
       end
     end
 
+    # Run +cmd+ on the shell using +shell?+.
+    #
+    # The semantics of this command are identical to those of +repo_shell+,
+    # except that +shell?+ is used to invoke the command instead of +shell+.
+    #
+    # (See the ShellHelpers docs for details on those two methods).
     def repo_shell? *cmd
       if !exists?
         raise GitRepoError, "There is no repo at #{@path}."
       else
         opts = cmd.extract_options!
-        shell? *cmd.push(opts.merge(:cd => root))
+        shell?(*cmd.push(opts.merge(:cd => root)))
       end
     end
 
+    # Run +cmd+ via +repo_shell+, sudoing as the owner of the repository if the
+    # +run_as_owner?+ flag is set.
+    #
+    # This command is useful for cleanly working with a root-owned repo without
+    # having to run babushka as root.
+    def repo_shell_as_owner *cmd, &block
+      opts = cmd.extract_options!
+      opts[:as] = root.owner if run_as_owner?
+
+      repo_shell(*cmd.push(opts), &block)
+    end
 
     # True if the repo is clean, i.e. when the content in its index and working
     # copy match the commit that HEAD refers to.
@@ -261,38 +283,38 @@ module Babushka
     end
 
     def commit! message
-      repo_shell("git", "commit", "-m", message)
+      repo_shell_as_owner("git", "commit", "-m", message)
     end
 
     # Create a new local branch called +branch+ with +ref+ (defaulting to
     # HEAD) as its tip.
     def branch! branch, ref = 'HEAD'
-      repo_shell("git branch '#{branch}' '#{ref}'")
+      repo_shell_as_owner("git branch '#{branch}' '#{ref}'")
     end
 
     # Create a new local tracking branch for +branch+, which should be specified
     # as remote/branch. For example, if "origin/next" is passed, a local 'next'
     # branch will be created to track origin's 'next' branch.
     def track! branch
-      repo_shell("git checkout -t '#{branch}' -b '#{branch.sub(%r{^.*/}, '')}'")
+      repo_shell_as_owner("git checkout -t '#{branch}' -b '#{branch.sub(%r{^.*/}, '')}'")
     end
 
     # Check out the supplied ref, detaching the HEAD if the named ref
     # isn't a branch.
     def checkout! ref
-      repo_shell("git checkout '#{ref}'")
+      repo_shell_as_owner("git checkout '#{ref}'")
     end
 
     # Check out the supplied ref, detaching the HEAD. If the ref is a branch
     # or tag, HEAD will reference the commit at the tip of the ref.
     def detach! ref = 'HEAD'
-      repo_shell("git checkout '#{resolve(ref)}'")
+      repo_shell_as_owner("git checkout '#{resolve(ref)}'")
     end
 
     # Reset the repo to the given ref, discarding changes in the index and
     # working copy.
     def reset_hard! ref = 'HEAD'
-      repo_shell("git reset --hard '#{ref}'")
+      repo_shell_as_owner("git reset --hard '#{ref}'")
     end
 
     def inspect

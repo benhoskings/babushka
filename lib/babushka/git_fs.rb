@@ -1,4 +1,3 @@
-
 class Babushka::GitFS
 
   GITIGNORE_FILE = (Babushka::Path.path / 'conf/git_fs_gitignore')
@@ -25,6 +24,9 @@ class Babushka::GitFS
   end
 
   def self.repo
-    @repo ||= Babushka::GitRepo.new('/')
+    # Using :run_as_owner means babushka will sudo to commit to the gitfs when
+    # meeting deps as a regular user. For this to work well, the app user
+    # should have passwordless sudo during provisioning, revoked on completion.
+    @repo ||= Babushka::GitRepo.new('/', :run_as_owner => true)
   end
 end
