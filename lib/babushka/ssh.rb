@@ -10,7 +10,10 @@ module Babushka
     end
 
     def shell *cmd
-      ShellHelpers.shell "ssh", "-A", host, *cmd, :log => true
+      # We would do this, but ruby 1.8 can't handle options after a splat:
+      #   ShellHelpers.shell("ssh", "-A", host, *cmd, :log => true)
+      args = ["ssh", "-A", host].concat(cmd).push(:log => true)
+      ShellHelpers.shell(*args)
     end
 
     def babushka dep_spec, args = {}
