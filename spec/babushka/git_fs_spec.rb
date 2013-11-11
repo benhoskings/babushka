@@ -3,6 +3,12 @@ require 'spec_helper'
 describe Babushka::GitFS do
   let(:git_fs) { Babushka::GitFS }
 
+  describe 'repo' do
+    it "should run destrucive commands as the repo owner" do
+      git_fs.repo.run_as_owner?.should be_true
+    end
+  end
+
   describe '#snapshotting_with' do
     let(:blk) { lambda {} }
     context "when snapshotting is enabled" do
