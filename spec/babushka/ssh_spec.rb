@@ -35,6 +35,10 @@ describe Babushka::SSH do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", :log => true).and_return(true)
       ssh.babushka('git')
     end
+    it "should log the command via log_shell" do
+      ssh.should_receive(:log_shell).with("babushka", "git", "--defaults", "--git-fs", "--show-args").and_return(true)
+      ssh.babushka('git')
+    end
     it "should raise when the remote babushka fails" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "fail", "--defaults", "--git-fs", "--show-args", :log => true).and_return(false)
       expect { ssh.babushka('fail') }.to raise_error(Babushka::UnmeetableDep)

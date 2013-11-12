@@ -41,7 +41,7 @@ module Babushka
 
       remote_args.concat(dep_args)
 
-      shell('babushka', Shellwords.escape(dep_spec), *remote_args).tap {|result|
+      log_shell('babushka', Shellwords.escape(dep_spec), *remote_args).tap {|result|
         raise Babushka::UnmeetableDep, "The remote babushka reported an error." unless result
       }
     end
