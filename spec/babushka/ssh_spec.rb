@@ -5,6 +5,10 @@ describe Babushka::SSH do
     Babushka::SSH.new('user@host')
   }
 
+  before {
+    $stdin.stub(:tty?) { false }
+  }
+
   describe '#shell' do
     it "should run remote commands" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "ls", :log => true)
@@ -28,9 +32,6 @@ describe Babushka::SSH do
   end
 
   describe '#babushka' do
-    before {
-      $stdin.stub(:tty?).and_return(false)
-    }
     it "should run babushka remotely" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", :log => true).and_return(true)
       ssh.babushka('git')
