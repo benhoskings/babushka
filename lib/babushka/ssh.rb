@@ -16,6 +16,17 @@ module Babushka
       ShellHelpers.shell(*args)
     end
 
+    def log_shell *cmd
+      cmd_message = [
+        host.colorize("on grey"),
+        cmd.map {|i| i.sub(/^(.{40})(.).+/m, '\1…') }.join(' ') # Truncate long args
+      ].join(' $ ')
+
+      LogHelpers.log cmd_message, :closing_status => cmd_message do
+        shell(*cmd)
+      end
+    end
+
     def babushka dep_spec, args = {}
       remote_args = [
         '--defaults',

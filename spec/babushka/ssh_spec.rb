@@ -4,10 +4,26 @@ describe Babushka::SSH do
   let(:ssh) {
     Babushka::SSH.new('user@host')
   }
+
   describe '#shell' do
     it "should run remote commands" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "ls", :log => true)
       ssh.shell('ls')
+    end
+  end
+
+  describe '#log_shell' do
+    it "should log about the command being run, and run it" do
+      # This is messy; refactoring Loghelpers.log will fix it.
+      Babushka::LogHelpers.stub(:log)
+      Babushka::LogHelpers.should_receive(:log).with('user@host $ ls', :closing_status => 'user@host $ ls').and_call_original
+      ssh.should_receive(:shell).with('ls') { true }
+      ssh.log_shell('ls')
+    end
+    it "should truncate long args" do
+      cmd_message = "user@host $ ls lorem_ipsum_dolor_sit_amet_consectetur_a…"
+      Babushka::LogHelpers.should_receive(:log).with(cmd_message, :closing_status => cmd_message)
+      ssh.log_shell('ls', 'lorem_ipsum_dolor_sit_amet_consectetur_adipisicing_elit_sed_do_eiusmod')
     end
   end
 
