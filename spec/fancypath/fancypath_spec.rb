@@ -1,3 +1,4 @@
+require 'spec_helper'
 require 'fancypath_support'
 
 describe Fancypath do
