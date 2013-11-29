@@ -192,6 +192,16 @@ describe Fancypath do
     it('writes contents to file') { @file.write('test').read.should == 'test' }
   end
 
+  describe '#puts' do
+    it('returns self') { @file.write('').should == @file }
+    it('appends the line to the file') {
+      @file.puts('test1').puts('test2').read.should == "test1\ntest2\n"
+    }
+    it('does not add a trailing newline when one is already present') {
+      @file.puts("test1\n").read.should == "test1\n"
+    }
+  end
+
   describe '#copy' do
     before { @file.touch }
     it('returns a Fancypath') { @file.copy(tmp_dir/'foo').should be_instance_of(Fancypath) }
