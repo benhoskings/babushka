@@ -18,8 +18,17 @@ class Babushka::GitFS
 
   def self.init
     unless repo.exists?
+      set_name_and_email
       repo.init!(File.read(GITIGNORE_FILE))
       commit("Add the base system.")
+    end
+  end
+
+  def self.set_name_and_email
+    if !Babushka::ShellHelpers.shell?("git config --global user.name") ||
+       !Babushka::ShellHelpers.shell?("git config --global user.email")
+      Babushka::ShellHelpers.shell("git config --global user.name babushka", :as => repo.owner)
+      Babushka::ShellHelpers.shell("git config --global user.email hello@babushka.me", :as => repo.owner)
     end
   end
 
