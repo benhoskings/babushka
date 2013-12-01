@@ -62,6 +62,12 @@ describe Babushka::SSH do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "version=this\\ needs'\n'escaping", :log => true).and_return(true)
       ssh.babushka('git', :version => "this needs\nescaping")
     end
+    it "should convert the args to strings for ruby < 2.0" do
+      Shellwords.should_receive(:escape).with("git").and_call_original
+      Shellwords.should_receive(:escape).with("1.23").and_call_original
+      Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "version=1.23", :log => true).and_return(true)
+      ssh.babushka('git', :version => 1.23)
+    end
     it "should escape quotes" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "quotes", "--defaults", "--git-fs", "--show-args", "double=\\\"doublequote", "single=single\\'quote", :log => true).and_return(true)
       ssh.babushka('quotes', :single => "single'quote", :double => '"doublequote')
