@@ -57,10 +57,6 @@ module Babushka
       @root ||= self.class.repo_for(path)
     end
 
-    def owner
-      root.owner
-    end
-
     # This repo's +.git+ directory, where git stores its objects and other repo data.
     def git_dir
       root / '.git'
@@ -111,7 +107,7 @@ module Babushka
     # having to run babushka as root.
     def repo_shell_as_owner *cmd, &block
       opts = cmd.extract_options!
-      opts[:as] = owner if run_as_owner?
+      opts[:as] = root.owner if run_as_owner?
 
       repo_shell(*cmd.push(opts), &block)
     end
