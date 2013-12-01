@@ -44,7 +44,7 @@ module Babushka
     def check_for_formulas pkgs
       pkgs.all? {|pkg|
         has_formula_for?(pkg).tap {|result|
-          log_error "There is no formula for '#{pkg}' in #{formulas_path} nor #{taps_path}." unless result
+          log_error "There is no formula for '#{pkg}' in #{formulas_path} or #{taps_path}." unless result
         }
       }
     end
