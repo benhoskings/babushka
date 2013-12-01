@@ -517,6 +517,7 @@ describe "fs snapshotting" do
   before {
     Babushka::Base.task.stub(:opt).and_return(false)
     Babushka::Base.task.stub(:opt).with(:git_fs).and_return(true)
+    Babushka::GitFS.repo.stub(:exists?) { true }
   }
   context "when the dep is already met" do
     let(:the_dep) {
@@ -546,7 +547,6 @@ describe "fs snapshotting" do
       }
     }
     it "should snapshot after meeting the dep" do
-      Babushka::GitFS.should_receive(:init)
       the_dep.should_receive(:run_meet_stage).and_call_original
       Babushka::GitFS.should_receive(:commit).with("babushka 'snapshotting - unmet'\n\n")
       the_dep.meet
