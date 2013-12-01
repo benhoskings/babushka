@@ -47,7 +47,8 @@ describe Babushka::GitFS do
 
   describe '#init' do
     context "when the repo doesn't exist" do
-      it "should init, and commit the current system" do
+      it "should configure name, init, and commit the current system" do
+        git_fs.should_receive(:set_name_and_email)
         git_fs.repo.stub(:exists?) { false }
         git_fs.repo.should_receive(:init!)
         git_fs.should_receive(:commit).with("Add the base system.")
@@ -56,6 +57,7 @@ describe Babushka::GitFS do
     end
     context "when the repo already exists" do
       it "should do nothing" do
+        git_fs.should_not_receive(:set_name_and_email)
         git_fs.repo.stub(:exists?) { true }
         git_fs.repo.should_not_receive(:init)
         git_fs.should_not_receive(:commit)
@@ -69,6 +71,43 @@ describe Babushka::GitFS do
       git_fs.repo.should_receive(:repo_shell_as_owner).with('git add -A .')
       git_fs.repo.should_receive(:commit!).with('dep name')
       git_fs.commit('dep name')
+    end
+  end
+
+  describe '#set_name_and_email' do
+    context "when neither the name nor the email are set" do
+      before {
+        Babushka::ShellHelpers.stub(:shell?).with("git config --global user.name") { false }
+        git_fs.repo.stub(:owner) { 'root' }
+      }
+      it "should set the name and email" do
+        Babushka::ShellHelpers.should_receive(:shell).with("git config --global user.name babushka", :as => 'root')
+        Babushka::ShellHelpers.should_receive(:shell).with("git config --global user.email hello@babushka.me", :as => 'root')
+        git_fs.set_name_and_email
+      end
+    end
+    context "when at least one of name and email is not set" do
+      before {
+        Babushka::ShellHelpers.stub(:shell?).with("git config --global user.name") { true }
+        Babushka::ShellHelpers.stub(:shell?).with("git config --global user.email") { false }
+        git_fs.repo.stub(:owner) { 'root' }
+      }
+      it "should set the name and email" do
+        Babushka::ShellHelpers.should_receive(:shell).with("git config --global user.name babushka", :as => 'root')
+        Babushka::ShellHelpers.should_receive(:shell).with("git config --global user.email hello@babushka.me", :as => 'root')
+        git_fs.set_name_and_email
+      end
+    end
+    context "when name and email are both set" do
+      before {
+        Babushka::ShellHelpers.stub(:shell?).with("git config --global user.name") { true }
+        Babushka::ShellHelpers.stub(:shell?).with("git config --global user.email") { true }
+        git_fs.repo.stub(:owner) { 'root' }
+      }
+      it "should set the name and email" do
+        Babushka::ShellHelpers.should_not_receive(:shell)
+        git_fs.set_name_and_email
+      end
     end
   end
 
