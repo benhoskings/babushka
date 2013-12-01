@@ -27,8 +27,8 @@ class Babushka::GitFS
   def self.set_name_and_email
     if !Babushka::ShellHelpers.shell?("git config --global user.name") ||
        !Babushka::ShellHelpers.shell?("git config --global user.email")
-      Babushka::ShellHelpers.shell("git config --global user.name babushka", :as => repo.owner)
-      Babushka::ShellHelpers.shell("git config --global user.email hello@babushka.me", :as => repo.owner)
+      Babushka::ShellHelpers.shell("git config --global user.name babushka", :as => root.owner)
+      Babushka::ShellHelpers.shell("git config --global user.email hello@babushka.me", :as => root.owner)
     end
   end
 
@@ -36,6 +36,10 @@ class Babushka::GitFS
     # Using :run_as_owner means babushka will sudo to commit to the gitfs when
     # meeting deps as a regular user. For this to work well, the app user
     # should have passwordless sudo during provisioning, revoked on completion.
-    @repo ||= Babushka::GitRepo.new('/', :run_as_owner => true)
+    @repo ||= Babushka::GitRepo.new(root, :run_as_owner => true)
+  end
+
+  def self.root
+    '/'.p
   end
 end
