@@ -62,4 +62,24 @@ From: https://github.com/mxcl/homebrew/commits/master/Library/Formula/readline.r
       ]
     end
   end
+
+  describe '#has_formula_for?' do
+    before {
+      brew_helper.stub(:prefix).and_return('/usr/local')
+      Dir.stub(:[]).with('/usr/local/Library/Formula/*.rb', '/usr/local/Library/Taps/**/*.rb').and_return([
+        '/usr/local/Library/Formula/zsh.rb',
+        '/usr/local/Library/Taps/homebrew-dupes/apple-gcc42.rb',
+        '/usr/local/Library/Taps/original-dev/Formula/redis.rb',
+      ])
+    }
+    it "should find both core and tapped packages" do
+      zsh = double('pkg', :name => 'zsh')
+      gcc42 = double('pkg', :name => 'homebrew/dupes/apple-gcc42')
+      redis = double('pkg', :name => 'original/dev/redis')
+
+      brew_helper.send(:has_formula_for?, zsh).should be_true
+      brew_helper.send(:has_formula_for?, gcc42).should be_true
+      brew_helper.send(:has_formula_for?, redis).should be_true
+    end
+  end
 end

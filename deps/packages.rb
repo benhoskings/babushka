@@ -13,7 +13,9 @@ end
 dep 'nodejs.bin' do
   installs {
     via :apt, 'nodejs', 'nodejs-dev'
-    otherwise 'node'
+    via :brew, 'node'
+    via :freebsd, 'node'
+    otherwise 'nodejs'
   }
   provides 'node >= 0.6.12'
   after {

@@ -216,6 +216,11 @@ class Fancypath < Pathname
     self
   end
 
+  def puts str
+    append(str[/\n$/].nil? ? "#{str}\n" : str)
+    self
+  end
+
 end
 
 class Pathname

@@ -44,17 +44,20 @@ module Babushka
     def check_for_formulas pkgs
       pkgs.all? {|pkg|
         has_formula_for?(pkg).tap {|result|
-          log_error "There is no formula for '#{pkg}' in #{formulas_path}." unless result
+          log_error "There is no formula for '#{pkg}' in #{formulas_path} or #{taps_path}." unless result
         }
       }
     end
 
     def has_formula_for? pkg
-      existing_formulas.include? pkg.name
+      # Tapped formulas need to be mapped to a path
+      # e.g. homebrew/dupes/redis.rb => 'homebrew-dupes/**/redis.rb'
+      formula = pkg.name.sub('/', '-').sub('/', '/(.*/)?') + '.rb\Z'
+      existing_formulas.any? {|path| path.match /#{formula}/ }
     end
 
     def existing_formulas
-      Dir[formulas_path / '*.rb'].map {|i| File.basename i, '.rb' }
+      Dir[formulas_path / '*.rb', taps_path / '**/*.rb']
     end
 
     def active_version_of pkg
@@ -90,6 +93,10 @@ module Babushka
 
     def formulas_path
       prefix / 'Library/Formula'
+    end
+
+    def taps_path
+      prefix / 'Library/Taps'
     end
 
     def homebrew_lib_path
