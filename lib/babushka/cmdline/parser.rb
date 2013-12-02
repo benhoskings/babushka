@@ -42,7 +42,7 @@ module Babushka
 
       def default_opts
         {
-          :"[no_]color" => $stdout.tty?
+          :"[no_]color" => STDOUT.tty?
         }
       end
 

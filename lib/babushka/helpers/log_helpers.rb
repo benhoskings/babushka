@@ -125,7 +125,7 @@ module Babushka
         message = message.colorize 'bold' if opts[:as] == :stderr
         message = message.end_with "\n" unless opts[:newline] == false
         Logging.print_log(message, printable, opts[:as])
-        $stdout.flush
+        STDOUT.flush
         nil
       end
     end
@@ -201,9 +201,9 @@ module Babushka
       if !printable
         # Only written to the log file.
       elsif [:error, :stderr].include?(as)
-        $stderr.print message
+        STDERR.print message
       elsif !Base.task.opt(:silent)
-        $stdout.print message
+        STDOUT.print message
       end
       write_to_persistent_log message
     end

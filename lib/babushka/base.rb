@@ -62,7 +62,7 @@ module Babushka
     end
 
     def exit_on_interrupt!
-      if $stdin.tty?
+      if STDIN.tty?
         stty_save = `stty -g`.chomp
         trap("INT") {
           system "stty", stty_save

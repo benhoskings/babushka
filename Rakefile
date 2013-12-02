@@ -4,7 +4,7 @@ require 'rspec/core/rake_task'
 desc 'Run the spec suite'
 RSpec::Core::RakeTask.new('spec') {|t|
   opts = ['--color']
-  opts << '--format Fuubar' if $stdin.tty?
+  opts << '--format Fuubar' if STDIN.tty?
   t.rspec_opts = opts
 }
 
