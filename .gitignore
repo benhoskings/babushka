@@ -10,6 +10,7 @@ vendor/bundle/
 
 bin/autospec
 bin/htmldiff
+bin/irb
 bin/ldiff
 bin/rake
 bin/rspec
