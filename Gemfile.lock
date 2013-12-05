@@ -42,6 +42,6 @@ DEPENDENCIES
   ir_b
   rake
   rspec
-  rubysl-abbrev (~> 2.0)
-  rubysl-irb (~> 2.0)
-  rubysl-singleton (~> 2.0)
+  rubysl-abbrev
+  rubysl-irb
+  rubysl-singleton

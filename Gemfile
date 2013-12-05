@@ -9,7 +9,7 @@ group :test do
 end
 
 platform :rbx do
-  gem 'rubysl-singleton', '~> 2.0'
-  gem 'rubysl-abbrev',    '~> 2.0'
-  gem 'rubysl-irb',       '~> 2.0'
+  gem 'rubysl-singleton'
+  gem 'rubysl-abbrev'
+  gem 'rubysl-irb'
 end
