@@ -81,6 +81,10 @@ describe "accepts_*_for" do
       subject.produces.should == ["a default response"]
       subject.valid_formats.should == %w[html xml js json]
     end
+    it "should return the correct boolean default when no value is stored" do
+      subject.do_cleanup.should == [false]
+      subject.do_backup.should == [true]
+    end
     it "should accept splatted args" do
       subject.records "an item", "another item"
       subject.records.should == ["an item", "another item"]

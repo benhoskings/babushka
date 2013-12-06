@@ -28,6 +28,8 @@ class AcceptsForTest
   accepts_value_for :package, :choose_with => :via
   accepts_value_for :renders, "a default response", :choose_with => :via
   accepts_value_for :format, :default_format, :choose_with => :via
+  accepts_value_for :do_cleanup, false, :choose_with => :via
+  accepts_value_for :do_backup, true, :choose_with => :via
 
   accepts_list_for :records, :choose_with => :via
   accepts_list_for :produces, "a default response", :choose_with => :via
@@ -38,6 +40,8 @@ def test_lists
   {
     nil         => [],
     []          => [],
+    true        => [true],
+    false       => [false],
     'a'         => ['a'],
     %w[a]       => ['a'],
     %w[a b c]   => ['a', 'b', 'c']
