@@ -32,6 +32,10 @@ describe "accepts_*_for" do
       subject.renders.should == "a default response"
       subject.format.should == "json"
     end
+    it "should handle boolean defaults correctly" do
+      subject.do_cleanup.should == false
+      subject.do_backup.should == true
+    end
     it "should return the value when called without args" do
       [:package, :renders, :format].each {|method_name|
         subject.send(method_name, "hello").send(method_name).should == "hello"
