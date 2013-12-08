@@ -32,6 +32,10 @@ describe "accepts_*_for" do
       subject.renders.should == "a default response"
       subject.format.should == "json"
     end
+    it "should handle boolean defaults correctly" do
+      subject.do_cleanup.should == false
+      subject.do_backup.should == true
+    end
     it "should return the value when called without args" do
       [:package, :renders, :format].each {|method_name|
         subject.send(method_name, "hello").send(method_name).should == "hello"
@@ -80,10 +84,6 @@ describe "accepts_*_for" do
     it "should return the correct default when no value is stored" do
       subject.produces.should == ["a default response"]
       subject.valid_formats.should == %w[html xml js json]
-    end
-    it "should return the correct boolean default when no value is stored" do
-      subject.do_cleanup.should == [false]
-      subject.do_backup.should == [true]
     end
     it "should accept splatted args" do
       subject.records "an item", "another item"
