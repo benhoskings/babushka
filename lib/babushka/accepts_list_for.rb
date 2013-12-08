@@ -41,7 +41,14 @@ module Babushka
       else
         # Splatting on expressions instead of just a single token seems
         # to break the result in rubinius. https://gist.github.com/1173301
-        values = default.is_a?(Symbol) ? send(default) : (default || [])
+        values = if default.is_a?(Symbol)
+          send(default)
+        elsif !default.nil?
+          default
+        else
+          []
+        end
+
         [*values]
       end
     end
