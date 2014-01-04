@@ -14,11 +14,10 @@ module Babushka
         reopen_pipe_for :write, pipe_err, STDERR
 
         ENV.update opts[:env] if opts[:env]
-        if opts[:chdir]
-          Dir.chdir(opts[:chdir]) { exec(*cmd) }
-        else
+
+        PathHelpers.cd(opts[:chdir]) {
           exec(*cmd)
-        end
+        }
       }
 
       near.each {|p| p.sync = true }
