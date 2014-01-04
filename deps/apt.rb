@@ -46,8 +46,8 @@ dep 'ppa', :spec do
     ('/var/lib/apt/lists/' / ppa_release_file).exists?
   }
   meet {
-    log_shell "Adding #{spec}", "add-apt-repository '#{spec}'", :spinner => true
-    log_shell "Updating apt lists to load #{spec}.", "apt-get update"
+    log_shell "Adding #{spec}", "add-apt-repository '#{spec}'", :spinner => true, :sudo => true
+    log_shell "Updating apt lists to load #{spec}.", "apt-get update", :sudo => true
   }
 end
 
