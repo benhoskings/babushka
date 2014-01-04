@@ -13,10 +13,12 @@ module Babushka
         reopen_pipe_for :write, pipe_out, STDOUT
         reopen_pipe_for :write, pipe_err, STDERR
 
-        Dir.chdir opts[:chdir] if opts[:chdir]
         ENV.update opts[:env] if opts[:env]
-
-        exec(*cmd)
+        if opts[:chdir]
+          Dir.chdir(opts[:chdir]) { exec(*cmd) }
+        else
+          exec(*cmd)
+        end
       }
 
       near.each {|p| p.sync = true }
