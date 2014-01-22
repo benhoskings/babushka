@@ -8,7 +8,7 @@ dep 'rubygems', :version do
   }
   meet {
     Babushka::Resource.extract "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz" do
-      log_shell "Installing rubygems-#{version}", "ruby setup.rb", :spinner => true, :sudo => !File.writable?(which('ruby'))
+      log_shell "Installing rubygems-#{version}", "ruby setup.rb", :spinner => true, :sudo => !File.writable_real?(which('ruby'))
     end
   }
   after {
@@ -16,7 +16,7 @@ dep 'rubygems', :version do
     cd cmd_dir('ruby') do
       %w[gem1.8 gem18].each do |file|
         if File.exists? file
-          shell "ln -sf #{file} gem", :sudo => !File.writable?(which('ruby'))
+          shell "ln -sf #{file} gem", :sudo => !File.writable_real?(which('ruby'))
         end
       end
     end

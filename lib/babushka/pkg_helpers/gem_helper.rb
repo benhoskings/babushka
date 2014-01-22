@@ -51,7 +51,7 @@ module Babushka
     end
 
     def should_sudo?
-      super || (Babushka.ruby.gem_dir.exists? && !Babushka.ruby.gem_dir.writable?)
+      super || (Babushka.ruby.gem_dir.exists? && !Babushka.ruby.gem_dir.writable_real?)
     end
 
 

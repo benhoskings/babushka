@@ -58,7 +58,7 @@ module Babushka
     end
 
     def should_sudo?
-      !File.writable?(bin_path)
+      !File.writable_real?(bin_path)
     end
 
     def update_pkg_lists_if_required
