@@ -75,6 +75,7 @@ module Babushka
           '7.1' => :wheezy, # Temporary, until these are parsed by major
           '7.2' => :wheezy, # version.
           '7.3' => :wheezy,
+          '7.4' => :wheezy,
           '8.0' => :jessie
         },
         :redhat => {
