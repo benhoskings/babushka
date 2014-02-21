@@ -1,6 +1,6 @@
 module Babushka
 
-  VERSION = '0.17.6'
+  VERSION = '0.17.7'
 
   WORKING_PREFIX  = '~/.babushka'
   SOURCE_PREFIX   = '~/.babushka/sources'
