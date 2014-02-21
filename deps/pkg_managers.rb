@@ -29,7 +29,7 @@ dep 'npm.src' do
   requires 'nodejs.bin'
   met? { which 'npm' }
   meet {
-    log_shell "Installing npm", "curl https://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable?} sh"
+    log_shell "Installing npm", "curl https://npmjs.org/install.sh | #{'sudo' unless which('node').p.writable_real?} sh"
   }
 end
 

@@ -73,7 +73,7 @@ class Fancypath < Pathname
   # True if the path is writable (and already exists), or createable by the
   # current user (i.e. if its closest existing parent is writable).
   def hypothetically_writable?
-    writable? || (!exists? && !root? && parent.hypothetically_writable?)
+    writable_real? || (!exists? && !root? && parent.hypothetically_writable?)
   end
 
 
