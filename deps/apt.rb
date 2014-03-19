@@ -2,7 +2,8 @@ dep 'keyed apt source', :uri, :release, :repo, :key_sig, :key_uri do
   requires 'apt source'.with(uri, release, repo, uri, 'no')
 
   met? {
-    shell('apt-key list').split("\n").collapse(/^pub.*\//).val_for(key_sig)
+    shell?('apt-key list', :sudo => true) &&
+    shell('apt-key list', :sudo => true).split("\n").collapse(/^pub.*\//).val_for(key_sig)
   }
   meet {
     key = log_shell("Downloading #{key_uri}", 'curl', key_uri)
