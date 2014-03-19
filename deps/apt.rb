@@ -7,7 +7,7 @@ dep 'keyed apt source', :uri, :release, :repo, :key_sig, :key_uri do
   }
   meet {
     key = log_shell("Downloading #{key_uri}", 'curl', key_uri)
-    log_shell("Adding #{key_sig}", 'apt-key add -', :input => key)
+    log_shell("Adding #{key_sig}", 'apt-key add -', :input => key, :sudo => true)
     Babushka::AptHelper.update_pkg_lists "Updating apt lists to load #{uri}"
   }
 end
