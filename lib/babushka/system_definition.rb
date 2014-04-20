@@ -66,6 +66,7 @@ module Babushka
           '12.10' => :quantal,
           '13.04' => :raring,
           '13.10' => :saucy,
+          '14.04' => :trusty,
         },
         :debian => {
           '4.0' => :etch,
@@ -133,6 +134,7 @@ module Babushka
           '12.10' => 'Quantal Quetzal',
           '13.04' => 'Raring Ringtail',
           '13.10' => 'Saucy Salamander',
+          '14.04' => 'Trusty Tahr',
         },
         :redhat => {
           '3' => 'Taroon',
