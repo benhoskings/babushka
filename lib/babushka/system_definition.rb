@@ -77,6 +77,7 @@ module Babushka
           '7.2' => :wheezy, # version.
           '7.3' => :wheezy,
           '7.4' => :wheezy,
+          '7.5' => :wheezy,
           '8.0' => :jessie,
         },
         :redhat => {
