@@ -27,6 +27,10 @@ module Babushka
       "#{pkg_cmd} --sync --refresh"
     end
 
+    def pkg_list_dir
+      '/var/lib/pacman/sync'.p
+    end
+
     def pkg_update_timeout
       3600 # 1 hour
     end
