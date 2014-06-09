@@ -70,6 +70,17 @@ describe Babushka::Asset do
     }
   end
 
+  describe 'pre-build cleanup' do
+    it "should remove the build dir before extracting" do
+      (tmp_prefix / 'archives/archive/pre-existing-dir').mkdir
+      Babushka::Asset.for(archive_path / "archive.tar").extract {
+        (tmp_prefix / 'archives/archive').exists?.should be_true
+        (tmp_prefix / 'archives/archive/pre-existing-dir').exists?.should be_false
+        true
+      }
+    end
+  end
+
   describe 'cleanup' do
     it "should remove the build dir on success" do
       Babushka::Asset.for(archive_path / "archive.tar").extract {

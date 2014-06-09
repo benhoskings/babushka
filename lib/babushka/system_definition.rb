@@ -42,7 +42,7 @@ module Babushka
           '10.6' => :snow_leopard,
           '10.7' => :lion,
           '10.8' => :mountain_lion,
-          '10.9' => :mavericks
+          '10.9' => :mavericks,
         }
       },
       :linux => {
@@ -65,7 +65,8 @@ module Babushka
           '12.04' => :precise,
           '12.10' => :quantal,
           '13.04' => :raring,
-          '13.10' => :saucy
+          '13.10' => :saucy,
+          '14.04' => :trusty,
         },
         :debian => {
           '4.0' => :etch,
@@ -74,13 +75,16 @@ module Babushka
           '7.0' => :wheezy,
           '7.1' => :wheezy, # Temporary, until these are parsed by major
           '7.2' => :wheezy, # version.
-          '8.0' => :jessie
+          '7.3' => :wheezy,
+          '7.4' => :wheezy,
+          '7.5' => :wheezy,
+          '8.0' => :jessie,
         },
         :redhat => {
           '3' => :taroon,
           '4' => :nahant,
           '5' => :tikanga,
-          '6' => :santiago
+          '6' => :santiago,
         },
         :fedora => {
           '14' => :laughlin,
@@ -88,14 +92,14 @@ module Babushka
           '16' => :verne,
           '17' => :beefy,
           '18' => :spherical,
-          '19' => :schrodinger
+          '19' => :schrodinger,
         },
-        :arch => {}
+        :arch => {},
       },
       :bsd => {
         :dragonfly => {},
-        :freebsd => {}
-      }
+        :freebsd => {},
+      },
     }
 
     DESCRIPTIONS = {
@@ -107,7 +111,7 @@ module Babushka
           '10.6' => 'Snow Leopard',
           '10.7' => 'Lion',
           '10.8' => 'Mountain Lion',
-          '10.9' => 'Mavericks'
+          '10.9' => 'Mavericks',
         }
       },
       :linux => {
@@ -130,13 +134,14 @@ module Babushka
           '12.04' => 'Precise Pangolin',
           '12.10' => 'Quantal Quetzal',
           '13.04' => 'Raring Ringtail',
-          '13.10' => 'Saucy Salamander'
+          '13.10' => 'Saucy Salamander',
+          '14.04' => 'Trusty Tahr',
         },
         :redhat => {
           '3' => 'Taroon',
           '4' => 'Nahant',
           '5' => 'Tikanga',
-          '6' => 'Santiago'
+          '6' => 'Santiago',
         },
         :fedora => {
           '14' => 'Laughlin',
@@ -144,13 +149,13 @@ module Babushka
           '16' => 'Verne',
           '17' => 'Beefy Miracle',
           '18' => 'Spherical Cow',
-          '19' => "Schrödinger's Cat"
-        }
+          '19' => "Schrödinger's Cat",
+        },
       },
       :bsd => {
         :dragonfly => {},
-        :freebsd => {}
-      }
+        :freebsd => {},
+      },
     }
   end
 end

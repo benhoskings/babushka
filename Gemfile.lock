@@ -21,6 +21,17 @@ GEM
     rspec-instafail (0.2.4)
     rspec-mocks (2.14.4)
     ruby-progressbar (1.2.0)
+    rubysl-abbrev (2.0.4)
+    rubysl-e2mmap (2.0.0)
+    rubysl-irb (2.0.4)
+      rubysl-e2mmap (~> 2.0)
+      rubysl-mathn (~> 2.0)
+      rubysl-readline (~> 2.0)
+      rubysl-thread (~> 2.0)
+    rubysl-mathn (2.0.0)
+    rubysl-readline (2.0.2)
+    rubysl-singleton (2.0.0)
+    rubysl-thread (2.0.2)
 
 PLATFORMS
   ruby
@@ -31,3 +42,6 @@ DEPENDENCIES
   ir_b
   rake
   rspec
+  rubysl-abbrev
+  rubysl-irb
+  rubysl-singleton

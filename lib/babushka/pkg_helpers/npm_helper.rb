@@ -37,7 +37,7 @@ module Babushka
     end
 
     def should_sudo?
-      !File.writable?(bin_path / pkg_binary)
+      !File.writable_real?(bin_path / pkg_binary)
     end
 
   end

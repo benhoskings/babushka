@@ -23,6 +23,18 @@ module Babushka
       log_shell "Syncing packages", "#{pkg_cmd} --sync --noconfirm --noprogressbar #{pkgs.join(' ')}", :sudo => should_sudo?
     end
 
+    def pkg_update_command
+      "#{pkg_cmd} --sync --refresh"
+    end
+
+    def pkg_list_dir
+      '/var/lib/pacman/sync'.p
+    end
+
+    def pkg_update_timeout
+      3600 # 1 hour
+    end
+
   end
   end
 end

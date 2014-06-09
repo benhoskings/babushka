@@ -46,6 +46,7 @@ module Babushka
     end
 
     def extract &block
+      rm_build_dir # A previous build might be in a bad state.
       cd(build_prefix, :create => true) { process_extract(&block) }
     end
 
@@ -97,8 +98,12 @@ module Babushka
 
     def cleanup!
       LogHelpers.log_block "Cleaning up" do
-        (build_prefix / name).p.rm
+        rm_build_dir
       end
+    end
+
+    def rm_build_dir
+      (build_prefix / name).p.rm
     end
   end
 

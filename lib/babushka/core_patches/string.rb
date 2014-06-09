@@ -74,9 +74,9 @@ class String
   alias_method :colorize, :colourise
 
   # As +colorize+, but modify this string in-place instead of returning a new one.
-  def colorize! description = nil, start_at = nil
+  def colorize! description = nil
     Babushka::LogHelpers.deprecated! "2014-03-29", :method_name => 'String#colorize!'
-    replace colorize(description, start_at) unless description.nil?
+    replace colorize(description) unless description.nil?
   end
 
   # Return a new string with all color-related escape sequences removed.

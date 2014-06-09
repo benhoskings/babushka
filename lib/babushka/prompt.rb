@@ -79,7 +79,7 @@ module Babushka
     def prompt_and_read_value message, opts, &block
       if !opts[:default] && !opts[:ask]
         raise DefaultUnavailable.new(message)
-      elsif opts[:ask] && !$stdin.tty?
+      elsif opts[:ask] && !STDIN.tty?
         raise PromptUnavailable.new(message)
       else
         log_choice_descriptions opts[:choice_descriptions]
@@ -147,7 +147,7 @@ module Babushka
     rescue LoadError
       def read_from_prompt prompt, choices = nil
         print prompt
-        $stdin.gets.try(:strip)
+        STDIN.gets.try(:strip)
       end
     end
   end

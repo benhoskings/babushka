@@ -22,6 +22,6 @@ class Object
   # Return self unmodified after logging the output of #inspect, along with
   # the point at which +tapp+ was called.
   def tapp
-    tap { puts "#{File.basename caller[2]}: #{self.inspect}" }
+    tap { STDOUT.puts "#{File.basename caller[2]}: #{self.inspect}" }
   end
 end
