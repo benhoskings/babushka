@@ -37,7 +37,8 @@ module Babushka
     end
 
     def should_sudo?
-      !File.writable_real?(bin_path / pkg_binary)
+      node_prefix_dir = shell("npm config ls -l").val_for("prefix").gsub('"', '').p
+      node_prefix_dir.exists? && !node_prefix_dir.writable_real?
     end
 
   end
