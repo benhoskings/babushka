@@ -104,16 +104,16 @@ describe Babushka::SystemProfile do
 
       context 'on a Debian 7 box' do
         let(:profile) { Babushka::DebianSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return(%Q{7.0}) }
+        before { profile.stub(:get_version_info).and_return(%Q{7.5}) }
 
         it "should have correct name and version info" do
-          info_for(profile).should == [:linux, :debian, "7.0", "7.0", :wheezy]
+          info_for(profile).should == [:linux, :debian, "7", "7.5", :wheezy]
         end
         it "should have correct version info" do
           info_strs_for(profile).should == ['Linux', 'Debian', 'wheezy']
         end
         it "should be described correctly" do
-          profile.description.should == 'Debian Linux 7.0 (wheezy)'
+          profile.description.should == 'Debian Linux 7.5 (wheezy)'
         end
       end
 
@@ -122,7 +122,7 @@ describe Babushka::SystemProfile do
         before { profile.stub(:get_version_info).and_return(%Q{6.0.4}) }
 
         it "should have correct name and version info" do
-          info_for(profile).should == [:linux, :debian, "6.0", "6.0.4", :squeeze]
+          info_for(profile).should == [:linux, :debian, "6", "6.0.4", :squeeze]
         end
         it "should have correct version info" do
           info_strs_for(profile).should == ['Linux', 'Debian', 'squeeze']
