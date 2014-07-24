@@ -6,6 +6,10 @@ module Babushka
     def pkg_binary; "npm" end
     def manager_key; :npm end
 
+    def should_sudo?
+      !shell("npm config get prefix").p.writable_real?
+    end
+
     private
 
     def has_pkg? pkg
@@ -34,10 +38,6 @@ module Babushka
         # e.g. 'socket.io@==0.12.0'
         "'#{pkg.name}@#{pkg.version.operator}#{pkg.version.version}'"
       end
-    end
-
-    def should_sudo?
-      !File.writable_real?(bin_path / pkg_binary)
     end
 
   end

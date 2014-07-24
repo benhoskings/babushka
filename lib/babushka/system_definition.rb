@@ -69,16 +69,11 @@ module Babushka
           '14.04' => :trusty,
         },
         :debian => {
-          '4.0' => :etch,
-          '5.0' => :lenny,
-          '6.0' => :squeeze,
-          '7.0' => :wheezy,
-          '7.1' => :wheezy, # Temporary, until these are parsed by major
-          '7.2' => :wheezy, # version.
-          '7.3' => :wheezy,
-          '7.4' => :wheezy,
-          '7.5' => :wheezy,
-          '8.0' => :jessie,
+          '4' => :etch,
+          '5' => :lenny,
+          '6' => :squeeze,
+          '7' => :wheezy,
+          '8' => :jessie,
         },
         :redhat => {
           '3' => :taroon,

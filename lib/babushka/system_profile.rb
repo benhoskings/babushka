@@ -154,7 +154,7 @@ module Babushka
   class DebianSystemProfile < LinuxSystemProfile
     def flavour_str; 'Debian' end
     def version; version_info end
-    def release; version[/^(\d+\.\d+)/, 1] end
+    def release; version[/^(\d+)/, 1] end
     def codename_str; codename.to_s end # They're named just like our symbols; no need to duplicate in SystemDefinition.
 
     def get_version_info; File.read('/etc/debian_version') end

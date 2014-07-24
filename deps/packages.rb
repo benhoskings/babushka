@@ -12,6 +12,9 @@ end
 
 dep 'nodejs.bin' do
   installs {
+    # The 'nodejs-legacy' package symlinks the renamed 'nodejs' binary back
+    # into place as 'node'.
+    on :trusty, 'nodejs', 'nodejs-dev', 'nodejs-legacy'
     via :apt, 'nodejs', 'nodejs-dev'
     via :brew, 'node'
     via :freebsd, 'node'
