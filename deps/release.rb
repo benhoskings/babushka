@@ -67,7 +67,7 @@ end
 dep 'repo clean', :template => 'release' do
   met? {
     repo.repo_shell("git diff") # Clear git's internal cache, which sometimes says the repo is dirty when it isn't.
-    repo.clean? || unmeetable!("The remote repo has local changes.")
+    repo.clean? || unmeetable!("The repo has uncommitted changes.")
   }
 end
 
