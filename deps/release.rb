@@ -37,7 +37,7 @@ dep 'release exists', :version, :version_file, :template => 'release' do
   version_file.default!('./lib/babushka.rb')
 
   def update_version!
-    sed_expression = %q{s/^(\s+VERSION\s+=\s+).*/\1'%s'/} % version
+    sed_expression = %q{s/^( +VERSION += +).*/\1'%s'/} % version
     shell! 'sed', '-i.bak', '-E', sed_expression, version_file
     shell! 'rm', "#{version_file}.bak"
   end
