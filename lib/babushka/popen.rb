@@ -15,9 +15,11 @@ module Babushka
 
         ENV.update opts[:env] if opts[:env]
 
-        PathHelpers.cd(opts[:chdir]) {
+        if opts[:chdir]
+          Dir.chdir(opts[:chdir]) { exec(*cmd) }
+        else
           exec(*cmd)
-        }
+        end
       }
 
       near.each {|p| p.sync = true }
