@@ -73,7 +73,7 @@ end
 
 dep 'build passing' do
   met? {
-    log_shell("Running specs", "bundle exec rspec --format documentation") ||
+    log_shell("Running specs", "bin/rspec --format documentation") ||
       unmeetable!("Can't make a release when the build is broken.")
   }
 end
