@@ -20,7 +20,7 @@ module Babushka
         log_error dir_hash.values.map {|cmds|
             cmd_location_str_for cmds
           }.to_list(:oxford => true, :conj => 'but').end_with('.')
-        unmeetable! unless Prompt.confirm("Multiple installations might indicate a problem. Meet anyway?", :default => 'n')
+        unmeetable! unless Prompt.confirm("Multiple installations might indicate a problem. Attempt to meet the dep anyway?", :default => 'n')
       else
         dir_hash[nil].blank?.tap {|result|
           if result
