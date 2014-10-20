@@ -56,6 +56,10 @@ describe Babushka::SystemDetector do
         File.should_receive(:exists?).with("/etc/fedora-release").and_return(true)
         subject.should be_an_instance_of(Babushka::FedoraSystemProfile)
       end
+      it "should return SuseSystemProfile on openSuse boxes" do
+        File.should_receive(:exists?).with("/etc/SuSE-release").and_return(true)
+        subject.should be_an_instance_of(Babushka::SuseSystemProfile)
+      end
       it "should return LinuxSystemProfile on unknown Linux boxes" do
         subject.class.should == Babushka::LinuxSystemProfile
       end

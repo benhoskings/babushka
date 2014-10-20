@@ -1,6 +1,7 @@
 dep 'python.bin' do
   installs {
     via :apt, 'python', 'python-dev'
+    via :zypper, 'python', 'python-devel'
     otherwise 'python'
   }
   provides {
