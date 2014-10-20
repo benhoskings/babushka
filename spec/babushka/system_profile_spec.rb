@@ -192,9 +192,9 @@ describe Babushka::SystemProfile do
         end
       end
 
-      context 'on an openSuse box' do
+      context 'on an openSUSE box' do
         let(:profile) { Babushka::SuSESystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("openSUSE 13.1") }
+        before { profile.stub(:get_version_info).and_return("openSUSE release 13.1 (Bottle)") }
 
         it "should report correct name and version info" do
           info_for(profile).should == [:linux, :opensuse, "13", "13.1", :bottle]

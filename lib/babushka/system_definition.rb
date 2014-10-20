@@ -91,6 +91,7 @@ module Babushka
         },
         :opensuse => {
           '13.1' => :bottle,
+          '13.2' => :harlequin,
         },
         :arch => {},
       },
@@ -151,6 +152,7 @@ module Babushka
         },
         :opensuse => {
           '13.1' => 'Bottle',
+          '13.2' => 'Harlequin',
         },
       },
       :bsd => {

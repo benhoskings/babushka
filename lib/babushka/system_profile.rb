@@ -204,7 +204,7 @@ module Babushka
   end
 
     class SuseSystemProfile < LinuxSystemProfile
-    def flavour_str; 'openSuse' end
+    def flavour_str; 'openSUSE' end
     def get_version_info; File.read('/etc/SuSE-release') end
     def pkg_helper; ZypperHelper end
   end
