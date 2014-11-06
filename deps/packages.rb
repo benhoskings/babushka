@@ -16,6 +16,7 @@ dep 'nodejs.bin' do
     # into place as 'node'.
     on :trusty, 'nodejs', 'nodejs-dev', 'nodejs-legacy'
     via :apt, 'nodejs', 'nodejs-dev'
+    via :zypper, 'nodejs', 'nodejs-devel'
     via :brew, 'node'
     via :freebsd, 'node'
     otherwise 'nodejs'

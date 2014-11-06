@@ -62,6 +62,7 @@ module Babushka
     pkg_helpers/binports_helper
     pkg_helpers/npm_helper
     pkg_helpers/pacman_helper
+    pkg_helpers/zypper_helper
     dsl
     dep
     dep_pool

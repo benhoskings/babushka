@@ -30,6 +30,8 @@ module Babushka
         CentOSSystemProfile
       elsif File.exists?('/etc/redhat-release')
         RedhatSystemProfile
+      elsif File.exists?('/etc/SuSE-release')
+        SuseSystemProfile
       end
     end
   end
