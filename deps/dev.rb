@@ -14,9 +14,11 @@ dep 'linux build tools', :template => 'bin' do
   provides %w[gcc g++ make ld autoconf automake libtool]
 end
 
-dep 'xcode tools', :template => 'external' do
-  expects %w[cc gcc c++ g++ clang make ld libtool]
-  otherwise {
+dep 'xcode tools' do
+  met? {
+    in_path?(%w[cc gcc c++ g++]) && in_path?(%w[clang make ld libtool])
+  }
+  meet {
     unmeetable! "Install Xcode via the App Store, then go Preferences -> Downloads -> Components -> Command Line Tools."
   }
 end
