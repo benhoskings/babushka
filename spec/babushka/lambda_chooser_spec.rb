@@ -77,7 +77,7 @@ describe "lambda choosing" do
   it "should not join lists from multiple choices" do
     Babushka::LambdaChooser.new(
       nil,
-      :apt, :brew, :zypper, :yum, :linux, :osx, :ubuntu, :debian, :osx, :karmic, :gutsy, :lucid, :intrepid, :dapper, :breezy, :jaunty, :feisty, :edgy, :warty, :hardy, :maverick, :hoary, :lenny, :snow_leopard, :panther, :tiger, :leopard
+      :osx, :linux, :brew, :apt, :ubuntu, :yosemite, :hardy, :maverick, :hoary
     ) {
       on :maverick, %w[ruby ruby1.8-dev]
       on :apt, %w[ruby irb ruby1.8-dev libopenssl-ruby]
