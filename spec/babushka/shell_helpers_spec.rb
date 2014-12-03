@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'tmpdir'
 
 SUCCEEDING_LS = 'ls /bin'
 FAILING_LS = 'ls /missing'
@@ -276,6 +277,18 @@ describe "which" do
   it "should handle command parameter passed as Symbol" do
     path = `which ls`.chomp
     Babushka::ShellHelpers.which(:ls).should == path
+  end
+  it "should not return a directory" do
+    original_env = ENV['PATH']
+    begin
+      Dir.mktmpdir do |dir|
+        Dir.mkdir(File.join(dir, 'directorycmd'), 0700)
+        ENV['PATH'] = "#{ENV['PATH']}:#{dir}"
+        Babushka::ShellHelpers.which('directorycmd').should be_nil
+      end
+    ensure
+      ENV['PATH'] = original_env
+    end
   end
 end
 
