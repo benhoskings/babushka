@@ -49,7 +49,7 @@ dep 'release exists', :version, :version_file, :template => 'release' do
     repo.resolve(release_tag)
   }
   meet {
-    git_log "#{latest_tag}", 'HEAD'
+    git_log "#{latest_tag}", 'master'
     confirm "Create #{release_tag} from #{latest_tag} + this changeset?" do
       log_block("Writing version to #{version_file}") { update_version! }
       log_shell "Committing", "git commit #{version_file} --message '#{release_tag} - ' --edit"
