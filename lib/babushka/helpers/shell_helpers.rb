@@ -188,7 +188,8 @@ module Babushka
     # also faster to not shell out.
     def cmd_dir cmd_name
       ENV['PATH'].split(':').detect {|path|
-        File.executable? File.join(path, cmd_name.to_s)
+        full_path = File.join(path, cmd_name.to_s)
+        File.executable?(full_path) && File.file?(full_path)
       }
     end
 
