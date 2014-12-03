@@ -80,10 +80,10 @@ end
 
 dep 'descendant of last release', :template => 'release' do
   met? {
-    if shell?("git rev-list HEAD | grep #{repo.resolve(latest_tag)}")
-      log_ok "The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) is a parent of HEAD."
+    if shell?("git rev-list master | grep #{repo.resolve(latest_tag)}")
+      log_ok "The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) is a parent of master."
     else
-      unmeetable!("The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) isn't a parent of HEAD.")
+      unmeetable!("The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) isn't a parent of master.")
     end
   }
 end
