@@ -1,3 +1,5 @@
+# coding: utf-8
+
 require 'spec_helper'
 
 describe Babushka::SystemProfile do
@@ -179,16 +181,31 @@ describe Babushka::SystemProfile do
 
       context 'on a Fedora box' do
         let(:profile) { Babushka::FedoraSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("Fedora release 18 (Spherical Cow)") }
+        before { profile.stub(:get_version_info).and_return("Fedora release 19 (Schrödinger's Cat)") }
 
         it "should report correct name and version info" do
-          info_for(profile).should == [:linux, :fedora, "18", "18", :spherical]
+          info_for(profile).should == [:linux, :fedora, "19", "19", :schrodinger]
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Fedora', 'Spherical Cow']
+          info_strs_for(profile).should == ['Linux', 'Fedora', "Schrödinger's Cat"]
         end
         it "should be described correctly" do
-          profile.description.should == 'Fedora Linux 18 (Spherical Cow)'
+          profile.description.should == "Fedora Linux 19 (Schrödinger's Cat)"
+        end
+      end
+
+      context 'on an openSUSE box' do
+        let(:profile) { Babushka::SuseSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return("openSUSE 13.1 (x86_64)") }
+
+        it "should report correct name and version info" do
+          info_for(profile).should == [:linux, :opensuse, "13", "13.1", nil]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'openSUSE', nil]
+        end
+        it "should be described correctly" do
+          profile.description.should == 'openSUSE Linux 13.1'
         end
       end
 

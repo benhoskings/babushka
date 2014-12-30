@@ -35,10 +35,6 @@ class Fancypath < Pathname
 
   # About this Fancypath object.
 
-  def inspect
-    super.sub('Pathname','Fancypath')
-  end
-
   def to_fancypath
     self
   end

@@ -202,4 +202,16 @@ module Babushka
     def get_version_info; 'rolling' end
     def version; nil end
   end
+
+    class SuseSystemProfile < LinuxSystemProfile
+    def flavour_str; 'openSUSE' end
+    def version
+      version_info[/([\d\.]+)/i, 1]
+    end
+    def release
+      version[/^(\d+)/, 1]
+    end
+    def get_version_info; File.read('/etc/SuSE-release') end
+    def pkg_helper; ZypperHelper end
+  end
 end

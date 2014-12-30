@@ -239,12 +239,12 @@ module Babushka
     # enter the repo (via commit or fetch), as git adds characters to keep
     # short SHAs unique.
     def resolve ref
-      repo_shell?("git rev-parse --short #{ref}")
+      repo_shell?("git rev-parse --short #{ref}^{commit}")
     end
 
     # The full SHA of the commit that +ref+ currently refers to.
     def resolve_full ref
-      repo_shell?("git rev-parse #{ref}")
+      repo_shell?("git rev-parse #{ref}^{commit}")
     end
 
     # The remote assigned to branch in the git config, or 'origin' if none

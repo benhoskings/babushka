@@ -37,7 +37,7 @@ dep 'release exists', :version, :version_file, :template => 'release' do
   version_file.default!('./lib/babushka.rb')
 
   def update_version!
-    sed_expression = %q{s/^(\s+VERSION\s+=\s+).*/\1'%s'/} % version
+    sed_expression = %q{s/^( +VERSION += +).*/\1'%s'/} % version
     shell! 'sed', '-i.bak', '-E', sed_expression, version_file
     shell! 'rm', "#{version_file}.bak"
   end
@@ -49,7 +49,7 @@ dep 'release exists', :version, :version_file, :template => 'release' do
     repo.resolve(release_tag)
   }
   meet {
-    git_log "#{latest_tag}", 'HEAD'
+    git_log "#{latest_tag}", 'master'
     confirm "Create #{release_tag} from #{latest_tag} + this changeset?" do
       log_block("Writing version to #{version_file}") { update_version! }
       log_shell "Committing", "git commit #{version_file} --message '#{release_tag} - ' --edit"
@@ -67,23 +67,23 @@ end
 dep 'repo clean', :template => 'release' do
   met? {
     repo.repo_shell("git diff") # Clear git's internal cache, which sometimes says the repo is dirty when it isn't.
-    repo.clean? || unmeetable!("The remote repo has local changes.")
+    repo.clean? || unmeetable!("The repo has uncommitted changes.")
   }
 end
 
 dep 'build passing' do
   met? {
-    log_shell("Running specs", "bundle exec rspec --format documentation") ||
+    log_shell("Running specs", "bin/rspec --format documentation") ||
       unmeetable!("Can't make a release when the build is broken.")
   }
 end
 
 dep 'descendant of last release', :template => 'release' do
   met? {
-    if shell?("git rev-list HEAD | grep #{repo.resolve(latest_tag)}")
-      log_ok "The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) is a parent of HEAD."
+    if shell?("git rev-list master | grep #{repo.resolve(latest_tag)}")
+      log_ok "The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) is a parent of master."
     else
-      unmeetable!("The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) isn't a parent of HEAD.")
+      unmeetable!("The most recent version (#{latest_tag} / #{repo.resolve(latest_tag)}) isn't a parent of master.")
     end
   }
 end

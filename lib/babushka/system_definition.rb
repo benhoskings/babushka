@@ -89,6 +89,10 @@ module Babushka
           '18' => :spherical,
           '19' => :schrodinger,
         },
+        :opensuse => {
+          '13.1' => :bottle,
+          '13.2' => :harlequin,
+        },
         :arch => {},
       },
       :bsd => {
@@ -145,6 +149,10 @@ module Babushka
           '17' => 'Beefy Miracle',
           '18' => 'Spherical Cow',
           '19' => "Schrödinger's Cat",
+        },
+        :opensuse => {
+          '13.1' => 'Bottle',
+          '13.2' => 'Harlequin',
         },
       },
       :bsd => {
