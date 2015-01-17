@@ -7,8 +7,6 @@ module Babushka
   BUILD_PREFIX    = '~/.babushka/build'
   DOWNLOAD_PREFIX = '~/.babushka/downloads'
   LOG_PREFIX      = '~/.babushka/logs'
-  VARS_PREFIX     = '~/.babushka/vars'
-  REPORT_PREFIX   = '~/.babushka/runs'
 
   def self.const_missing const_name
     if %w[
@@ -17,12 +15,10 @@ module Babushka
       BuildPrefix
       DownloadPrefix
       LogPrefix
-      VarsPrefix
       ReportPrefix
     ].include?(const_name.to_s)
       const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')
-      Babushka::LogHelpers.deprecated! "2013-12-15", :method_name => "Babushka::#{const_name}", :instead => "Babushka::#{const_case}"
-      Babushka.const_get(const_case)
+      Babushka::LogHelpers.removed! :method_name => "Babushka::#{const_name}", :instead => "Babushka::#{const_case}"
     else
       super
     end

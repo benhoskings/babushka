@@ -21,12 +21,10 @@ module Babushka
     def codename_str; definition.codename_str end
 
     def name
-      deprecated! '2014-02-13', :method_name => 'Babushka.host.name', :instead => 'Babushka.host.codename'
-      codename
+      removed! :method_name => 'Babushka.host.name', :instead => 'Babushka.host.codename'
     end
     def name_str
-      deprecated! '2014-02-13', :method_name => 'Babushka.host.name_str', :instead => 'Babushka.host.codename_str'
-      codename_str
+      removed! :method_name => 'Babushka.host.name_str', :instead => 'Babushka.host.codename_str'
     end
 
     def differentiator_for specs

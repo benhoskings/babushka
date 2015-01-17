@@ -71,7 +71,6 @@ module Babushka
     source
     implicit_source
     source_pool
-    vars
     parameter
     path_checker
     dep_definer
