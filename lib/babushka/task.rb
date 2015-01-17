@@ -19,7 +19,6 @@ module Babushka
       raise "A task is already running." if running?
       @cmd = cmd
       @running = true
-      cleanup_obsolete_data # TODO: remove after August '13 or so.
       dep_names.all? {|dep_name| process_dep(dep_name, with_args) }
     rescue SourceLoadError => e
       Babushka::Logging.log_exception(e)
@@ -83,10 +82,6 @@ module Babushka
 
     def log_prefix
       Babushka::LOG_PREFIX.p
-    end
-
-    def cleanup_obsolete_data
-      Babushka::REPORT_PREFIX.p.rm if Babushka::REPORT_PREFIX.p.exists?
     end
 
   end

@@ -7,7 +7,6 @@ module Babushka
   BUILD_PREFIX    = '~/.babushka/build'
   DOWNLOAD_PREFIX = '~/.babushka/downloads'
   LOG_PREFIX      = '~/.babushka/logs'
-  REPORT_PREFIX   = '~/.babushka/runs'
 
   def self.const_missing const_name
     if %w[
