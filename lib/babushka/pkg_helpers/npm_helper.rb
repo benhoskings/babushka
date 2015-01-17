@@ -5,6 +5,7 @@ module Babushka
     def pkg_cmd; "#{pkg_binary} --color false" end
     def pkg_binary; "npm" end
     def manager_key; :npm end
+    def manager_dep; 'core:npm' end
 
     def should_sudo?
       !shell("npm config get prefix").p.writable_real?

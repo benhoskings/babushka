@@ -4,7 +4,7 @@ module Babushka
     def pkg_type; :brew end
     def pkg_cmd; 'brew' end
     def manager_key; :brew end
-    def manager_dep; 'homebrew' end
+    def manager_dep; 'core:homebrew' end
 
     def update_pkg_lists_if_required
       super.tap {|result|

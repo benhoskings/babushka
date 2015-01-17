@@ -5,10 +5,7 @@ module Babushka
     def pkg_cmd; pkg_binary end
     def pkg_binary; "pip" end
     def manager_key; :pip end
-
-    def manager_dep
-      'pip'
-    end
+    def manager_dep; 'core:pip' end
 
     private
 
