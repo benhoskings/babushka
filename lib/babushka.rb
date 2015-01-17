@@ -18,8 +18,7 @@ module Babushka
       ReportPrefix
     ].include?(const_name.to_s)
       const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')
-      Babushka::LogHelpers.deprecated! "2013-12-15", :method_name => "Babushka::#{const_name}", :instead => "Babushka::#{const_case}"
-      Babushka.const_get(const_case)
+      Babushka::LogHelpers.removed! :method_name => "Babushka::#{const_name}", :instead => "Babushka::#{const_case}"
     else
       super
     end

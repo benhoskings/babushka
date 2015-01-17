@@ -137,17 +137,7 @@ class Fancypath < Pathname
   end
 
   def select(*args)
-    Babushka::LogHelpers.deprecated! '2012-10-23', :instead => 'Fancypath#glob', :example => "#{to_s.inspect}.p.glob(#{args.first.inspect})"
-    return args.map { |arg| select(arg) }.flatten.uniq if args.size > 1
-
-    case arg = args.first
-    when Symbol
-      Dir["#{self}/*.#{arg}"].map { |p| self.class.new(p) }
-    when Regexp
-      children.select { |child| child.to_s =~ arg }
-    else
-      Dir["#{self}/#{arg}"].map { |p| self.class.new(p) }
-    end
+    Babushka::LogHelpers.removed! :instead => 'Fancypath#glob', :example => "#{to_s.inspect}.p.glob(#{args.first.inspect})"
   end
 
 
