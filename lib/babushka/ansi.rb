@@ -34,7 +34,7 @@ module Babushka
     #     Babushka::ANSI.wrap('babushka', 'reverse')          #=> "\e[7mbabushka\e[m"
     def self.wrap text, description
       # This means "colour", not "no colour". The "no_" is the flippable bit.
-      if !$stdin.tty? || Babushka::Base.cmdline.opts[:"[no_]color"] == false
+      if Babushka::Base.cmdline.opts[:"[no_]color"] == false
         text
       else
         "#{escape_for(description)}#{text}\e[m"

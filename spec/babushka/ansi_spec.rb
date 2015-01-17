@@ -3,27 +3,10 @@ require 'spec_helper'
 describe Babushka::ANSI do
   describe '.wrap' do
     before {
-      $stdin.stub(:tty?) { true }
       Babushka::Base.cmdline.opts.stub(:[]).with(:"[no_]color") { true }
     }
     it "should wrap the input in ansi codes" do
       Babushka::ANSI.wrap('lol', 'blue').should == "\e[34mlol\e[m"
-    end
-    context "when we're not on a terminal" do
-      before {
-        $stdin.stub(:tty?) { false }
-      }
-      it "should not add the codes" do
-        Babushka::ANSI.wrap('lol', 'blue').should == "lol"
-      end
-    end
-    context "when --no-colour was passed" do
-      before {
-        Babushka::Base.cmdline.opts.stub(:[]).with(:"[no_]color") { false }
-      }
-      it "should not add the codes" do
-        Babushka::ANSI.wrap('lol', 'blue').should == "lol"
-      end
     end
   end
   describe '.escape_for' do
