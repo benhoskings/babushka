@@ -5,9 +5,7 @@ module Babushka
     include PathHelpers
 
     def append_to_file text, file, opts = {}
-      deprecated! '2012-09-01', :instead => 'Fancypath#append', :example => "'#{file}'.p.append(#{text.inspect})"
-      text = text.to_s
-      shell %Q{echo "\n# #{added_by_babushka(text.split("\n").length)}\n#{text.gsub('"', '\"')}" >> #{file}}, opts
+      removed! :instead => 'Fancypath#append', :example => "'#{file}'.p.append(#{text.inspect})"
     end
 
     def _by_babushka

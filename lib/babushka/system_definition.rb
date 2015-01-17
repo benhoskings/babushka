@@ -43,6 +43,7 @@ module Babushka
           '10.7' => :lion,
           '10.8' => :mountain_lion,
           '10.9' => :mavericks,
+          '10.10' => :yosemite,
         }
       },
       :linux => {

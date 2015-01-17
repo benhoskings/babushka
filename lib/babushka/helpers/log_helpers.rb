@@ -143,8 +143,7 @@ module Babushka
         CrossChar
       ].include?(const_name.to_s)
         const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')
-        deprecated! "2013-12-15", :method_name => "Babushka::Logging::#{const_name}", :instead => "Babushka::Logging::#{const_case}"
-        Babushka::Logging.const_get(const_case)
+        removed! :method_name => "Babushka::Logging::#{const_name}", :instead => "Babushka::Logging::#{const_case}"
       else
         super
       end

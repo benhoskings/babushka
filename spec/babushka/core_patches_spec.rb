@@ -208,15 +208,6 @@ describe String, '#to_utf8' do
   end
 end
 
-describe String, '#colorized?' do
-  it "should return false for regular strings" do
-    "babushka".should_not be_colorized
-  end
-  it "should return true for strings containing ANSI color sequences" do
-    "\e[0;32;29mbabushka\e[0m".should be_colorized
-  end
-end
-
 describe Integer, '#xsecs' do
   it "should return now for 0" do
     0.xsecs.should == 'now'
