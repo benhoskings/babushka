@@ -7,7 +7,6 @@ module Babushka
   BUILD_PREFIX    = '~/.babushka/build'
   DOWNLOAD_PREFIX = '~/.babushka/downloads'
   LOG_PREFIX      = '~/.babushka/logs'
-  VARS_PREFIX     = '~/.babushka/vars'
   REPORT_PREFIX   = '~/.babushka/runs'
 
   def self.const_missing const_name
@@ -17,7 +16,6 @@ module Babushka
       BuildPrefix
       DownloadPrefix
       LogPrefix
-      VarsPrefix
       ReportPrefix
     ].include?(const_name.to_s)
       const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')

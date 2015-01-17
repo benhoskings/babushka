@@ -86,7 +86,6 @@ module Babushka
     end
 
     def cleanup_obsolete_data
-      Babushka::VARS_PREFIX.p.rm if Babushka::VARS_PREFIX.p.exists?
       Babushka::REPORT_PREFIX.p.rm if Babushka::REPORT_PREFIX.p.exists?
     end
 
