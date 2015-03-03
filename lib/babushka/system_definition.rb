@@ -68,6 +68,7 @@ module Babushka
           '13.04' => :raring,
           '13.10' => :saucy,
           '14.04' => :trusty,
+          '14.10' => :utopic,
         },
         :debian => {
           '4' => :etch,
@@ -136,6 +137,7 @@ module Babushka
           '13.04' => 'Raring Ringtail',
           '13.10' => 'Saucy Salamander',
           '14.04' => 'Trusty Tahr',
+          '14.10' => 'Utopic Unicorn',
         },
         :redhat => {
           '3' => 'Taroon',
