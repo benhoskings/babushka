@@ -139,7 +139,7 @@ module Babushka
 
     def load_deps!
       unless @loaded
-        path.p.glob('**/*.rb').each {|f|
+        path.p.glob('**/*.rb').sort.each {|f|
           Base.sources.load_context :source => self, :path => f do
             load f
           end
