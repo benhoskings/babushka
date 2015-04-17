@@ -29,7 +29,7 @@ end
 dep 'git.installer', :version do
   version.default!('1.8.0')
   requires 'layout.fhs'.with('/usr/local')
-  source "https://git-osx-installer.googlecode.com/files/git-#{version}-intel-universal-snow-leopard.dmg"
+  source "https://sourceforge.net/projects/git-osx-installer/files/git-#{version}-intel-universal-mavericks.dmg/download?use_mirror=autoselect"
   provides "git >= #{version}"
   after {
     sudo "ln -sf /usr/local/git/bin/git* /usr/local/bin"
