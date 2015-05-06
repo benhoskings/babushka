@@ -19,6 +19,9 @@ describe Babushka::SSH do
   end
 
   describe '#log_shell' do
+    before {
+      Babushka::ANSI.stub(:using_colour?) { false }
+    }
     it "should log about the command being run, and run it" do
       # This is messy; refactoring Loghelpers.log will fix it.
       Babushka::LogHelpers.stub(:log)
