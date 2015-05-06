@@ -47,7 +47,6 @@ module Babushka
     def babushka dep_spec, args = {}
       remote_args = [
         '--defaults',
-        '--git-fs',
         '--show-args',
         # No need to send --no-colour explicitly. The remote won't use colour
         # except with an explicit --colour, because its STDOUT isn't a tty.
