@@ -4,7 +4,7 @@ module Babushka
     def pkg_type; :gem end
     def pkg_cmd; 'gem' end
     def manager_key; :gem end
-    def manager_dep; 'rubygems' end
+    def manager_dep; 'core:rubygems' end
 
     def install! pkgs, opts = nil
       super.tap {

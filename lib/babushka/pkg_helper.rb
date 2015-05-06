@@ -7,7 +7,7 @@ module Babushka
     def pkg_binary; pkg_cmd end
 
     def manager_dep
-      'package manager'.with(pkg_binary)
+      'core:package manager'.with(pkg_binary)
     end
 
     def all_manager_keys
