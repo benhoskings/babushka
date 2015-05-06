@@ -3,6 +3,11 @@
 require 'shellwords'
 
 module Babushka
+  # Represents an ssh connection to a remote host.
+  #
+  # This class prioritises simplicity over performance; there's no connection
+  # re-use, or any state apart from the address of the host. Every connection
+  # is new and independent of any others.
   class SSH
 
     attr_reader :host
@@ -11,6 +16,8 @@ module Babushka
       @host = host
     end
 
+    # Run cmd on the remote host via ssh. Arguments will be escaped for the
+    # shell as required.
     def shell *cmd
       # We would do this, but ruby 1.8 can't handle options after a splat:
       #   ShellHelpers.shell("ssh", "-A", host, *cmd, :log => true)
@@ -18,6 +25,9 @@ module Babushka
       ShellHelpers.shell(*args)
     end
 
+    # Log the command to be run on the remote host, including argument details,
+    # and then run it using #shell within an indented log block. The result of
+    # the command will be logged at the end of the indented section.
     def log_shell *cmd
       cmd_message = [
         host.colorize("on grey"),
@@ -29,6 +39,11 @@ module Babushka
       end
     end
 
+    # Run babushka on the remote host with the given dep specification and
+    # arguments, logging the remote command and its output.
+    #
+    # Functionally, this is identical to running babushka manually on the
+    # remote commandline, except that the remote stdin is not a terminal.
     def babushka dep_spec, args = {}
       remote_args = [
         '--defaults',
