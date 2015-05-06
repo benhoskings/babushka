@@ -120,6 +120,12 @@ end
   end
 end
 
+describe "comparator" do
+  it "should return nil on nil input" do
+    (Babushka::VersionStr.new('0.3.1') <=> nil).should be_nil
+  end
+end
+
 describe "comparing" do
   it "should work with other VersionStrs" do
     (Babushka::VersionStr.new('0.3.1') > Babushka::VersionStr.new('0.2.9')).should be_true

@@ -54,7 +54,8 @@ module Babushka
     end
 
     def <=> other
-      raise ArgumentError, "You can't compare the versions of two different things (#{name}, #{other.name})." unless name == other.name
+      return nil if other.nil?
+      return nil unless name == other.name
       version <=> other.version
     end
 
