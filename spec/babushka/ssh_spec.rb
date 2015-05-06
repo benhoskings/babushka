@@ -7,10 +7,6 @@ describe Babushka::SSH do
     Babushka::SSH.new('user@host')
   }
 
-  before {
-    $stdin.stub(:tty?) { false }
-  }
-
   describe '#shell' do
     it "should run remote commands" do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "ls", :log => true)
@@ -19,6 +15,9 @@ describe Babushka::SSH do
   end
 
   describe '#log_shell' do
+    before {
+      Babushka::ANSI.stub(:using_colour?) { false }
+    }
     it "should log about the command being run, and run it" do
       # This is messy; refactoring Loghelpers.log will fix it.
       Babushka::LogHelpers.stub(:log)
@@ -76,19 +75,15 @@ describe Babushka::SSH do
       Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "escaping", "--defaults", "--git-fs", "--show-args", "arg=a\\ gnarly\\ string\\ \\|\\ with\\ \\'many'\n'tricks\\\"", :log => true).and_return(true)
       ssh.babushka('escaping', :arg => "a gnarly string | with 'many\ntricks\"")
     end
-    context "when running on a terminal" do
-      before {
-        $stdin.stub(:tty?).and_return(true)
-      }
-      it "should use colour" do
-        Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "--colour", :log => true).and_return(true)
-        ssh.babushka('git')
-      end
-    end
     describe "passing options" do
       before {
         Babushka::Base.task.stub(:opt).and_return(false)
       }
+      it "should propagate --colour to the remote" do
+        Babushka::Base.task.stub(:opt).with(:"[no_]color").and_return(true)
+        Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "--colour", "version=1.8.3.2", :log => true).and_return(true)
+        ssh.babushka('git', :version => '1.8.3.2')
+      end
       it "should propagate --update to the remote" do
         Babushka::Base.task.stub(:opt).with(:update).and_return(true)
         Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--git-fs", "--show-args", "--update", "version=1.8.3.2", :log => true).and_return(true)

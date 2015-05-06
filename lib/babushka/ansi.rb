@@ -33,8 +33,7 @@ module Babushka
     #     Babushka::ANSI.wrap('babushka', 'underlined blue')  #=> "\e[34;4mbabushka\e[m"
     #     Babushka::ANSI.wrap('babushka', 'reverse')          #=> "\e[7mbabushka\e[m"
     def self.wrap text, description
-      # This means "colour", not "no colour". The "no_" is the flippable bit.
-      if !$stdin.tty? || Babushka::Base.cmdline.opts[:"[no_]color"] == false
+      if !using_colour?
         text
       else
         "#{escape_for(description)}#{text}\e[m"
@@ -67,6 +66,11 @@ module Babushka
 
     def self.linux_pty?
       STDOUT.tty? && (ENV['TERM'] == 'linux')
+    end
+
+    def self.using_colour?
+      # This means "colour", not "no colour". The "no_" is the flippable bit.
+      Babushka::Base.cmdline.opts[:"[no_]color"]
     end
   end
 end

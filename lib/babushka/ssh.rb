@@ -49,7 +49,9 @@ module Babushka
         '--defaults',
         '--git-fs',
         '--show-args',
-        ('--colour' if $stdin.tty?),
+        # No need to send --no-colour explicitly. The remote won't use colour
+        # except with an explicit --colour, because its STDOUT isn't a tty.
+        ('--colour' if Babushka::Base.task.opt(:"[no_]color")),
         ('--update' if Babushka::Base.task.opt(:update)),
         ('--debug'  if Babushka::Base.task.opt(:debug))
       ].compact
