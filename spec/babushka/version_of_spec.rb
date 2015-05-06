@@ -93,7 +93,10 @@ describe "equality" do
   end
 end
 
-describe "comparisons" do
+describe "comparator" do
+  it "should return nil on nil input" do
+    (version_of('ruby', '1.8') <=> nil).should be_nil
+  end
   it "should return nil when the names don't match" do
     (version_of('ruby', '1.8') <=> version_of('mongo', '1.4.2')).should be_nil
   end

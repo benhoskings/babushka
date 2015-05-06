@@ -54,6 +54,7 @@ module Babushka
     end
 
     def <=> other
+      return nil if other.nil?
       return nil unless name == other.name
       version <=> other.version
     end

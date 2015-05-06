@@ -32,6 +32,7 @@ module Babushka
     end
 
     def <=> other
+      return nil if other.nil?
       other = other.to_version unless other.is_a? VersionStr
       max_length = [pieces.length, other.pieces.length].max
       (0...max_length).to_a.pick {|index|
