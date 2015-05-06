@@ -94,10 +94,8 @@ describe "equality" do
 end
 
 describe "comparisons" do
-  it "should fail when the names don't match" do
-    L{
-      version_of('ruby', '1.8') <=> version_of('mongo', '1.4.2')
-    }.should raise_error(ArgumentError, "You can't compare the versions of two different things (ruby, mongo).")
+  it "should return nil when the names don't match" do
+    (version_of('ruby', '1.8') <=> version_of('mongo', '1.4.2')).should be_nil
   end
   it "should defer to VersionStr#<=>" do
     (version_of('ruby', '1.8') <=> version_of('ruby', '1.9')).should == -1
