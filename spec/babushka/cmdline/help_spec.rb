@@ -52,6 +52,7 @@ describe "help" do
         --show-args                  Show the arguments being passed between deps as they're run
         --profile                    Print a per-line timestamp to the debug log
         --git-fs                     [EXPERIMENTAL] Snapshot the root filesystem in a git repo after meeting deps
+        --remote-git-fs              [EXPERIMENTAL] Snapshot the remote host using --git-fs after remote babushka runs
 ")
 
       Babushka::LogHelpers.should_receive(:log).with("\n")
