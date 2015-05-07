@@ -79,6 +79,11 @@ describe Babushka::SSH do
       before {
         Babushka::Base.task.stub(:opt).and_return(false)
       }
+      it "should send --git-fs to the remote when --remote-git-fs is used" do
+        Babushka::Base.task.stub(:opt).with(:remote_git_fs).and_return(true)
+        Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--git-fs", "version=1.8.3.2", :log => true).and_return(true)
+        ssh.babushka('git', :version => '1.8.3.2')
+      end
       it "should propagate --colour to the remote" do
         Babushka::Base.task.stub(:opt).with(:"[no_]color").and_return(true)
         Babushka::ShellHelpers.should_receive(:shell).with("ssh", "-A", "user@host", "babushka", "git", "--defaults", "--show-args", "--colour", "version=1.8.3.2", :log => true).and_return(true)

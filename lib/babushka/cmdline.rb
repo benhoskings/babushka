@@ -43,12 +43,13 @@ module Babushka
     }
 
     handle('meet', 'The main one: run a dep and all its dependencies.') {
-      opt '-n', '--dry-run',      "Check which deps are met, but don't meet any unmet deps"
-      opt '-y', '--defaults',     "Use dep arguments' default values without prompting"
-      opt '-u', '--update',       "Update sources before loading deps from them"
-      opt       '--show-args',    "Show the arguments being passed between deps as they're run"
-      opt       '--profile',      "Print a per-line timestamp to the debug log"
-      opt       '--git-fs',       "[EXPERIMENTAL] Snapshot the root filesystem in a git repo after meeting deps"
+      opt '-n', '--dry-run',       "Check which deps are met, but don't meet any unmet deps"
+      opt '-y', '--defaults',      "Use dep arguments' default values without prompting"
+      opt '-u', '--update',        "Update sources before loading deps from them"
+      opt       '--show-args',     "Show the arguments being passed between deps as they're run"
+      opt       '--profile',       "Print a per-line timestamp to the debug log"
+      opt       '--git-fs',        "[EXPERIMENTAL] Snapshot the root filesystem in a git repo after meeting deps"
+      opt       '--remote-git-fs', "[EXPERIMENTAL] Snapshot the remote host using --git-fs after remote babushka runs"
     }.run {|cmd|
       dep_names, args = cmd.argv.partition {|arg| arg['='].nil? }
       if !(bad_arg = args.detect {|arg| arg[/^\w+=/].nil? }).nil?
