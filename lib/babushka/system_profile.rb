@@ -149,7 +149,6 @@ module Babushka
     end
   end
 
-
   class DebianSystemProfile < LinuxSystemProfile
     def flavour_str; 'Debian' end
     def version; version_info end
