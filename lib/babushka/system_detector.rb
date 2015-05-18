@@ -17,11 +17,7 @@ module Babushka
 
     def self.detect_using_release_file
       if File.exists?('/etc/debian_version')
-        if File.exists?('/etc/lsb-release') && File.read('/etc/lsb-release')[/ubuntu/i]
-          UbuntuSystemProfile
-        else
-          DebianSystemProfile
-        end
+        detect_debian_derivative
       elsif File.exists?('/etc/arch-release')
         ArchSystemProfile
       elsif File.exists?('/etc/fedora-release')
@@ -34,5 +30,16 @@ module Babushka
         SuseSystemProfile
       end
     end
+
+    def self.detect_debian_derivative
+      if File.exists?('/etc/lsb-release') && File.read('/etc/lsb-release')[/ubuntu/i]
+        UbuntuSystemProfile
+      elsif File.exists?('/usr/share/doc/raspberrypi-bootloader-nokernel')
+        RaspbianSystemProfile
+      else
+        DebianSystemProfile
+      end
+    end
+
   end
 end

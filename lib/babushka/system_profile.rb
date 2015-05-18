@@ -159,6 +159,10 @@ module Babushka
     def pkg_helper; AptHelper end
   end
 
+  class RaspbianSystemProfile < DebianSystemProfile;
+    def flavour_str; 'Raspbian' end
+  end
+
   class UbuntuSystemProfile < LinuxSystemProfile
     def flavour_str; 'Ubuntu' end
     def version; version_info.val_for('DISTRIB_RELEASE') end

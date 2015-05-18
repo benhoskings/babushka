@@ -22,14 +22,16 @@ module Babushka
     def source_for_system
       {
         :debian => 'http://http.debian.net/debian',
-        :ubuntu => 'http://archive.ubuntu.com/ubuntu'
+        :ubuntu => 'http://archive.ubuntu.com/ubuntu',
+        :raspbian => 'http://archive.raspbian.org/raspbian',
       }[Babushka.host.flavour]
     end
 
     def source_matcher_for_system
       {
         :debian => %r{http://(ftp\d?\.(\w\w\.)?debian\.org|(http|cdn)\.debian\.net)/debian/?},
-        :ubuntu => %r{http://((\w\w-(.*)-\d\.ec2\.)|(\w\w\.))?archive\.ubuntu\.com/ubuntu/?}
+        :ubuntu => %r{http://((\w\w-(.*)-\d\.ec2\.)|(\w\w\.))?archive\.ubuntu\.com/ubuntu/?},
+        :raspbian => %r{http://(archive|mirrordirector)\.raspbian\.org/raspbian/?},
       }[Babushka.host.flavour]
     end
 
