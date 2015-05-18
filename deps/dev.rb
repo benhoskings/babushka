@@ -12,7 +12,7 @@ dep 'linux build tools', :template => 'bin' do
     via :apt, %w[build-essential autoconf automake libtool]
     via :pacman, 'base-devel'
   }
-  provides %w[gcc g++ make ld autoconf automake libtool]
+  provides %w[gcc g++ make ld autoconf automake libtoolize]
 end
 
 dep 'xcode tools' do
