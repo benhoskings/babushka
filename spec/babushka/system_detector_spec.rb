@@ -32,6 +32,7 @@ describe Babushka::SystemDetector do
       it "should return DebianSystemProfile on Debian boxes" do
         File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
         File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
+        File.should_receive(:exists?).with("/usr/share/doc/raspberrypi-bootloader-nokernel").and_return(false)
         subject.should be_an_instance_of(Babushka::DebianSystemProfile)
       end
       it "should return UbuntuSystemProfile on Ubuntu boxes" do
@@ -39,6 +40,12 @@ describe Babushka::SystemDetector do
         File.should_receive(:exists?).with("/etc/lsb-release").and_return(true)
         File.should_receive(:read).with("/etc/lsb-release").and_return('Ubuntu')
         subject.should be_an_instance_of(Babushka::UbuntuSystemProfile)
+      end
+      it "should return RaspbianSystemProfile on Raspbian boxes" do
+        File.should_receive(:exists?).with("/etc/debian_version").and_return(true)
+        File.should_receive(:exists?).with("/etc/lsb-release").and_return(false)
+        File.should_receive(:exists?).with("/usr/share/doc/raspberrypi-bootloader-nokernel").and_return(true)
+        subject.should be_an_instance_of(Babushka::RaspbianSystemProfile)
       end
       it "should return ArchSystemProfile on Arch boxes" do
         File.should_receive(:exists?).with("/etc/arch-release").and_return(true)

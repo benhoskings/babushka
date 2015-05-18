@@ -61,5 +61,22 @@ describe Babushka::AptHelper do
         'http://lol.ec2.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
       end
     end
+    context 'on raspbian' do
+      before {
+        Babushka.host.stub(:flavour).and_return(:raspbian)
+      }
+      it "should match the root mirror" do
+        'http://archive.raspbian.org/raspbian'[matcher].should_not be_nil
+      end
+      it "should match the mirror director" do
+        'http://mirrordirector.raspbian.org/raspbian'[matcher].should_not be_nil
+      end
+      it "should match a trailing slash" do
+        'http://mirrordirector.raspbian.org/raspbian/'[matcher].should_not be_nil
+      end
+      it "should not match other things" do
+        'http://ec2.archive.ubuntu.com/ubuntu/'[matcher].should be_nil
+      end
+    end
   end
 end

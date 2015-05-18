@@ -149,6 +149,7 @@ module Babushka
     end
   end
 
+
   class DebianSystemProfile < LinuxSystemProfile
     def flavour_str; 'Debian' end
     def version; version_info end
@@ -157,6 +158,10 @@ module Babushka
 
     def get_version_info; File.read('/etc/debian_version') end
     def pkg_helper; AptHelper end
+  end
+
+  class RaspbianSystemProfile < DebianSystemProfile;
+    def flavour_str; 'Raspbian' end
   end
 
   class UbuntuSystemProfile < LinuxSystemProfile
