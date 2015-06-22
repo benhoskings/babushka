@@ -4,7 +4,7 @@ describe "help" do
   context "with no verb" do
     before {
       [
-        "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2012 Ben Hoskings <ben@hoskings.net>",
+        "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) Ben Hoskings <ben@hoskings.net>",
         "\nThe gist:",
         "  #{Babushka::Base.program_name} <command> [options]",
         "\nAlso:",
@@ -34,7 +34,7 @@ describe "help" do
     let(:parser) { Babushka::Cmdline::Parser.for(%w[help meet]) }
     before {
       Babushka::Cmdline::Helpers.should_receive(:log).with(
-        "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) 2012 Ben Hoskings <ben@hoskings.net>"
+        "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) Ben Hoskings <ben@hoskings.net>"
       )
       Babushka::LogHelpers.should_receive(:log).with(
         "\nmeet - The main one: run a dep and all its dependencies."
