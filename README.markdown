@@ -32,7 +32,7 @@ Babushka takes advantage of these ruby libraries:
 
 - [fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://twitter.com/quackingduck) & [Chris Lloyd](http://twitter.com/chrislloyd), for more concise path handling in deps;
 - [inkan](https://github.com/pat/inkan), by [Pat Allan](http://twitter.com/pat), for tracking changes to rendered files;
-- [levenshtein](http://raa.ruby-lang.org/project/levenshtein/), by [Paul Battley](http://twitter.com/threedaymonk), for suggested typo corrections.
+- [Text::Levenshtein](https://github.com/threedaymonk/text), by [Paul Battley](http://twitter.com/threedaymonk), for suggested typo corrections.
 
 Thanks very much to everyone who's contributed to babushka, whether by submitting patches, discussing design ideas with me, testing, or just giving their feedback.
 
