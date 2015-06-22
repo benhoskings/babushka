@@ -20,9 +20,10 @@ Babushka should run on any Unix. OS X and Ubuntu are fully supported, including 
 
 ### acknowledgements
 
-[Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
+Babushka takes advantage of these ruby libraries:
 
-[Levenshtein](http://raa.ruby-lang.org/project/levenshtein/), for typo correction. Thanks to [Paul Battley](http://twitter.com/threedaymonk) for letting me dual-license it under the MIT license.
+- [fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://twitter.com/quackingduck) & [Chris Lloyd](http://twitter.com/chrislloyd), for more concise path handling in deps;
+- [levenshtein](http://raa.ruby-lang.org/project/levenshtein/), by [Paul Battley](http://twitter.com/threedaymonk), for suggested typo corrections.
 
 Thanks very much to everyone who's contributed to babushka, whether by submitting patches, discussing design ideas with me, testing, or just giving their feedback.
 
