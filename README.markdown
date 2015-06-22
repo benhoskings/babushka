@@ -1,4 +1,4 @@
-# babushka: test-driven sysadmin.
+### babushka: test-driven sysadmin.
 
 _[Detailed documentation](http://babushka.me), [rdocs](http://babushka.me/rdoc), [mailing list](http://babushka.me/mailing_list)_
 
@@ -7,7 +7,7 @@ A lot of the tech jobs we do manually aren't challenging or fun, but they're qui
 That's what babushka is for. Once you describe a job using its DSL, babushka can not only accomplish each part of the job, but also check if each part is already satisfied. For each component of the job, a test, along with the code to make that test pass -- test-driven sysadmin.
 
 
-# installing
+### installing
 
 Babushka is best installed using `babushka.me/up`, a script that installs babushka via git (and some dependencies via your system's package manager). It's safe to run on existing systems, and intended to be used as the first shell command on a new system too. You can install babushka this way using `curl` or `wget`:
 
@@ -18,7 +18,7 @@ If you'd rather install manually, all you need to do is clone [the git repo](htt
 Babushka should run on any Unix. OS X and Ubuntu are fully supported, including their respective package managers, homebrew and apt. There is some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, but I'm not familiar with those systems so it might be incomplete. Patches are most welcome.
 
 
-## acknowledgements
+### acknowledgements
 
 [Fancypath](http://github.com/tred/fancypath/), by [Myles Byrne](http://www.myles.id.au/) & [Chris Lloyd](http://thelincolnshirepoacher.com/). It's how I made the paths so fancy.
 
@@ -41,7 +41,7 @@ Thanks to my rubyist friends who've contributed to babushka by submitting patche
 [@ryanbigg](http://twitter.com/ryanbigg).
 
 
-## license
+### license
 
 Babushka is licensed under the three-clause BSD license, except for `lib/levenshtein/levenshtein.rb`, which is licensed under the MIT license.
 
