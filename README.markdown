@@ -1,6 +1,6 @@
 
-Detailed documentation: http://babushka.me
-rdocs: http://babushka.me/rdoc
+Detailed documentation: http://babushka.me<br />
+rdocs: http://babushka.me/rdoc<br />
 Mailing list: http://babushka.me/mailing_list
 
 A lot of the tech jobs we do manually aren't challenging or fun, but they're quite particular and have to be done just right -- they're chores. Things that are important to do, but that are better automated than done manually.
