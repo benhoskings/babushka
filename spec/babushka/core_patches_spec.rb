@@ -209,22 +209,23 @@ describe String, '#to_utf8' do
 end
 
 describe Integer, '#xsecs' do
-  it "should return now for 0" do
+  it "should handle 0" do
     0.xsecs.should == 'now'
   end
-  it "should return less than a minute for 12s" do
-    12.xsecs.should == 'less than a minute'
+  it "should work for seconds" do
+    3.xsecs.should == 'less than a minute'
+    59.xsecs.should == 'less than a minute'
   end
-  it "should return 1 minute for 80s" do
-    80.xsecs.should == '1 minute'
+  it "should work for minutes" do
+    60.xsecs.should == '1 minute'
+    3599.xsecs.should == '59 minutes'
   end
-  it "should return 22 minutes for 1337s" do
-    1337.xsecs.should == '22 minutes'
+  it "should work for hours" do
+    3600.xsecs.should == '1 hour'
+    86399.xsecs.should == '23 hours'
   end
-  it "should return 2 hours for 10000s" do
-    10000.xsecs.should == '2 hours'
-  end
-  it "should return 14 days for 1234567s" do
+  it "should work for days" do
+    86400.xsecs.should == '1 day'
     1234567.xsecs.should == '14 days'
   end
 end

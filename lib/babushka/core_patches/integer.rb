@@ -14,7 +14,7 @@ class Integer
     case value
     when 0; return 'now'
     when 1...60; return "less than a minute#{' ago' if past}"
-    when 61...3600;        value /= 60;        unit = 'minute'
+    when 60...3600;        value /= 60;        unit = 'minute'
     when 3600...(3600*24); value /= 3600;      unit = 'hour'
     else                   value /= (3600*24); unit = 'day'
     end
