@@ -155,7 +155,7 @@ module Babushka
     def release; version[/^(\d+)/, 1] end
     def codename_str; codename.to_s end # They're named just like our symbols; no need to duplicate in SystemDefinition.
 
-    def get_version_info; File.read('/etc/debian_version') end
+    def get_version_info; shell('lsb_release -sr') end
     def pkg_helper; AptHelper end
   end
 
