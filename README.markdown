@@ -3,9 +3,49 @@ Detailed documentation: http://babushka.me<br />
 rdocs: http://babushka.me/rdoc<br />
 Mailing list: http://babushka.me/mailing_list
 
-A lot of the tech jobs we do manually aren't challenging or fun, but they're quite particular and have to be done just right -- they're chores. Things that are important to do, but that are better automated than done manually.
+Babushka is a humble tool for automating computing chores. For each dependency (dep) of the job to do, a test, and the code to make that test pass -- test-driven sysadmin.
 
-That's what babushka is for. Once you describe a job using its DSL, babushka can not only accomplish each part of the job, but also check if each part is already satisfied. For each component of the job, a test, along with the code to make that test pass -- test-driven sysadmin.
+    dep 'on git branch', :branch do
+      requires 'git'
+      met? {
+        current_branch = shell('git branch').split("\n").collapse(/^\* /).first
+        log "Currently on #{current_branch}."
+        current_branch == branch
+      }
+      meet {
+        log_shell("Checking out #{branch}", 'git', 'checkout', branch)
+      }
+    end
+
+That's an expository dep that can achieve the modest goal of being on the correct git branch. Notice the parameter denoted by the :branch symbol, and the clear separation of test, in the `met?` block, and code, in `meet`.
+
+Running this dep when a branch change is required shows how babushka does its work in blocks of met/meet/met: a failing test, an action blindly taken, and then the same test again, hopefully passing now as a result.
+
+    $ bin/babushka.rb 'on git branch' branch=stable
+    on git branch {
+      git {
+        'git' runs from /usr/bin.
+        ✓ git is 2.3.8, which is >= 1.6.
+      } ✓ git
+      Currently on master.
+      meet {
+        Checking out stable... done.
+      }
+      Currently on stable.
+    } ✓ on git branch
+
+If we're already on the right branch, though, the initial test is already passing, and so there's no work to do.
+
+    $ bin/babushka.rb 'on git branch' branch=stable
+    on git branch {
+      git {
+        'git' runs from /usr/bin.
+        ✓ git is 2.3.8, which is >= 1.6.
+      } ✓ git
+      Currently on stable.
+    } ✓ on git branch
+
+There are other things to learn about, like dep requirements (shown above), dep templates, dep sources, and the few remaining words in babushka's DSL, but this is the important bit. If you string a few dozen deps like this one together, you can provision a server from scratch, or do anything else you like.
 
 
 ### Installing
