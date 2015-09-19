@@ -218,14 +218,14 @@ describe Integer, '#xsecs' do
   end
   it "should work for minutes" do
     60.xsecs.should == '1 minute'
-    3599.xsecs.should == '59 minutes'
+    (3600-1).xsecs.should == '59 minutes'
   end
   it "should work for hours" do
     3600.xsecs.should == '1 hour'
-    86399.xsecs.should == '23 hours'
+    (3600*24 - 1).xsecs.should == '23 hours'
   end
   it "should work for days" do
-    86400.xsecs.should == '1 day'
-    1234567.xsecs.should == '14 days'
+    (3600*24).xsecs.should == '1 day'
+    (3600*24*7 - 1).xsecs.should == '6 days'
   end
 end
