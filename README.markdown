@@ -3,17 +3,19 @@
 
 Babushka is a humble tool for automating computing chores. For each dependency (dep) of the job to do, a test, and the code to make that test pass -- test-driven sysadmin.
 
-    dep 'on git branch', :branch do
-      requires 'git'
-      met? {
-        current_branch = shell('git branch').split("\n").collapse(/^\* /).first
-        log "Currently on #{current_branch}."
-        current_branch == branch
-      }
-      meet {
-        log_shell("Checking out #{branch}", 'git', 'checkout', branch)
-      }
-    end
+```ruby
+dep 'on git branch', :branch do
+  requires 'git'
+  met? {
+    current_branch = shell('git branch').split("\n").collapse(/^\* /).first
+    log "Currently on #{current_branch}."
+    current_branch == branch
+  }
+  meet {
+    log_shell("Checking out #{branch}", 'git', 'checkout', branch)
+  }
+end
+```
 
 That's an expository dep that can achieve the modest goal of being on the correct git branch. Notice the parameter denoted by the :branch symbol, and the clear separation of test, in the `met?` block, and code, in `meet`.
 
