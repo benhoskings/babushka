@@ -81,11 +81,8 @@ module Babushka
         opts[:from].find(dep_spec) || dep_for(dep_spec)
       else # Otherwise, try the standard set.
         matches = default.map {|source| source.find(dep_spec) }.flatten.compact
-        if matches.length > 1
-          log "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) contain a dep called '#{dep_spec}'."
-        else
-          matches.first
-        end
+        log_warn "Multiple sources (#{matches.map(&:dep_source).map(&:name).join(',')}) define '#{dep_spec}'; choosing '#{matches.first.full_name}'." if matches.length > 1
+        matches.first
       end
     end
 
