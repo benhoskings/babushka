@@ -27,7 +27,7 @@ dep 'git.bin', :version do
 end
 
 dep 'git.installer', :version do
-  version.default!('1.8.0')
+  version.default!('2.5.3')
   requires 'layout.fhs'.with('/usr/local')
   source "https://sourceforge.net/projects/git-osx-installer/files/git-#{version}-intel-universal-mavericks.dmg/download?use_mirror=autoselect"
   provides "git >= #{version}"
@@ -37,8 +37,8 @@ dep 'git.installer', :version do
 end
 
 dep 'git.src', :version do
-  version.default!('1.8.0')
+  version.default!('2.5.3')
   requires 'gettext.lib'
-  source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
+  source "https://github.com/git/git/archive/v#{version}.zip"
   provides "git >= #{version}"
 end

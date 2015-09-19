@@ -73,15 +73,20 @@ module Babushka
       end
     end
 
-    # Returns this dep's name, including its source name as a prefix if the
-    # source is remote.
+    # Returns this dep's name, including its source's name as a prefix.
     #
-    # The contextual name is the name you can use to refer to unambiguously
-    # refer to this dep on your system; i.e. the name that properly identifies
-    # the dep, taking your (possibly customised) source names into account.
+    # The full name is the name you can use to refer to unambiguously refer to
+    # this dep on your system; i.e. the name that properly identifies the dep,
+    # taking your (possibly customised) source names into account.
+    def full_name
+      "#{dep_source.name}:#{name}"
+    end
+
+    # Returns this dep's name, or the full name if the source is remote (i.e. if
+    # the full name is required to reference the dep).
     def contextual_name
       # TODO This isn't quite right; it should be dep_source.default? instead."
-      dep_source.remote? ? "#{dep_source.name}:#{name}" : name
+      dep_source.remote? ? full_name : name
     end
 
     # Return this dep's name, first removing the template suffix if one is

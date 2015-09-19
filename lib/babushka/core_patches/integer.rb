@@ -11,15 +11,28 @@ class Integer
     value = self.abs
     past = (self < 0)
 
-    case value
-    when 0; return 'now'
-    when 1...60; return "less than a minute#{' ago' if past}"
-    when 61...3600;        value /= 60;        unit = 'minute'
-    when 3600...(3600*24); value /= 3600;      unit = 'hour'
-    else                   value /= (3600*24); unit = 'day'
+    if value == 0
+      'now'
+    elsif value < 60
+      "less than a minute#{' ago' if past}"
+    else
+      divisor, threshold, unit = [
+        [1, 1, 'less than a minute'],
+        [60, 50, 'minute'],
+        [3600, 3600, 'hour'],
+        [3600*24, 3600*24, 'day'],
+        [3600*24*7, 3600*24*7, 'week'],
+        [3600*24*30, 3600*24*28, 'month'], # 28: 4 weeks
+        [3600*24*365, 3600*24*360, 'year'], # 360: 12 30-day months
+        [1, Float::INFINITY, 'forever']
+      ].each_cons(2).detect {|(this_threshold, next_threshold)|
+        value < next_threshold[1]
+      }.first
+
+      value /= divisor
+      value = 1 if value == 0
+      "#{value.commas} #{unit}#{'s' unless value == 1}#{' ago' if past}"
     end
 
-    value = 1 if value == 0
-    "#{value.commas} #{unit}#{'s' unless value == 1}#{' ago' if past}"
   end
 end

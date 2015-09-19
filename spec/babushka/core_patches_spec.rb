@@ -209,22 +209,35 @@ describe String, '#to_utf8' do
 end
 
 describe Integer, '#xsecs' do
-  it "should return now for 0" do
+  it "should handle 0" do
     0.xsecs.should == 'now'
   end
-  it "should return less than a minute for 12s" do
-    12.xsecs.should == 'less than a minute'
+  it "should work for seconds" do
+    3.xsecs.should == 'less than a minute'
+    59.xsecs.should == 'less than a minute'
   end
-  it "should return 1 minute for 80s" do
-    80.xsecs.should == '1 minute'
+  it "should work for minutes" do
+    60.xsecs.should == '1 minute'
+    (3600-1).xsecs.should == '59 minutes'
   end
-  it "should return 22 minutes for 1337s" do
-    1337.xsecs.should == '22 minutes'
+  it "should work for hours" do
+    3600.xsecs.should == '1 hour'
+    (3600*24 - 1).xsecs.should == '23 hours'
   end
-  it "should return 2 hours for 10000s" do
-    10000.xsecs.should == '2 hours'
+  it "should work for days" do
+    (3600*24).xsecs.should == '1 day'
+    (3600*24*7 - 1).xsecs.should == '6 days'
   end
-  it "should return 14 days for 1234567s" do
-    1234567.xsecs.should == '14 days'
+  it "should work for weeks" do
+    (3600*24*7).xsecs.should == '1 week'
+    (3600*24*27 - 1).xsecs.should == '3 weeks'
+  end
+  it "should work for months" do
+    (3600*24*28).xsecs.should == '1 month'
+    (3600*24*360 - 1).xsecs.should == '11 months'
+  end
+  it "should work for years" do
+    (3600*24*365).xsecs.should == '1 year'
+    (3600*24*365*20).xsecs.should == '20 years'
   end
 end
