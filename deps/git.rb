@@ -39,6 +39,6 @@ end
 dep 'git.src', :version do
   version.default!('1.8.0')
   requires 'gettext.lib'
-  source "http://git-core.googlecode.com/files/git-#{version}.tar.gz"
+  source "https://github.com/git/git/archive/v#{version}.zip"
   provides "git >= #{version}"
 end
