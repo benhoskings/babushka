@@ -1,7 +1,5 @@
 
-Detailed documentation: http://babushka.me<br />
-rdocs: http://babushka.me/rdoc<br />
-Mailing list: http://babushka.me/mailing_list
+### What
 
 Babushka is a humble tool for automating computing chores. For each dependency (dep) of the job to do, a test, and the code to make that test pass -- test-driven sysadmin.
 
@@ -46,6 +44,8 @@ If we're already on the right branch, though, the initial test is already passin
     } ✓ on git branch
 
 There are other things to learn about, like dep requirements (shown above), dep templates, dep sources, and the few remaining words in babushka's DSL, but this is the important bit. If you string a few dozen deps like this one together, you can provision a server from scratch, or do anything else you like.
+
+There is much more detailed documentation on [the website](http://babushka.me), along with per-method documentation which can be viewed [here](http://babushka.me/rdoc).
 
 
 ### Installing
