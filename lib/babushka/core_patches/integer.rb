@@ -21,6 +21,9 @@ class Integer
         [60, 'minute'],
         [3600, 'hour'],
         [3600*24, 'day'],
+        [3600*24*7, 'week'],
+        [3600*24*30, 'month'],
+        [3600*24*365, 'year'],
         [Float::INFINITY, 'lawl']
       ].each_cons(2).detect {|(this_threshold, next_threshold)|
         value < next_threshold.first

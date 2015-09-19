@@ -228,4 +228,16 @@ describe Integer, '#xsecs' do
     (3600*24).xsecs.should == '1 day'
     (3600*24*7 - 1).xsecs.should == '6 days'
   end
+  it "should work for weeks" do
+    (3600*24*7).xsecs.should == '1 week'
+    (3600*24*30 - 1).xsecs.should == '4 weeks'
+  end
+  it "should work for months" do
+    (3600*24*30).xsecs.should == '1 month'
+    (3600*24*365 - 1).xsecs.should == '12 months'
+  end
+  it "should work for years" do
+    (3600*24*365).xsecs.should == '1 year'
+    (3600*24*365*20).xsecs.should == '20 years'
+  end
 end
