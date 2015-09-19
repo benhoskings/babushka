@@ -5,7 +5,6 @@ Babushka is a humble tool for automating computing chores. For each dependency (
 
 ```ruby
 dep 'on git branch', :branch do
-  requires 'git'
   met? {
     current_branch = shell('git branch').split("\n").collapse(/^\* /).first
     log "Currently on #{current_branch}."
@@ -17,16 +16,12 @@ dep 'on git branch', :branch do
 end
 ```
 
-That's an expository dep that can achieve the modest goal of being on the correct git branch. Notice the parameter denoted by the :branch symbol, and the clear separation of test, in the `met?` block, and code, in `meet`.
+That's an expository dep that can achieve the modest goal of being on the correct git branch. Notice the parameter denoted by the :branch symbol, and the two DSL words `met?` and `meet`: there's a clear separation of test (is the dependency met?) and code (meet the dependency).
 
 Running this dep when a branch change is required shows how babushka does its work in blocks of met/meet/met: a failing test, an action blindly taken, and then the same test again, hopefully passing now as a result.
 
     $ bin/babushka.rb 'on git branch' branch=stable
     on git branch {
-      git {
-        'git' runs from /usr/bin.
-        ✓ git is 2.3.8, which is >= 1.6.
-      } ✓ git
       Currently on master.
       meet {
         Checking out stable... done.
@@ -38,6 +33,21 @@ If we're already on the right branch, though, the initial test is already passin
 
     $ bin/babushka.rb 'on git branch' branch=stable
     on git branch {
+      Currently on stable.
+    } ✓ on git branch
+
+That's all very well for one isolated task. To achieve something bigger, tasks have to trigger other ones, which is where the third DSL word `requires` comes in.
+
+```ruby
+dep 'on git branch', :branch do
+  requires 'git'
+  # ...
+```
+
+All the deps listed as requirements of this one have to succeed before this one is even attempted. That reflects reality: asking if we're on the right git branch doesn't even make sense if git isn't installed.
+
+    $ bin/babushka.rb 'on git branch' branch=stable
+    on git branch {
       git {
         'git' runs from /usr/bin.
         ✓ git is 2.3.8, which is >= 1.6.
@@ -45,7 +55,7 @@ If we're already on the right branch, though, the initial test is already passin
       Currently on stable.
     } ✓ on git branch
 
-There are other things to learn about, like dep requirements (shown above), dep templates, dep sources, and the few remaining words in babushka's DSL, but this is the important bit. If you string a few dozen deps like this one together, you can provision a server from scratch, or do anything else you like.
+There are other things to learn about, like dep templates, dep sources, and the few remaining words in babushka's DSL, but the above is the nut of it. If you string a few dozen deps like this one together, you can provision a server from scratch, or do anything else you like.
 
 There is much more detailed documentation on [the website](http://babushka.me), along with per-method documentation which can be viewed [here](http://babushka.me/rdoc).
 
