@@ -104,6 +104,21 @@ describe Babushka::SystemProfile do
         profile.description.should == 'Unknown Linux'
       end
 
+      context 'on a Debian 8 box' do
+        let(:profile) { Babushka::DebianSystemProfile.new }
+        before { profile.stub(:get_version_info).and_return(%Q{8.1}) }
+
+        it "should have correct name and version info" do
+          info_for(profile).should == [:linux, :debian, "8", "8.1", :jessie]
+        end
+        it "should have correct version info" do
+          info_strs_for(profile).should == ['Linux', 'Debian', 'jessie']
+        end
+        it "should be described correctly" do
+          profile.description.should == 'Debian Linux 8.1 (jessie)'
+        end
+      end
+
       context 'on a Debian 7 box' do
         let(:profile) { Babushka::DebianSystemProfile.new }
         before { profile.stub(:get_version_info).and_return(%Q{7.5}) }
