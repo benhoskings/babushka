@@ -24,9 +24,9 @@ class Integer
         [3600*24*7, 3600*24*7, 'week'],
         [3600*24*30, 3600*24*28, 'month'], # 28: 4 weeks
         [3600*24*365, 3600*24*360, 'year'], # 360: 12 30-day months
-        [1, Float::INFINITY, 'forever']
+        [1, :infinity, 'forever']
       ].each_cons(2).detect {|(this_threshold, next_threshold)|
-        value < next_threshold[1]
+        next_threshold[1] == :infinity || value < next_threshold[1]
       }.first
 
       value /= divisor
