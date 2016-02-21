@@ -69,6 +69,9 @@ module Babushka
           '13.10' => :saucy,
           '14.04' => :trusty,
           '14.10' => :utopic,
+          '15.04' => :vivd,
+          '15.10' => :wily,
+          '16.04' => :xenial,
         },
         :debian => {
           '4' => :etch,
@@ -138,6 +141,9 @@ module Babushka
           '13.10' => 'Saucy Salamander',
           '14.04' => 'Trusty Tahr',
           '14.10' => 'Utopic Unicorn',
+          '15.04' => 'Vivid Vervet',
+          '15.10' => 'Wily Werewolf',
+          '16.04' => 'Xenial Xerus',
         },
         :redhat => {
           '3' => 'Taroon',
