@@ -18,6 +18,16 @@ def tmp_prefix
   Babushka::Specs.tmp_prefix
 end
 
+RSpec.configure do |config|
+  config.expect_with :rspec
+  config.mock_with :rspec
+
+  config.disable_monkey_patching!
+
+  config.example_status_persistence_file_path = "spec/examples.txt"
+  config.default_formatter = 'doc' if config.files_to_run.one?
+end
+
 module Babushka
   module Specs
     def self.tmp_prefix

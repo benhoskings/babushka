@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Babushka::SystemProfile do
+RSpec.describe Babushka::SystemProfile do
   let(:profile) {
     Babushka::SystemDetector.profile_for_host
   }
@@ -21,72 +21,72 @@ describe Babushka::SystemProfile do
       let(:profile) { Babushka::UnknownSystem.new }
 
       it "should report correct name and version info" do
-        info_for(profile).should == [:unknown, :unknown, 'unknown', 'unknown', :unknown]
+        expect(info_for(profile)).to eq([:unknown, :unknown, 'unknown', 'unknown', :unknown])
       end
       it "should report correct info strings" do
-        info_strs_for(profile).should == ['Unknown', 'Unknown', 'Unknown']
+        expect(info_strs_for(profile)).to eq(['Unknown', 'Unknown', 'Unknown'])
       end
       it "should be described correctly" do
-        profile.description.should == 'Unknown system'
+        expect(profile.description).to eq('Unknown system')
       end
     end
 
     describe 'on an OS X box' do
       let(:profile) { Babushka::OSXSystemProfile.new }
-      before { profile.stub(:get_version_info).and_return("ProductName:  Mac OS X\nProductVersion: 10.8.4\nBuildVersion: 12E55") }
+      before { allow(profile).to receive(:get_version_info).and_return("ProductName:  Mac OS X\nProductVersion: 10.8.4\nBuildVersion: 12E55") }
 
       it "should have correct system info" do
-        info_for(profile).should == [:osx, :osx, '10.8', '10.8.4', :mountain_lion]
+        expect(info_for(profile)).to eq([:osx, :osx, '10.8', '10.8.4', :mountain_lion])
       end
       it "should have correct version info" do
-        info_strs_for(profile).should == ['Mac OS X', 'Mac OS X', 'Mountain Lion']
+        expect(info_strs_for(profile)).to eq(['Mac OS X', 'Mac OS X', 'Mountain Lion'])
       end
       it "should have the right description" do
-        profile.description.should == 'Mac OS X 10.8.4 (Mountain Lion)'
+        expect(profile.description).to eq('Mac OS X 10.8.4 (Mountain Lion)')
       end
     end
 
     describe 'on a BSD box' do
       let(:profile) { Babushka::BSDSystemProfile.new }
-      before { profile.stub(:shell).with('uname -r').and_return("1.2.3") }
+      before { allow(profile).to receive(:shell).with('uname -r').and_return("1.2.3") }
 
       it "should have correct system info" do
-        info_for(profile).should == [:bsd, :unknown, '1.2', '1.2.3', nil]
+        expect(info_for(profile)).to eq([:bsd, :unknown, '1.2', '1.2.3', nil])
       end
       it "should have correct version info" do
-        info_strs_for(profile).should == ['BSD', 'Unknown', nil]
+        expect(info_strs_for(profile)).to eq(['BSD', 'Unknown', nil])
       end
       it "should be described correctly" do
-        profile.description.should == 'Unknown BSD 1.2.3'
+        expect(profile.description).to eq('Unknown BSD 1.2.3')
       end
 
       describe 'on a FreeBSD box' do
         let(:profile) { Babushka::FreeBSDSystemProfile.new }
-        before { profile.stub(:shell).with('uname -r').and_return("9.0-RELEASE") }
+        before { allow(profile).to receive(:shell).with('uname -r').and_return("9.0-RELEASE") }
 
         it "should have correct system info" do
-          info_for(profile).should == [:bsd, :freebsd, '9.0-RELEASE', '9.0-RELEASE', nil]
+          expect(info_for(profile)).to eq([:bsd, :freebsd, '9.0-RELEASE', '9.0-RELEASE', nil])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['BSD', 'FreeBSD', nil]
+          expect(info_strs_for(profile)).to eq(['BSD', 'FreeBSD', nil])
         end
         it "should be described correctly" do
-          profile.description.should == 'FreeBSD 9.0-RELEASE'
+          expect(profile.description).to eq('FreeBSD 9.0-RELEASE')
         end
       end
 
       describe 'on a DragonFly box' do
         let(:profile) { Babushka::DragonFlySystemProfile.new }
-        before { profile.stub(:shell).with('uname -r').and_return("1.2.3") }
+        before { allow(profile).to receive(:shell).with('uname -r').and_return("1.2.3") }
 
         it "should have correct system info" do
-          info_for(profile).should == [:bsd, :dragonfly, '1.2', '1.2.3', nil]
+          expect(info_for(profile)).to eq([:bsd, :dragonfly, '1.2', '1.2.3', nil])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['BSD', 'DragonFly', nil]
+          expect(info_strs_for(profile)).to eq(['BSD', 'DragonFly', nil])
         end
         it "should be described correctly" do
-          profile.description.should == 'DragonFly BSD 1.2.3'
+          expect(profile.description).to eq('DragonFly BSD 1.2.3')
         end
       end
     end
@@ -95,132 +95,132 @@ describe Babushka::SystemProfile do
       let(:profile) { Babushka::LinuxSystemProfile.new }
 
       it "should have correct system info" do
-        info_for(profile).should == [:linux, :unknown, nil, nil, nil]
+        expect(info_for(profile)).to eq([:linux, :unknown, nil, nil, nil])
       end
       it "should have correct version info" do
-        info_strs_for(profile).should == ['Linux', 'Unknown', nil]
+        expect(info_strs_for(profile)).to eq(['Linux', 'Unknown', nil])
       end
       it "should be described correctly" do
-        profile.description.should == 'Unknown Linux'
+        expect(profile.description).to eq('Unknown Linux')
       end
 
       context 'on a Debian 8 box' do
         let(:profile) { Babushka::DebianSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return(%Q{8.1}) }
+        before { allow(profile).to receive(:get_version_info).and_return(%Q{8.1}) }
 
         it "should have correct name and version info" do
-          info_for(profile).should == [:linux, :debian, "8", "8.1", :jessie]
+          expect(info_for(profile)).to eq([:linux, :debian, "8", "8.1", :jessie])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Debian', 'jessie']
+          expect(info_strs_for(profile)).to eq(['Linux', 'Debian', 'jessie'])
         end
         it "should be described correctly" do
-          profile.description.should == 'Debian Linux 8.1 (jessie)'
+          expect(profile.description).to eq('Debian Linux 8.1 (jessie)')
         end
       end
 
       context 'on a Debian 7 box' do
         let(:profile) { Babushka::DebianSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return(%Q{7.5}) }
+        before { allow(profile).to receive(:get_version_info).and_return(%Q{7.5}) }
 
         it "should have correct name and version info" do
-          info_for(profile).should == [:linux, :debian, "7", "7.5", :wheezy]
+          expect(info_for(profile)).to eq([:linux, :debian, "7", "7.5", :wheezy])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Debian', 'wheezy']
+          expect(info_strs_for(profile)).to eq(['Linux', 'Debian', 'wheezy'])
         end
         it "should be described correctly" do
-          profile.description.should == 'Debian Linux 7.5 (wheezy)'
+          expect(profile.description).to eq('Debian Linux 7.5 (wheezy)')
         end
       end
 
       context 'on a Debian 6 box' do
         let(:profile) { Babushka::DebianSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return(%Q{6.0.4}) }
+        before { allow(profile).to receive(:get_version_info).and_return(%Q{6.0.4}) }
 
         it "should have correct name and version info" do
-          info_for(profile).should == [:linux, :debian, "6", "6.0.4", :squeeze]
+          expect(info_for(profile)).to eq([:linux, :debian, "6", "6.0.4", :squeeze])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Debian', 'squeeze']
+          expect(info_strs_for(profile)).to eq(['Linux', 'Debian', 'squeeze'])
         end
         it "should be described correctly" do
-          profile.description.should == 'Debian Linux 6.0.4 (squeeze)'
+          expect(profile.description).to eq('Debian Linux 6.0.4 (squeeze)')
         end
       end
 
       context 'on an Ubuntu box' do
         let(:profile) { Babushka::UbuntuSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return(%Q{DISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=12.04\nDISTRIB_CODENAME=precise\nDISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"}) }
+        before { allow(profile).to receive(:get_version_info).and_return(%Q{DISTRIB_ID=Ubuntu\nDISTRIB_RELEASE=12.04\nDISTRIB_CODENAME=precise\nDISTRIB_DESCRIPTION="Ubuntu 12.04.2 LTS"}) }
 
         it "should have correct name and version info" do
-          info_for(profile).should == [:linux, :ubuntu, "12.04", "12.04", :precise]
+          expect(info_for(profile)).to eq([:linux, :ubuntu, "12.04", "12.04", :precise])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Ubuntu', 'Precise Pangolin']
+          expect(info_strs_for(profile)).to eq(['Linux', 'Ubuntu', 'Precise Pangolin'])
         end
         it "should be described correctly" do
-          profile.description.should == 'Ubuntu Linux 12.04 (Precise Pangolin)'
+          expect(profile.description).to eq('Ubuntu Linux 12.04 (Precise Pangolin)')
         end
       end
 
       context 'on a Redhat box' do
         let(:profile) { Babushka::RedhatSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("Red Hat Enterprise Linux Server release 6.4 (Santiago)") }
+        before { allow(profile).to receive(:get_version_info).and_return("Red Hat Enterprise Linux Server release 6.4 (Santiago)") }
 
         it "should have correct system info" do
-          info_for(profile).should == [:linux, :redhat, "6", "6.4", :santiago]
+          expect(info_for(profile)).to eq([:linux, :redhat, "6", "6.4", :santiago])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Red Hat', 'Santiago']
+          expect(info_strs_for(profile)).to eq(['Linux', 'Red Hat', 'Santiago'])
         end
         it "should be described correctly" do
-          profile.description.should == 'Red Hat Linux 6.4 (Santiago)'
+          expect(profile.description).to eq('Red Hat Linux 6.4 (Santiago)')
         end
       end
 
       context 'on a CentOS box' do
         let(:profile) { Babushka::CentOSSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("CentOS release 6.4 (Final)") }
+        before { allow(profile).to receive(:get_version_info).and_return("CentOS release 6.4 (Final)") }
 
         it "should have correct system info" do
-          info_for(profile).should == [:linux, :centos, "6", "6.4", nil]
+          expect(info_for(profile)).to eq([:linux, :centos, "6", "6.4", nil])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'CentOS', nil]
+          expect(info_strs_for(profile)).to eq(['Linux', 'CentOS', nil])
         end
         it "should be described correctly" do
-          profile.description.should == 'CentOS Linux 6.4'
+          expect(profile.description).to eq('CentOS Linux 6.4')
         end
       end
 
       context 'on a Fedora box' do
         let(:profile) { Babushka::FedoraSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("Fedora release 19 (Schrödinger's Cat)") }
+        before { allow(profile).to receive(:get_version_info).and_return("Fedora release 19 (Schrödinger's Cat)") }
 
         it "should report correct name and version info" do
-          info_for(profile).should == [:linux, :fedora, "19", "19", :schrodinger]
+          expect(info_for(profile)).to eq([:linux, :fedora, "19", "19", :schrodinger])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Fedora', "Schrödinger's Cat"]
+          expect(info_strs_for(profile)).to eq(['Linux', 'Fedora', "Schrödinger's Cat"])
         end
         it "should be described correctly" do
-          profile.description.should == "Fedora Linux 19 (Schrödinger's Cat)"
+          expect(profile.description).to eq("Fedora Linux 19 (Schrödinger's Cat)")
         end
       end
 
       context 'on an openSUSE box' do
         let(:profile) { Babushka::SuseSystemProfile.new }
-        before { profile.stub(:get_version_info).and_return("openSUSE 13.1 (x86_64)") }
+        before { allow(profile).to receive(:get_version_info).and_return("openSUSE 13.1 (x86_64)") }
 
         it "should report correct name and version info" do
-          info_for(profile).should == [:linux, :opensuse, "13", "13.1", nil]
+          expect(info_for(profile)).to eq([:linux, :opensuse, "13", "13.1", nil])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'openSUSE', nil]
+          expect(info_strs_for(profile)).to eq(['Linux', 'openSUSE', nil])
         end
         it "should be described correctly" do
-          profile.description.should == 'openSUSE Linux 13.1'
+          expect(profile.description).to eq('openSUSE Linux 13.1')
         end
       end
 
@@ -228,13 +228,13 @@ describe Babushka::SystemProfile do
         let(:profile) { Babushka::ArchSystemProfile.new }
 
         it "should report correct name and version info" do
-          info_for(profile).should == [:linux, :arch, nil, nil, nil]
+          expect(info_for(profile)).to eq([:linux, :arch, nil, nil, nil])
         end
         it "should have correct version info" do
-          info_strs_for(profile).should == ['Linux', 'Arch', nil]
+          expect(info_strs_for(profile)).to eq(['Linux', 'Arch', nil])
         end
         it "should be described correctly" do
-          profile.description.should == 'Arch Linux'
+          expect(profile.description).to eq('Arch Linux')
         end
       end
     end
@@ -243,77 +243,77 @@ describe Babushka::SystemProfile do
   describe '#hostname' do
     let(:profile) { Babushka::SystemProfile.new }
     it "should shell out to fetch the hostname" do
-      Babushka::ShellHelpers.should_receive(:shell).with('hostname -f').and_return('spec.local')
-      profile.hostname.should == 'spec.local'
+      expect(Babushka::ShellHelpers).to receive(:shell).with('hostname -f').and_return('spec.local')
+      expect(profile.hostname).to eq('spec.local')
     end
   end
 
   describe '#cpu_type' do
     it "should return the type reported by `uname`" do
-      profile.should_receive(:shell).with('uname -m').and_return('x86')
-      profile.cpu_type.should == 'x86'
+      expect(profile).to receive(:shell).with('uname -m').and_return('x86')
+      expect(profile.cpu_type).to eq('x86')
     end
     it "should substitute 'x86_64' for 'amd64'" do
-      profile.should_receive(:shell).with('uname -m').and_return('amd64')
-      profile.cpu_type.should == 'x86_64'
+      expect(profile).to receive(:shell).with('uname -m').and_return('amd64')
+      expect(profile.cpu_type).to eq('x86_64')
     end
   end
 
   describe '#cpus' do
     it "should work on OS X" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
-      profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
-      profile.cpus.should == 4
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("Darwin")
+      expect(profile).to receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
+      expect(profile.cpus).to eq(4)
     end
     it "should work on Linux" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
-      profile.should_receive(:shell).with("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").and_return("    4")
-      profile.cpus.should == 4
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("Linux")
+      expect(profile).to receive(:shell).with("cat /proc/cpuinfo | grep '^processor\\b' | wc -l").and_return("    4")
+      expect(profile.cpus).to eq(4)
     end
     it "should work on FreeBSD" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
-      profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
-      profile.cpus.should == 4
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("FreeBSD")
+      expect(profile).to receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
+      expect(profile.cpus).to eq(4)
     end
     it "should work on DragonFly" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
-      profile.should_receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
-      profile.cpus.should == 4
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("DragonFly")
+      expect(profile).to receive(:shell).with('sysctl -n hw.ncpu').and_return("4")
+      expect(profile.cpus).to eq(4)
     end
   end
 
   describe '#total_memory' do
     it "should work on OS X" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
-      profile.should_receive(:shell).with('sysctl -n hw.memsize').and_return("4294967296")
-      profile.total_memory.should == 4294967296
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("Darwin")
+      expect(profile).to receive(:shell).with('sysctl -n hw.memsize').and_return("4294967296")
+      expect(profile.total_memory).to eq(4294967296)
     end
     it "should work on Linux" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
-      profile.should_receive(:shell).with('free -b').and_return("             total       used       free     shared    buffers     cached
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("Linux")
+      expect(profile).to receive(:shell).with('free -b').and_return("             total       used       free     shared    buffers     cached
 Mem:    1039704064  930856960  108847104          0    2244608  751648768
 -/+ buffers/cache:  176963584  862740480
 Swap:            0          0          0
 ")
-      profile.total_memory.should == 1039704064
+      expect(profile.total_memory).to eq(1039704064)
     end
     it "should work on FreeBSD" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("FreeBSD")
-      profile.should_receive(:shell).with('sysctl -n hw.realmem').and_return("242647040")
-      profile.total_memory.should == 242647040
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("FreeBSD")
+      expect(profile).to receive(:shell).with('sysctl -n hw.realmem').and_return("242647040")
+      expect(profile.total_memory).to eq(242647040)
     end
     it "should work on DragonFly" do
-      Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("DragonFly")
-      profile.should_receive(:shell).with('sysctl -n hw.physmem').and_return("242647040")
-      profile.total_memory.should == 242647040
+      expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("DragonFly")
+      expect(profile).to receive(:shell).with('sysctl -n hw.physmem').and_return("242647040")
+      expect(profile.total_memory).to eq(242647040)
     end
   end
 
   describe '#public_ip' do
     context "on OS X" do
       before {
-        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Darwin")
-        profile.should_receive(:shell).with('netstat -nr').and_return("
+        expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("Darwin")
+        expect(profile).to receive(:shell).with('netstat -nr').and_return("
 Routing tables
 
 Internet:
@@ -345,7 +345,7 @@ ff02::%lo0/32                           fe80::1%lo0                     UmCI    
 ff02::%en0/32                           link#4                          UmCI            en0
 ff02::fb%en0                            link#4                          UHmW3I          en0    350
         ")
-        profile.should_receive(:shell).with('ifconfig', 'en0').and_return("
+        expect(profile).to receive(:shell).with('ifconfig', 'en0').and_return("
 en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	ether 60:c5:47:03:5b:6a
 	inet6 fe80::62c5:47ff:fe03:5b6a%en0 prefixlen 64 scopeid 0x4
@@ -355,21 +355,21 @@ en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
         ")
       }
       it "should return the correct IP" do
-        profile.public_ip.should == '10.0.1.31'
+        expect(profile.public_ip).to eq('10.0.1.31')
       end
     end
 
     context "on Linux" do
       before {
-        Babushka::ShellHelpers.should_receive(:shell).with("uname -s").and_return("Linux")
-        profile.should_receive(:shell).with('netstat -nr').and_return("
+        expect(Babushka::ShellHelpers).to receive(:shell).with("uname -s").and_return("Linux")
+        expect(profile).to receive(:shell).with('netstat -nr').and_return("
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
 49.156.17.0     0.0.0.0         255.255.255.0   U         0 0          0 eth0
 10.0.0.0        0.0.0.0         255.0.0.0       U         0 0          0 eth1
 0.0.0.0         49.156.17.1     0.0.0.0         UG        0 0          0 eth0
         ")
-        profile.should_receive(:shell).with('ifconfig', 'eth0').and_return("
+        expect(profile).to receive(:shell).with('ifconfig', 'eth0').and_return("
 eth0      Link encap:Ethernet  HWaddr 00:16:31:9c:11:ad
           inet addr:49.156.17.173  Bcast:49.156.17.255  Mask:255.255.255.0
           inet6 addr: fe80::216:31ff:fe9c:11ad/64 Scope:Link
@@ -382,7 +382,7 @@ eth0      Link encap:Ethernet  HWaddr 00:16:31:9c:11:ad
         ")
       }
       it "should return the correct IP" do
-        profile.public_ip.should == '49.156.17.173'
+        expect(profile.public_ip).to eq('49.156.17.173')
       end
     end
 

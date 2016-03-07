@@ -1,85 +1,85 @@
 require 'spec_helper'
 
-describe "name checks" do
+RSpec.describe "name checks" do
   describe "invalid names" do
     it "should not allow blank names" do
-      L{ meta(nil) }.should raise_error(ArgumentError, "You can't define a template with a blank name.")
-      L{ meta('') }.should raise_error(ArgumentError, "You can't define a template with a blank name.")
+      expect(L{ meta(nil) }).to raise_error(ArgumentError, "You can't define a template with a blank name.")
+      expect(L{ meta('') }).to raise_error(ArgumentError, "You can't define a template with a blank name.")
     end
     it "should not allow reserved names" do
-      L{ meta(:base) }.should raise_error(ArgumentError, "You can't use 'base' for a template name, because it's reserved.")
+      expect(L{ meta(:base) }).to raise_error(ArgumentError, "You can't use 'base' for a template name, because it's reserved.")
     end
     it "should allow valid names" do
-      L{ meta(:a) }.should_not raise_error
-      L{ meta('b') }.should_not raise_error
-      L{ meta('valid') }.should_not raise_error
+      expect(L{ meta(:a) }).not_to raise_error
+      expect(L{ meta('b') }).not_to raise_error
+      expect(L{ meta('valid') }).not_to raise_error
     end
     it "should not allow spaces and numbers" do
-      L{ meta('meta dep 2') }.should raise_error(ArgumentError, "You can't use 'meta dep 2' for a template name - it can only contain [a-z0-9_].")
+      expect(L{ meta('meta dep 2') }).to raise_error(ArgumentError, "You can't use 'meta dep 2' for a template name - it can only contain [a-z0-9_].")
     end
     it "should not allow invalid characters" do
-      L{ meta("meta\ndep") }.should raise_error(ArgumentError, "You can't use 'meta\ndep' for a template name - it can only contain [a-z0-9_].")
+      expect(L{ meta("meta\ndep") }).to raise_error(ArgumentError, "You can't use 'meta\ndep' for a template name - it can only contain [a-z0-9_].")
     end
     it "should not allow names that don't start with a letter" do
-      L{ meta('3d_dep') }.should raise_error(ArgumentError, "You can't use '3d_dep' for a template name - it must start with a letter.")
+      expect(L{ meta('3d_dep') }).to raise_error(ArgumentError, "You can't use '3d_dep' for a template name - it must start with a letter.")
     end
   end
 
   describe "duplicates" do
     before { meta 'duplicate' }
     it "should be prevented" do
-      L{ meta(:duplicate) }.should raise_error(ArgumentError, "A template called 'duplicate' has already been defined.")
+      expect(L{ meta(:duplicate) }).to raise_error(ArgumentError, "A template called 'duplicate' has already been defined.")
     end
     after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 
   describe "valid names" do
     it "should work" do
-      L{ meta 'count_test' }.should change(Babushka::Base.sources.anonymous.templates, :count).by(1)
+      expect(L{ meta 'count_test' }).to change(Babushka::Base.sources.anonymous.templates, :count).by(1)
     end
     it "should downcase the name" do
-      meta("Case_Test").name.should == 'case_test'
+      expect(meta("Case_Test").name).to eq('case_test')
     end
   end
 end
 
-describe "declaration" do
+RSpec.describe "declaration" do
   let(:template) { meta 'test' }
   it "should set the name" do
-    template.name.should == 'test'
+    expect(template.name).to eq('test')
   end
   it "should set the source" do
-    template.source.should == Babushka::Base.sources.anonymous
+    expect(template.source).to eq(Babushka::Base.sources.anonymous)
   end
   it "should define a dep context" do
-    template.context_class.should be_an_instance_of(Class)
-    template.context_class.ancestors.should include(Babushka::DepContext)
+    expect(template.context_class).to be_an_instance_of(Class)
+    expect(template.context_class.ancestors).to include(Babushka::DepContext)
   end
   it "should define template on the context" do
-    template.context_class.source_template.should == template
+    expect(template.context_class.source_template).to eq(template)
   end
   it "should not define a dep helper" do
-    Object.new.should_not respond_to('test')
+    expect(Object.new).not_to respond_to('test')
   end
   after { Babushka::Base.sources.anonymous.templates.clear! }
 end
 
-describe "using" do
+RSpec.describe "using" do
   describe "invalid template names" do
     it "should be rejected when passed as options" do
-      L{
+      expect(L{
         dep('something undefined', :template => 'undefined').template
-      }.should raise_error(Babushka::TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
+      }).to raise_error(Babushka::TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
     end
     it "should be ignored when passed as suffixes" do
-      dep('something.undefined').tap(&:template).should be_an_instance_of(Babushka::Dep)
+      expect(dep('something.undefined').tap(&:template)).to be_an_instance_of(Babushka::Dep)
     end
   end
 
   describe "without template" do
     let!(:template) { meta('templateless_test') {} }
     it "should define deps based on the template" do
-      dep('templateless dep.templateless_test').template.should == template
+      expect(dep('templateless dep.templateless_test').template).to eq(template)
     end
     after { Babushka::Base.sources.anonymous.templates.clear! }
   end
@@ -101,23 +101,23 @@ describe "using" do
       end
     }
     it "should define the helper on the context class" do
-      template.context_class.respond_to?(:a_helper).should be_false
-      template.context_class.new(nil).respond_to?(:a_helper).should be_false
-      dep('dep1.template_test').context.define!.respond_to?(:a_helper).should be_true
+      expect(template.context_class.respond_to?(:a_helper)).to be_falsey
+      expect(template.context_class.new(nil).respond_to?(:a_helper)).to be_falsey
+      expect(dep('dep1.template_test').context.define!.respond_to?(:a_helper)).to be_truthy
     end
     it "should correctly define the helper method" do
-      dep('dep2.template_test').context.a_helper_method.should == 'hello from the helper!'
+      expect(dep('dep2.template_test').context.a_helper_method).to eq('hello from the helper!')
     end
     it "should correctly define the helper" do
-      dep('dep2.template_test').context.define!.a_helper.should == 'hello from the helper in the template!'
+      expect(dep('dep2.template_test').context.define!.a_helper).to eq('hello from the helper in the template!')
     end
     it "should correctly define the met? block" do
-      dep('dep3.template_test').send(:invoke, :met?).should == 'this dep is met.'
+      expect(dep('dep3.template_test').send(:invoke, :met?)).to eq('this dep is met.')
     end
     it "should override the template correctly" do
-      dep('dep4.template_test') {
+      expect(dep('dep4.template_test') {
         met? { 'overridden met? block.' }
-      }.send(:invoke, :met?).should == 'overridden met? block.'
+      }.send(:invoke, :met?)).to eq('overridden met? block.')
     end
     after { Babushka::Base.sources.anonymous.templates.clear! }
   end
@@ -138,8 +138,8 @@ describe "using" do
       end
     }
     it "should handle accepts_list_for" do
-      dep('unmet accepts_list_for.acceptor_test') { list_test 'invalid' }.met?.should be_false
-      dep('met accepts_list_for.acceptor_test') { list_test 'valid' }.met?.should be_true
+      expect(dep('unmet accepts_list_for.acceptor_test') { list_test 'invalid' }.met?).to be_falsey
+      expect(dep('met accepts_list_for.acceptor_test') { list_test 'valid' }.met?).to be_truthy
     end
     it "should handle accepts_block_for" do
       block_called = false
@@ -149,7 +149,7 @@ describe "using" do
           block_called = true
         }
       }.meet
-      block_called.should be_true
+      expect(block_called).to be_truthy
     end
     after { Babushka::Base.sources.anonymous.templates.clear! }
   end
@@ -167,7 +167,7 @@ describe "using" do
     }
 
     it "should run the default block in the dep's context" do
-      a_dep.context.invoke(:testing).should == a_dep.context
+      expect(a_dep.context.invoke(:testing)).to eq(a_dep.context)
     end
   end
 end

@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe '#ssh' do
+RSpec.describe '#ssh' do
   it "should return a Babushka::SSH instance" do
     value = nil
     dep 'ssh test without block' do
       value = ssh('user@host')
     end.met?
-    value.should be_an_instance_of(Babushka::SSH)
-    value.host.should == 'user@host'
+    expect(value).to be_an_instance_of(Babushka::SSH)
+    expect(value.host).to eq('user@host')
   end
   it "should yield the Babushka::SSH instance to the block" do
     value = nil
@@ -16,12 +16,12 @@ describe '#ssh' do
         value = remote
       }
     end.met?
-    value.should be_an_instance_of(Babushka::SSH)
-    value.host.should == 'user@host'
+    expect(value).to be_an_instance_of(Babushka::SSH)
+    expect(value.host).to eq('user@host')
   end
 end
 
-describe "accepts_block_for behaviour" do
+RSpec.describe "accepts_block_for behaviour" do
   let(:lambda_hello) { L{ "hello world!" } }
 
   def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
@@ -30,18 +30,18 @@ describe "accepts_block_for behaviour" do
       send accepter_name, opts, &lambda
     end
     on = opts[:on].nil? ? :all : Babushka.host.system
-    Dep('accepts_block_for').context.define!.payload[accepter_name][on].should == value
+    expect(Dep('accepts_block_for').context.define!.payload[accepter_name][on]).to eq(value)
   end
 
   before {
-    Babushka.host.stub(:match_list).and_return([:osx])
+    allow(Babushka.host).to receive(:match_list).and_return([:osx])
     dep 'default'
   }
 
   it "should define a declarer" do
-    Dep('default').context.should_not respond_to(:test_defining)
+    expect(Dep('default').context).not_to respond_to(:test_defining)
     Babushka::DepContext.accepts_block_for :test_defining
-    Dep('default').context.should respond_to(:test_defining)
+    expect(Dep('default').context).to respond_to(:test_defining)
   end
 
   it "should return lambda" do
@@ -51,7 +51,7 @@ describe "accepts_block_for behaviour" do
     dep 'returning test' do
       value_from_block = test_defining(&lambda)
     end.met?
-    value_from_block.should == lambda
+    expect(value_from_block).to eq(lambda)
   end
 
   it "should accept and return a block" do
@@ -71,15 +71,15 @@ describe "accepts_block_for behaviour" do
     dep 'default test' do
       value_from_block = test_defaults
     end.met?
-    value_from_block.should == lambda
+    expect(value_from_block).to eq(lambda)
   end
 
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe "accepts_list_for behaviour" do
+RSpec.describe "accepts_list_for behaviour" do
   before {
-    Babushka.host.stub(:match_list).and_return([:osx])
+    allow(Babushka.host).to receive(:match_list).and_return([:osx])
     dep 'test build tools' do
       requires {
         on :osx, 'xcode tools'
@@ -88,6 +88,6 @@ describe "accepts_list_for behaviour" do
     end
   }
   it "should choose requires for the correct system" do
-    Dep('test build tools').context.define!.requires.should == ['xcode tools']
+    expect(Dep('test build tools').context.define!.requires).to eq(['xcode tools'])
   end
 end

@@ -1,6 +1,6 @@
 require 'acceptance_helper'
 
-describe "babushka" do
+RSpec.describe "babushka" do
   before(:all) {
     @vm = VM.new
     @vm.run 'sh -c "`wget -O - https://babushka.me/up`"'
@@ -8,26 +8,26 @@ describe "babushka" do
 
   context "basics" do
     it "should have installed babushka" do
-      @vm.run('babushka --version').should =~ /^[\d.]+ \(\w{7}\)$/
+      expect(@vm.run('babushka --version')).to match(/^[\d.]+ \(\w{7}\)$/)
     end
   end
 
   context "core deps" do
     it "should install build tools" do
-      @vm.should meet('build tools')
+      expect(@vm).to meet('build tools')
     end
   end
 
   context "some of my deps" do
     it "should configure the system" do
       @vm.babushka('benhoskings:system') # once to set the locale
-      @vm.should meet('benhoskings:system')
+      expect(@vm).to meet('benhoskings:system')
     end
     it "should build a recent ruby" do
-      @vm.should meet('benhoskings:ruby.src')
+      expect(@vm).to meet('benhoskings:ruby.src')
     end
     it "should set up nginx" do
-      @vm.should meet('benhoskings:running.nginx')
+      expect(@vm).to meet('benhoskings:running.nginx')
     end
   end
 
@@ -37,7 +37,7 @@ describe "babushka" do
   # babushka's scope.
   context "community deps" do
     it "should build node and coffee-script" do
-      @vm.should meet('dgoodlad:coffeescript.src')
+      expect(@vm).to meet('dgoodlad:coffeescript.src')
     end
   end
 end

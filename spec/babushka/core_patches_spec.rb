@@ -2,82 +2,82 @@
 
 require 'spec_helper'
 
-describe Array, "to_list" do
+RSpec.describe Array, "to_list" do
   it "no elements" do
-    [].to_list.should == ''
+    expect([].to_list).to eq('')
   end
   it "single element" do
-    %w[a].to_list.should == 'a'
+    expect(%w[a].to_list).to eq('a')
   end
   it "two elements" do
-    %w[a b].to_list.should == 'a and b'
+    expect(%w[a b].to_list).to eq('a and b')
   end
   it "three elements" do
-    %w[a b c].to_list.should == 'a, b and c'
+    expect(%w[a b c].to_list).to eq('a, b and c')
   end
   it "oxford comma" do
-    %w[a b c].to_list(:oxford => true).should == 'a, b, and c'
+    expect(%w[a b c].to_list(:oxford => true)).to eq('a, b, and c')
   end
   it "custom conjugation" do
-    %w[a b c].to_list(:conj => 'or').should == 'a, b or c'
+    expect(%w[a b c].to_list(:conj => 'or')).to eq('a, b or c')
   end
 end
 
-describe Array, '#collapse' do
+RSpec.describe Array, '#collapse' do
   it "should work for empty lists" do
-    [].collapse('blah').should == []
-    [].collapse(/blah/).should == []
+    expect([].collapse('blah')).to eq([])
+    expect([].collapse(/blah/)).to eq([])
   end
   it "should select surnames from a list" do
-    [
+    expect([
       'Ben Hoskings',
       'Nathan Sampimon',
       'Nathan de Vries'
-    ].collapse(/Nathan /).should == ['Sampimon', 'de Vries']
+    ].collapse(/Nathan /)).to eq(['Sampimon', 'de Vries'])
   end
   it "should strip git branch prefixes" do
-    [
+    expect([
       '  next',
       '* master',
       '  topic'
-    ].collapse(/^\* /).should == [
+    ].collapse(/^\* /)).to eq([
       'master'
-    ]
+    ])
   end
   it "should use the replacement if passed" do
-    [
+    expect([
       "Chain fail2ban-nginx-catchall (1 references)",
       "target     prot opt source               destination",
       "DROP       all  --  58.161.41.76         0.0.0.0/0  ",
       "RETURN     all  --  0.0.0.0/0            0.0.0.0/0  "
-    ].collapse(/^DROP\s+[^\d]+([\d\.]+)\s+.*/, '\1').should == [
+    ].collapse(/^DROP\s+[^\d]+([\d\.]+)\s+.*/, '\1')).to eq([
       '58.161.41.76'
-    ]
+    ])
   end
 end
 
-describe Array, '#local_group_by' do
+RSpec.describe Array, '#local_group_by' do
   it "should work for empty lists" do
-    [].group_by(&:length).should == {}
+    expect([].group_by(&:length)).to eq({})
   end
   it "should do what you expect" do
-    %w[cat badger narwahl pug].local_group_by(&:length).should == {
+    expect(%w[cat badger narwahl pug].local_group_by(&:length)).to eq({
       3 => %w[cat pug],
       6 => %w[badger],
       7 => %w[narwahl]
-    }
+    })
   end
   it "should work with nils and such" do
-    %w[cat badger narwahl pug].local_group_by {|i|
+    expect(%w[cat badger narwahl pug].local_group_by {|i|
       i[/a[rt]/]
-    }.should == {
+    }).to eq({
       nil => %w[badger pug],
       'at' => %w[cat],
       'ar' => %w[narwahl]
-    }
+    })
   end
   it "should return nil for keys that don't match a group" do
-    %w[cat badger narwahl pug].local_group_by(&:length)[4].should be_nil
+    expect(%w[cat badger narwahl pug].local_group_by(&:length)[4]).to be_nil
   end
 end
 
@@ -86,7 +86,7 @@ def version_of *args
 end
 
 
-describe Array, '#versions' do
+RSpec.describe Array, '#versions' do
   {
     %w[a]     => [version_of('a')],
     %w[a b c] => [version_of('a'), version_of('b'), version_of('c')],
@@ -94,81 +94,81 @@ describe Array, '#versions' do
     ['a 0.1', 'b >= 0.6.0', 'c ~> 2.2'] => [version_of('a', '0.1'), version_of('b', '>= 0.6.0'), version_of('c', '~> 2.2')]
   }.each_pair {|input, expected|
     it "should return #{expected.inspect} when passed #{input.inspect}" do
-      input.versions.should == expected
+      expect(input.versions).to eq(expected)
     end
   }
 end
 
-describe Hash, '#defaults!' do
+RSpec.describe Hash, '#defaults!' do
   it "should work for empty hashes" do
-    {}.defaults!(:a => 'b', :c => 'd').should == {:a => 'b', :c => 'd'}
+    expect({}.defaults!(:a => 'b', :c => 'd')).to eq({:a => 'b', :c => 'd'})
   end
   it "should work for empty defaults" do
-    {:a => 'custom b', :c => 'custom d'}.defaults!({}).should == {:a => 'custom b', :c => 'custom d'}
+    expect({:a => 'custom b', :c => 'custom d'}.defaults!({})).to eq({:a => 'custom b', :c => 'custom d'})
   end
   it "should combine defaults with the hash" do
-    {:a => 'custom b', :c => 'custom d'}.defaults!({:e => 'f', :g => 'h'}).should == {:a => 'custom b', :c => 'custom d', :e => 'f', :g => 'h'}
+    expect({:a => 'custom b', :c => 'custom d'}.defaults!({:e => 'f', :g => 'h'})).to eq({:a => 'custom b', :c => 'custom d', :e => 'f', :g => 'h'})
   end
   it "should override default values" do
-    {:a => 'custom b', :e => 'custom e'}.defaults!({:e => 'f', :g => 'h'}).should == {:a => 'custom b', :e => 'custom e', :g => 'h'}
+    expect({:a => 'custom b', :e => 'custom e'}.defaults!({:e => 'f', :g => 'h'})).to eq({:a => 'custom b', :e => 'custom e', :g => 'h'})
   end
 end
 
-describe Array, '#val_for' do
+RSpec.describe Array, '#val_for' do
   it "space separation" do
-    ['key value'].val_for('key').should == 'value'
+    expect(['key value'].val_for('key')).to eq('value')
   end
   it "key/value separation" do
-    ['key: value'].val_for('key').should == 'value'
-    ['key = value'].val_for('key').should == 'value'
+    expect(['key: value'].val_for('key')).to eq('value')
+    expect(['key = value'].val_for('key')).to eq('value')
   end
   it "whitespace" do
-    ['  key value '].val_for('key').should == 'value'
+    expect(['  key value '].val_for('key')).to eq('value')
   end
   it "whitespace in key" do
-    ['space-separated key: value'].val_for('space-separated key').should == 'value'
+    expect(['space-separated key: value'].val_for('space-separated key')).to eq('value')
   end
   it "whitespace in value" do
-    ['key: space-separated value'].val_for('key').should == 'space-separated value'
+    expect(['key: space-separated value'].val_for('key')).to eq('space-separated value')
   end
   it "whitespace in both" do
-    ['key with spaces: space-separated value'].val_for('key with spaces').should == 'space-separated value'
+    expect(['key with spaces: space-separated value'].val_for('key with spaces')).to eq('space-separated value')
   end
   it "key ending in non-word characters" do
-    ["psql (PostgreSQL) 9.1.0"].val_for('psql (PostgreSQL)').should == '9.1.0'
+    expect(["psql (PostgreSQL) 9.1.0"].val_for('psql (PostgreSQL)')).to eq('9.1.0')
   end
   it "non-word leading characters" do
-    ['*key: value'].val_for('*key').should == 'value'
-    ['-key: value'].val_for('-key').should == 'value'
-    ['-key: value'].val_for('key').should == nil
+    expect(['*key: value'].val_for('*key')).to eq('value')
+    expect(['-key: value'].val_for('-key')).to eq('value')
+    expect(['-key: value'].val_for('key')).to eq(nil)
   end
   it "non-word leading tokens" do
-    ['* key: value'].val_for('key').should == 'value'
-    ['- key with spaces: value'].val_for('key with spaces').should == 'value'
-    [' --  key with spaces: value'].val_for('key with spaces').should == 'value'
+    expect(['* key: value'].val_for('key')).to eq('value')
+    expect(['- key with spaces: value'].val_for('key with spaces')).to eq('value')
+    expect([' --  key with spaces: value'].val_for('key with spaces')).to eq('value')
   end
   it "trailing characters" do
-    ['key: value;'].val_for('key').should == 'value'
-    ['key: value,'].val_for('key').should == 'value'
+    expect(['key: value;'].val_for('key')).to eq('value')
+    expect(['key: value,'].val_for('key')).to eq('value')
   end
   it "paths" do
-    ["/dev/disk1s2        	Apple_HFS                        /Volumes/TextMate 1.5.9"].val_for("/dev/disk1s2        	Apple_HFS").should == "/Volumes/TextMate 1.5.9"
-    ["/dev/disk1s2        	Apple_HFS                        /Volumes/TextMate 1.5.9"].val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/).should == "/Volumes/TextMate 1.5.9"
+    expect(["/dev/disk1s2        	Apple_HFS                        /Volumes/TextMate 1.5.9"].val_for("/dev/disk1s2        	Apple_HFS")).to eq("/Volumes/TextMate 1.5.9")
+    expect(["/dev/disk1s2        	Apple_HFS                        /Volumes/TextMate 1.5.9"].val_for(/^\/dev\/disk\d+s\d+\s+Apple_HFS\s+/)).to eq("/Volumes/TextMate 1.5.9")
   end
   context "regexp keys" do
     it "should use the supplied regexp to match" do
-      ["a key: value"].val_for(/key/).should == 'a : value'
+      expect(["a key: value"].val_for(/key/)).to eq('a : value')
     end
     it "should match cleanly with a proper key" do
-      ["a key: value"].val_for(/^a key:/).should == 'value'
+      expect(["a key: value"].val_for(/^a key:/)).to eq('value')
     end
     it "should match case-insensitively" do
-      ["Key: value"].val_for(/^key:/i).should == 'value'
+      expect(["Key: value"].val_for(/^key:/i)).to eq('value')
     end
   end
 end
 
-describe String, '#to_utf8' do
+RSpec.describe String, '#to_utf8' do
   if "".respond_to?(:encoding) # Skip these tests on ruby-1.8.
 
     let(:valid_utf8) { "こんにちは".force_encoding('utf-8') }
@@ -184,60 +184,60 @@ describe String, '#to_utf8' do
     end
 
     it "should convert ASCII strings to utf8" do
-      valid_ascii.encoding.should == Encoding::ASCII
-      valid_ascii.to_utf8.should == "konnichiwa"
-      valid_ascii.to_utf8.encoding.should == Encoding::UTF_8
+      expect(valid_ascii.encoding).to eq(Encoding::ASCII)
+      expect(valid_ascii.to_utf8).to eq("konnichiwa")
+      expect(valid_ascii.to_utf8.encoding).to eq(Encoding::UTF_8)
     end
     it "should leave UTF-8 strings untouched" do
-      valid_utf8.encoding.should == Encoding::UTF_8
-      valid_utf8.to_utf8.should == "こんにちは"
-      valid_utf8.to_utf8.encoding.should == Encoding::UTF_8
+      expect(valid_utf8.encoding).to eq(Encoding::UTF_8)
+      expect(valid_utf8.to_utf8).to eq("こんにちは")
+      expect(valid_utf8.to_utf8.encoding).to eq(Encoding::UTF_8)
     end
     # TODO: This case might be better handled by assuming the string is UTF-8, but
     # I'm going to leave the logic stupid for now and improve it later.
     it "should respect mislabelled strings" do
-      valid_utf8_mislabelled.encoding.should == Encoding::ASCII
-      valid_utf8_mislabelled.to_utf8.should == "???????????????"
-      valid_utf8_mislabelled.to_utf8.encoding.should == Encoding::UTF_8
+      expect(valid_utf8_mislabelled.encoding).to eq(Encoding::ASCII)
+      expect(valid_utf8_mislabelled.to_utf8).to eq("???????????????")
+      expect(valid_utf8_mislabelled.to_utf8.encoding).to eq(Encoding::UTF_8)
     end
     it "should convert invalid strings" do
-      invalid.encoding.should == Encoding::ASCII
-      invalid.to_utf8.should == "lol?"
-      invalid.to_utf8.encoding.should == Encoding::UTF_8
+      expect(invalid.encoding).to eq(Encoding::ASCII)
+      expect(invalid.to_utf8).to eq("lol?")
+      expect(invalid.to_utf8.encoding).to eq(Encoding::UTF_8)
     end
   end
 end
 
-describe Integer, '#xsecs' do
+RSpec.describe Integer, '#xsecs' do
   it "should handle 0" do
-    0.xsecs.should == 'now'
+    expect(0.xsecs).to eq('now')
   end
   it "should work for seconds" do
-    3.xsecs.should == 'less than a minute'
-    59.xsecs.should == 'less than a minute'
+    expect(3.xsecs).to eq('less than a minute')
+    expect(59.xsecs).to eq('less than a minute')
   end
   it "should work for minutes" do
-    60.xsecs.should == '1 minute'
-    (3600-1).xsecs.should == '59 minutes'
+    expect(60.xsecs).to eq('1 minute')
+    expect((3600-1).xsecs).to eq('59 minutes')
   end
   it "should work for hours" do
-    3600.xsecs.should == '1 hour'
-    (3600*24 - 1).xsecs.should == '23 hours'
+    expect(3600.xsecs).to eq('1 hour')
+    expect((3600*24 - 1).xsecs).to eq('23 hours')
   end
   it "should work for days" do
-    (3600*24).xsecs.should == '1 day'
-    (3600*24*7 - 1).xsecs.should == '6 days'
+    expect((3600*24).xsecs).to eq('1 day')
+    expect((3600*24*7 - 1).xsecs).to eq('6 days')
   end
   it "should work for weeks" do
-    (3600*24*7).xsecs.should == '1 week'
-    (3600*24*27 - 1).xsecs.should == '3 weeks'
+    expect((3600*24*7).xsecs).to eq('1 week')
+    expect((3600*24*27 - 1).xsecs).to eq('3 weeks')
   end
   it "should work for months" do
-    (3600*24*28).xsecs.should == '1 month'
-    (3600*24*360 - 1).xsecs.should == '11 months'
+    expect((3600*24*28).xsecs).to eq('1 month')
+    expect((3600*24*360 - 1).xsecs).to eq('11 months')
   end
   it "should work for years" do
-    (3600*24*365).xsecs.should == '1 year'
-    (3600*24*365*20).xsecs.should == '20 years'
+    expect((3600*24*365).xsecs).to eq('1 year')
+    expect((3600*24*365*20).xsecs).to eq('20 years')
   end
 end

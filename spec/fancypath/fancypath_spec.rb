@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fancypath_support'
 
-describe Fancypath do
+RSpec.describe Fancypath do
   let(:tmp_dir) { tmp_prefix / 'fancypath' }
   before do
     tmp_dir.rmtree if tmp_dir.exist?
@@ -13,104 +13,104 @@ describe Fancypath do
 
   describe '#==' do
     it "should compare properly with other fancypaths" do
-      Fancypath('test').should == Fancypath('test')
-      Fancypath('test').should_not == Fancypath('test2')
+      expect(Fancypath('test')).to eq(Fancypath('test'))
+      expect(Fancypath('test')).not_to eq(Fancypath('test2'))
     end
     it "should compare properly with strings" do
-      Fancypath('test').should == 'test'
-      Fancypath('test').should_not == 'test2'
+      expect(Fancypath('test')).to eq('test')
+      expect(Fancypath('test')).not_to eq('test2')
     end
     it "should compare in reverse with strings" do
-      'test'.should == Fancypath('test')
-      'test2'.should_not == Fancypath('test')
+      expect('test').to eq(Fancypath('test'))
+      expect('test2').not_to eq(Fancypath('test'))
     end
   end
 
   describe '#length' do
     it "should calculate the length" do
-      @file.length.should == @file.to_s.length
-      @file.length.should == File.join(tmp_dir, 'testfile').length
-      @dir.length.should == File.join(tmp_dir, 'testdir').length
+      expect(@file.length).to eq(@file.to_s.length)
+      expect(@file.length).to eq(File.join(tmp_dir, 'testfile').length)
+      expect(@dir.length).to eq(File.join(tmp_dir, 'testdir').length)
     end
   end
 
   describe '#hypothetically_writable?' do
     it "initial conditions" do
-      @file.should_not be_exists
-      @dir.should_not be_exists
-      @dir.parent.should be_exists
-      @dir.parent.should be_writable
+      expect(@file).not_to be_exists
+      expect(@dir).not_to be_exists
+      expect(@dir.parent).to be_exists
+      expect(@dir.parent).to be_writable
     end
     it "returns true for writable paths" do
-      @file.stub(:writable_real?).and_return(true)
+      allow(@file).to receive(:writable_real?).and_return(true)
 
-      @file.should be_hypothetically_writable
+      expect(@file).to be_hypothetically_writable
     end
     it "returns false for existing, nonwritable paths" do
-      @file.stub(:exists?).and_return(true)
-      @file.stub(:writable_real?).and_return(false)
+      allow(@file).to receive(:exists?).and_return(true)
+      allow(@file).to receive(:writable_real?).and_return(false)
 
-      @file.should_not be_hypothetically_writable
+      expect(@file).not_to be_hypothetically_writable
     end
     it "returns true for nonexistent paths when the parent is writable" do
-      @file.stub(:parent).and_return(@dir)
-      @dir.stub(:writable_real?).and_return(true)
+      allow(@file).to receive(:parent).and_return(@dir)
+      allow(@dir).to receive(:writable_real?).and_return(true)
       dir_parent = @dir.parent
-      dir_parent.stub(:hypothetically_writable?).and_return(false)
-      @dir.stub(:parent).and_return(dir_parent)
+      allow(dir_parent).to receive(:hypothetically_writable?).and_return(false)
+      allow(@dir).to receive(:parent).and_return(dir_parent)
 
       subfile = @file / 'subfile'
-      subfile.stub(:parent).and_return(@file)
+      allow(subfile).to receive(:parent).and_return(@file)
 
-      @file.should be_hypothetically_writable
-      subfile.should be_hypothetically_writable
+      expect(@file).to be_hypothetically_writable
+      expect(subfile).to be_hypothetically_writable
     end
     it "returns false for nonexistent paths when the parent isn't writable" do
-      @file.stub(:parent).and_return(@dir)
-      @dir.stub(:exists?).and_return(true)
-      @dir.stub(:writable_real?).and_return(false)
+      allow(@file).to receive(:parent).and_return(@dir)
+      allow(@dir).to receive(:exists?).and_return(true)
+      allow(@dir).to receive(:writable_real?).and_return(false)
 
       subfile = @file / 'subfile'
-      subfile.stub(:parent).and_return(@file)
+      allow(subfile).to receive(:parent).and_return(@file)
 
-      @file.should_not be_hypothetically_writable
-      subfile.should_not be_hypothetically_writable
+      expect(@file).not_to be_hypothetically_writable
+      expect(subfile).not_to be_hypothetically_writable
     end
     it "works for the root" do
       @root = '/'.p
-      @root.stub(:writable_real?).and_return(false)
-      @root.should_not be_hypothetically_writable
+      allow(@root).to receive(:writable_real?).and_return(false)
+      expect(@root).not_to be_hypothetically_writable
     end
   end
 
   describe '#join', 'aliased to #/' do
-    it('returns a Fancypath') { (@dir/'somefile').class.should == Fancypath }
-    it('joins paths') { (@dir/'somefile').to_s.should =~ /\/somefile$/ }
-    it('joins absolute paths') { (@dir/'/somefile').to_s.should == File.join(@dir, 'somefile') }
+    it('returns a Fancypath') { expect((@dir/'somefile').class).to eq(Fancypath) }
+    it('joins paths') { expect((@dir/'somefile').to_s).to match(/\/somefile$/) }
+    it('joins absolute paths') { expect((@dir/'/somefile').to_s).to eq(File.join(@dir, 'somefile')) }
   end
 
   describe '#parent' do
-    it('returns parent') { @file.parent.should == tmp_dir.to_fancypath }
-    it('returns Fancypath') { @file.parent.should be_instance_of(Fancypath) }
+    it('returns parent') { expect(@file.parent).to eq(tmp_dir.to_fancypath) }
+    it('returns Fancypath') { expect(@file.parent).to be_instance_of(Fancypath) }
   end
 
   describe '#touch', 'file does not exist' do
-    it('returns self') { @file.touch.should == @file }
-    it('returns a Fancypath') { @file.touch.should be_instance_of(Fancypath) }
-    it('creates file') { @file.touch.should be_file }
+    it('returns self') { expect(@file.touch).to eq(@file) }
+    it('returns a Fancypath') { expect(@file.touch).to be_instance_of(Fancypath) }
+    it('creates file') { expect(@file.touch).to be_file }
   end
 
   describe '#create', 'dir does not exist' do
-    it('returns self') { @dir.create.should == @dir }
-    it('returns a Fancypath') { @dir.create.should be_instance_of(Fancypath) }
-    it('creates directory') { @dir.create.should be_directory }
+    it('returns self') { expect(@dir.create).to eq(@dir) }
+    it('returns a Fancypath') { expect(@dir.create).to be_instance_of(Fancypath) }
+    it('creates directory') { expect(@dir.create).to be_directory }
   end
 
   describe '#remove' do
-    it('returns self') { @file.remove.should == @file }
-    it('returns a Fancypath') { @file.remove.should be_instance_of(Fancypath) }
-    it('removes file') { @file.touch.remove.should_not exist }
-    it('removes directory') { @dir.create.remove.should_not exist }
+    it('returns self') { expect(@file.remove).to eq(@file) }
+    it('returns a Fancypath') { expect(@file.remove).to be_instance_of(Fancypath) }
+    it('removes file') { expect(@file.touch.remove).not_to exist }
+    it('removes directory') { expect(@dir.create.remove).not_to exist }
   end
 
   describe "#grep" do
@@ -118,16 +118,16 @@ describe Fancypath do
       @file.write("some\ncontent\ncontentedness")
     }
     it("returns nil when the file doesn't exist") {
-      (@dir / 'missing').grep(/test/).should be_nil
+      expect((@dir / 'missing').grep(/test/)).to be_nil
     }
     it('returns nil on no match') {
-      @file.grep(/test/).should be_nil
+      expect(@file.grep(/test/)).to be_nil
     }
     it('returns the matches with string parameter') {
-      @file.grep("content").should == ['content']
+      expect(@file.grep("content")).to eq(['content'])
     }
     it('returns the matches with regexp parameter') {
-      @file.grep(/cont/).should == ['content', 'contentedness']
+      expect(@file.grep(/cont/)).to eq(['content', 'contentedness'])
     }
   end
 
@@ -139,7 +139,7 @@ describe Fancypath do
       ")
     }
     it('returns the file contents as yaml') {
-      @file.yaml.should == {'guise' => {'seriously' => 'guise'}}
+      expect(@file.yaml).to eq({'guise' => {'seriously' => 'guise'}})
     }
   end
 
@@ -154,9 +154,9 @@ describe Fancypath do
       @relative_link = @dir/'testlink_relative'
       @absolute_link = @dir/'testlink_absolute'
     }
-    it('returns self for non-symlinks') { @file.readlink.should == @file }
-    it('returns the target for relative symlinks') { @relative_link.readlink.should == @file }
-    it('returns the target for absolute symlinks') { @absolute_link.readlink.should == '/bin/bash' }
+    it('returns self for non-symlinks') { expect(@file.readlink).to eq(@file) }
+    it('returns the target for relative symlinks') { expect(@relative_link.readlink).to eq(@file) }
+    it('returns the target for absolute symlinks') { expect(@absolute_link.readlink).to eq('/bin/bash') }
   end
 
   describe '#mkdir' do
@@ -164,9 +164,9 @@ describe Fancypath do
       @mkdir = Fancypath(tmp_dir/'nested/mkdir')
     }
     it "should create directories" do
-      @mkdir.exists?.should == false
+      expect(@mkdir.exists?).to eq(false)
       @mkdir.mkdir
-      @mkdir.exists?.should == true
+      expect(@mkdir.exists?).to eq(true)
     end
   end
 
@@ -176,38 +176,38 @@ describe Fancypath do
       @file.touch
     }
     it "should glob" do
-      tmp_dir.glob('**/*').should =~ [(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s)
+      expect(tmp_dir.glob('**/*')).to match_array([(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s))
     end
     it "should glob with no args" do
-      (tmp_dir / '**/*').glob.should =~ [(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s)
+      expect((tmp_dir / '**/*').glob).to match_array([(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s))
     end
     it "should be case insensitive" do
-      tmp_dir.glob('**/TEST*').should =~ [(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s)
+      expect(tmp_dir.glob('**/TEST*')).to match_array([(tmp_prefix/'fancypath/testdir'), (tmp_prefix/'fancypath/testfile')].map(&:to_s))
     end
   end
 
   describe '#write' do
-    it('returns self') { @file.write('').should == @file }
-    it('returns a Fancypath') { @file.write('').should be_instance_of(Fancypath) }
-    it('writes contents to file') { @file.write('test').read.should == 'test' }
+    it('returns self') { expect(@file.write('')).to eq(@file) }
+    it('returns a Fancypath') { expect(@file.write('')).to be_instance_of(Fancypath) }
+    it('writes contents to file') { expect(@file.write('test').read).to eq('test') }
   end
 
   describe '#puts' do
-    it('returns self') { @file.write('').should == @file }
+    it('returns self') { expect(@file.write('')).to eq(@file) }
     it('appends the line to the file') {
-      @file.puts('test1').puts('test2').read.should == "test1\ntest2\n"
+      expect(@file.puts('test1').puts('test2').read).to eq("test1\ntest2\n")
     }
     it('does not add a trailing newline when one is already present') {
-      @file.puts("test1\n").read.should == "test1\n"
+      expect(@file.puts("test1\n").read).to eq("test1\n")
     }
   end
 
   describe '#copy' do
     before { @file.touch }
-    it('returns a Fancypath') { @file.copy(tmp_dir/'foo').should be_instance_of(Fancypath) }
-    it('creates a new file') { @file.copy(tmp_dir/'foo').should exist }
-    it('keeps the original') { @file.copy(tmp_dir/'foo'); @file.should exist }
-    it('copies the contents') { @file.copy(tmp_dir/'foo').read.should == @file.read }
+    it('returns a Fancypath') { expect(@file.copy(tmp_dir/'foo')).to be_instance_of(Fancypath) }
+    it('creates a new file') { expect(@file.copy(tmp_dir/'foo')).to exist }
+    it('keeps the original') { @file.copy(tmp_dir/'foo'); expect(@file).to exist }
+    it('copies the contents') { expect(@file.copy(tmp_dir/'foo').read).to eq(@file.read) }
   end
 
   describe '#copy on a directory' do
@@ -215,25 +215,25 @@ describe Fancypath do
       @dir.mkdir
       (@dir / 'testfile').touch
     }
-    it('returns a Fancypath') { @dir.copy(tmp_dir/'foo').should be_instance_of(Fancypath) }
+    it('returns a Fancypath') { expect(@dir.copy(tmp_dir/'foo')).to be_instance_of(Fancypath) }
     it('creates a new dir with a file in it') {
       @dir.copy(tmp_dir/'foo')
-      (tmp_dir/'foo').should exist
-      (tmp_dir/'foo/testfile').should exist
+      expect(tmp_dir/'foo').to exist
+      expect(tmp_dir/'foo/testfile').to exist
     }
-    it('keeps the original') { @dir.copy(tmp_dir/'foo'); @dir.should exist }
-    it('copies the contents') { @dir.copy(tmp_dir/'foo'); (tmp_dir/'foo/testfile').read.should == (@dir/'testfile').read }
+    it('keeps the original') { @dir.copy(tmp_dir/'foo'); expect(@dir).to exist }
+    it('copies the contents') { @dir.copy(tmp_dir/'foo'); expect((tmp_dir/'foo/testfile').read).to eq((@dir/'testfile').read) }
   end
 
   describe '#set_extension' do
     example "file without extension" do
-      Fancypath('/tmp/foo').set_extension('rb').should == Fancypath('/tmp/foo.rb')
+      expect(Fancypath('/tmp/foo').set_extension('rb')).to eq(Fancypath('/tmp/foo.rb'))
     end
     example "single extension" do
-      Fancypath('/tmp/foo.py').set_extension('rb').should == Fancypath('/tmp/foo.rb')
+      expect(Fancypath('/tmp/foo.py').set_extension('rb')).to eq(Fancypath('/tmp/foo.rb'))
     end
     example "multi extension" do
-      Fancypath('/tmp/foo.py.z').set_extension('rb').should == Fancypath('/tmp/foo.py.rb')
+      expect(Fancypath('/tmp/foo.py.z').set_extension('rb')).to eq(Fancypath('/tmp/foo.py.rb'))
     end
   end
 
@@ -242,45 +242,45 @@ describe Fancypath do
       @file.write('foo')
       dest = tmp_dir/'newfile'
       @file.move( dest )
-      @file.should_not exist
-      dest.read.should == 'foo'
+      expect(@file).not_to exist
+      expect(dest.read).to eq('foo')
     end
   end
 
   describe '#has_extension?' do
     example do
-      Fancypath('/tmp/foo.bar').has_extension?('bar').should be_true
+      expect(Fancypath('/tmp/foo.bar').has_extension?('bar')).to be_truthy
     end
     example do
-      Fancypath('/tmp/foo.bar').has_extension?('foo').should be_false
+      expect(Fancypath('/tmp/foo.bar').has_extension?('foo')).to be_falsey
     end
   end
 
   describe '#empty?' do
     example 'with empty file' do
       @file.touch
-      @file.empty?.should be_true
+      expect(@file.empty?).to be_truthy
     end
     example 'with non-empty file' do
       @file.write 'foo'
-      @file.empty?.should be_false
+      expect(@file.empty?).to be_falsey
     end
     example 'with empty dir' do
       @dir.create_dir
-      @dir.empty?.should be_true
+      expect(@dir.empty?).to be_truthy
     end
     example 'with non-empty dir' do
       @dir.create_dir
       (@dir/'foo').touch
-      @dir.empty?.should be_false
+      expect(@dir.empty?).to be_falsey
     end
   end
 end #/Fancypath
 
-describe "String#to_fancypath" do
-  it('returns a Fancypath') { 'test'.to_fancypath.should be_instance_of(Fancypath) }
+RSpec.describe "String#to_fancypath" do
+  it('returns a Fancypath') { expect('test'.to_fancypath).to be_instance_of(Fancypath) }
 end
 
-describe "Pathname#to_fancypath" do
-  it('returns a Fancypath') { Fancypath.new('/').to_fancypath.should be_instance_of(Fancypath) }
+RSpec.describe "Pathname#to_fancypath" do
+  it('returns a Fancypath') { expect(Fancypath.new('/').to_fancypath).to be_instance_of(Fancypath) }
 end

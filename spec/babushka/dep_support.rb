@@ -12,6 +12,6 @@ end
 
 def expect_dep_blocks receiver, expectations
   expectations.each_pair {|method_name, times|
-    receiver.should_receive(:invoke).with(method_name).exactly(times).times.and_call_original
+    expect(receiver).to receive(:invoke).with(method_name).exactly(times).times.and_call_original
   }
 end
