@@ -117,20 +117,20 @@ RSpec.describe "args" do
   end
   context "without arguments" do
     it "should fail when called with unnamed args" do
-      expect(L{ dep('no args').with('a') }).to raise_error(Babushka::DepArgumentError, "The dep 'no args' accepts 0 arguments, but 1 was passed.")
+      expect { dep('no args').with('a') }.to raise_error(Babushka::DepArgumentError, "The dep 'no args' accepts 0 arguments, but 1 was passed.")
     end
     it "should fail when called with named args that don't match" do
-      expect(L{ dep('no args').with(:a => 'a') }).to raise_error(Babushka::DepArgumentError, "The dep 'no args' received an unexpected argument :a.")
+      expect { dep('no args').with(:a => 'a') }.to raise_error(Babushka::DepArgumentError, "The dep 'no args' received an unexpected argument :a.")
     end
   end
   context "with the wrong number of arguments" do
     it "should fail when called with the wrong number of unnamed args" do
-      expect(L{ dep('1 arg', :a).with('a', 'b') }).to raise_error(Babushka::DepArgumentError, "The dep '1 arg' accepts 1 argument, but 2 were passed.")
-      expect(L{ dep('2 args', :a, :b).with('a') }).to raise_error(Babushka::DepArgumentError, "The dep '2 args' accepts 2 arguments, but 1 was passed.")
+      expect { dep('1 arg', :a).with('a', 'b') }.to raise_error(Babushka::DepArgumentError, "The dep '1 arg' accepts 1 argument, but 2 were passed.")
+      expect { dep('2 args', :a, :b).with('a') }.to raise_error(Babushka::DepArgumentError, "The dep '2 args' accepts 2 arguments, but 1 was passed.")
     end
     it "should fail when called with named args that don't match" do
-      expect(L{ dep('1 arg', :a).with(:a => 'a', :b => 'b') }).to raise_error(Babushka::DepArgumentError, "The dep '1 arg' received an unexpected argument :b.")
-      expect(L{ dep('1 arg', :a).with(:a => 'a', :b => 'b', :c => 'c') }).to raise_error(Babushka::DepArgumentError, "The dep '1 arg' received unexpected arguments :b and :c.")
+      expect { dep('1 arg', :a).with(:a => 'a', :b => 'b') }.to raise_error(Babushka::DepArgumentError, "The dep '1 arg' received an unexpected argument :b.")
+      expect { dep('1 arg', :a).with(:a => 'a', :b => 'b', :c => 'c') }.to raise_error(Babushka::DepArgumentError, "The dep '1 arg' received unexpected arguments :b and :c.")
     end
   end
   context "with empty arguments" do
@@ -171,14 +171,14 @@ RSpec.describe "args" do
   end
   context "with non-symbol names" do
     it "should be rejected, singular" do
-      expect(L{
+      expect {
         dep('2 args', :a).with('a' => 'a')
-      }).to raise_error(Babushka::DepArgumentError, %{The dep '2 args' received a non-symbol argument "a".})
+      }.to raise_error(Babushka::DepArgumentError, %{The dep '2 args' received a non-symbol argument "a".})
     end
     it "should be rejected, plural" do
-      expect(L{
+      expect {
         dep('2 args', :a, :b).with('a' => 'a', 'b' => 'b')
-      }).to raise_error(Babushka::DepArgumentError, %{The dep '2 args' received non-symbol arguments "a" and "b".})
+      }.to raise_error(Babushka::DepArgumentError, %{The dep '2 args' received non-symbol arguments "a" and "b".})
     end
   end
   context "with incomplete named arguments" do

@@ -54,9 +54,9 @@ RSpec.describe "lambda choosing" do
   end
 
   it "should reject :otherwise as a choice name" do
-    expect(L{
+    expect {
       Babushka::LambdaChooser.new(nil, :ours, :yours, :otherwise)
-    }).to raise_error(ArgumentError, "You can't use :otherwise as a choice name, because it's reserved.")
+    }.to raise_error(ArgumentError, "You can't use :otherwise as a choice name, because it's reserved.")
   end
 
   it "should pick 'otherwise' if no choices match" do
@@ -109,23 +109,23 @@ RSpec.describe "lambda choosing" do
   end
 
   it "should reject values and block together" do
-    expect(L{
+    expect {
       Babushka::LambdaChooser.new(nil, :ours, :theirs) {
         on :ours, "this is ours"
         on :theirs, "this is theirs" do
           'another value'
         end
       }.choose(:ours, :on)
-    }).to raise_error("You can supply values or a block, but not both.")
+    }.to raise_error("You can supply values or a block, but not both.")
   end
 
   it "should reject unknown choosers" do
-    expect(L{
+    expect {
       Babushka::LambdaChooser.new(nil, :ours, :theirs) {
         on :ours, "this is ours"
         on :someone_elses, "this is theirs"
       }.choose(:ours, :on)
-    }).to raise_error("The choice 'someone_elses' isn't valid.")
+    }.to raise_error("The choice 'someone_elses' isn't valid.")
   end
 
   it "should return the data intact" do

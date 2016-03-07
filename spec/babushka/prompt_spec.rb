@@ -45,9 +45,9 @@ RSpec.describe Babushka::Prompt, "get_value" do
   end
 
   it "should reject :choices and :choice_descriptions together" do
-    expect(L{
+    expect {
       Babushka::Prompt.get_value('value', :choices => %w[a b c], :choice_descriptions => {:a => "description"})
-    }).to raise_error(ArgumentError, "You can't use the :choices and :choice_descriptions options together.")
+    }.to raise_error(ArgumentError, "You can't use the :choices and :choice_descriptions options together.")
   end
 
   describe "with choices" do
@@ -66,9 +66,9 @@ RSpec.describe Babushka::Prompt, "get_value" do
       expect(Babushka::Prompt.get_value('value', :choices => %w[a b c])).to eq('a')
     end
     it "should reject non-string choices" do
-      expect(L{
+      expect {
         Babushka::Prompt.get_value('value', :choices => [:a, :b])
-      }).to raise_error ArgumentError, "Choices must be passed as strings."
+      }.to raise_error ArgumentError, "Choices must be passed as strings."
     end
     describe "with default" do
       it "should accept a valid choice" do

@@ -52,7 +52,7 @@ RSpec.describe "cd" do
       (tmp_prefix / 'missing').tap(&:rm)
     }
     it "should fail" do
-      expect(L{ Babushka::PathHelpers.cd(nonexistent_dir) }).to raise_error(Errno::ENOENT)
+      expect { Babushka::PathHelpers.cd(nonexistent_dir) }.to raise_error(Errno::ENOENT)
     end
     context "when :create => true is specified" do
       it "should create and cd" do

@@ -6,11 +6,11 @@ RSpec.describe "accepts_*_for" do
 
   describe "invalid input" do
     it "should reject values and a block at once" do
-      expect(L{
+      expect {
         subject.records "stuff" do
           more "stuff"
         end
-      }).to raise_error(ArgumentError, "You can supply arguments or a block, but not both.")
+      }.to raise_error(ArgumentError, "You can supply arguments or a block, but not both.")
     end
   end
 

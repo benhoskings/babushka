@@ -74,9 +74,9 @@ RSpec.describe Babushka::Parameter do
       else
         "Can't coerce 3065:Fixnum into a String"
       end
-      expect(L{
+      expect {
         File.exists?(parameter)
-      }).to raise_error(TypeError, message)
+      }.to raise_error(TypeError, message)
     end
   end
 

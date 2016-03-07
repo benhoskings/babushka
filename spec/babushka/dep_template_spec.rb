@@ -3,39 +3,39 @@ require 'spec_helper'
 RSpec.describe "name checks" do
   describe "invalid names" do
     it "should not allow blank names" do
-      expect(L{ meta(nil) }).to raise_error(ArgumentError, "You can't define a template with a blank name.")
-      expect(L{ meta('') }).to raise_error(ArgumentError, "You can't define a template with a blank name.")
+      expect { meta(nil) }.to raise_error(ArgumentError, "You can't define a template with a blank name.")
+      expect { meta('') }.to raise_error(ArgumentError, "You can't define a template with a blank name.")
     end
     it "should not allow reserved names" do
-      expect(L{ meta(:base) }).to raise_error(ArgumentError, "You can't use 'base' for a template name, because it's reserved.")
+      expect { meta(:base) }.to raise_error(ArgumentError, "You can't use 'base' for a template name, because it's reserved.")
     end
     it "should allow valid names" do
-      expect(L{ meta(:a) }).not_to raise_error
-      expect(L{ meta('b') }).not_to raise_error
-      expect(L{ meta('valid') }).not_to raise_error
+      expect { meta(:a) }.not_to raise_error
+      expect { meta('b') }.not_to raise_error
+      expect { meta('valid') }.not_to raise_error
     end
     it "should not allow spaces and numbers" do
-      expect(L{ meta('meta dep 2') }).to raise_error(ArgumentError, "You can't use 'meta dep 2' for a template name - it can only contain [a-z0-9_].")
+      expect { meta('meta dep 2') }.to raise_error(ArgumentError, "You can't use 'meta dep 2' for a template name - it can only contain [a-z0-9_].")
     end
     it "should not allow invalid characters" do
-      expect(L{ meta("meta\ndep") }).to raise_error(ArgumentError, "You can't use 'meta\ndep' for a template name - it can only contain [a-z0-9_].")
+      expect { meta("meta\ndep") }.to raise_error(ArgumentError, "You can't use 'meta\ndep' for a template name - it can only contain [a-z0-9_].")
     end
     it "should not allow names that don't start with a letter" do
-      expect(L{ meta('3d_dep') }).to raise_error(ArgumentError, "You can't use '3d_dep' for a template name - it must start with a letter.")
+      expect { meta('3d_dep') }.to raise_error(ArgumentError, "You can't use '3d_dep' for a template name - it must start with a letter.")
     end
   end
 
   describe "duplicates" do
     before { meta 'duplicate' }
     it "should be prevented" do
-      expect(L{ meta(:duplicate) }).to raise_error(ArgumentError, "A template called 'duplicate' has already been defined.")
+      expect { meta(:duplicate) }.to raise_error(ArgumentError, "A template called 'duplicate' has already been defined.")
     end
     after { Babushka::Base.sources.anonymous.templates.clear! }
   end
 
   describe "valid names" do
     it "should work" do
-      expect(L{ meta 'count_test' }).to change(Babushka::Base.sources.anonymous.templates, :count).by(1)
+      expect { meta 'count_test' }.to change(Babushka::Base.sources.anonymous.templates, :count).by(1)
     end
     it "should downcase the name" do
       expect(meta("Case_Test").name).to eq('case_test')
@@ -67,9 +67,9 @@ end
 RSpec.describe "using" do
   describe "invalid template names" do
     it "should be rejected when passed as options" do
-      expect(L{
+      expect {
         dep('something undefined', :template => 'undefined').template
-      }).to raise_error(Babushka::TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
+      }.to raise_error(Babushka::TemplateNotFound, "There is no template named 'undefined' to define 'something undefined' against.")
     end
     it "should be ignored when passed as suffixes" do
       expect(dep('something.undefined').tap(&:template)).to be_an_instance_of(Babushka::Dep)
