@@ -414,11 +414,11 @@ module Babushka
       end
     end
 
+    public
+
     def suffixed?
       !opts[:template] && template != self.class.base_template
     end
-
-    public
 
     def inspect
       "#<Dep:#{object_id} '#{dep_source.name}:#{name}'>"
