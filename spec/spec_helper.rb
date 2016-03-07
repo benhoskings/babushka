@@ -19,8 +19,12 @@ def tmp_prefix
 end
 
 RSpec.configure do |config|
-  config.expect_with :rspec
-  config.mock_with :rspec
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+  config.mock_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
 
   config.example_status_persistence_file_path = "spec/examples.txt"
   config.default_formatter = 'doc' if config.files_to_run.one?
