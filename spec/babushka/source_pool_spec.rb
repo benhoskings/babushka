@@ -299,9 +299,9 @@ RSpec.describe Babushka::SourcePool do
         expect(dep('template selection 1', :template => 'source_1:meta_1').template).to eq(meta1)
       end
       it "should not find the template with the wrong source prefix, and raise" do
-        expect(L{
+        expect {
           dep('template selection 2', :template => 'source_2:meta_1').template
-        }).to raise_error(Babushka::TemplateNotFound, "There is no template named 'source_2:meta_1' to define 'template selection 2' against.")
+        }.to raise_error(Babushka::TemplateNotFound, "There is no template named 'source_2:meta_1' to define 'template selection 2' against.")
       end
     end
     context "without namespacing" do
@@ -310,9 +310,9 @@ RSpec.describe Babushka::SourcePool do
           expect(define_in(source1) { dep 'template selection 3', :template => 'meta_1' }.template).to eq(meta1)
         end
         it "should not find a template in the wrong source, and raise" do
-          expect(L{
+          expect {
             define_in(source1) { dep 'template selection 4', :template => 'meta_3' }.template
-          }).to raise_error(Babushka::TemplateNotFound, "There is no template named 'meta_3' to define 'template selection 4' against.")
+          }.to raise_error(Babushka::TemplateNotFound, "There is no template named 'meta_3' to define 'template selection 4' against.")
         end
       end
       context "with suffixes" do

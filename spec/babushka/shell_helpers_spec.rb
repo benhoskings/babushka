@@ -51,15 +51,15 @@ RSpec.describe "shell" do
       expect(Babushka::ShellHelpers.shell("pwd", :cd => '~')).to eq(ENV['HOME'])
     end
     it "should raise when the path is nonexistent" do
-      expect(L{
+      expect {
         Babushka::ShellHelpers.shell("pwd", :cd => (tmp_prefix / 'missing'))
-      }).to raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'missing'}")
+      }.to raise_error(Errno::ENOENT, "No such file or directory - #{tmp_prefix / 'missing'}")
     end
     it "should raise when the path isn't a directory" do
-      expect(L{
+      expect {
         (tmp_prefix / 'notadir').touch
         Babushka::ShellHelpers.shell("pwd", :cd => (tmp_prefix / 'notadir'))
-      }).to raise_error(Errno::ENOTDIR, "Not a directory - #{tmp_prefix / 'notadir'}")
+      }.to raise_error(Errno::ENOTDIR, "Not a directory - #{tmp_prefix / 'notadir'}")
     end
     context "with :create option" do
       it "should run in the specified directory" do
@@ -89,8 +89,8 @@ RSpec.describe "shell!" do
     expect(Babushka::ShellHelpers.shell!(SUCCEEDING_LS)).to be_truthy
   end
   it "should return false for failed commands" do
-    expect(L{ Babushka::ShellHelpers.shell!('false') }).to raise_error(Babushka::Shell::ShellCommandFailed, "Shell command failed: 'false'")
-    expect(L{ Babushka::ShellHelpers.shell!(FAILING_LS) }).to raise_error(Babushka::Shell::ShellCommandFailed)
+    expect { Babushka::ShellHelpers.shell!('false') }.to raise_error(Babushka::Shell::ShellCommandFailed, "Shell command failed: 'false'")
+    expect { Babushka::ShellHelpers.shell!(FAILING_LS) }.to raise_error(Babushka::Shell::ShellCommandFailed)
   end
 end
 

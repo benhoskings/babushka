@@ -5,51 +5,51 @@ require 'dep_support'
 
 RSpec.describe "Dep.new" do
   it "should reject deps with non-string names" do
-    expect(L{
+    expect {
       Babushka::Dep.new(:symbol_name, Babushka::Base.sources.anonymous, [], {}, nil)
-    }).to raise_error(Babushka::InvalidDepName, "The dep name :symbol_name isn't a string.")
+    }.to raise_error(Babushka::InvalidDepName, "The dep name :symbol_name isn't a string.")
   end
   it "should reject deps with empty names" do
-    expect(L{
+    expect {
       Babushka::Dep.new("", Babushka::Base.sources.anonymous, [], {}, nil)
-    }).to raise_error(Babushka::InvalidDepName, "Deps can't have empty names.")
+    }.to raise_error(Babushka::InvalidDepName, "Deps can't have empty names.")
     expect(Dep("carriage\rreturn")).to be_nil
   end
   it "should reject deps with nonprintable characters in their names" do
-    expect(L{
+    expect {
       Babushka::Dep.new("carriage\rreturn", Babushka::Base.sources.anonymous, [], {}, nil)
-    }).to raise_error(Babushka::InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
+    }.to raise_error(Babushka::InvalidDepName, "The dep name 'carriage\rreturn' contains nonprintable characters.")
     expect(Dep("carriage\rreturn")).to be_nil
   end
   it "should allow deps with unicode characters in their names" do
-    expect(L{
+    expect {
       Babushka::Dep.new("☕script", Babushka::Base.sources.anonymous, [], {}, nil)
-    }).not_to raise_error
+    }.not_to raise_error
     expect(Dep("☕script")).to be_an_instance_of(Babushka::Dep)
   end
   it "should reject deps slashes in their names" do
-    expect(L{
+    expect {
       Babushka::Dep.new("slashes/invalidate names", Babushka::Base.sources.anonymous, [], {}, nil)
-    }).to raise_error(Babushka::InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
+    }.to raise_error(Babushka::InvalidDepName, "The dep name 'slashes/invalidate names' contains '/', which isn't allowed (logs are named after deps, and filenames can't contain '/').")
     expect(Dep("slashes/invalidate names")).to be_nil
   end
   it "should reject deps colons in their names" do
     allow(Babushka::GitHelpers).to receive(:git) # To avoid cloning.
-    expect(L{
+    expect {
       Babushka::Dep.new("colons:invalidate names", Babushka::Base.sources.anonymous, [], {}, nil)
-    }).to raise_error(Babushka::InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
+    }.to raise_error(Babushka::InvalidDepName, "The dep name 'colons:invalidate names' contains ':', which isn't allowed (colons separate dep and template names from source prefixes).")
     expect(Dep("colons:invalidate names")).to be_nil
   end
   it "should create deps with valid names" do
-    expect(L{
+    expect {
       Babushka::Dep.new("valid dep name", Babushka::Base.sources.anonymous, [], {}, nil)
-    }).to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    }.to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
     expect(Dep("valid dep name")).to be_an_instance_of(Babushka::Dep)
   end
   it "should store the params" do
-    expect(L{
+    expect {
       Babushka::Dep.new("valid dep with params", Babushka::Base.sources.anonymous, [:some, :params], {}, nil)
-    }).to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    }.to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
     expect(Dep("valid dep with params").params).to eq([:some, :params])
   end
   context "without template" do
@@ -63,9 +63,9 @@ RSpec.describe "Dep.new" do
   end
   context "with a missing template" do
     it "should fail to define optioned deps against a missing template" do
-      expect(L{
+      expect {
         Babushka::Dep.new("valid but missing template", Babushka::Base.sources.anonymous, [], {:template => 'template'}, nil).template
-      }).to raise_error(Babushka::TemplateNotFound, "There is no template named 'template' to define 'valid but missing template' against.")
+      }.to raise_error(Babushka::TemplateNotFound, "There is no template named 'template' to define 'valid but missing template' against.")
     end
   end
   context "with template" do
@@ -100,13 +100,13 @@ end
 
 RSpec.describe "dep creation" do
   it "should work for blank deps" do
-    expect(L{
+    expect {
       dep "a blank dep"
-    }).to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    }.to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
     expect(Dep('a blank dep')).to be_an_instance_of(Babushka::Dep)
   end
   it "should work for filled in deps" do
-    expect(L{
+    expect {
       dep "a standard dep" do
         requires 'some other dep'
         before { }
@@ -114,15 +114,15 @@ RSpec.describe "dep creation" do
         meet { }
         after { }
       end
-    }).to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
+    }.to change(Babushka::Base.sources.anonymous.deps, :count).by(1)
     expect(Dep('a standard dep')).to be_an_instance_of(Babushka::Dep)
   end
   it "should accept deps as dep names" do
-    expect(L{
+    expect {
       dep 'parent dep' do
         requires dep('nested dep')
       end.met?
-    }).to change(Babushka::Base.sources.anonymous.deps, :count).by(2)
+    }.to change(Babushka::Base.sources.anonymous.deps, :count).by(2)
     expect(Dep('parent dep').context.requires).to eq([Dep('nested dep')])
   end
   after { Babushka::Base.sources.anonymous.deps.clear! }
@@ -293,23 +293,23 @@ end
 RSpec.describe Babushka::Dep, "params" do
   describe "non-symbol params" do
     it "should be rejected, singular" do
-      expect(L{
+      expect {
         dep('non-symbol param', 'a')
-      }).to raise_error(Babushka::DepParameterError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
+      }.to raise_error(Babushka::DepParameterError, %{The dep 'non-symbol param' has a non-symbol param "a", which isn't allowed.})
     end
     it "should be rejected, plural" do
-      expect(L{
+      expect {
         dep('non-symbol params', 'a', 'b')
-      }).to raise_error(Babushka::DepParameterError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
+      }.to raise_error(Babushka::DepParameterError, %{The dep 'non-symbol params' has non-symbol params "a" and "b", which aren't allowed.})
     end
   end
   it "should define methods on the context" do
     expect(dep('params test', :a_param).context.define!).to respond_to(:a_param)
   end
   it "should raise on conflicting methods" do
-    expect(L{
+    expect {
       dep('conflicting param names', :name).context.define!
-    }).to raise_error(Babushka::DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
+    }.to raise_error(Babushka::DepParameterError, "You can't use :name as a parameter (on 'conflicting param names'), because that's already a method on Babushka::DepDefiner.")
   end
   it "should discard the context" do
     dep('context discarding').tap {|dep|

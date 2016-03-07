@@ -44,29 +44,29 @@ RSpec.describe "parsing" do
   end
   describe "invalid operators" do
     it "should reject them" do
-      expect(L{
+      expect {
         Babushka::VersionStr.new('~ 0.2')
-      }).to raise_error(Babushka::InvalidVersionOperator, "Babushka::VersionStr.new('~ 0.2'): invalid operator '~'.")
-      expect(L{
+      }.to raise_error(Babushka::InvalidVersionOperator, "Babushka::VersionStr.new('~ 0.2'): invalid operator '~'.")
+      expect {
         Babushka::VersionStr.new('>> 0.2')
-      }).to raise_error(Babushka::InvalidVersionOperator, "Babushka::VersionStr.new('>> 0.2'): invalid operator '>>'.")
+      }.to raise_error(Babushka::InvalidVersionOperator, "Babushka::VersionStr.new('>> 0.2'): invalid operator '>>'.")
     end
   end
   describe "invalid version numbers" do
     it "should reject version numbers that don't contain any digits" do
-      expect(L{
+      expect {
         Babushka::VersionStr.new('nginx')
-      }).to raise_error(Babushka::InvalidVersionStr, "Babushka::VersionStr.new('nginx'): couldn't parse a version number.")
+      }.to raise_error(Babushka::InvalidVersionStr, "Babushka::VersionStr.new('nginx'): couldn't parse a version number.")
     end
     it "should reject numbers containing spaces" do
-      expect(L{
+      expect {
         Babushka::VersionStr.new('0. 2')
-      }).to raise_error(Babushka::InvalidVersionStr, "Babushka::VersionStr.new('0. 2'): couldn't parse a version number.")
+      }.to raise_error(Babushka::InvalidVersionStr, "Babushka::VersionStr.new('0. 2'): couldn't parse a version number.")
     end
     it "should reject numbers containing unexpected chars" do
-      expect(L{
+      expect {
         Babushka::VersionStr.new('0.2!')
-      }).to raise_error(Babushka::InvalidVersionStr, "Babushka::VersionStr.new('0.2!'): couldn't parse a version number.")
+      }.to raise_error(Babushka::InvalidVersionStr, "Babushka::VersionStr.new('0.2!'): couldn't parse a version number.")
     end
   end
 end

@@ -364,7 +364,7 @@ RSpec.describe Babushka::Source do
         context "with the same name and URI" do
           let(:dup) { Babushka::Source.new(nil, 'the-source', 'https://example.org/the-source') }
           it "should work" do
-            expect(L{ dup.add! }).not_to raise_error
+            expect { dup.add! }.not_to raise_error
             expect(dup).to eq(source)
           end
         end

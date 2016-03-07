@@ -3,7 +3,7 @@ require 'timeout'
 
 RSpec.describe Babushka::Shell, "arguments" do
   it "should reject calls with no arguments, since exec will explode anyway" do
-    expect(L{ Babushka::Shell.new }).to raise_error(ArgumentError, "wrong number of arguments (0 for 1+)")
+    expect { Babushka::Shell.new }.to raise_error(ArgumentError, "wrong number of arguments (0 for 1+)")
   end
 end
 

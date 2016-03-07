@@ -46,7 +46,7 @@ RSpec.describe Babushka::Renderable do
     context "when the result doesn't exist" do
       let(:dest_file) { tmp_prefix / 'missing.conf' }
       it "should raise an error" do
-        expect(L{ subject.source_sha }).to raise_error(Errno::ENOENT)
+        expect { subject.source_sha }.to raise_error(Errno::ENOENT)
       end
     end
     context "when the result is an empty file" do

@@ -22,9 +22,9 @@ RSpec.describe Babushka::Asset do
   end
   it "should raise an error on unsupported types" do
     expect(Babushka::Asset).to receive(:shell).with("file '#{archive_path / 'invalid_archive'}'").and_return('ASCII text')
-    expect(L{
+    expect {
       Babushka::Asset.for(archive_path / 'invalid_archive')
-    }).to raise_error("Don't know how to extract invalid_archive.")
+    }.to raise_error("Don't know how to extract invalid_archive.")
   end
   it "should set the name" do
     expect(Babushka::Asset.for(archive_path / 'archive.tar').name).to eq('archive')

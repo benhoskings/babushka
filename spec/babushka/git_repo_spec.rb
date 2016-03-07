@@ -67,14 +67,14 @@ RSpec.describe Babushka::GitRepo, 'without a dir' do
   end
   [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
     it "should raise on #{method}" do
-      expect(L{ subject.send(method) }).to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/missing'}.")
+      expect { subject.send(method) }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/missing'}.")
     end
   }
   context "with lazy eval" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy_dir') }
     it "should fail before the repo is created, but work afterwards" do
       expect(subject.exists?).to be_falsey
-      expect(L{ subject.clean? }).to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_dir'}.")
+      expect { subject.clean? }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_dir'}.")
       stub_repo 'lazy_dir'
       expect(subject.exists?).to be_truthy
       expect(subject).to be_clean
@@ -91,14 +91,14 @@ RSpec.describe Babushka::GitRepo, 'without a repo' do
   end
   [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
     it "should raise on #{method}" do
-      expect(L{ subject.send(method) }).to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/empty'}.")
+      expect { subject.send(method) }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/empty'}.")
     end
   }
   context "with lazy eval" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy_repo') }
     it "should fail before the repo is created, but work afterwards" do
       expect(subject.exists?).to be_falsey
-      expect(L{ subject.clean? }).to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_repo'}.")
+      expect { subject.clean? }.to raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_repo'}.")
       stub_repo 'lazy_repo'
       expect(subject.exists?).to be_truthy
       expect(subject).to be_clean
@@ -504,9 +504,9 @@ RSpec.describe Babushka::GitRepo, '#clone!' do
   context "for existing repos" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
     it "should raise" do
-      expect(L{
+      expect {
         subject.clone!('a_remote/remote.git')
-      }).to raise_error(Babushka::GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}.")
+      }.to raise_error(Babushka::GitRepoExists, "Can't clone a_remote/remote.git to existing path #{tmp_prefix / 'repos/a'}.")
     end
   end
   context "for non-existent repos" do
@@ -516,9 +516,9 @@ RSpec.describe Babushka::GitRepo, '#clone!' do
     end
     context "when the clone fails" do
       it "should raise" do
-        expect(L{
+        expect {
           subject.clone!(tmp_prefix / 'repos/a_remote/missing.git')
-        }).to raise_error(Babushka::GitRepoError)
+        }.to raise_error(Babushka::GitRepoError)
       end
     end
     context "after cloning" do
