@@ -2,8 +2,6 @@ require "stringio"
 
 module Babushka
   class Shell
-    include LogHelpers
-
     BUF_SIZE = 1024 * 16
 
     class ShellCommandFailed < StandardError
@@ -59,7 +57,7 @@ module Babushka
     private
 
     def invoke
-      debug "$ #{@cmd.join(' ')}".colorize('grey')
+      LogHelpers.debug "$ #{@cmd.join(' ')}".colorize('grey')
       Babushka::Open3.popen3 @cmd, popen_opts do |pipe_in, pipe_out, pipe_err|
         read_fds = [pipe_err, pipe_out].reject {|p| p.closed? }
         write_fds = if input.nil?
@@ -99,7 +97,7 @@ module Babushka
       if output.nil?
         io.close
       else
-        debug output.chomp, :log => opts[:log], :as => log_as
+        LogHelpers.debug output.chomp, :log => opts[:log], :as => log_as
         buf << output
 
         if @should_spin
