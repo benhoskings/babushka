@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe URI, "escaping" do
+RSpec.describe URI, "escaping" do
   it "should escape URLs" do
     expect(URI.escape("http://babushka.me/babushka snapshot.tgz")).to eq("http://babushka.me/babushka%20snapshot.tgz")
   end

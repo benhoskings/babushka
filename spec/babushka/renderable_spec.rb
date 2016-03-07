@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-shared_examples_for 'renderable' do
+RSpec.shared_examples_for 'renderable' do
   it "should not exist" do
     expect(subject.exists?).to be_falsey
   end
@@ -39,7 +39,7 @@ shared_examples_for 'renderable' do
   end
 end
 
-describe Babushka::Renderable do
+RSpec.describe Babushka::Renderable do
   subject { Babushka::Renderable.new(dest_file) }
 
   describe '#source_sha' do
@@ -102,7 +102,7 @@ describe Babushka::Renderable do
   end
 end
 
-describe "binding handling" do
+RSpec.describe "binding handling" do
   subject { Babushka::Renderable.new(tmp_prefix / 'example.conf') }
   context "when no explicit binding is passed" do
     before {

@@ -1,12 +1,12 @@
 require 'spec_helper'
 
-describe "source_template" do
+RSpec.describe "source_template" do
   it "should be base_template" do
     expect(Babushka::DepContext.source_template).to eq(Babushka::Dep.base_template)
   end
 end
 
-describe Babushka::DepDefiner, '#define!' do
+RSpec.describe Babushka::DepDefiner, '#define!' do
   let(:a_dep) { dep('DepDefiner defining spec') }
 
   it "should return itself" do
@@ -65,7 +65,7 @@ describe Babushka::DepDefiner, '#define!' do
   end
 end
 
-describe Babushka::DepDefiner, '#invoke' do
+RSpec.describe Babushka::DepDefiner, '#invoke' do
   let(:a_dep) { dep('DepDefiner invoking spec') }
   let(:definer) { Babushka::DepDefiner.new(a_dep) }
 
@@ -94,7 +94,7 @@ describe Babushka::DepDefiner, '#invoke' do
   end
 end
 
-describe "args" do
+RSpec.describe "args" do
   describe "parsing style" do
     it "should parse as named when just a single hash is passed" do
       dep('1 arg', :a).tap {|dep|
@@ -200,7 +200,7 @@ describe "args" do
   end
 end
 
-describe "methods in deps" do
+RSpec.describe "methods in deps" do
   before {
     dep 'helper method test' do
       def helper_test
@@ -218,7 +218,7 @@ describe "methods in deps" do
   end
 end
 
-describe "#on for scoping accepters" do
+RSpec.describe "#on for scoping accepters" do
   let!(:the_lambda) { L{ 'hello from the lambda' } }
   let!(:other_lambda) { L{ 'hello from the other lambda' } }
   before {

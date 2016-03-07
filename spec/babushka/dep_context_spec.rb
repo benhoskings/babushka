@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe '#ssh' do
+RSpec.describe '#ssh' do
   it "should return a Babushka::SSH instance" do
     value = nil
     dep 'ssh test without block' do
@@ -21,7 +21,7 @@ describe '#ssh' do
   end
 end
 
-describe "accepts_block_for behaviour" do
+RSpec.describe "accepts_block_for behaviour" do
   let(:lambda_hello) { L{ "hello world!" } }
 
   def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
@@ -77,7 +77,7 @@ describe "accepts_block_for behaviour" do
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe "accepts_list_for behaviour" do
+RSpec.describe "accepts_list_for behaviour" do
   before {
     allow(Babushka.host).to receive(:match_list).and_return([:osx])
     dep 'test build tools' do

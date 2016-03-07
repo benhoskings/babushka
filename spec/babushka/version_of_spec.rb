@@ -4,7 +4,7 @@ def version_of *args
   Babushka.VersionOf(*args)
 end
 
-describe "creation" do
+RSpec.describe "creation" do
   it "should store name" do
     expect(version_of('ruby').name).to eq('ruby')
   end
@@ -33,7 +33,7 @@ describe "creation" do
   # it "should accept name with space and version"
 end
 
-describe "to_s" do
+RSpec.describe "to_s" do
   describe "versionless" do
     it "should be just the name" do
       expect(version_of('ruby').to_s).to eq('ruby')
@@ -57,7 +57,7 @@ describe "to_s" do
   end
 end
 
-describe '#exact?' do
+RSpec.describe '#exact?' do
   it "should be false when there is no version" do
     expect(version_of('ruby')).not_to be_exact
   end
@@ -72,7 +72,7 @@ describe '#exact?' do
   end
 end
 
-describe "equality" do
+RSpec.describe "equality" do
   it "should compare to versionless strings" do
     expect(version_of('ruby'       )).to     eq(version_of('ruby'))
     expect(version_of('ruby', '1.8')).not_to eq(version_of('ruby'))
@@ -93,7 +93,7 @@ describe "equality" do
   end
 end
 
-describe "comparator" do
+RSpec.describe "comparator" do
   it "should return nil on nil input" do
     expect(version_of('ruby', '1.8') <=> nil).to be_nil
   end
@@ -108,7 +108,7 @@ describe "comparator" do
   end
 end
 
-describe "matching" do
+RSpec.describe "matching" do
   describe "against strings" do
     it "should match all versions when unversioned" do
       expect(version_of('ruby').matches?('1.8')).to be_truthy

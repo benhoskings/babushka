@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'version_str_support'
 
-describe "parsing" do
+RSpec.describe "parsing" do
   it "should parse the version number" do
     expect(Babushka::VersionStr.new('0.2').pieces).to eq([0, 2])
     expect(Babushka::VersionStr.new('0.3.10.2').pieces).to eq([0, 3, 10, 2])
@@ -71,7 +71,7 @@ describe "parsing" do
   end
 end
 
-describe '#parseable_version?' do
+RSpec.describe '#parseable_version?' do
   it 'should not report emptyness as parseable' do
     expect(Babushka::VersionStr.parseable_version?(nil)).to be_falsey
     expect(Babushka::VersionStr.parseable_version?('')).to be_falsey
@@ -87,7 +87,7 @@ describe '#parseable_version?' do
   end
 end
 
-describe 'rendering' do
+RSpec.describe 'rendering' do
   it "should render just the version number with no operator" do
     expect(Babushka::VersionStr.new('0.3.1').to_s).to eq('0.3.1')
   end
@@ -115,18 +115,18 @@ def compare_with operator
 end
 
 %w[== != > < >= <= ~>].each do |operator|
-  describe operator do
+  RSpec.describe operator do
     compare_with operator
   end
 end
 
-describe "comparator" do
+RSpec.describe "comparator" do
   it "should return nil on nil input" do
     expect(Babushka::VersionStr.new('0.3.1') <=> nil).to be_nil
   end
 end
 
-describe "comparing" do
+RSpec.describe "comparing" do
   it "should work with other VersionStrs" do
     expect(Babushka::VersionStr.new('0.3.1') > Babushka::VersionStr.new('0.2.9')).to be_truthy
   end

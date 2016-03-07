@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "version" do
+RSpec.describe "version" do
   before {
     expect(Babushka::Cmdline::Helpers).to receive(:log).with("#{Babushka::VERSION} (#{Babushka::Base.ref})")
   }

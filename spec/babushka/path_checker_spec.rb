@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::PathChecker do
+RSpec.describe Babushka::PathChecker do
   describe '.match_potential_versions' do
     it "should extract a single version" do
       expect(Babushka::PathChecker.match_potential_versions('0.13.2')).to eq(['0.13.2'])

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "name checks" do
+RSpec.describe "name checks" do
   describe "invalid names" do
     it "should not allow blank names" do
       expect(L{ meta(nil) }).to raise_error(ArgumentError, "You can't define a template with a blank name.")
@@ -43,7 +43,7 @@ describe "name checks" do
   end
 end
 
-describe "declaration" do
+RSpec.describe "declaration" do
   let(:template) { meta 'test' }
   it "should set the name" do
     expect(template.name).to eq('test')
@@ -64,7 +64,7 @@ describe "declaration" do
   after { Babushka::Base.sources.anonymous.templates.clear! }
 end
 
-describe "using" do
+RSpec.describe "using" do
   describe "invalid template names" do
     it "should be rejected when passed as options" do
       expect(L{

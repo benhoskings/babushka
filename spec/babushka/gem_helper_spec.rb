@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::GemHelper do
+RSpec.describe Babushka::GemHelper do
   let(:gem_helper) { Babushka::GemHelper }
   before {
     allow(gem_helper).to receive(:versions_of).and_return([

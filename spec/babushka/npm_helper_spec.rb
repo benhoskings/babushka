@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::NpmHelper do
+RSpec.describe Babushka::NpmHelper do
   let(:npm_helper) { Babushka::NpmHelper }
 
   describe '.should_sudo?' do

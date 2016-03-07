@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::BrewHelper do
+RSpec.describe Babushka::BrewHelper do
   let(:brew_helper) { Babushka::BrewHelper }
   describe '#active_version_of' do
     context "when a version is active" do

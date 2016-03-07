@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'dep_support'
 
-shared_examples_for "met? when unmet" do
+RSpec.shared_examples_for "met? when unmet" do
   describe "met?" do
     it "should be false" do
       expect(Dep('a')).not_to be_met
@@ -21,7 +21,7 @@ shared_examples_for "met? when unmet" do
   end
 end
 
-describe "an already met dep tree" do
+RSpec.describe "an already met dep tree" do
   before {
     dep('a') { requires('b', 'c') }
     dep('b') { requires('c', 'd', 'e') }
@@ -60,7 +60,7 @@ describe "an already met dep tree" do
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe "an unmeetable dep tree" do
+RSpec.describe "an unmeetable dep tree" do
   before {
     dep('a') { met? { false }; requires('b', 'c') }
     dep('b') { met? { false }; requires('c', 'd', 'e') }
@@ -91,7 +91,7 @@ describe "an unmeetable dep tree" do
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe "a meetable dep tree" do
+RSpec.describe "a meetable dep tree" do
   before {
     dep('a') { met? { @met }; meet { @met = true }; requires('b', 'c') }
     dep('b') { met? { @met }; meet { @met = true }; requires('c', 'd', 'e') }
@@ -114,7 +114,7 @@ describe "a meetable dep tree" do
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe "a partially meetable dep tree" do
+RSpec.describe "a partially meetable dep tree" do
   before {
     dep('a') { met? { @met }; meet { @met = true }; requires('b', 'c') }
     dep('b') { met? { @met }; meet { @met = true }; requires('c', 'd', 'e') }

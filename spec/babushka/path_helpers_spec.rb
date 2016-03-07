@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "cd" do
+RSpec.describe "cd" do
   let!(:original_pwd) { Dir.pwd }
 
   it "should yield if no dir is given" do
@@ -68,7 +68,7 @@ describe "cd" do
   end
 end
 
-describe "in_build_dir" do
+RSpec.describe "in_build_dir" do
   let!(:original_pwd) { Dir.pwd }
 
   it "should change to the build dir with no args" do
@@ -85,7 +85,7 @@ describe "in_build_dir" do
   end
 end
 
-describe "in_download_dir" do
+RSpec.describe "in_download_dir" do
   let!(:original_pwd) { Dir.pwd }
 
   it "should change to the download dir with no args" do

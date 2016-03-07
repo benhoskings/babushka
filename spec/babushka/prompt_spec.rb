@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::Prompt, "get_value" do
+RSpec.describe Babushka::Prompt, "get_value" do
   it "should raise when not running on a terminal" do
     expect(STDIN).to receive(:tty?).and_return(false)
     expect { Babushka::Prompt.get_value('value') }.to raise_error(Babushka::PromptUnavailable)
@@ -136,7 +136,7 @@ describe Babushka::Prompt, "get_value" do
   end
 end
 
-describe "'y' input" do
+RSpec.describe "'y' input" do
   context "intentional" do
     it "should return 'y'" do
       expect(STDIN).to receive(:tty?).twice.and_return(true)

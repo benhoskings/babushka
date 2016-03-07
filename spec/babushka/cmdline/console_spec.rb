@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "console" do
+RSpec.describe "console" do
   before {
     entry_point = File.expand_path(File.join(__FILE__, '../../../../lib/babushka'))
     expect(Babushka::Cmdline).to receive(:exec).with("irb -r'#{entry_point}' --simple-prompt")

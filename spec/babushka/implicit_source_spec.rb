@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::ImplicitSource do
+RSpec.describe Babushka::ImplicitSource do
 
   describe '#initialize' do
     it "should require a name" do

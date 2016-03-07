@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe '#log' do
+RSpec.describe '#log' do
   describe 'unicode handling' do
     if "".respond_to?(:encoding) # Skip these tests on ruby-1.8.
 

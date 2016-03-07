@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::SystemDetector do
+RSpec.describe Babushka::SystemDetector do
   subject {
     Babushka::SystemDetector.profile_for_host
   }

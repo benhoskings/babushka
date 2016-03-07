@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'source_support'
 
-describe Babushka::Source do
+RSpec.describe Babushka::Source do
   before(:all) {
     @remote_1 = make_source_remote 'remote_1'
     @remote_2 = make_source_remote 'remote_2'

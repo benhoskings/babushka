@@ -4,7 +4,7 @@ require 'tmpdir'
 SUCCEEDING_LS = 'ls /bin'
 FAILING_LS = 'ls /missing'
 
-describe "shell" do
+RSpec.describe "shell" do
   it "should return something true on successful commands" do
     expect(Babushka::ShellHelpers.shell('true')).not_to be_nil
   end
@@ -72,7 +72,7 @@ describe "shell" do
   end
 end
 
-describe "shell?" do
+RSpec.describe "shell?" do
   it "should return the output for successful commands" do
     expect(Babushka::ShellHelpers.shell?('echo lol')).to eq('lol')
     expect(Babushka::ShellHelpers.shell?(SUCCEEDING_LS)).to be_truthy
@@ -83,7 +83,7 @@ describe "shell?" do
   end
 end
 
-describe "shell!" do
+RSpec.describe "shell!" do
   it "should return the output for successful commands" do
     expect(Babushka::ShellHelpers.shell!('echo lol')).to eq('lol')
     expect(Babushka::ShellHelpers.shell!(SUCCEEDING_LS)).to be_truthy
@@ -94,7 +94,7 @@ describe "shell!" do
   end
 end
 
-describe "raw_shell" do
+RSpec.describe "raw_shell" do
   it "should always return a Shell" do
     expect(Babushka::ShellHelpers.raw_shell('true')).to be_a(Babushka::Shell)
     expect(Babushka::ShellHelpers.raw_shell('false')).to be_a(Babushka::Shell)
@@ -118,7 +118,7 @@ describe "raw_shell" do
   end
 end
 
-describe 'login_shell' do
+RSpec.describe 'login_shell' do
   it "should return something true on successful commands" do
     expect(Babushka::ShellHelpers.login_shell('true')).not_to be_nil
   end
@@ -132,7 +132,7 @@ describe 'login_shell' do
   end
 end
 
-describe 'argument behaviour' do
+RSpec.describe 'argument behaviour' do
   context "with a single string" do
     it "should support compound commands" do
       expect(Babushka::ShellHelpers.shell("echo trousers | tr a-z A-Z")).to eq('TROUSERS')
@@ -151,7 +151,7 @@ describe 'argument behaviour' do
   end
 end
 
-describe "sudo" do
+RSpec.describe "sudo" do
   it "should accept string input" do
     expect(Babushka::ShellHelpers).to receive(:shell_cmd).with({}, 'sudo -u root whoami', {}).once
     Babushka::ShellHelpers.sudo('whoami')
@@ -242,7 +242,7 @@ describe "sudo" do
   end
 end
 
-describe "log_shell" do
+RSpec.describe "log_shell" do
   it "should log correctly for a successful command" do
     expect(Babushka::LogHelpers).to receive(:log).with("Getting uptime...", {:newline=>false}).once
     expect(Babushka::ShellHelpers).to receive(:shell).with('uptime', {:spinner=>true}).and_return("days and days")
@@ -263,7 +263,7 @@ describe "log_shell" do
   end
 end
 
-describe "which" do
+RSpec.describe "which" do
   it "should return a string" do
     expect(Babushka::ShellHelpers.which('ls')).to be_an_instance_of(String)
   end
@@ -292,7 +292,7 @@ describe "which" do
   end
 end
 
-describe "cmd_dir" do
+RSpec.describe "cmd_dir" do
   it "should return a string" do
     expect(Babushka::ShellHelpers.cmd_dir('ruby')).to be_an_instance_of(String)
   end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe "lambda choosing" do
+RSpec.describe "lambda choosing" do
   it "should return the value of the block when there are no choices" do
     expect(Babushka::LambdaChooser.new(nil, :ours, :theirs) {
       "block value"

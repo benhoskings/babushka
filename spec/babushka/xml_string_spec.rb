@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::XMLString do
+RSpec.describe Babushka::XMLString do
   it "should parse xml like a son of a bitch" do
     expect(sample_xml.val_for('CFBundleShortVersionString')).to eq('5.0.310.0')
     expect(sample_xml.val_for('CFBundleSignature')).to eq('Cr24 Example String')

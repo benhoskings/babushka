@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::Task do
+RSpec.describe Babushka::Task do
   let(:parser) { Babushka::Cmdline::Parser.for(%w[test]) }
 
   describe "process" do

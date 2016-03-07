@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'source_support'
 
-describe Babushka::SourcePool do
+RSpec.describe Babushka::SourcePool do
 
   describe 'default sources' do
     describe 'types' do
@@ -336,7 +336,7 @@ describe Babushka::SourcePool do
 end
 
 
-describe "template selection during defining from a real source" do
+RSpec.describe "template selection during defining from a real source" do
   let(:source) { Babushka::Source.new('spec/deps/good', 'good source').tap(&:load!) }
   before {
     allow(Babushka::Source).to receive(:present).and_return([source])
@@ -363,7 +363,7 @@ describe "template selection during defining from a real source" do
   end
 end
 
-describe "nested source loads" do
+RSpec.describe "nested source loads" do
   let(:outer_source) { Babushka::Source.new('spec/deps/outer', 'outer source').tap(&:load!) }
   let(:nested_source) { Babushka::Source.new('spec/deps/good', 'nested source') }
   before {

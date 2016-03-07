@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::AptHelper do
+RSpec.describe Babushka::AptHelper do
   let(:apt_helper) { Babushka::AptHelper }
 
   describe '.source_matcher_for_system' do

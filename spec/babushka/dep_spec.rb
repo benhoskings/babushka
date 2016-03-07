@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'dep_support'
 
-describe "Dep.new" do
+RSpec.describe "Dep.new" do
   it "should reject deps with non-string names" do
     expect(L{
       Babushka::Dep.new(:symbol_name, Babushka::Base.sources.anonymous, [], {}, nil)
@@ -88,7 +88,7 @@ describe "Dep.new" do
   end
 end
 
-describe '#inspect' do
+RSpec.describe '#inspect' do
   let(:source) {
     Babushka::Source.new(nil, 'test source')
   }
@@ -98,7 +98,7 @@ describe '#inspect' do
   end
 end
 
-describe "dep creation" do
+RSpec.describe "dep creation" do
   it "should work for blank deps" do
     expect(L{
       dep "a blank dep"
@@ -166,7 +166,7 @@ describe "dep creation" do
   after { Babushka::Base.sources.anonymous.templates.clear! }
 end
 
-describe Babushka::Dep, "defining" do
+RSpec.describe Babushka::Dep, "defining" do
   before {
     allow(Babushka::Base.sources).to receive(:current_real_load_source).and_return(Babushka::Base.sources.anonymous)
   }
@@ -237,7 +237,7 @@ describe Babushka::Dep, "defining" do
   end
 end
 
-describe Babushka::Dep, '#basename' do
+RSpec.describe Babushka::Dep, '#basename' do
   context "for base deps" do
     it "should be the same as the dep's name" do
       expect(dep('basename test').basename).to eq('basename test')
@@ -275,7 +275,7 @@ describe Babushka::Dep, '#basename' do
   end
 end
 
-describe Babushka::Dep, '#cache_key' do
+RSpec.describe Babushka::Dep, '#cache_key' do
   it "should work for parameterless deps" do
     expect(dep('cache key, no params').cache_key).to eq(Babushka::DepRequirement.new('cache key, no params', []))
   end
@@ -290,7 +290,7 @@ describe Babushka::Dep, '#cache_key' do
   end
 end
 
-describe Babushka::Dep, "params" do
+RSpec.describe Babushka::Dep, "params" do
   describe "non-symbol params" do
     it "should be rejected, singular" do
       expect(L{
@@ -334,7 +334,7 @@ describe Babushka::Dep, "params" do
   end
 end
 
-describe Babushka::Dep, 'lambda lists' do
+RSpec.describe Babushka::Dep, 'lambda lists' do
   before {
     allow(Babushka.host.matcher).to receive(:name).and_return(:test_name)
     allow(Babushka.host.matcher).to receive(:system).and_return(:test_system)
@@ -355,7 +355,7 @@ describe Babushka::Dep, 'lambda lists' do
   end
 end
 
-describe Babushka::Dep, '#requirements_for' do
+RSpec.describe Babushka::Dep, '#requirements_for' do
   let(:dependency) {
     dep('requirements_for specs') {
       requires 'a dep'
@@ -392,7 +392,7 @@ describe Babushka::Dep, '#requirements_for' do
   end
 end
 
-describe "exceptions" do
+RSpec.describe "exceptions" do
   it "should be unmet after an exception in met? {}" do
     the_dep = dep 'exception met? test' do
       met? { raise }
@@ -410,7 +410,7 @@ describe "exceptions" do
   end
 end
 
-describe "calling met? on a single dep" do
+RSpec.describe "calling met? on a single dep" do
   it "should still call met? if setup returns falsey" do
     the_dep = dep('met? - setup is false') {
       setup { false }
@@ -435,7 +435,7 @@ describe "calling met? on a single dep" do
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe "calling meet on a single dep" do
+RSpec.describe "calling meet on a single dep" do
   it "should be false for an unmeetable dep" do
     the_dep = dep('unmeetable') {
       met? { false }
@@ -493,7 +493,7 @@ describe "calling meet on a single dep" do
   after { Babushka::Base.sources.anonymous.deps.clear! }
 end
 
-describe 'dep caching' do
+RSpec.describe 'dep caching' do
   before {
     dep 'caching child b', :arg_b1, :arg_b2
     dep 'caching child c', :arg_c1
@@ -517,7 +517,7 @@ describe 'dep caching' do
   end
 end
 
-describe "fs snapshotting" do
+RSpec.describe "fs snapshotting" do
   before {
     allow(Babushka::Base.task).to receive(:opt).and_return(false)
     allow(Babushka::Base.task).to receive(:opt).with(:git_fs).and_return(true)

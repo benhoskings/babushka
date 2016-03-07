@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'fancypath_support'
 
-describe Fancypath do
+RSpec.describe Fancypath do
   let(:tmp_dir) { tmp_prefix / 'fancypath' }
   before do
     tmp_dir.rmtree if tmp_dir.exist?
@@ -277,10 +277,10 @@ describe Fancypath do
   end
 end #/Fancypath
 
-describe "String#to_fancypath" do
+RSpec.describe "String#to_fancypath" do
   it('returns a Fancypath') { expect('test'.to_fancypath).to be_instance_of(Fancypath) }
 end
 
-describe "Pathname#to_fancypath" do
+RSpec.describe "Pathname#to_fancypath" do
   it('returns a Fancypath') { expect(Fancypath.new('/').to_fancypath).to be_instance_of(Fancypath) }
 end

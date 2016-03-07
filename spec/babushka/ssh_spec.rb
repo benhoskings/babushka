@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Babushka::SSH do
+RSpec.describe Babushka::SSH do
   let(:ssh) {
     Babushka::SSH.new('user@host')
   }

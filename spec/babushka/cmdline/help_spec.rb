@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "help" do
+RSpec.describe "help" do
   context "with no verb" do
     before {
       [

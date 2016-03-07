@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Array, "to_list" do
+RSpec.describe Array, "to_list" do
   it "no elements" do
     expect([].to_list).to eq('')
   end
@@ -23,7 +23,7 @@ describe Array, "to_list" do
   end
 end
 
-describe Array, '#collapse' do
+RSpec.describe Array, '#collapse' do
   it "should work for empty lists" do
     expect([].collapse('blah')).to eq([])
     expect([].collapse(/blah/)).to eq([])
@@ -56,7 +56,7 @@ describe Array, '#collapse' do
   end
 end
 
-describe Array, '#local_group_by' do
+RSpec.describe Array, '#local_group_by' do
   it "should work for empty lists" do
     expect([].group_by(&:length)).to eq({})
   end
@@ -86,7 +86,7 @@ def version_of *args
 end
 
 
-describe Array, '#versions' do
+RSpec.describe Array, '#versions' do
   {
     %w[a]     => [version_of('a')],
     %w[a b c] => [version_of('a'), version_of('b'), version_of('c')],
@@ -99,7 +99,7 @@ describe Array, '#versions' do
   }
 end
 
-describe Hash, '#defaults!' do
+RSpec.describe Hash, '#defaults!' do
   it "should work for empty hashes" do
     expect({}.defaults!(:a => 'b', :c => 'd')).to eq({:a => 'b', :c => 'd'})
   end
@@ -114,7 +114,7 @@ describe Hash, '#defaults!' do
   end
 end
 
-describe Array, '#val_for' do
+RSpec.describe Array, '#val_for' do
   it "space separation" do
     expect(['key value'].val_for('key')).to eq('value')
   end
@@ -168,7 +168,7 @@ describe Array, '#val_for' do
   end
 end
 
-describe String, '#to_utf8' do
+RSpec.describe String, '#to_utf8' do
   if "".respond_to?(:encoding) # Skip these tests on ruby-1.8.
 
     let(:valid_utf8) { "こんにちは".force_encoding('utf-8') }
@@ -208,7 +208,7 @@ describe String, '#to_utf8' do
   end
 end
 
-describe Integer, '#xsecs' do
+RSpec.describe Integer, '#xsecs' do
   it "should handle 0" do
     expect(0.xsecs).to eq('now')
   end

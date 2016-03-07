@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'accepts_for_support'
 
-describe "accepts_*_for" do
+RSpec.describe "accepts_*_for" do
   subject { AcceptsForTest.new }
 
   describe "invalid input" do

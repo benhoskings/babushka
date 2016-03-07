@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Babushka::SystemProfile do
+RSpec.describe Babushka::SystemProfile do
   let(:profile) {
     Babushka::SystemDetector.profile_for_host
   }

@@ -24,7 +24,7 @@ def repo_context name, &block
   Babushka::PathHelpers.cd(tmp_prefix / 'repos'/ name, &block)
 end
 
-describe Babushka::GitRepo, 'creation' do
+RSpec.describe Babushka::GitRepo, 'creation' do
   before(:all) { stub_repo 'a' }
   it "should return nil on nonexistent paths" do
     expect(Babushka::GitRepo.new(tmp_prefix / 'repos/missing').root).to eq(nil)
@@ -60,7 +60,7 @@ describe Babushka::GitRepo, 'creation' do
   end
 end
 
-describe Babushka::GitRepo, 'without a dir' do
+RSpec.describe Babushka::GitRepo, 'without a dir' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/missing') }
   it "should not exist" do
     expect(subject.exists?).to be_falsey
@@ -82,7 +82,7 @@ describe Babushka::GitRepo, 'without a dir' do
   end
 end
 
-describe Babushka::GitRepo, 'without a repo' do
+RSpec.describe Babushka::GitRepo, 'without a repo' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/empty') }
   before { (tmp_prefix / 'repos/empty').mkdir }
 
@@ -106,7 +106,7 @@ describe Babushka::GitRepo, 'without a repo' do
   end
 end
 
-describe Babushka::GitRepo, "with a repo" do
+RSpec.describe Babushka::GitRepo, "with a repo" do
   before(:all) { stub_repo 'a' }
   it "should exist with string path" do
     expect(Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).exists?).to be_truthy
@@ -116,7 +116,7 @@ describe Babushka::GitRepo, "with a repo" do
   end
 end
 
-describe 'shelling' do
+RSpec.describe 'shelling' do
   before(:all) { stub_repo 'a' }
   let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
 
@@ -163,7 +163,7 @@ describe 'shelling' do
   end
 end
 
-describe Babushka::GitRepo, '#clean? / #dirty?' do
+RSpec.describe Babushka::GitRepo, '#clean? / #dirty?' do
   context "on commitless repos" do
     before(:all) { stub_commitless_repo 'a' }
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -200,7 +200,7 @@ describe Babushka::GitRepo, '#clean? / #dirty?' do
   end
 end
 
-describe Babushka::GitRepo, '#include?' do
+RSpec.describe Babushka::GitRepo, '#include?' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return true for valid commits" do
@@ -213,7 +213,7 @@ describe Babushka::GitRepo, '#include?' do
   end
 end
 
-describe Babushka::GitRepo, '#branches' do
+RSpec.describe Babushka::GitRepo, '#branches' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   context "on a repo with commits" do
     before(:all) { stub_repo 'a' }
@@ -245,7 +245,7 @@ describe Babushka::GitRepo, '#branches' do
   end
 end
 
-describe Babushka::GitRepo, '#all_branches' do
+RSpec.describe Babushka::GitRepo, '#all_branches' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   context "on a repo with commits" do
     before(:all) { stub_repo 'a' }
@@ -281,7 +281,7 @@ describe Babushka::GitRepo, '#all_branches' do
   end
 end
 
-describe Babushka::GitRepo, '#current_branch' do
+RSpec.describe Babushka::GitRepo, '#current_branch' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return 'master'" do
@@ -313,7 +313,7 @@ describe Babushka::GitRepo, '#current_branch' do
   end
 end
 
-describe Babushka::GitRepo, '#current_remote_branch' do
+RSpec.describe Babushka::GitRepo, '#current_remote_branch' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return the namespaced remote branch" do
@@ -330,7 +330,7 @@ describe Babushka::GitRepo, '#current_remote_branch' do
   end
 end
 
-describe Babushka::GitRepo, '#current_head' do
+RSpec.describe Babushka::GitRepo, '#current_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a short commit id" do
@@ -338,7 +338,7 @@ describe Babushka::GitRepo, '#current_head' do
   end
 end
 
-describe Babushka::GitRepo, '#current_full_head' do
+RSpec.describe Babushka::GitRepo, '#current_full_head' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
@@ -346,7 +346,7 @@ describe Babushka::GitRepo, '#current_full_head' do
   end
 end
 
-describe Babushka::GitRepo, '#resolve' do
+RSpec.describe Babushka::GitRepo, '#resolve' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a short commit id" do
@@ -354,7 +354,7 @@ describe Babushka::GitRepo, '#resolve' do
   end
 end
 
-describe Babushka::GitRepo, '#resolve_full' do
+RSpec.describe Babushka::GitRepo, '#resolve_full' do
   before { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return a full commit id" do
@@ -362,7 +362,7 @@ describe Babushka::GitRepo, '#resolve_full' do
   end
 end
 
-describe Babushka::GitRepo, '#remote_for' do
+RSpec.describe Babushka::GitRepo, '#remote_for' do
   before(:all) {
     stub_repo 'a' do |repo|
       repo.repo_shell('git config branch.next.remote upstream')
@@ -377,7 +377,7 @@ describe Babushka::GitRepo, '#remote_for' do
   end
 end
 
-describe Babushka::GitRepo, '#ahead?' do
+RSpec.describe Babushka::GitRepo, '#ahead?' do
   before(:all) {
     stub_repo 'a'
     Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
@@ -430,7 +430,7 @@ describe Babushka::GitRepo, '#ahead?' do
   end
 end
 
-describe Babushka::GitRepo, '#behind?' do
+RSpec.describe Babushka::GitRepo, '#behind?' do
   before(:all) {
     stub_repo 'a'
     Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
@@ -465,7 +465,7 @@ describe Babushka::GitRepo, '#behind?' do
   end
 end
 
-describe Babushka::GitRepo, '#init!' do
+RSpec.describe Babushka::GitRepo, '#init!' do
   context "when the repo doesn't exist" do
     let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/uninited') }
     it "should init the repo" do
@@ -499,7 +499,7 @@ describe Babushka::GitRepo, '#init!' do
   end
 end
 
-describe Babushka::GitRepo, '#clone!' do
+RSpec.describe Babushka::GitRepo, '#clone!' do
   before(:all) { stub_repo 'a' }
   context "for existing repos" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
@@ -547,7 +547,7 @@ origin\t#{tmp_prefix / 'repos/a_remote/remote.git'} (push)
   end
 end
 
-describe Babushka::GitRepo, '#commit!' do
+RSpec.describe Babushka::GitRepo, '#commit!' do
   before(:all) { stub_repo 'a' }
   let(:repo) { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should run using repo_shell_as_owner" do
@@ -565,7 +565,7 @@ describe Babushka::GitRepo, '#commit!' do
   end
 end
 
-describe Babushka::GitRepo, '#branch!' do
+RSpec.describe Babushka::GitRepo, '#branch!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should run using repo_shell_as_owner" do
@@ -613,7 +613,7 @@ describe Babushka::GitRepo, '#branch!' do
   end
 end
 
-describe Babushka::GitRepo, '#track!' do
+RSpec.describe Babushka::GitRepo, '#track!' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should run using repo_shell_as_owner" do
@@ -634,7 +634,7 @@ describe Babushka::GitRepo, '#track!' do
   end
 end
 
-describe Babushka::GitRepo, '#checkout!' do
+RSpec.describe Babushka::GitRepo, '#checkout!' do
   before(:all) {
     stub_repo 'a'
     Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {
@@ -671,7 +671,7 @@ describe Babushka::GitRepo, '#checkout!' do
   end
 end
 
-describe Babushka::GitRepo, '#detach!' do
+RSpec.describe Babushka::GitRepo, '#detach!' do
   before(:all) {
     stub_repo 'a'
   }
@@ -697,7 +697,7 @@ describe Babushka::GitRepo, '#detach!' do
   end
 end
 
-describe Babushka::GitRepo, '#reset_hard!' do
+RSpec.describe Babushka::GitRepo, '#reset_hard!' do
   before {
     stub_repo 'a'
     Babushka::PathHelpers.cd(tmp_prefix / 'repos/a') {

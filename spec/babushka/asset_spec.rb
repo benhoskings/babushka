@@ -4,7 +4,7 @@ def archive_path
   __FILE__.p.parent.parent / 'archives'
 end
 
-describe Babushka::Asset do
+RSpec.describe Babushka::Asset do
   it "should detect file types" do
     expect(Babushka::Asset.type(archive_path / 'archive.zip')).to eq(:zip)
     expect(Babushka::Asset.type(archive_path / 'archive.tgz')).to eq(:gzip)

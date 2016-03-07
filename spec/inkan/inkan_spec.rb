@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'digest/sha1'
 
-describe "Inkan" do
+RSpec.describe "Inkan" do
   describe '.legitimate?' do
     context "without a hashbang" do
       let(:content) { 'foo bar baz' }

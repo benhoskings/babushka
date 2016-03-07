@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::CurrentRuby do
+RSpec.describe Babushka::CurrentRuby do
   let(:current_ruby) { Babushka::CurrentRuby.new }
   before {
     allow(current_ruby).to receive(:gem_env).and_return(%{

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::GitFS do
+RSpec.describe Babushka::GitFS do
   let(:git_fs) { Babushka::GitFS }
 
   describe 'repo' do

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Babushka::ANSI do
+RSpec.describe Babushka::ANSI do
   describe '.wrap' do
     before {
       allow(Babushka::Base.cmdline.opts).to receive(:[]).with(:"[no_]color") { true }
