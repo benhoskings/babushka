@@ -10,7 +10,7 @@ describe "cd" do
       Dir.pwd.should == original_pwd
       has_yielded = true
     }
-    has_yielded.should be_true
+    has_yielded.should be_truthy
   end
 
   it "should yield if no chdir is required" do
@@ -20,7 +20,7 @@ describe "cd" do
       Dir.pwd.should == original_pwd
       has_yielded = true
     }
-    has_yielded.should be_true
+    has_yielded.should be_truthy
   end
   it "should change dir for the duration of the block" do
     has_yielded = false
@@ -28,7 +28,7 @@ describe "cd" do
       Dir.pwd.should == tmp_prefix
       has_yielded = true
     }
-    has_yielded.should be_true
+    has_yielded.should be_truthy
     Dir.pwd.should == original_pwd
   end
   context "recursively" do
@@ -43,7 +43,7 @@ describe "cd" do
         }
         Dir.pwd.should == tmp_prefix
       }
-      has_yielded.should be_true
+      has_yielded.should be_truthy
       Dir.pwd.should == original_pwd
     end
   end

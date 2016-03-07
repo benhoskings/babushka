@@ -89,8 +89,8 @@ describe Babushka::DepDefiner, '#invoke' do
   end
 
   it "should call the task with a valid block" do
-    Babushka::DepContext.new(a_dep) { }.invoke(:met?).should be_true
-    Babushka::DepContext.new(a_dep) { met? { false } }.invoke(:met?).should be_false
+    Babushka::DepContext.new(a_dep) { }.invoke(:met?).should be_truthy
+    Babushka::DepContext.new(a_dep) { met? { false } }.invoke(:met?).should be_falsey
   end
 end
 

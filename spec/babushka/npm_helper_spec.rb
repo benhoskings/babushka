@@ -14,12 +14,12 @@ describe Babushka::NpmHelper do
 
     it "should require sudo when the npm prefix dir is not writeable by the current user" do
       npm_prefix_fancypath.should_receive(:writable_real?).and_return(false)
-      npm_helper.should_sudo?.should be_true
+      npm_helper.should_sudo?.should be_truthy
     end
 
     it "should not require sudo when the npm prefix dir is writeable by the current user" do
       npm_prefix_fancypath.should_receive(:writable_real?).and_return(true)
-      npm_helper.should_sudo?.should be_false
+      npm_helper.should_sudo?.should be_falsey
     end
   end
 end

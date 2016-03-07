@@ -101,9 +101,9 @@ describe "using" do
       end
     }
     it "should define the helper on the context class" do
-      template.context_class.respond_to?(:a_helper).should be_false
-      template.context_class.new(nil).respond_to?(:a_helper).should be_false
-      dep('dep1.template_test').context.define!.respond_to?(:a_helper).should be_true
+      template.context_class.respond_to?(:a_helper).should be_falsey
+      template.context_class.new(nil).respond_to?(:a_helper).should be_falsey
+      dep('dep1.template_test').context.define!.respond_to?(:a_helper).should be_truthy
     end
     it "should correctly define the helper method" do
       dep('dep2.template_test').context.a_helper_method.should == 'hello from the helper!'
@@ -138,8 +138,8 @@ describe "using" do
       end
     }
     it "should handle accepts_list_for" do
-      dep('unmet accepts_list_for.acceptor_test') { list_test 'invalid' }.met?.should be_false
-      dep('met accepts_list_for.acceptor_test') { list_test 'valid' }.met?.should be_true
+      dep('unmet accepts_list_for.acceptor_test') { list_test 'invalid' }.met?.should be_falsey
+      dep('met accepts_list_for.acceptor_test') { list_test 'valid' }.met?.should be_truthy
     end
     it "should handle accepts_block_for" do
       block_called = false
@@ -149,7 +149,7 @@ describe "using" do
           block_called = true
         }
       }.meet
-      block_called.should be_true
+      block_called.should be_truthy
     end
     after { Babushka::Base.sources.anonymous.templates.clear! }
   end

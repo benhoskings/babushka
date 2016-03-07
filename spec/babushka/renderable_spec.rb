@@ -2,12 +2,12 @@ require 'spec_helper'
 
 shared_examples_for 'renderable' do
   it "should not exist" do
-    subject.exists?.should be_false
+    subject.exists?.should be_falsey
   end
   describe '#render' do
     before { subject.render(source_file) }
     it "should exist" do
-      subject.exists?.should be_true
+      subject.exists?.should be_truthy
     end
     it "should have added the prefix" do
       dest_file.read.should =~ Babushka::Renderable::SEAL_REGEXP

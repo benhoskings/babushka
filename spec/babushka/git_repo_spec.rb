@@ -55,7 +55,7 @@ describe Babushka::GitRepo, 'creation' do
   end
   describe "options" do
     it "should accept :run_as_owner" do
-      Babushka::GitRepo.new(tmp_prefix / 'repos/a', :run_as_owner => true).run_as_owner?.should be_true
+      Babushka::GitRepo.new(tmp_prefix / 'repos/a', :run_as_owner => true).run_as_owner?.should be_truthy
     end
   end
 end
@@ -63,7 +63,7 @@ end
 describe Babushka::GitRepo, 'without a dir' do
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/missing') }
   it "should not exist" do
-    subject.exists?.should be_false
+    subject.exists?.should be_falsey
   end
   [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
     it "should raise on #{method}" do
@@ -73,10 +73,10 @@ describe Babushka::GitRepo, 'without a dir' do
   context "with lazy eval" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy_dir') }
     it "should fail before the repo is created, but work afterwards" do
-      subject.exists?.should be_false
+      subject.exists?.should be_falsey
       L{ subject.clean? }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_dir'}.")
       stub_repo 'lazy_dir'
-      subject.exists?.should be_true
+      subject.exists?.should be_truthy
       subject.should be_clean
     end
   end
@@ -87,7 +87,7 @@ describe Babushka::GitRepo, 'without a repo' do
   before { (tmp_prefix / 'repos/empty').mkdir }
 
   it "should not exist" do
-    subject.exists?.should be_false
+    subject.exists?.should be_falsey
   end
   [:clean?, :dirty?, :current_branch, :current_head, :remote_branch_exists?, :ahead?].each {|method|
     it "should raise on #{method}" do
@@ -97,10 +97,10 @@ describe Babushka::GitRepo, 'without a repo' do
   context "with lazy eval" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/lazy_repo') }
     it "should fail before the repo is created, but work afterwards" do
-      subject.exists?.should be_false
+      subject.exists?.should be_falsey
       L{ subject.clean? }.should raise_error(Babushka::GitRepoError, "There is no repo at #{tmp_prefix / 'repos/lazy_repo'}.")
       stub_repo 'lazy_repo'
-      subject.exists?.should be_true
+      subject.exists?.should be_truthy
       subject.should be_clean
     end
   end
@@ -109,10 +109,10 @@ end
 describe Babushka::GitRepo, "with a repo" do
   before(:all) { stub_repo 'a' }
   it "should exist with string path" do
-    Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).exists?.should be_true
+    Babushka::GitRepo.new((tmp_prefix / 'repos/a').to_s).exists?.should be_truthy
   end
   it "should exist with Fancypath path" do
-    Babushka::GitRepo.new(tmp_prefix / 'repos/a').exists?.should be_true
+    Babushka::GitRepo.new(tmp_prefix / 'repos/a').exists?.should be_truthy
   end
 end
 
@@ -204,12 +204,12 @@ describe Babushka::GitRepo, '#include?' do
   before(:all) { stub_repo 'a' }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return true for valid commits" do
-    subject.include?('20758f2d9d696c51ac83a0fd36626d421057b24d').should be_true
-    subject.include?('20758f2').should be_true
+    subject.include?('20758f2d9d696c51ac83a0fd36626d421057b24d').should be_truthy
+    subject.include?('20758f2').should be_truthy
   end
   it "should return false for nonexistent commits" do
-    subject.include?('20758f2d9d696c51ac83a0fd36626d421057b24e').should be_false
-    subject.include?('20758f3').should be_false
+    subject.include?('20758f2d9d696c51ac83a0fd36626d421057b24e').should be_falsey
+    subject.include?('20758f3').should be_falsey
   end
 end
 
@@ -389,7 +389,7 @@ describe Babushka::GitRepo, '#ahead?' do
     subject.current_branch.should == 'topic'
   end
   it "should return true if the current branch has no remote" do
-    subject.remote_branch_exists?.should be_false
+    subject.remote_branch_exists?.should be_falsey
     subject.should be_ahead
   end
   context "when remote branch exists" do
@@ -404,7 +404,7 @@ describe Babushka::GitRepo, '#ahead?' do
       subject.current_branch.should == 'topic'
     end
     it "should return true if there are unpushed commits on the current branch" do
-      subject.remote_branch_exists?.should be_true
+      subject.remote_branch_exists?.should be_truthy
       subject.should be_ahead
     end
     context "when the branch is fully pushed" do
@@ -414,7 +414,7 @@ describe Babushka::GitRepo, '#ahead?' do
         }
       }
       it "should not be ahead" do
-        subject.remote_branch_exists?.should be_true
+        subject.remote_branch_exists?.should be_truthy
         subject.should_not be_ahead
       end
       context "when the remote doesn't exist" do
@@ -422,7 +422,7 @@ describe Babushka::GitRepo, '#ahead?' do
           subject.repo_shell('git config branch.topic.remote upstream')
         }
         it "should be ahead" do
-          subject.remote_branch_exists?.should be_false
+          subject.remote_branch_exists?.should be_falsey
           subject.should be_ahead
         end
       end
@@ -440,7 +440,7 @@ describe Babushka::GitRepo, '#behind?' do
   }
   subject { Babushka::GitRepo.new(tmp_prefix / 'repos/a') }
   it "should return true if there are new commits on the remote" do
-    subject.remote_branch_exists?.should be_true
+    subject.remote_branch_exists?.should be_truthy
     subject.should be_behind
   end
   context "when the remote is merged" do
@@ -450,7 +450,7 @@ describe Babushka::GitRepo, '#behind?' do
       }
     }
     it "should not be behind" do
-      subject.remote_branch_exists?.should be_true
+      subject.remote_branch_exists?.should be_truthy
       subject.should_not be_behind
     end
     context "when the remote doesn't exist" do
@@ -458,7 +458,7 @@ describe Babushka::GitRepo, '#behind?' do
         subject.repo_shell('git config branch.next.remote upstream')
       }
       it "should be ahead" do
-        subject.remote_branch_exists?.should be_false
+        subject.remote_branch_exists?.should be_falsey
         subject.should be_ahead
       end
     end
@@ -512,7 +512,7 @@ describe Babushka::GitRepo, '#clone!' do
   context "for non-existent repos" do
     subject { Babushka::GitRepo.new(tmp_prefix / 'repos/b') }
     it "should not exist yet" do
-      subject.exists?.should be_false
+      subject.exists?.should be_falsey
     end
     context "when the clone fails" do
       it "should raise" do
@@ -524,7 +524,7 @@ describe Babushka::GitRepo, '#clone!' do
     context "after cloning" do
       before { subject.clone! "a_remote/remote.git" }
       it "should exist now" do
-        subject.exists?.should be_true
+        subject.exists?.should be_truthy
       end
       it "should have the correct remote" do
         subject.repo_shell("git remote -v").should == %Q{
@@ -683,17 +683,17 @@ describe Babushka::GitRepo, '#detach!' do
   it "should detach to HEAD when no ref is supplied" do
     subject.detach!
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
-    subject.current_branch.starts_with?(subject.resolve('master')).should be_true
+    subject.current_branch.starts_with?(subject.resolve('master')).should be_truthy
   end
   it "should detach the HEAD when a ref is supplied" do
     subject.detach! 'origin/next'
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
-    subject.current_branch.starts_with?(subject.resolve('origin/next')).should be_true
+    subject.current_branch.starts_with?(subject.resolve('origin/next')).should be_truthy
   end
   it "should detach the HEAD when a branch is supplied" do
     subject.detach! "master"
     subject.current_branch.should =~ /^[0-9a-f]{40}$/
-    subject.current_branch.starts_with?(subject.resolve('master')).should be_true
+    subject.current_branch.starts_with?(subject.resolve('master')).should be_truthy
   end
 end
 

@@ -249,30 +249,30 @@ describe Fancypath do
 
   describe '#has_extension?' do
     example do
-      Fancypath('/tmp/foo.bar').has_extension?('bar').should be_true
+      Fancypath('/tmp/foo.bar').has_extension?('bar').should be_truthy
     end
     example do
-      Fancypath('/tmp/foo.bar').has_extension?('foo').should be_false
+      Fancypath('/tmp/foo.bar').has_extension?('foo').should be_falsey
     end
   end
 
   describe '#empty?' do
     example 'with empty file' do
       @file.touch
-      @file.empty?.should be_true
+      @file.empty?.should be_truthy
     end
     example 'with non-empty file' do
       @file.write 'foo'
-      @file.empty?.should be_false
+      @file.empty?.should be_falsey
     end
     example 'with empty dir' do
       @dir.create_dir
-      @dir.empty?.should be_true
+      @dir.empty?.should be_truthy
     end
     example 'with non-empty dir' do
       @dir.create_dir
       (@dir/'foo').touch
-      @dir.empty?.should be_false
+      @dir.empty?.should be_falsey
     end
   end
 end #/Fancypath

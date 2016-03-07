@@ -194,13 +194,13 @@ describe Babushka::Source do
 
   describe "equality" do
     it "should be equal when uri, name and type are the same" do
-      (Babushka::Source.new('/path/to/the-source') == Babushka::Source.new('/path/to/the-source')).should be_true
+      (Babushka::Source.new('/path/to/the-source') == Babushka::Source.new('/path/to/the-source')).should be_truthy
     end
     it "shouldn't be equal when the name differs" do
-      (Babushka::Source.new('/path/to/the-source') == Babushka::Source.new('/path/to/the-source', 'custom-name')).should be_false
+      (Babushka::Source.new('/path/to/the-source') == Babushka::Source.new('/path/to/the-source', 'custom-name')).should be_falsey
     end
     it "shouldn't be equal when the uri differs" do
-      (Babushka::Source.new('/path/to/the-source', 'name') == Babushka::Source.new('/path/to/the-source', 'name', 'https://example.org/custom')).should be_false
+      (Babushka::Source.new('/path/to/the-source', 'name') == Babushka::Source.new('/path/to/the-source', 'name', 'https://example.org/custom')).should be_falsey
     end
   end
 
@@ -251,11 +251,11 @@ describe Babushka::Source do
     }
     it "should find the specified dep" do
       @source.find('test dep 1').should be_an_instance_of(Babushka::Dep)
-      @source.deps.items.include?(@source.find('test dep 1')).should be_true
+      @source.deps.items.include?(@source.find('test dep 1')).should be_truthy
     end
     it "should find the specified template" do
       @source.find_template('test_meta_1').should be_an_instance_of(Babushka::DepTemplate)
-      @source.templates.items.include?(@source.find_template('test_meta_1')).should be_true
+      @source.templates.items.include?(@source.find_template('test_meta_1')).should be_truthy
     end
   end
 

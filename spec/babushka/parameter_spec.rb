@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe Babushka::Parameter do
   it "should not be set without a value" do
-    Babushka::Parameter.new(:test).set?.should be_false
+    Babushka::Parameter.new(:test).set?.should be_falsey
   end
   it "should be set with a value" do
-    Babushka::Parameter.new(:test, 'testy test').set?.should be_true
+    Babushka::Parameter.new(:test, 'testy test').set?.should be_truthy
   end
 
   describe ".for" do
@@ -65,7 +65,7 @@ describe Babushka::Parameter do
 
   describe "#to_str" do
     it "should delegate to the value" do
-      File.exists?(Babushka::Parameter.new(:path, "/bin")).should be_true
+      File.exists?(Babushka::Parameter.new(:path, "/bin")).should be_truthy
     end
     it "should fail when the value itself would fail" do
       parameter = Babushka::Parameter.new(:path, 3065)

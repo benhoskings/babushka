@@ -45,7 +45,7 @@ describe Babushka::Asset do
     Babushka::Asset.for(archive_path / "archive.tar").extract {
       yielded = true
     }
-    yielded.should be_true
+    yielded.should be_truthy
   end
   it "should yield in the extracted dir" do
     Babushka::Asset.for(archive_path / "archive.tar").extract {
@@ -74,8 +74,8 @@ describe Babushka::Asset do
     it "should remove the build dir before extracting" do
       (tmp_prefix / 'archives/archive/pre-existing-dir').mkdir
       Babushka::Asset.for(archive_path / "archive.tar").extract {
-        (tmp_prefix / 'archives/archive').exists?.should be_true
-        (tmp_prefix / 'archives/archive/pre-existing-dir').exists?.should be_false
+        (tmp_prefix / 'archives/archive').exists?.should be_truthy
+        (tmp_prefix / 'archives/archive/pre-existing-dir').exists?.should be_falsey
         true
       }
     end
@@ -84,17 +84,17 @@ describe Babushka::Asset do
   describe 'cleanup' do
     it "should remove the build dir on success" do
       Babushka::Asset.for(archive_path / "archive.tar").extract {
-        (tmp_prefix / 'archives/archive').exists?.should be_true
+        (tmp_prefix / 'archives/archive').exists?.should be_truthy
         true
       }
-      (tmp_prefix / 'archives/archive').exists?.should be_false
+      (tmp_prefix / 'archives/archive').exists?.should be_falsey
     end
     it "should not remove the build dir on failure" do
       Babushka::Asset.for(archive_path / "archive.tar").extract {
-        (tmp_prefix / 'archives/archive').exists?.should be_true
+        (tmp_prefix / 'archives/archive').exists?.should be_truthy
         false
       }
-      (tmp_prefix / 'archives/archive').exists?.should be_true
+      (tmp_prefix / 'archives/archive').exists?.should be_truthy
     end
   end
 

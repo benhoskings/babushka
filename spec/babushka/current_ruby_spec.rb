@@ -21,22 +21,22 @@ RubyGems Environment:
   describe '#rbenv?' do
     it "should return true when ruby is running via rbenv" do
       Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/Users/steve/.rbenv/shims/ruby')
-      current_ruby.rbenv?.should be_true
+      current_ruby.rbenv?.should be_truthy
     end
     it "should return false otherwise" do
       Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/usr/local/bin/ruby')
-      current_ruby.rbenv?.should be_false
+      current_ruby.rbenv?.should be_falsey
     end
   end
 
   describe '#rvm?' do
     it "should return true when ruby is running via rvm" do
       Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/Users/steve/.rvm/rubies/ruby-1.9.3-p194/bin/ruby')
-      current_ruby.rvm?.should be_true
+      current_ruby.rvm?.should be_truthy
     end
     it "should return false otherwise" do
       Babushka::ShellHelpers.stub(:which).with('ruby').and_return('/usr/local/bin/ruby')
-      current_ruby.rvm?.should be_false
+      current_ruby.rvm?.should be_falsey
     end
   end
 

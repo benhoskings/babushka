@@ -10,7 +10,7 @@ describe Babushka::Cmdline, 'meet' do
       Babushka::LogHelpers.should_receive(:log_error)
     }
     it "should fail" do
-      parser.run.should be_false
+      parser.run.should be_falsey
     end
   end
   describe "with a name and uri" do

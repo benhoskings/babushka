@@ -5,7 +5,7 @@ describe Babushka::GitFS do
 
   describe 'repo' do
     it "should run destrucive commands as the repo owner" do
-      git_fs.repo.run_as_owner?.should be_true
+      git_fs.repo.run_as_owner?.should be_truthy
     end
   end
 

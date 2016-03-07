@@ -73,17 +73,17 @@ end
 
 describe '#parseable_version?' do
   it 'should not report emptyness as parseable' do
-    Babushka::VersionStr.parseable_version?(nil).should be_false
-    Babushka::VersionStr.parseable_version?('').should be_false
-    Babushka::VersionStr.parseable_version?('  ').should be_false
+    Babushka::VersionStr.parseable_version?(nil).should be_falsey
+    Babushka::VersionStr.parseable_version?('').should be_falsey
+    Babushka::VersionStr.parseable_version?('  ').should be_falsey
   end
   it "should not report digitless input as parseable" do
-    Babushka::VersionStr.parseable_version?('nginx').should be_false
+    Babushka::VersionStr.parseable_version?('nginx').should be_falsey
   end
   it "should not report input with digits as parseable" do
-    Babushka::VersionStr.parseable_version?('3').should be_true
-    Babushka::VersionStr.parseable_version?('R13B04').should be_true
-    Babushka::VersionStr.parseable_version?('1.9.3-p0').should be_true
+    Babushka::VersionStr.parseable_version?('3').should be_truthy
+    Babushka::VersionStr.parseable_version?('R13B04').should be_truthy
+    Babushka::VersionStr.parseable_version?('1.9.3-p0').should be_truthy
   end
 end
 
@@ -128,35 +128,35 @@ end
 
 describe "comparing" do
   it "should work with other VersionStrs" do
-    (Babushka::VersionStr.new('0.3.1') > Babushka::VersionStr.new('0.2.9')).should be_true
+    (Babushka::VersionStr.new('0.3.1') > Babushka::VersionStr.new('0.2.9')).should be_truthy
   end
 
   it "should work with strings" do
-    (Babushka::VersionStr.new('0.3.1') > '0.2.9').should be_true
+    (Babushka::VersionStr.new('0.3.1') > '0.2.9').should be_truthy
   end
 
   it "should treat word pieces as less than no piece" do
-    (Babushka::VersionStr.new('3.0.0') > Babushka::VersionStr.new('3.0.0.beta')).should be_true
-    (Babushka::VersionStr.new('3.0.0') > Babushka::VersionStr.new('3.0.0.beta1')).should be_true
-    (Babushka::VersionStr.new('1.0.0') > Babushka::VersionStr.new('1.0.0.rc.5')).should be_true
+    (Babushka::VersionStr.new('3.0.0') > Babushka::VersionStr.new('3.0.0.beta')).should be_truthy
+    (Babushka::VersionStr.new('3.0.0') > Babushka::VersionStr.new('3.0.0.beta1')).should be_truthy
+    (Babushka::VersionStr.new('1.0.0') > Babushka::VersionStr.new('1.0.0.rc.5')).should be_truthy
   end
 
   it "should compare word pieces alphabetically" do
-    (Babushka::VersionStr.new('3.0.0.beta') < Babushka::VersionStr.new('3.0.0.pre')).should be_true
-    (Babushka::VersionStr.new('3.0.0.pre') < Babushka::VersionStr.new('3.0.0.rc')).should be_true
+    (Babushka::VersionStr.new('3.0.0.beta') < Babushka::VersionStr.new('3.0.0.pre')).should be_truthy
+    (Babushka::VersionStr.new('3.0.0.pre') < Babushka::VersionStr.new('3.0.0.rc')).should be_truthy
   end
 
   it "should treat word pieces with a number as more than without one" do
-    (Babushka::VersionStr.new('3.0.0.beta1') > Babushka::VersionStr.new('3.0.0.beta')).should be_true
+    (Babushka::VersionStr.new('3.0.0.beta1') > Babushka::VersionStr.new('3.0.0.beta')).should be_truthy
   end
 
   it "should compare number parts of word pieces numerically" do
-    (Babushka::VersionStr.new('3.0.0.beta2') > Babushka::VersionStr.new('3.0.0.beta1')).should be_true
-    (Babushka::VersionStr.new('3.0.0.beta10') > Babushka::VersionStr.new('3.0.0.beta1')).should be_true
+    (Babushka::VersionStr.new('3.0.0.beta2') > Babushka::VersionStr.new('3.0.0.beta1')).should be_truthy
+    (Babushka::VersionStr.new('3.0.0.beta10') > Babushka::VersionStr.new('3.0.0.beta1')).should be_truthy
   end
 
   it "should allow for integers in strings and sort correctly" do
-    (Babushka::VersionStr.new('3.0.0.beta12') > Babushka::VersionStr.new('3.0.0.beta2')).should be_true
-    (Babushka::VersionStr.new('R13B04') > Babushka::VersionStr.new('R2B9')).should be_true
+    (Babushka::VersionStr.new('3.0.0.beta12') > Babushka::VersionStr.new('3.0.0.beta2')).should be_truthy
+    (Babushka::VersionStr.new('R13B04') > Babushka::VersionStr.new('R2B9')).should be_truthy
   end
 end

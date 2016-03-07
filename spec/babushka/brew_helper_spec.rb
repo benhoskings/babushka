@@ -77,9 +77,9 @@ From: https://github.com/mxcl/homebrew/commits/master/Library/Formula/readline.r
       gcc42 = double('pkg', :name => 'homebrew/dupes/apple-gcc42')
       redis = double('pkg', :name => 'original/dev/redis')
 
-      brew_helper.send(:has_formula_for?, zsh).should be_true
-      brew_helper.send(:has_formula_for?, gcc42).should be_true
-      brew_helper.send(:has_formula_for?, redis).should be_true
+      brew_helper.send(:has_formula_for?, zsh).should be_truthy
+      brew_helper.send(:has_formula_for?, gcc42).should be_truthy
+      brew_helper.send(:has_formula_for?, redis).should be_truthy
     end
   end
 end

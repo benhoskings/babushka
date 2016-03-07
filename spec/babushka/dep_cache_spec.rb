@@ -10,7 +10,7 @@ describe Babushka::DepCache do
     it "should not yield #hit" do
       hit = false
       dep_cache.read(:miss, :hit => lambda{ hit = true }) { 'a miss' }
-      hit.should be_false
+      hit.should be_falsey
     end
   end
 

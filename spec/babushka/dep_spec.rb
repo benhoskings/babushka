@@ -396,13 +396,13 @@ describe "exceptions" do
   it "should be unmet after an exception in met? {}" do
     dep 'exception met? test' do
       met? { raise }
-    end.met?.should be_false
+    end.met?.should be_falsey
   end
   it "should be unmet after an exception in meet {}" do
     dep 'exception meet test' do
       met? { false }
       meet { raise }
-    end.met?.should be_false
+    end.met?.should be_falsey
   end
 end
 

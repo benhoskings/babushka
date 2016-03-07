@@ -13,7 +13,7 @@ describe "Inkan" do
           file.print content
         end
 
-        Inkan.legitimate?('/tmp/spec.txt').should be_true
+        Inkan.legitimate?('/tmp/spec.txt').should be_truthy
       end
 
       it "returns false if the file contents don't match the SHA" do
@@ -22,7 +22,7 @@ describe "Inkan" do
           file.puts content
         end
 
-        Inkan.legitimate?('/tmp/spec.txt').should be_false
+        Inkan.legitimate?('/tmp/spec.txt').should be_falsey
       end
 
       it "returns false if there is no SHA" do
@@ -30,7 +30,7 @@ describe "Inkan" do
           file.print content
         end
 
-        Inkan.legitimate?('/tmp/spec.txt').should be_false
+        Inkan.legitimate?('/tmp/spec.txt').should be_falsey
       end
     end
     context "with a hashbang" do
@@ -43,7 +43,7 @@ describe "Inkan" do
           file.print 'foo bar baz'
         end
 
-        Inkan.legitimate?('/tmp/spec.txt').should be_true
+        Inkan.legitimate?('/tmp/spec.txt').should be_truthy
       end
 
       it "returns false if the file contents don't match the SHA" do
@@ -53,7 +53,7 @@ describe "Inkan" do
           file.puts 'foo bar baz'
         end
 
-        Inkan.legitimate?('/tmp/spec.txt').should be_false
+        Inkan.legitimate?('/tmp/spec.txt').should be_falsey
       end
 
       it "returns false if there is no SHA" do
@@ -61,7 +61,7 @@ describe "Inkan" do
           file.print content
         end
 
-        Inkan.legitimate?('/tmp/spec.txt').should be_false
+        Inkan.legitimate?('/tmp/spec.txt').should be_falsey
       end
     end
   end
@@ -154,7 +154,7 @@ describe "Inkan" do
     it "doesn't write the file" do
       inkan.print "foo bar baz"
       inkan.render
-      File.exists?('/tmp/spec.txt').should be_false
+      File.exists?('/tmp/spec.txt').should be_falsey
     end
   end
 

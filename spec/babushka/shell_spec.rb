@@ -9,10 +9,10 @@ end
 
 describe Babushka::Shell, '#ok?' do
   it "should return true on success" do
-    Babushka::Shell.new('true', {}).run(&:ok?).should be_true
+    Babushka::Shell.new('true', {}).run(&:ok?).should be_truthy
   end
   it "should return false on failure" do
-    Babushka::Shell.new('false', {}).run(&:ok?).should be_false
+    Babushka::Shell.new('false', {}).run(&:ok?).should be_falsey
   end
 end
 

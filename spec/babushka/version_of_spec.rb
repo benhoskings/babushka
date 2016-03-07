@@ -111,28 +111,28 @@ end
 describe "matching" do
   describe "against strings" do
     it "should match all versions when unversioned" do
-      version_of('ruby').matches?('1.8').should be_true
-      version_of('ruby').matches?('1.9').should be_true
+      version_of('ruby').matches?('1.8').should be_truthy
+      version_of('ruby').matches?('1.9').should be_truthy
     end
     it "should only match the correct version" do
-      version_of('ruby', '1.8').matches?('1.8').should be_true
-      version_of('ruby', '1.9').matches?('1.8').should be_false
-      version_of('ruby', '>= 1.7').matches?('1.8').should be_true
-      version_of('ruby', '~> 1.8').matches?('1.9').should be_true
-      version_of('ruby', '~> 1.8').matches?('2.0').should be_false
+      version_of('ruby', '1.8').matches?('1.8').should be_truthy
+      version_of('ruby', '1.9').matches?('1.8').should be_falsey
+      version_of('ruby', '>= 1.7').matches?('1.8').should be_truthy
+      version_of('ruby', '~> 1.8').matches?('1.9').should be_truthy
+      version_of('ruby', '~> 1.8').matches?('2.0').should be_falsey
     end
   end
   describe "against VersionStrs" do
     it "should match all versions when unversioned" do
-      version_of('ruby').matches?('1.8'.to_version).should be_true
-      version_of('ruby').matches?('1.9'.to_version).should be_true
+      version_of('ruby').matches?('1.8'.to_version).should be_truthy
+      version_of('ruby').matches?('1.9'.to_version).should be_truthy
     end
     it "should only match the correct version" do
-      version_of('ruby', '1.8').matches?('1.8'.to_version).should be_true
-      version_of('ruby', '1.9').matches?('1.8'.to_version).should be_false
-      version_of('ruby', '>= 1.7').matches?('1.8'.to_version).should be_true
-      version_of('ruby', '~> 1.8').matches?('1.9'.to_version).should be_true
-      version_of('ruby', '~> 1.8').matches?('2.0'.to_version).should be_false
+      version_of('ruby', '1.8').matches?('1.8'.to_version).should be_truthy
+      version_of('ruby', '1.9').matches?('1.8'.to_version).should be_falsey
+      version_of('ruby', '>= 1.7').matches?('1.8'.to_version).should be_truthy
+      version_of('ruby', '~> 1.8').matches?('1.9'.to_version).should be_truthy
+      version_of('ruby', '~> 1.8').matches?('2.0'.to_version).should be_falsey
     end
   end
 end

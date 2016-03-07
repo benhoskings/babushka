@@ -75,18 +75,18 @@ end
 describe "shell?" do
   it "should return the output for successful commands" do
     Babushka::ShellHelpers.shell?('echo lol').should == 'lol'
-    Babushka::ShellHelpers.shell?(SUCCEEDING_LS).should be_true
+    Babushka::ShellHelpers.shell?(SUCCEEDING_LS).should be_truthy
   end
   it "should return false for failed commands" do
-    Babushka::ShellHelpers.shell?('false').should be_false
-    Babushka::ShellHelpers.shell?(FAILING_LS).should be_false
+    Babushka::ShellHelpers.shell?('false').should be_falsey
+    Babushka::ShellHelpers.shell?(FAILING_LS).should be_falsey
   end
 end
 
 describe "shell!" do
   it "should return the output for successful commands" do
     Babushka::ShellHelpers.shell!('echo lol').should == 'lol'
-    Babushka::ShellHelpers.shell!(SUCCEEDING_LS).should be_true
+    Babushka::ShellHelpers.shell!(SUCCEEDING_LS).should be_truthy
   end
   it "should return false for failed commands" do
     L{ Babushka::ShellHelpers.shell!('false') }.should raise_error(Babushka::Shell::ShellCommandFailed, "Shell command failed: 'false'")
