@@ -43,7 +43,7 @@ module Babushka
     def run &block
       @stdout, @stderr = '', ''
       @result = invoke
-      print "#{" " * (@progress.length + 1)}#{"\b" * (@progress.length + 1)}" unless @progress.nil?
+      Logging.print "#{" " * (@progress.length + 1)}#{"\b" * (@progress.length + 1)}" unless @progress.nil?
 
       if block_given?
         yield(self)
@@ -101,9 +101,9 @@ module Babushka
         buf << output
 
         if @should_spin
-          print " #{%w[| / - \\][@spinner_offset = ((@spinner_offset + 1) % 4)]}\b\b"
+          Logging.print " #{%w[| / - \\][@spinner_offset = ((@spinner_offset + 1) % 4)]}\b\b"
         elsif opts[:progress] && (@progress = output[opts[:progress]])
-          print " #{@progress}#{"\b" * (@progress.length + 1)}"
+          Logging.print " #{@progress}#{"\b" * (@progress.length + 1)}"
         end
       end
     end
