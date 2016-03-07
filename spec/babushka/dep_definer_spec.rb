@@ -40,7 +40,7 @@ describe Babushka::DepDefiner, '#define!' do
   end
   it "should fail with an invalid block" do
     Babushka::DepDefiner.new(a_dep) { lol }.tap {|dd|
-      lambda { dd.define! }.should raise_error
+      lambda { dd.define! }.should raise_error(NameError, /undefined local variable or method `lol'/)
       dd.should_not be_loaded
       dd.should be_failed
     }
@@ -83,9 +83,9 @@ describe Babushka::DepDefiner, '#invoke' do
   end
 
   it "should not invoke when defining failed" do
-    definer.should_receive(:define_elements!).and_raise(StandardError)
+    definer.should_receive(:define_elements!).and_raise("expected error")
     definer.should_not_receive(:met?)
-    lambda { definer.invoke(:met?) }.should raise_error
+    lambda { definer.invoke(:met?) }.should raise_error("expected error")
   end
 
   it "should call the task with a valid block" do
