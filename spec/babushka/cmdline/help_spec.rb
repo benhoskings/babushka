@@ -22,9 +22,9 @@ describe "help" do
         "\nCommands can be abbrev'ed, as long as they remain unique.",
         "  e.g. '#{Babushka::Base.program_name} l' is short for '#{Babushka::Base.program_name} list'.",
       ].each {|line|
-        Babushka::Cmdline::Helpers.should_receive(:log).with(line)
+        expect(Babushka::Cmdline::Helpers).to receive(:log).with(line)
       }
-      Babushka::LogHelpers.should_receive(:log).with("\n")
+      expect(Babushka::LogHelpers).to receive(:log).with("\n")
     }
     it "should print the verb help information" do
       Babushka::Cmdline::Parser.for(%w[help]).run
@@ -33,14 +33,14 @@ describe "help" do
   context "with a verb" do
     let(:parser) { Babushka::Cmdline::Parser.for(%w[help meet]) }
     before {
-      Babushka::Cmdline::Helpers.should_receive(:log).with(
+      expect(Babushka::Cmdline::Helpers).to receive(:log).with(
         "Babushka v#{Babushka::VERSION} (#{Babushka::Base.ref}), (c) Ben Hoskings <ben@hoskings.net>"
       )
-      Babushka::LogHelpers.should_receive(:log).with(
+      expect(Babushka::LogHelpers).to receive(:log).with(
         "\nmeet - The main one: run a dep and all its dependencies."
       )
 
-      parser.should_receive(:log).with("
+      expect(parser).to receive(:log).with("
     -v, --version                    Print the current version
     -h, --help                       Show this information
     -d, --debug                      Show more verbose logging, and realtime shell command output
@@ -55,7 +55,7 @@ describe "help" do
         --remote-git-fs              [EXPERIMENTAL] Snapshot the remote host using --git-fs after remote babushka runs
 ")
 
-      Babushka::LogHelpers.should_receive(:log).with("\n")
+      expect(Babushka::LogHelpers).to receive(:log).with("\n")
     }
     it "should print the help information for the verb" do
       parser.run

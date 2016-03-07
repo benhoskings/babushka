@@ -7,31 +7,31 @@ describe Babushka::ImplicitSource do
       expect { Babushka::ImplicitSource.new(nil) }.to raise_error(ArgumentError, "Implicit sources require a name.")
     end
     it "should accept the supplied name" do
-      Babushka::Source.new('name').name.should == 'name'
+      expect(Babushka::Source.new('name').name).to eq('name')
     end
   end
 
   describe '#type' do
     it "should be :implicit" do
-      Babushka::ImplicitSource.new('name').type.should == :implicit
+      expect(Babushka::ImplicitSource.new('name').type).to eq(:implicit)
     end
   end
 
   describe Babushka::ImplicitSource, '#path' do
     it "should be nil" do
-      Babushka::ImplicitSource.new('name').path.should == nil
+      expect(Babushka::ImplicitSource.new('name').path).to eq(nil)
     end
   end
 
   describe Babushka::ImplicitSource, '#present?' do
     it "should be false" do
-      Babushka::ImplicitSource.new('name').should_not be_present
+      expect(Babushka::ImplicitSource.new('name')).not_to be_present
     end
   end
 
   describe Babushka::ImplicitSource, '#remote?' do
     it "should not be remote" do
-      Babushka::ImplicitSource.new('name').should_not be_remote
+      expect(Babushka::ImplicitSource.new('name')).not_to be_remote
     end
   end
 

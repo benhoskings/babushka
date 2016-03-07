@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe Babushka::XMLString do
   it "should parse xml like a son of a bitch" do
-    sample_xml.val_for('CFBundleShortVersionString').should == '5.0.310.0'
-    sample_xml.val_for('CFBundleSignature').should == 'Cr24 Example String'
-    sample_xml.val_for('SVNRevision').should == '37609'
+    expect(sample_xml.val_for('CFBundleShortVersionString')).to eq('5.0.310.0')
+    expect(sample_xml.val_for('CFBundleSignature')).to eq('Cr24 Example String')
+    expect(sample_xml.val_for('SVNRevision')).to eq('37609')
   end
 end
 

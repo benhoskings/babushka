@@ -4,7 +4,7 @@ require 'dep_support'
 shared_examples_for "met? when unmet" do
   describe "met?" do
     it "should be false" do
-      Dep('a').should_not be_met
+      expect(Dep('a')).not_to be_met
     end
     it "should met?-check deps that don't have failed subdeps" do
       %w[f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
@@ -33,7 +33,7 @@ describe "an already met dep tree" do
   }
   describe "met?" do
     it "should be true" do
-      Dep('a').should be_met
+      expect(Dep('a')).to be_met
     end
     it "should met?-check every dep" do
       %w[a b c d e f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
@@ -46,7 +46,7 @@ describe "an already met dep tree" do
   end
   describe "meet" do
     it "should be true" do
-      Dep('a').meet.should == true
+      expect(Dep('a').meet).to eq(true)
     end
     it "should not meet any deps" do
       %w[a b c d e f].each {|dep_name| should_call_dep_like(:met_run, Dep(dep_name)) }
@@ -73,7 +73,7 @@ describe "an unmeetable dep tree" do
   it_should_behave_like "met? when unmet"
   describe "meet" do
     it "should be false" do
-      Dep('a').meet.should == false
+      expect(Dep('a').meet).to eq(false)
     end
     it "should fail on the bootom-most dep" do
       %w[f].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
@@ -104,7 +104,7 @@ describe "a meetable dep tree" do
   it_should_behave_like "met? when unmet"
   describe "meet" do
     it "should be true" do
-      Dep('a').meet.should == true
+      expect(Dep('a').meet).to eq(true)
     end
     it "should meet every dep" do
       %w[a b c d e f g].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
@@ -127,7 +127,7 @@ describe "a partially meetable dep tree" do
   it_should_behave_like "met? when unmet"
   describe "meet" do
     it "should be false" do
-      Dep('a').meet.should == false
+      expect(Dep('a').meet).to eq(false)
     end
     it "should meet deps before the unmeetable dep is reached" do
       %w[c f g].each {|dep_name| should_call_dep_like(:meet_run, Dep(dep_name)) }
