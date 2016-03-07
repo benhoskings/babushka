@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 group :test do
   gem 'rake'
-  gem 'rspec'
+  gem 'rspec', '~> 2.99'
   gem 'fuubar'
   gem 'cloudservers'
   gem 'ir_b'
