@@ -6,6 +6,7 @@ conf/rackspace.yml
 coverage/
 sources/
 sources.yml
+spec/examples.txt
 vendor/bundle/
 
 bin/autospec
