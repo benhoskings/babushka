@@ -191,6 +191,10 @@ module Babushka
 
     private
 
+    def self.print message
+      print_log(message, true, :stdout)
+    end
+
     def self.print_log message, printable, as
       # This is disabled in the specs.
       print_log!(message, printable, as)
