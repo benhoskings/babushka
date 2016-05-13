@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    cloudservers (0.4.2)
+    cloudservers (0.4.3)
       json
     diff-lcs (1.2.5)
     ir_b (1.5.0)
@@ -22,15 +22,13 @@ GEM
     rspec-support (3.4.1)
     rubysl-abbrev (2.0.4)
     rubysl-e2mmap (2.0.0)
-    rubysl-irb (2.0.4)
+    rubysl-irb (2.1.1)
       rubysl-e2mmap (~> 2.0)
       rubysl-mathn (~> 2.0)
-      rubysl-readline (~> 2.0)
       rubysl-thread (~> 2.0)
     rubysl-mathn (2.0.0)
-    rubysl-readline (2.0.2)
     rubysl-singleton (2.0.0)
-    rubysl-thread (2.0.2)
+    rubysl-thread (2.0.3)
 
 PLATFORMS
   ruby
@@ -45,4 +43,4 @@ DEPENDENCIES
   rubysl-singleton
 
 BUNDLED WITH
-   1.12.0
+   1.12.2
