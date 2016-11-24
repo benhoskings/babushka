@@ -3,7 +3,6 @@ source "https://rubygems.org"
 group :test do
   gem 'rake'
   gem 'rspec'
-  gem 'cloudservers'
   gem 'ir_b'
 end
 

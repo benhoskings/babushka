@@ -1,11 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    cloudservers (0.4.3)
-      json
     diff-lcs (1.2.5)
     ir_b (1.5.0)
-    json (1.8.3)
     rake (11.1.2)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
@@ -34,7 +31,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cloudservers
   ir_b
   rake
   rspec

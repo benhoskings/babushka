@@ -2,7 +2,6 @@
 *.sublime-*
 .bundle/
 .idea/
-conf/rackspace.yml
 coverage/
 sources/
 sources.yml
