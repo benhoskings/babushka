@@ -43,8 +43,8 @@ module Babushka
 
     def versions_of pkg
       pkg_name = pkg.respond_to?(:name) ? pkg.name : pkg
-      gemspecs_for(pkg_name).select {|i|
-        i.p.read.val_for('s.name')[/^[\'\"\%qQ\{]*#{pkg_name}[\'\"\}]*$/]
+      gemspecs_for(pkg_name).select {|path|
+        Gem::Specification::load(path).version
       }.map {|i|
         File.basename(i).scan(/^#{pkg_name}-(.*).gemspec$/).flatten.first
       }.map {|i|
