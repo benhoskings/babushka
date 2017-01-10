@@ -71,8 +71,10 @@ RSpec.describe Babushka::Parameter do
       parameter = Babushka::Parameter.new(:path, 3065)
       message = if defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx'
         "Coercion error: #<Babushka::Parameter:#{parameter.object_id} path: 3065>.to_str => String failed"
-      else
+      elsif RUBY_VERSION < "2.4.0"
         "Can't coerce 3065:Fixnum into a String"
+      else
+        "Can't coerce 3065:Integer into a String"
       end
       expect {
         File.exists?(parameter)
