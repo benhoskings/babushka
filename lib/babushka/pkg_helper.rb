@@ -49,14 +49,6 @@ module Babushka
       prefix / 'bin'
     end
 
-    def cmd_in_path? cmd_name
-      if (_cmd_dir = cmd_dir(cmd_name)).nil?
-        log_error "The '#{cmd_name}' command is not available. You probably need to add #{bin_path} to your PATH."
-      else
-        _cmd_dir.starts_with?(prefix)
-      end
-    end
-
     def should_sudo?
       !File.writable_real?(bin_path)
     end
