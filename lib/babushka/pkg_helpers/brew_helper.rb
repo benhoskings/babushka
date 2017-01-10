@@ -92,7 +92,11 @@ module Babushka
     end
 
     def formulas_path
-      prefix / 'Library/Formula'
+      if Dir.exist?(prefix / 'Library/Formula')
+        prefix / 'Library/Formula'
+      else
+        prefix / 'Homebrew/Library/Formula'
+      end
     end
 
     def taps_path
