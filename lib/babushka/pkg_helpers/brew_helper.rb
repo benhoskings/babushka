@@ -84,7 +84,7 @@ module Babushka
     end
 
     def pkg_list_dir
-      prefix
+      homebrew_component_path
     end
 
     def installed_pkgs_path
@@ -92,15 +92,23 @@ module Babushka
     end
 
     def formulas_path
-      prefix / 'Library/Formula'
+      homebrew_component_path / 'Library/Formula'
     end
 
     def taps_path
-      prefix / 'Library/Taps'
+      homebrew_component_path / 'Library/Taps'
     end
 
     def homebrew_lib_path
-      prefix / 'Library/Homebrew'
+      homebrew_component_path / 'Library/Homebrew'
+    end
+
+    def homebrew_component_path
+      if Dir.exist?(prefix / "Library/Formula") # Indicates a legacy installation
+        prefix
+      else
+        prefix / "Homebrew"
+      end
     end
   end
   end

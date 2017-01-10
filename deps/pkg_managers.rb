@@ -15,7 +15,9 @@ dep 'apt' do
 end
 
 dep 'homebrew' do
-  requires 'binary.homebrew', 'build tools'
+  requires 'build tools'
+  met? { in_path? 'brew' }
+  meet { log_shell 'Installing Homebrew', 'ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"' }
 end
 
 dep 'npm' do
