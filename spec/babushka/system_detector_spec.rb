@@ -32,7 +32,8 @@ RSpec.describe Babushka::SystemDetector do
       it "should return DebianSystemProfile on Debian boxes" do
         expect(File).to receive(:exists?).with("/etc/debian_version").and_return(true)
         expect(File).to receive(:exists?).with("/etc/lsb-release").and_return(false)
-        expect(File).to receive(:exists?).with("/usr/share/doc/raspberrypi-bootloader-nokernel").and_return(false)
+        expect(File).to receive(:exists?).with("/etc/os-release").and_return(true)
+        expect(File).to receive(:read).with("/etc/os-release").and_return('ID=debian')
         expect(subject).to be_an_instance_of(Babushka::DebianSystemProfile)
       end
       it "should return UbuntuSystemProfile on Ubuntu boxes" do
@@ -44,7 +45,8 @@ RSpec.describe Babushka::SystemDetector do
       it "should return RaspbianSystemProfile on Raspbian boxes" do
         expect(File).to receive(:exists?).with("/etc/debian_version").and_return(true)
         expect(File).to receive(:exists?).with("/etc/lsb-release").and_return(false)
-        expect(File).to receive(:exists?).with("/usr/share/doc/raspberrypi-bootloader-nokernel").and_return(true)
+        expect(File).to receive(:exists?).with("/etc/os-release").and_return(true)
+        expect(File).to receive(:read).with("/etc/os-release").and_return('ID=raspbian')
         expect(subject).to be_an_instance_of(Babushka::RaspbianSystemProfile)
       end
       it "should return ArchSystemProfile on Arch boxes" do
