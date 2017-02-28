@@ -1,0 +1,27 @@
+
+This is a list of known shortcomings and missing features. As always, patches
+are welcome, but please get in touch before embarking on anything major to
+discuss the implementation.
+
+
+TODO
+----
+
+* Add homebrew cask support
+
+* Add a commandline option for specifying local dep paths.
+  https://github.com/benhoskings/babushka/issues/197
+  https://github.com/benhoskings/babushka/issues/251
+
+
+KNOWN ISSUES
+------------
+
+* Parameter changes don't cause templates to be re-rendered, because they don't form part of the hash.
+  https://github.com/benhoskings/babushka/issues/246
+
+* Parameters handle booleans poorly, necessitating `param == "true"` and so on.
+  https://github.com/benhoskings/babushka/issues/288
+
+* Filenames of downloaded paths are inconsistent because they're taken from URLs that might be the result of a redirect.
+  https://github.com/benhoskings/babushka/issues/255
