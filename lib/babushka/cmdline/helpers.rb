@@ -8,8 +8,10 @@ module Babushka
       def self.print_version opts = {}
         if opts[:full]
           log "Babushka v#{VERSION} (#{Base.ref}), (c) Ben Hoskings <ben@hoskings.net>"
-        else
+        elsif Base.ref
           log "#{VERSION} (#{Base.ref})"
+        else
+          log "#{VERSION}"
         end
       end
 
