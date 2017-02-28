@@ -34,7 +34,7 @@ module Babushka
     def self.detect_debian_derivative
       if File.exists?('/etc/lsb-release') && File.read('/etc/lsb-release')[/ubuntu/i]
         UbuntuSystemProfile
-      elsif File.exists?('/usr/share/doc/raspberrypi-bootloader-nokernel')
+      elsif File.exists?('/etc/os-release') && File.read('/etc/os-release')[/ID=raspbian/]
         RaspbianSystemProfile
       else
         DebianSystemProfile
