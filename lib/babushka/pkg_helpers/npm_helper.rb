@@ -1,3 +1,5 @@
+require 'json'
+
 module Babushka
   class NpmHelper < PkgHelper
   class << self
@@ -16,11 +18,11 @@ module Babushka
     def has_pkg? pkg
       # Some example output:
       #   socket.io@0.6.15      =rauchg active installed remote
-      shell("#{pkg_cmd} ls -g").split("\n").grep(
-        /^\W*#{Regexp.escape(pkg.name)}\@/
-      ).any? {|match|
-        pkg.matches? match.scan(/\@(.*)$/).flatten.first
-      }
+      package_json = shell("#{pkg_cmd} -j -g list #{pkg}")
+      return false if package_json.nil?
+
+      package_info = JSON.parse(package_json)
+      package_info["dependencies"][pkg.name]["version"] rescue false
     end
 
     def install_pkgs! pkgs, opts
