@@ -117,9 +117,7 @@ class Fancypath < Pathname
   end
 
   def yaml
-    Babushka::LogHelpers.deprecated! '2015-01-17', :instead => "YAML.load_file", :example => "YAML.load_file(#{self.to_s.inspect})"
-    require 'yaml'
-    YAML.load_file self
+    Babushka::LogHelpers.removed! :instead => "YAML.load_file", :example => "YAML.load_file(#{self.to_s.inspect})"
   end
 
 
