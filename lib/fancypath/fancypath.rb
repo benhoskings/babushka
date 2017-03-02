@@ -117,9 +117,7 @@ class Fancypath < Pathname
   end
 
   def yaml
-    Babushka::LogHelpers.deprecated! '2015-01-17', :instead => "YAML.load_file", :example => "YAML.load_file(#{self.to_s.inspect})"
-    require 'yaml'
-    YAML.load_file self
+    Babushka::LogHelpers.removed! :instead => "YAML.load_file", :example => "YAML.load_file(#{self.to_s.inspect})"
   end
 
 
@@ -134,10 +132,6 @@ class Fancypath < Pathname
 
   def glob expr = nil, flags = File::FNM_CASEFOLD, &block
     Dir.glob((expr.nil? ? self : (self / expr)).to_s, flags, &block)
-  end
-
-  def select(*args)
-    Babushka::LogHelpers.removed! :instead => 'Fancypath#glob', :example => "#{to_s.inspect}.p.glob(#{args.first.inspect})"
   end
 
 

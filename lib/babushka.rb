@@ -8,22 +8,6 @@ module Babushka
   DOWNLOAD_PREFIX = '~/.babushka/downloads'
   LOG_PREFIX      = '~/.babushka/logs'
 
-  def self.const_missing const_name
-    if %w[
-      WorkingPrefix
-      SourcePrefix
-      BuildPrefix
-      DownloadPrefix
-      LogPrefix
-      ReportPrefix
-    ].include?(const_name.to_s)
-      const_case = const_name.to_s.scan(/[A-Z][a-z]+/).map(&:upcase).join('_')
-      Babushka::LogHelpers.removed! :method_name => "Babushka::#{const_name}", :instead => "Babushka::#{const_case}"
-    else
-      super
-    end
-  end
-
   module Path
     def self.binary() File.symlink?(__FILE__) ? File.readlink(__FILE__) : __FILE__ end
     def self.bin() File.dirname(binary) end

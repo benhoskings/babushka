@@ -4,10 +4,6 @@ module Babushka
     include ShellHelpers
     include PathHelpers
 
-    def append_to_file text, file, opts = {}
-      removed! :instead => 'Fancypath#append', :example => "'#{file}'.p.append(#{text.inspect})"
-    end
-
     def _by_babushka
       "by babushka-#{VERSION} at #{Time.now}"
     end

@@ -20,13 +20,6 @@ module Babushka
     def codename; definition.codename end
     def codename_str; definition.codename_str end
 
-    def name
-      removed! :method_name => 'Babushka.host.name', :instead => 'Babushka.host.codename'
-    end
-    def name_str
-      removed! :method_name => 'Babushka.host.name_str', :instead => 'Babushka.host.codename_str'
-    end
-
     def differentiator_for specs
       differentiator = matcher.differentiator_for(specs)
       send("#{differentiator}_str") unless differentiator.nil?

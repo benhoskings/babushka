@@ -22,8 +22,7 @@ module Babushka
     # Define and return a meta dep named +name+, and whose implementation is
     # found in +block+. This method, along with +dep, together are the
     # top level of babushka's DSL.
-    def meta name, opts = {}, &block
-      Babushka::LogHelpers.removed! :method_name => "Passing options to 'meta' never actually did anything :) It" unless opts.empty?
+    def meta name, &block
       Base.sources.current_load_source.templates.add_template(name, block)
     end
   end

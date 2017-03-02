@@ -131,18 +131,6 @@ RSpec.describe Fancypath do
     }
   end
 
-  describe "#yaml" do
-    before {
-      @file.write("
-        guise:
-          seriously: guise
-      ")
-    }
-    it('returns the file contents as yaml') {
-      expect(@file.yaml).to eq({'guise' => {'seriously' => 'guise'}})
-    }
-  end
-
   describe '#readlink' do
     before {
       @file.touch
