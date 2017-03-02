@@ -1,7 +1,6 @@
 module Babushka
   class DepContext < DepDefiner
     include GitHelpers
-    include UriHelpers
 
     accepts_list_for :requires
     accepts_list_for :requires_when_unmet

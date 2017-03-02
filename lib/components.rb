@@ -24,7 +24,6 @@ module Babushka
     helpers/path_helpers
     helpers/run_helpers
     helpers/git_helpers
-    helpers/uri_helpers
     popen
     shell
     ssh

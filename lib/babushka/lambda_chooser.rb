@@ -1,9 +1,5 @@
 module Babushka
   class LambdaChooser
-    DEPRECATED_CHOICES = {
-      :macports => ['2012-12-13', :brew]
-    }
-
     attr_reader :owner
 
     def var(name, opts = {}) owner.var(name, opts) end
@@ -31,7 +27,6 @@ module Babushka
 
       [choices].flatten(1).each {|choice|
         raise "The choice '#{choice}' isn't valid." unless @possible_choices.include?(choice)
-        LogHelpers.log_warn "The #{choice.inspect} choice has been deprecated and will be removed on #{DEPRECATED_CHOICES[choice].first}. Use #{DEPRECATED_CHOICES[choice].last.inspect} instead." if DEPRECATED_CHOICES.keys.include?(choice)
 
         @results[choice] = if block
           block

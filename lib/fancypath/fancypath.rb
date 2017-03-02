@@ -136,10 +136,6 @@ class Fancypath < Pathname
     Dir.glob((expr.nil? ? self : (self / expr)).to_s, flags, &block)
   end
 
-  def select(*args)
-    Babushka::LogHelpers.removed! :instead => 'Fancypath#glob', :example => "#{to_s.inspect}.p.glob(#{args.first.inspect})"
-  end
-
 
   # Filename manupulation.
 

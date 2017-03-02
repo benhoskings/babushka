@@ -61,26 +61,10 @@ class String
     end
   end
 
-  def colorized?
-    Babushka::LogHelpers.removed! :method_name => 'String#colorized?'
-  end
-
   # Wrap this string in ANSI color codes according to description. See the
   # Babushka::ANSI docs for details.
   def colourise description
     Babushka::ANSI.wrap(self, description)
   end
   alias_method :colorize, :colourise
-
-  def colorize! description = nil
-    Babushka::LogHelpers.removed! :method_name => 'String#colorize!'
-  end
-
-  def decolorize
-    Babushka::LogHelpers.removed! :method_name => 'String#decolorize'
-  end
-
-  def decolorize!
-    Babushka::LogHelpers.removed! :method_name => 'String#decolorize!'
-  end
 end

@@ -2,10 +2,6 @@ dep 'curl.bin'
 
 dep 'gettext.lib'
 
-dep 'nodejs.src', :version do
-  removed! :method_name => "'#{name}'", :callpoint => false, :instead => "the 'nodejs.bin' dep"
-end
-
 dep 'nodejs.bin' do
   installs {
     # The 'nodejs-legacy' package symlinks the renamed 'nodejs' binary back
