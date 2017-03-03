@@ -60,7 +60,7 @@ module Babushka
     def find_or_suggest dep_name, opts = {}, &block
       if (dep = dep_for(dep_name, opts)).nil?
         log_stderr "#{dep_name.to_s.colorize 'grey'} #{"<- this dep isn't defined!".colorize('red')}"
-        suggestions = default_names.similar_to(dep_name.to_s)
+        suggestions = Babushka::Spell.for(dep_name.to_s, choices: default_names)
         log "Perhaps you meant #{suggestions.map {|s| "'#{s}'" }.to_list(:conj => 'or')}?".colorize('grey') if suggestions.any?
       elsif block.nil?
         dep

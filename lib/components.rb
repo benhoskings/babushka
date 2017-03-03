@@ -31,6 +31,7 @@ module Babushka
     resource
     asset
     prompt
+    spell
     lambda_chooser
     version_str
     version_of
