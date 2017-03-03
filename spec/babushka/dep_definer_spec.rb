@@ -71,14 +71,14 @@ RSpec.describe Babushka::DepDefiner, '#invoke' do
 
   it "should define and invoke when undefined" do
     expect(definer).to receive(:define!)
-    expect(definer).to receive(:met?).and_return(lambda {|_| })
+    expect(definer).to receive(:met?).and_return(lambda{|_| })
     definer.invoke(:met?)
   end
 
   it "should invoke only when already defined" do
     allow(definer).to receive(:loaded?).and_return(true)
     expect(definer).not_to receive(:define!)
-    expect(definer).to receive(:met?).and_return(lambda {|_| })
+    expect(definer).to receive(:met?).and_return(lambda{|_| })
     definer.invoke(:met?)
   end
 
@@ -219,8 +219,8 @@ RSpec.describe "methods in deps" do
 end
 
 RSpec.describe "#on for scoping accepters" do
-  let!(:the_lambda) { L{ 'hello from the lambda' } }
-  let!(:other_lambda) { L{ 'hello from the other lambda' } }
+  let!(:the_lambda) { lambda{ 'hello from the lambda' } }
+  let!(:other_lambda) { lambda{ 'hello from the other lambda' } }
   before {
     allow(Babushka).to receive(:host).and_return(Babushka::OSXSystemProfile.new)
     allow(Babushka.host).to receive(:match_list).and_return([:osx])

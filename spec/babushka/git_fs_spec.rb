@@ -10,7 +10,7 @@ RSpec.describe Babushka::GitFS do
   end
 
   describe '#snapshotting_with' do
-    let(:blk) { lambda {} }
+    let(:blk) { lambda{} }
     context "when snapshotting is enabled" do
       before {
         allow(Babushka::Base.task).to receive(:opt).with(:git_fs) { true }

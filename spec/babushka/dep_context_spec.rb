@@ -22,7 +22,7 @@ RSpec.describe '#ssh' do
 end
 
 RSpec.describe "accepts_block_for behaviour" do
-  let(:lambda_hello) { L{ "hello world!" } }
+  let(:lambda_hello) { lambda{ "hello world!" } }
 
   def test_accepts_block_for_response accepter_name, lambda, value, opts = {}
     Babushka::DepContext.accepts_block_for accepter_name
@@ -46,7 +46,7 @@ RSpec.describe "accepts_block_for behaviour" do
 
   it "should return lambda" do
     Babushka::DepContext.accepts_block_for :test_defining
-    lambda = L{ 'blah' }
+    lambda = lambda{ 'blah' }
     value_from_block = nil
     dep 'returning test' do
       value_from_block = test_defining(&lambda)
@@ -65,7 +65,7 @@ RSpec.describe "accepts_block_for behaviour" do
   end
 
   it "should use default blocks when no specific one is specified" do
-    lambda = L{ 'default value' }
+    lambda = lambda{ 'default value' }
     Babushka::DepContext.accepts_block_for :test_defaults, &lambda
     value_from_block = nil
     dep 'default test' do

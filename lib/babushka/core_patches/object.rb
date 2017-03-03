@@ -1,4 +1,7 @@
-alias :L :proc
+def L(&blk)
+  Babushka::LogHelpers.deprecated! '2017-09-01', instead: '`->(){}` (or `lambda{}`)'
+  proc(&blk)
+end
 
 class Object
   # Return this object's metaclass; i.e. the value of self within a
