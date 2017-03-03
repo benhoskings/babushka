@@ -61,24 +61,4 @@ class Hash
     }
     hsh
   end
-
-  # Converts this hash to a string that can be submitted as HTTP parameters.
-  # The keys and values are encoded, so the string is safe to submit exactly as
-  # it is returned.
-  #
-  # This isn't a recursive implementation, because I didn't need it to be :)
-  #
-  # Example:
-  # {'name' => 'Sigur Rós', 'album' => 'Takk...'}.to_http_params
-  #   #=> "name=Sigur%20R%C3%B3s&album=Takk..."
-  def to_http_params
-    require 'uri'
-
-    keys.map {|key|
-      [
-        URI.escape(key.to_s),
-        URI.escape(fetch(key).to_s)
-      ].join('=')
-    }.join( '&')
-  end
 end
