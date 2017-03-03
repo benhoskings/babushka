@@ -16,7 +16,6 @@ module Babushka
     core_patches/bytes
     core_patches/object
     core_patches/string
-    core_patches/symbol
     core_patches/uri
     xml_string
     helpers/log_helpers
