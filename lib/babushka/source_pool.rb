@@ -152,7 +152,8 @@ module Babushka
     end
 
     def current_load_path
-      current_load_context[:path].try(:p)
+      path = current_load_context[:path]
+      path.p unless path.nil?
     end
 
     def current_load_opts

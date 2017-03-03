@@ -112,7 +112,7 @@ module Babushka
     end
 
     def cache_key
-      DepRequirement.new(name, @params.map {|p| @args[p].try(:current_value) })
+      DepRequirement.new(name, @params.map {|p| @args.fetch(p) { Parameter.new(name) }.current_value })
     end
 
     def with *args

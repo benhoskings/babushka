@@ -37,7 +37,7 @@ module Babushka
       ShellHelpers.shell('hostname -f')
     end
 
-    def pkg_helper_key; pkg_helper.try(:manager_key) end
+    def pkg_helper_key; pkg_helper.manager_key end
     def pkg_helper_str; pkg_helper_key.to_s.capitalize end
 
     def cpu_type

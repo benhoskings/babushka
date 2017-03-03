@@ -13,8 +13,6 @@ TODO
   https://github.com/benhoskings/babushka/issues/197
   https://github.com/benhoskings/babushka/issues/251
 
-* Remove Object#try and the associated reliance on nil.
-
 
 KNOWN ISSUES
 ------------
