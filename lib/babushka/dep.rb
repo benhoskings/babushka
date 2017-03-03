@@ -269,7 +269,7 @@ module Babushka
     # the same arguments.
     def process_with_caching and_meet
       cache.read(
-        cache_key, :hit => lambda {|value| log_cached(value, and_meet) }
+        cache_key, :hit => lambda{|value| log_cached(value, and_meet) }
       ) {
         process!(and_meet)
       }

@@ -16,19 +16,6 @@ module Babushka
     # Make these helpers directly callable, and private when included.
     module_function
 
-    def suggest_value_for typo, choices
-      if (possible_matches = choices.similar_to(typo.to_s)).empty?
-        nil # nothing to suggest
-      elsif possible_matches.length == 1
-        confirm "#{"Did you mean".colorize('grey')} '#{possible_matches.first}'#{"?".colorize('grey')}" do
-          possible_matches.first
-        end or false
-      else
-        LogHelpers.log "Similar: #{possible_matches.map {|d| "'#{d}'" }.join(', ')}"
-        get_value("Did you mean any of those".colorize('grey'), :default => possible_matches.first)
-      end
-    end
-
     def confirm message, opts = {}, &block
       answer = get_value(message,
         :message => message,
@@ -54,7 +41,7 @@ module Babushka
       if opts[:choices] && opts[:choices].any? {|c| !c.is_a?(String) }
         raise ArgumentError, "Choices must be passed as strings."
       end
-      opts.defaults! :prompt => '? '
+      opts = {:prompt => '? '}.merge(opts)
       prompt_and_read_value prompt_message(message, opts), opts.merge(:ask => !Base.task.opt(:defaults)), &block
     end
 
@@ -125,9 +112,9 @@ module Babushka
         Readline.completion_append_character = nil
 
         Readline.completion_proc = if !choices.nil?
-          L{|str| choices.select {|i| i.starts_with? choice } }
+          lambda{|str| choices.select {|i| i.starts_with? choice } }
         else
-          L{|str|
+          lambda{|str|
             Dir["#{str}*"].map {|path|
               path.end_with(if File.directory?(path)
                 using_libedit ? '' : '/' # libedit adds its own trailing slash to dirs

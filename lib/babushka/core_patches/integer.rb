@@ -8,6 +8,7 @@ class Integer
   #   1337.xsecs    #=> "22 minutes"
   #   1234567.xsecs #=> "14 days"
   def xsecs
+    # TODO: move
     value = self.abs
     past = (self < 0)
 
@@ -31,7 +32,7 @@ class Integer
 
       value /= divisor
       value = 1 if value == 0
-      "#{value.commas} #{unit}#{'s' unless value == 1}#{' ago' if past}"
+      "#{value} #{unit}#{'s' unless value == 1}#{' ago' if past}"
     end
 
   end

@@ -67,6 +67,7 @@ class Array
   # first element for which the block returs true, and the second being the
   # remainder (or +nil+ if the block didn't return true for any elements).
   def cut &block
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     if (cut_at = index {|i| yield i }).nil?
       [self, nil]
     else
@@ -76,16 +77,19 @@ class Array
   # Return two arrays in the same manner as +cut+, but check for element
   # equality against +value+ to find the point at which to cut the array.
   def cut_at value
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     cut {|i| i == value }
   end
   # Return a new array containing every element from this array for which
   # the block returns true.
   def extract &block
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: '#select'
     dup.extract!(&block)
   end
   # Like +extract+, but remove the extracted values in-place before
   # returning them.
   def extract! &block
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: '#select!'
     dup.inject [] do |extracted,i|
       extracted << delete(i) if yield i
       extracted
@@ -94,10 +98,12 @@ class Array
   # Return a new array containing all the elements from this array that
   # are neither +#nil?+ nor +#blank?+.
   def squash
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     dup.squash!
   end
   # Like +squash+, but remove the +#nil?+ and +#blank?+ entries in-place.
   def squash!
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     delete_if(&:blank?)
   end
 
@@ -120,6 +126,7 @@ class Array
 
   # Return a new array by converting each element in this array to a VersionOf.
   def versions
+    # TODO: deprecate
     map {|i| Babushka::VersionOf::Helpers.VersionOf i }
   end
 
@@ -139,46 +146,29 @@ class Array
   #   %w[hook line sinker].to_list(:oxford => true) #=> "hook, line, and sinker"
   #
   def to_list(opts = {})
+    # TODO: deprecate
     items = map(&:to_s)
     [
-      items[0..-2].squash.join(', '),
+      items[0..-2].compact.join(', '),
       items.last
-    ].squash.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
+    ].compact.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
   end
 
   # If the final element of the array is a +Hash+, it's removed from this array
   # and returned. Otherwise, an empty hash is returned.
   def extract_options!
+    # TODO: deprecate
     last.is_a?(::Hash) ? pop : {}
   end
 
   # As above, without modifying the receiving object.
   def extract_options
+    # TODO: deprecate
     dup.extract_options!
   end
 
-  # Return a new array containing the terms from this array that were
-  # determined to be 'similar to' +string+. A string is considered to
-  # be similar to another if its Levenshtein distance is less than
-  # either the string's length minus one, or one fifth is length plus
-  # two, whichever is less.
-  #
-  #     word length  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  …
-  #   typos allowed  0  0  1  2  3  3  3  3  3   4   4   4   4   4   5  …
-  #
-  # This means that:
-  #   - a little over one fifth of strings longer than 4 characters can be misspelt;
-  #   - strings 3 or 4 characters long can have 1 or 2 misspelt characters respectively;
-  #   - strings 1 or 2 characters long must be spelt correctly.
   def similar_to string
-    map {|term|
-      [term, Babushka::Levenshtein.distance(term, string)]
-    }.select {|(i, similarity)|
-      similarity <= [i.length - 2, (i.length / 5) + 2].min
-    }.sort_by {|(_, similarity)|
-      similarity
-    }.map {|(i, _)|
-      i
-    }
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: 'Babushka::Spell.for(str, choices: arr)'
+    Babushka::Spell.for(string, choices: self)
   end
 end

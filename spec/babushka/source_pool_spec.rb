@@ -71,7 +71,6 @@ RSpec.describe Babushka::SourcePool do
         end
       }
       before {
-        allow(Babushka::Prompt).to receive(:suggest_value_for).and_return(nil)
         allow(Babushka::Source).to receive(:present).and_return([source])
       }
       it "should not find the dep without a namespace" do

@@ -43,7 +43,7 @@ RSpec.describe "accepts_*_for" do
     end
     it "should return the result of callable items" do
       [:package, :renders, :format].each {|method_name|
-        expect(subject.send(method_name, L{ "world" }).send(method_name)).to eq("world")
+        expect(subject.send(method_name, lambda{ "world" }).send(method_name)).to eq("world")
       }
     end
     it "should replace existing values with new ones" do
@@ -100,7 +100,7 @@ RSpec.describe "accepts_*_for" do
     end
     it "should return the result of callable items" do
       [:records, :produces, :valid_formats].each {|method_name|
-        expect(subject.send(method_name, "hello", L{ "world" }).send(method_name)).to eq(["hello", "world"])
+        expect(subject.send(method_name, "hello", lambda{ "world" }).send(method_name)).to eq(["hello", "world"])
       }
     end
     it "should append new values to existing ones" do
@@ -142,7 +142,7 @@ RSpec.describe "accepts_*_for" do
     describe "lambda and value input" do
       test_lists.each_pair {|input, expected|
         it "should return #{expected.inspect} when passed #{input.inspect} within a lambda" do
-          l = L{
+          l = lambda{
             via :brew, input
           }
           list = AcceptsForTest.new
@@ -154,7 +154,7 @@ RSpec.describe "accepts_*_for" do
 
     describe "nested lambdas" do
       it "should choose recursively" do
-        l = L{
+        l = lambda{
           via :brew do
             via :brew, "haha, excellent"
             via :apt, ":|"

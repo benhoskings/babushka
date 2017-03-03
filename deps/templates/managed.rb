@@ -1,4 +1,4 @@
-managed_template = L{
+managed_template = lambda{
   def packages
     installs.versions
   end

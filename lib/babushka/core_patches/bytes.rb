@@ -14,31 +14,37 @@ class Numeric
   alias :byte :bytes
 
   def kilobytes
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     self * KILOBYTE
   end
   alias :kilobyte :kilobytes
 
   def megabytes
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     self * MEGABYTE
   end
   alias :megabyte :megabytes
 
   def gigabytes
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     self * GIGABYTE
   end
   alias :gigabyte :gigabytes
 
   def terabytes
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     self * TERABYTE
   end
   alias :terabyte :terabytes
 
   def petabytes
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     self * PETABYTE
   end
   alias :petabyte :petabytes
 
   def exabytes
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     self * EXABYTE
   end
   alias :exabyte :exabytes

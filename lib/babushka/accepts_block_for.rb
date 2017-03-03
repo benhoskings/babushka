@@ -15,7 +15,8 @@ module Babushka
       end
 
       def default_blocks_for klass
-        (@@default_blocks ||= Hashish.hash)[klass]
+        @@default_blocks ||= Hash.new {|hsh,k| hsh[k] = {} }
+        @@default_blocks[klass]
       end
 
       def accepted_blocks
@@ -44,7 +45,7 @@ module Babushka
 
     def default_block_for block_name
       differentiator = Babushka.host.differentiator_for payload[block_name].keys
-      L{
+      lambda{
         debug "#{block_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
         true
       }

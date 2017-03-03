@@ -50,15 +50,15 @@ end
 
 def test_value_lambdas
   {
-    L{ } => nil,
-    L{
+    lambda{ } => nil,
+    lambda{
       via :apt, "git-core"
     } => nil,
-    L{
+    lambda{
       via :brew, 'ruby'
       via :apt, 'git-core'
     } => 'ruby',
-    L{
+    lambda{
       via :brew, 'something else'
       via :apt, 'some apt packages'
     } => 'something else'
@@ -67,15 +67,15 @@ end
 
 def test_list_lambdas
   {
-    L{ } => [],
-    L{
+    lambda{ } => [],
+    lambda{
       via :apt, %w[ruby irb ri rdoc]
     } => [],
-    L{
+    lambda{
       via :brew, 'ruby'
       via :apt, %w[ruby irb ri rdoc]
     } => ['ruby'],
-    L{
+    lambda{
       via :brew, 'something else'
       via :apt, 'some apt packages'
     } => ['something else']

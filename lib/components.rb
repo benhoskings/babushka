@@ -16,8 +16,6 @@ module Babushka
     core_patches/bytes
     core_patches/object
     core_patches/string
-    core_patches/symbol
-    core_patches/uri
     xml_string
     helpers/log_helpers
     helpers/shell_helpers
@@ -32,6 +30,7 @@ module Babushka
     resource
     asset
     prompt
+    spell
     lambda_chooser
     version_str
     version_of
