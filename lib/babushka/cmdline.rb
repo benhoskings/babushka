@@ -38,7 +38,7 @@ module Babushka
       opt '-t', '--templates', "List templates instead of deps"
     }.run {|cmd|
       Base.sources.local_only {
-        Helpers.generate_list_for(cmd.opts[:templates] ? :templates : :deps, cmd.argv.first)
+        Helpers.generate_list_for(cmd.opts[:templates] ? :templates : :deps, (cmd.argv.first || ""))
       }
     }
 

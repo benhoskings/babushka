@@ -55,7 +55,7 @@ module Babushka
 
       def self.generate_list_for to_list, filter_str
         context = to_list == :deps ? Base.program_name : ':template =>'
-        match_str = filter_str.try(:downcase)
+        match_str = filter_str.downcase
         Base.sources.all_present.each {|source|
           source.load!
         }.map {|source|

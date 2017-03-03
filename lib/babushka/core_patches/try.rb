@@ -5,11 +5,15 @@
 # nil and just send like normal when called on any other object.
 
 class Object
-  alias_method :try, :__send__
+  def try(*args)
+    Babushka::LogHelpers.deprecated! '2017-09-01'
+    __send__(*args)
+  end
 end
 
 class NilClass
   def try *args
+    Babushka::LogHelpers.deprecated! '2017-09-01'
     nil
   end
 end

@@ -51,7 +51,7 @@ module Babushka
 
     def open_log! mode = 'a'
       log_prefix.mkdir
-      @persistent_log.try(:close) # If the log was already open, close it.
+      @persistent_log.close unless @persistent_log.nil? # If the log was already open, close it.
       @persistent_log = log_path_for(current_dep).open(mode).tap {|f| f.sync = true }
     end
 

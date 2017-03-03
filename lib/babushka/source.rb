@@ -41,7 +41,9 @@ module Babushka
       raise ArgumentError, "Sources with nil paths require a name (as the second argument)." if path.nil? && name.nil?
       raise ArgumentError, "The source URI can only be supplied if the source doesn't exist already." if !uri.nil? && !path.nil? && path.p.exists?
       init
-      @path, @name, @uri = path.try(:p), name, uri
+      @path = path.p unless path.nil?
+      @name = name
+      @uri = uri
     end
 
     def path

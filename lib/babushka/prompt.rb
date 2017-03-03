@@ -84,14 +84,14 @@ module Babushka
     def read_value_from_prompt message, opts, &block
       value = nil
 
-      value = read_from_prompt(opts[:prompt].end_with(' '), opts[:choices]).try(:chomp)
-      value = opts[:default].to_s if value.blank? && !(opts[:default] && opts[:default].to_s.empty?)
+      value = read_from_prompt(opts[:prompt].end_with(' '), opts[:choices]).chomp
+      value = opts[:default].to_s if value.empty? && !(opts[:default] && opts[:default].to_s.empty?)
 
       error = if opts[:choices] && !opts[:choices].include?(value)
         "That's not a valid choice"
       elsif block_given? && !yield(value)
         opts[:retry] || "That wasn't valid"
-      elsif value.blank? && !(opts[:default] && opts[:default].empty?)
+      elsif value.empty? && !(opts[:default] && opts[:default].empty?)
         "That was blank"
       elsif !opts[:confirmation] && %w[y yes].include?(value) && !confirm("Wait, do you mean the literal value '#{value}'?", :default => 'n')
         "Thought so :) Hit enter for the [default]"
@@ -129,12 +129,12 @@ module Babushka
         # interrupts to work during Readline calls.
         Base.exit_on_interrupt!
 
-        Readline.readline(prompt, true).try(:strip)
+        (Readline.readline(prompt, true) || '').strip
       end
     rescue LoadError
       def read_from_prompt prompt, choices = nil
         print prompt
-        STDIN.gets.try(:strip)
+        (STDIN.gets || '').strip
       end
     end
   end
