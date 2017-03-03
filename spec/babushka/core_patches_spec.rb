@@ -99,6 +99,19 @@ RSpec.describe Array, '#versions' do
   }
 end
 
+RSpec.describe Hash, '#map_values' do
+  it "should work for empty hashes" do
+    expect({}.map_values {|k,v| "new #{v}" }).to eq({})
+  end
+  it "should work for empty defaults" do
+    expect({a: 'b', c: 'd'}.map_values {|k,v| "new #{v}" }).to eq({a: 'new b', c: 'new d'})
+  end
+  it "should not mutate the original" do
+    hsh = {a: 'b', c: 'd'}
+    expect { hsh.map_values {|k,v| "new #{v}" } }.not_to change { hsh }
+  end
+end
+
 RSpec.describe Hash, '#defaults!' do
   it "should work for empty hashes" do
     expect({}.defaults!(:a => 'b', :c => 'd')).to eq({:a => 'b', :c => 'd'})
