@@ -6,6 +6,10 @@ module Babushka
       @template
     end
 
+    def self.metaclass
+      class << self; self end
+    end
+
     def define!
       instance_eval(&self.class.template) unless self.class.template.nil?
       super

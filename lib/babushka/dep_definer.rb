@@ -69,6 +69,10 @@ module Babushka
       end
     end
 
+    def metaclass
+      class << self; self end
+    end
+
     private
 
     def define_elements!

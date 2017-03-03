@@ -13,7 +13,7 @@ module Babushka
     end
 
     def choose choices, method_name = nil
-      self.metaclass.send :alias_method, method_name, :on unless method_name.nil?
+      metaclass.send :alias_method, method_name, :on unless method_name.nil?
       block_result = instance_eval(&@block)
       @results.empty? ? block_result : [choices].flatten(1).push(:otherwise).pick {|c| @results[c] }
     end
@@ -36,6 +36,12 @@ module Babushka
           [first].flatten(1).concat(rest)
         end
       }
+    end
+
+    private
+
+    def metaclass
+      class << self; self end
     end
 
   end

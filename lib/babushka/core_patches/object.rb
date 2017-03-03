@@ -4,6 +4,7 @@ class Object
   # Return this object's metaclass; i.e. the value of self within a
   # 'class << self' block.
   def metaclass
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: '`class << self; self end`'
     class << self; self end
   end
 
