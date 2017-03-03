@@ -141,7 +141,7 @@ module Babushka
       unless @loaded
         path.p.glob('**/*.rb').each {|f|
           Base.sources.load_context :source => self, :path => f do
-            load f
+            load f, true
           end
         }
         debug "Loaded #{deps.count} deps from #{path}."

@@ -125,6 +125,7 @@ RSpec.describe Babushka::Source do
         @source = Babushka::Source.new('spec/deps/good')
         @source.load!
       }
+
       it "should load deps from a file" do
         expect(@source.deps.names).to include('test dep 1')
         expect(@source.deps.names).to include('test dep 2')
@@ -136,7 +137,11 @@ RSpec.describe Babushka::Source do
       it "should store the source the dep was loaded from" do
         expect(@source.deps.for('test dep 1').dep_source).to eq(@source)
       end
+      it "should not pollute the global namespace" do
+        expect(defined?(top_level_method_from_the_dep)).to be_falsey
+      end
     end
+
     context "with a source with errors" do
       before {
         @source = Babushka::Source.new('spec/deps/bad')
