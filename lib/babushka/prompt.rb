@@ -54,7 +54,7 @@ module Babushka
       if opts[:choices] && opts[:choices].any? {|c| !c.is_a?(String) }
         raise ArgumentError, "Choices must be passed as strings."
       end
-      opts.defaults! :prompt => '? '
+      opts = {:prompt => '? '}.merge(opts)
       prompt_and_read_value prompt_message(message, opts), opts.merge(:ask => !Base.task.opt(:defaults)), &block
     end
 

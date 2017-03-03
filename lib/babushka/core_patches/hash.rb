@@ -30,12 +30,14 @@ class Hash
   # Reverse-merge +other+ into this hash in-place; that is, merge all
   # key-value pairs in +other+ whose keys are not already present in self.
   def defaults! other
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: '#merge! the other way around'
     replace other.merge(self)
   end
 
   # Return a new hash consisting of +other+ reverse-merged into this hash;
   # that is, equal to +other.merge(self)+.
   def defaults other
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: '#merge the other way around'
     dup.defaults! other
   end
 
@@ -58,6 +60,7 @@ class Hash
   # the block returns true. That is, like Hash#select, but returning a hash
   # instead of an array of tuples.
   def selekt &block
+    Babushka::LogHelpers.deprecated! '2017-09-01', instead: '#select'
     hsh = {}
     each_pair {|k,v|
       hsh[k] = v if yield(k,v)
