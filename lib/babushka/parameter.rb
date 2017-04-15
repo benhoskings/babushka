@@ -106,6 +106,10 @@ module Babushka
       value.to_a
     end
 
+    def each
+      value.each { |i| yield i }
+    end
+
     def to_str
       if !value.respond_to?(:to_str)
         raise TypeError, "Can't coerce #{value}:#{value.class.name} into a String"
