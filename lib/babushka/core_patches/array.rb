@@ -151,7 +151,7 @@ class Array
     [
       items[0..-2].compact.join(', '),
       items.last
-    ].compact.join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
+    ].reject(&:blank?).join("#{',' if opts[:oxford]} #{opts[:conj] || 'and'} ")
   end
 
   # If the final element of the array is a +Hash+, it's removed from this array
