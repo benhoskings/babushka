@@ -29,7 +29,7 @@ module Babushka
       attr_reader :name, :description, :opt_definer, :handler
 
       def initialize name, description, opt_definer
-        @name, @description, @opt_definer = name, description, (opt_definer || lambda{})
+        @name, @description, @opt_definer = name, description, (opt_definer || proc{})
       end
 
       def run &handler

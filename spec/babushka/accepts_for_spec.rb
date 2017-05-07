@@ -142,7 +142,7 @@ RSpec.describe "accepts_*_for" do
     describe "lambda and value input" do
       test_lists.each_pair {|input, expected|
         it "should return #{expected.inspect} when passed #{input.inspect} within a lambda" do
-          l = lambda{
+          l = proc{
             via :brew, input
           }
           list = AcceptsForTest.new
@@ -154,7 +154,7 @@ RSpec.describe "accepts_*_for" do
 
     describe "nested lambdas" do
       it "should choose recursively" do
-        l = lambda{
+        l = proc{
           via :brew do
             via :brew, "haha, excellent"
             via :apt, ":|"

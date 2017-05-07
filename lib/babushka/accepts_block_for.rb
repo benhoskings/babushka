@@ -45,7 +45,7 @@ module Babushka
 
     def default_block_for block_name
       differentiator = Babushka.host.differentiator_for payload[block_name].keys
-      lambda{
+      proc{
         debug "#{block_name} not defined#{" for #{differentiator}" unless differentiator.nil?}."
         true
       }

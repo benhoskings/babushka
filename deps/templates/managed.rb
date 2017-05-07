@@ -1,4 +1,4 @@
-managed_template = lambda{
+managed_template = proc{
   def packages
     installs.versions
   end
