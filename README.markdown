@@ -1,7 +1,7 @@
 
 ### What
 
-Babushka is a humble tool for automating computing chores. For each dependency (dep) of the job to do, a test, and the code to make that test pass -- test-driven sysadmin.
+Babushka is a commandline tool for automating computing chores. Each distinct part of the job is expressed as a dependency (dep), which comprises a test and the code to make that test pass.
 
 ```ruby
 dep 'on git branch', :branch do
@@ -16,9 +16,9 @@ dep 'on git branch', :branch do
 end
 ```
 
-That's an expository dep that can achieve the modest goal of being on the correct git branch. Notice the parameter denoted by the :branch symbol, and the two DSL words `met?` and `meet`: there's a clear separation of test (is the dependency met?) and code (meet the dependency).
+Above is an expository dep that can achieve the modest goal of being on the correct git branch (note the parameter denoted by the :branch symbol). It's built using the two DSL words `met?` and `meet`, which contain each dep's logic, separating the test (is the dependency met?) from the code (meet the dependency).
 
-Running this dep when a branch change is required shows how babushka does its work in blocks of met/meet/met: a failing test, an action blindly taken, and then the same test again, hopefully passing now as a result.
+Running this dep when a branch change is required shows how babushka does its work in blocks of met/meet/met: a failing test, an action blindly taken, and then the same test again, passing now as a result.
 
     $ bin/babushka.rb 'on git branch' branch=stable
     on git branch {
@@ -44,7 +44,7 @@ dep 'on git branch', :branch do
   # ...
 ```
 
-All the deps listed as requirements of this one have to succeed before this one is even attempted. That reflects reality: asking if we're on the right git branch doesn't even make sense if git isn't installed.
+Before babushka processes a dep in the met/meet/met fashion described above, all its requirements are processed to completion in the same way. That reflects reality: asking if we're on the right git branch doesn't even make sense if git isn't installed.
 
     $ bin/babushka.rb 'on git branch' branch=stable
     on git branch {
@@ -54,6 +54,8 @@ All the deps listed as requirements of this one have to succeed before this one 
       } ✓ git
       Currently on stable.
     } ✓ on git branch
+
+The complentary DSL word `requires_when_unmet` can be used to specify dependencies required only when a given dep is found to be unmet, and that can be skipped when the dep is already met. (Build tools are a good example of such a requirement.)
 
 There are other things to learn about, like dep templates, dep sources, and the few remaining words in babushka's DSL, but the above is the nut of it. If you string a few dozen deps like this one together, you can provision a server from scratch, or do anything else you like.
 
@@ -66,16 +68,16 @@ Babushka is most easily installed using `babushka.me/up`, a shell script that in
 
     sh -c "`curl https://babushka.me/up`"
 
-If you'd rather install manually, all you need to do is clone [the git repo](https://github.com/benhoskings/babushka) (or extract an archive of it), and if you like, link `bin/babushka.rb` into your path as 'babushka'.
+If you'd rather install manually, all you need to do is clone [the git repo](https://github.com/benhoskings/babushka) (or extract an archive of it) and if you like, link `bin/babushka.rb` into your path as 'babushka'.
 
-Check [the install documentation](http://babushka.me/installing), for the full details on customising the installation, including locking to specific versions and installing from forks using `babushka.me/up`.
+Check [the install documentation](http://babushka.me/installing) for details on customising the installation, including locking to specific versions and installing from forks using `babushka.me/up`.
 
 
 ### Supported systems
 
 Babushka itself should run on any Unix; there's nothing in the core of babushka that requires anything other than unix, ruby, and git.
 
-I develop babushka against OS X and Ubuntu, so homebrew and apt are the best-supported package managers. There is also some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, thanks to others' contributions. On other systems, specific operations (like installing a package using that system's package manager) will fail with an error message, but otherwise babushka should run fine. In any case, patches are most welcome.
+I develop babushka on macOS and use it primarily on Ubuntu, so homebrew and apt are the best-supported package managers. There is also some yum (RedHat/Fedora/CentOS) and pacman (Arch) support, thanks to others' contributions. On other systems, specific operations (like installing a package using that system's package manager) will fail with an error message, but otherwise babushka should run fine. In any case, patches are most welcome.
 
 
 ### Acknowledgements
@@ -88,7 +90,7 @@ Babushka takes advantage of these ruby libraries:
 
 Thanks very much to everyone who's contributed to babushka, whether by submitting patches, discussing design ideas with me, testing, or just giving their feedback.
 
-Rather than a list of contributors here, which inevitably falls out of date, check [the contributors page](https://github.com/benhoskings/babushka/graphs/contributors). For other contributions, version-bumping commits always detail what changed and who helped out.
+A list of contributors here inevitably falls out of date - [the contributors page](https://github.com/benhoskings/babushka/graphs/contributors) contains the full list. In addition, the version-bumping commits always detail what changed and who helped out in their commit messages.
 
 
 ### License
