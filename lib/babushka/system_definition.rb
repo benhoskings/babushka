@@ -79,6 +79,8 @@ module Babushka
           '6' => :squeeze,
           '7' => :wheezy,
           '8' => :jessie,
+          '9' => :stretch,
+          '10' => :buster,
         },
         :redhat => {
           '3' => :taroon,
