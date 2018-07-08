@@ -13,6 +13,8 @@ TODO
   https://github.com/benhoskings/babushka/issues/197
   https://github.com/benhoskings/babushka/issues/251
 
+* Investigate whether adding an apt source on setup is really required on debian systems.
+  https://github.com/benhoskings/babushka/issues/339
 
 KNOWN ISSUES
 ------------
