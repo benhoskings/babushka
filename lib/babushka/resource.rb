@@ -31,22 +31,13 @@ module Babushka
       if filename.p.exists? && !filename.p.empty?
         log_ok "Already downloaded #{filename}."
         filename
-      elsif (result = shell(%Q{curl -I -X GET "#{url}"})).nil?
-        log_error "Couldn't download #{url}: `curl` exited with non-zero status."
       else
-        response_code = result.val_for(/HTTP\/1\.\d/) # not present for ftp://, etc.
-        if response_code && response_code[/^[23]/].nil?
-          log_error "Couldn't download #{url}: #{response_code}."
-        elsif !(location = result.val_for(/^location:/i)).nil?
-          log "Following redirect from #{url}"
-          download URI.escape(location), location.p.basename
-        else
-          success = log_block "Downloading #{url}" do
-            shell('curl', '-#', '-o', "#{filename}.tmp", url.to_s, :progress => /[\d\.]+%/) &&
+        success = log_block "Downloading #{url}" do
+          shell('curl', '-#', '-L', '-o' "#{filename}.tmp", url.to_s, :progress => /[\d\.]+%/) &&
             shell('mv', '-f', "#{filename}.tmp", filename)
-          end
-          filename if success
         end
+
+        filename if success
       end
     end
 
