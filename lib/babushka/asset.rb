@@ -71,7 +71,7 @@ module Babushka
 
     def content_subdir
       identity_dirs.reject {|dir|
-        %w[app pkg bundle tmbundle prefPane lbaction].map {|i|
+        %w[app pkg bundle tmbundle prefPane lbaction spoon].map {|i|
           /\.#{i}$/
         }.any? {|dont_descend|
           dir[dont_descend]
