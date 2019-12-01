@@ -1,3 +1,5 @@
+require 'uri'
+
 module Babushka
   class Resource
     extend LogHelpers
