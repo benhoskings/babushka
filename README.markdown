@@ -1,3 +1,18 @@
+### Archived
+
+I don't intend to do any further work on babushka (in fact I haven't done so in some time).
+
+I had the idea and [started working on the project](https://github.com/benhoskings/babushka/commit/f007e2c86ddb0729896814f6baac75673f8d7beb) in 2009. At the time docker and even vagrant were yet to be conceived. In part I wanted to build a simpler, small-scale alternative to the likes of chef and puppet, and in part it started as a bit of an experiment in how far I could hone a ruby DSL and to what extent I could lean on it to do useful work. I had a ball working on it and learned a hell of a lot, and I'm proud of the fact that the initial design proved sound. I'm less proud of certain parts of the implementation - hoowee would I write a few bits of that code differently today - but then we were all young once.
+
+These days things are very different. With modern containers and the immutability they provide, along with tools like terraform, kubernetes and so on, babushka and its mutation-based approach is quite dated. In fact requiring good old babushka for serious infrastructure work today could be considered a kind of warning sign.
+
+As for setting up a new laptop and so on, I've learned the long way that a dumb shell script that copies some preferences into place, runs a few `defaults write` commands, and so on, along with a few manual steps, is much easier to maintain. The more an automated process reaches into MacOS the more quickly it will fall out of compatibility, and in any case setting up a new machine is a rare enough occurrence for me that it's not worth aiming for perfect automation.
+
+Thanks to everyone who's contributed and made use of it over the years. As always if you'd like to make use of it in any way, go for your life - I just don't intend to make any more changes to this main repo. Well maybe one rainy day I'll refactor the hairy bits - we'll see.
+
+Cheers and all the best.
+
+---
 
 ### What
 
